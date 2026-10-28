@@ -11,10 +11,12 @@
 
   const LOG_GROUPS = {
     all: ['ทั้งหมด', null],
-    sect: ['สำนัก', ['decision', 'appoint', 'promote', 'demote', 'succession', 'politics', 'punish', 'expel', 'challenge', 'disciple', 'finance', 'research', 'build', 'system', 'desert']],
-    people: ['ผู้คน', ['relation', 'marriage', 'recruit', 'death', 'awaken']],
-    train: ['ฝึกฝน', ['breakthrough', 'learn', 'insight', 'craft', 'gear']],
-    world: ['นอกสำนัก', ['mission', 'raid', 'combat', 'duel', 'tournament', 'spar', 'event', 'explore']]
+    people: ['👥 ผู้คน', ['relation', 'marriage', 'recruit', 'death', 'injury', 'heal', 'awaken', 'desert', 'disciple', 'punish', 'expel']],
+    combat: ['⚔️ ต่อสู้/ล่า', ['combat', 'hunt', 'beast', 'explore', 'raid', 'duel', 'spar', 'tournament', 'conflict', 'challenge']],
+    craft: ['⚗️ การผลิต', ['craft', 'harvest', 'alchemy', 'forge', 'organ', 'learn', 'research', 'insight', 'breakthrough']],
+    economy: ['🪙 เศรษฐกิจ', ['economy', 'trade', 'finance', 'shop', 'gear', 'welfare', 'donation', 'surplus', 'shortage', 'salary']],
+    building: ['🏯 อาคาร', ['build', 'building', 'decision', 'appoint', 'dismiss', 'promote', 'demote', 'succession', 'politics', 'scandal', 'crisis', 'banquet', 'seclusion', 'system']],
+    major: ['⭐ สำคัญ', ['death', 'breakthrough', 'succession', 'crisis', 'raid', 'challenge', 'tournament', 'marriage', 'expel', 'build']]
   };
   const TOAST_TYPES = ['explore', 'death', 'breakthrough', 'raid', 'succession', 'challenge', 'tournament', 'marriage', 'desert', 'expel', 'research', 'build'];
 
@@ -85,7 +87,7 @@
     UI.sheet = kind; UI.tab = active; $('sheet').classList.add('show'); $('sheet').classList.toggle('tall', !!tall); $('shTitle').innerHTML = title;
     $('shTabs').style.display = tabs && tabs.length ? 'flex' : 'none';
     $('shTabs').innerHTML = (tabs || []).map(t => '<button data-t="' + t[0] + '" class="' + (t[0] === active ? 'on' : '') + '">' + t[1] + '</button>').join('');
-    $('shTabs').onclick = e => { const b = e.target.closest('button'); if (b) { UI.tab = b.dataset.t; UI.render(); } };
+    $('shTabs').onclick = e => { const b = e.target.closest('button'); if (b) { UI.tab = b.dataset.t; if (UI.sheet === 'log') UI.logFilters = new Set([UI.tab]); UI.render(); } };
     document.querySelectorAll('#hudBottom button').forEach(b => b.classList.toggle('on', b.dataset.nav === kind));
     $('selInfo').classList.remove('show');
   }
@@ -113,6 +115,27 @@
     else if (a === 'new') { UI.close(); UI.showStart(); }
     else if (a === 'tool') UI.tool(arg);
     else if (a === 'cmp') { UI.cmpId = arg; UI.render(); }
+    else if (a === 'logfilter') { UI.toggleLogFilter(arg); }
+  };
+  UI.toggleLogFilter = cat => {
+    if (!UI.logFilters) UI.logFilters = new Set(['all']);
+    if (cat === 'all') {
+      UI.logFilters = new Set(['all']);
+      UI.tab = 'all';
+    } else {
+      UI.logFilters.delete('all');
+      if (UI.logFilters.has(cat)) {
+        UI.logFilters.delete(cat);
+        if (UI.logFilters.size === 0) {
+          UI.logFilters.add('all');
+          UI.tab = 'all';
+        }
+      } else {
+        UI.logFilters.add(cat);
+        UI.tab = cat;
+      }
+    }
+    UI.render();
   };
   UI.render = () => {
     const G = UI.G, W = G.W, body = $('shBody'); if (!UI.sheet) return; const keepScroll = body.scrollTop;
@@ -280,9 +303,31 @@
 
   /* ----- บันทึก ----- */
   UI.rLog = () => {
-    const W = UI.G.W, grp = LOG_GROUPS[UI.tab][1]; let list = W.logs; if (grp) list = list.filter(l => grp.includes(l.type));
-    list = list.slice(-120).reverse(); if (!list.length) return '<div class="muted">ยังไม่มีเหตุการณ์</div>';
-    return list.map(l => '<div class="logrow"><span class="tm">' + dayStamp(l.t) + ' ' + U.pad2(Math.floor((l.t % 1440) / 60)) + ':' + U.pad2(l.t % 60) + '</span>' + linkify(W, l.text, l.ids) + '</div>').join('');
+    const W = UI.G.W;
+    if (!UI.logFilters) UI.logFilters = new Set([UI.tab || 'all']);
+    if (UI.tab && LOG_GROUPS[UI.tab] && (!UI.logFilters.has(UI.tab) && UI.logFilters.size === 1 && UI.logFilters.has('all') && UI.tab !== 'all')) {
+      UI.logFilters = new Set([UI.tab]);
+    }
+
+    let h = '<div class="log-filter-bar" style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">';
+    for (const k in LOG_GROUPS) {
+      const active = UI.logFilters.has(k);
+      h += '<button type="button" class="chip ' + (active ? 'ok' : '') + '" data-do="logfilter" data-arg="' + k + '" style="cursor:pointer;padding:6px 11px;font-size:12px;' + (active ? 'border-color:var(--gold);font-weight:bold;background:rgba(233,205,133,.18)' : '') + '">' + LOG_GROUPS[k][0] + '</button>';
+    }
+    h += '</div>';
+
+    let list = W.logs || [];
+    if (!UI.logFilters.has('all')) {
+      const allowed = new Set();
+      for (const k of UI.logFilters) {
+        const types = LOG_GROUPS[k] && LOG_GROUPS[k][1];
+        if (types) types.forEach(t => allowed.add(t));
+      }
+      list = list.filter(l => allowed.has(l.type));
+    }
+    list = list.slice(-150).reverse();
+    if (!list.length) return h + '<div class="muted">ยังไม่มีเหตุการณ์ในหมวดที่เลือก</div>';
+    return h + list.map(l => '<div class="logrow"><span class="tm">' + dayStamp(l.t) + ' ' + U.pad2(Math.floor((l.t % 1440) / 60)) + ':' + U.pad2(l.t % 60) + '</span>' + linkify(W, l.text, l.ids) + '</div>').join('');
   };
 
   /* ----- ยุทธภพ ----- */

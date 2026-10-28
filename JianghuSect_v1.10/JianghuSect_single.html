@@ -8550,12 +8550,30 @@ JD.EXPANSION=JD.EXPANSION||data;
       const d = Math.abs(x - 118) / 24, edge = y - WY1;
       if (d < 1 - edge * 0.004) { M.terrain[idx(x, y)] = T.GRASS; M.block[idx(x, y)] = 0; }
     }
-    // พื้นที่ล่าสองฝั่งนอกกำแพง เชื่อมต่อผ่านลานด้านใต้
-    for (let y = WY1 + 1; y < H; y++) for (let x = 2; x < W - 2; x++) { M.terrain[idx(x,y)] = T.GRASS; M.block[idx(x,y)] = 0; }
-    // ช่องประตู (เปิดผ่านกำแพงล่าง)
+    // พื้นที่ล่าและป่ารอบสำนัก เชื่อมต่อกันรอบกำแพงทั้ง 4 ด้าน (ใต้ ซ้าย ขวา บน)
+    for (let y = WY1 + 1; y < H; y++) for (let x = 2; x < W - 2; x++) { M.terrain[idx(x, y)] = T.GRASS; M.block[idx(x, y)] = 0; }
+    for (let y = 2; y <= WY1; y++) for (let x = 2; x < WX0; x++) { M.terrain[idx(x, y)] = T.GRASS; M.block[idx(x, y)] = 0; }
+    for (let y = 2; y <= WY1; y++) for (let x = WX1 + 1; x < W - 2; x++) { M.terrain[idx(x, y)] = T.GRASS; M.block[idx(x, y)] = 0; }
+    for (let y = 2; y < WY0; y++) for (let x = 2; x < W - 2; x++) { M.terrain[idx(x, y)] = T.GRASS; M.block[idx(x, y)] = 0; }
+
+    // ช่องประตูกำแพงด้านต่าง ๆ (เปิดเชื่อมต่อออกสู่พื้นที่ล่ารอบสำนัก)
+    // 1. ประตูทิศใต้ (ทางเข้าหลัก)
     const GX0 = 93 + OX, GX1 = 98 + OX;
     for (let y = WY1 - 1; y <= WY1; y++) for (let x = GX0; x <= GX1; x++) { M.terrain[idx(x, y)] = T.ARCH; M.block[idx(x, y)] = 0; }
     for (let y = WY1 + 1; y < H; y++) for (let x = 116; x <= 120; x++) { M.terrain[idx(x, y)] = T.ROAD; M.block[idx(x, y)] = 0; }
+
+    // 2. ประตูทิศประจิม (ตะวันตก - สู่ป่าไผ่หมอกคราม)
+    for (let y = 78; y <= 82; y++) for (let x = WX0; x <= WX0 + 1; x++) { M.terrain[idx(x, y)] = T.ARCH; M.block[idx(x, y)] = 0; }
+    for (let y = 79; y <= 81; y++) for (let x = 14; x < WX0; x++) { M.terrain[idx(x, y)] = T.ROAD; M.block[idx(x, y)] = 0; }
+
+    // 3. ประตูทิศบูรพา (ตะวันออก - สู่ผาหินแกร่ง)
+    for (let y = 78; y <= 82; y++) for (let x = WX1 - 1; x <= WX1; x++) { M.terrain[idx(x, y)] = T.ARCH; M.block[idx(x, y)] = 0; }
+    for (let y = 79; y <= 81; y++) for (let x = WX1 + 1; x <= 226; x++) { M.terrain[idx(x, y)] = T.ROAD; M.block[idx(x, y)] = 0; }
+
+    // 4. ประตูทิศอุดร (ทางเหนือ - สู่ยอดเขาเหมันต์)
+    for (let y = WY0; y <= WY0 + 1; y++) for (let x = 116; x <= 120; x++) { M.terrain[idx(x, y)] = T.ARCH; M.block[idx(x, y)] = 0; }
+    for (let y = 4; y < WY0; y++) for (let x = 117; x <= 119; x++) { M.terrain[idx(x, y)] = T.ROAD; M.block[idx(x, y)] = 0; }
+    for (let y = WY0 + 2; y <= 28 + OY; y++) for (let x = 117; x <= 119; x++) { if (M.block[idx(x, y)] === 0) M.terrain[idx(x, y)] = T.ROAD; }
 
     // 2) อาคารบนพื้นที่
     let bidn = 0;
@@ -9690,7 +9708,22 @@ JD.EXPANSION=JD.EXPANSION||data;
     const product = { id: String(npc.inv.personalCraftSeq), key, qty, q, purchasedCost: quote.cost, ownValue: quote.ownValue, intent: intent === 'donate' ? 'donate' : 'keep' };
     npc.inv.craftedPills.push(product); return { ok: true, product };
   };
-  ECO.donatePersonalProduct = (W, npc, id) => {
+  ECO.donatePersonalProduct = (W, npc, id, qty) => {
+    if (npc && npc.inv && npc.inv.mats && (npc.inv.mats[id] || 0) > 0) {
+      qty = Number.isFinite(qty) && qty > 0 ? Math.floor(qty) : 1;
+      const count = Math.min(qty, npc.inv.mats[id]);
+      const CPE = g.CPE;
+      const reward = CPE ? CPE.reward(W, id, count) : 5;
+      npc.inv.mats[id] -= count;
+      if (npc.inv.mats[id] <= 0) delete npc.inv.mats[id];
+      ECO.add(W, id, count);
+      if (CPE && reward > 0) {
+        CPE.mint(W, npc, reward, 'บริจาควัตถุดิบเข้าคลังสำนัก', true);
+        CPE.S(W).donated += reward;
+      }
+      W.log('economy', (npc.h && npc.h.name && npc.h.name.given || 'สมาชิก') + ' บริจาค「' + ECO.name(id) + '」×' + count + ' เข้าคลังสำนัก ได้รับ ' + Math.round(reward) + ' แต้มคุณูปการ', [npc.id]);
+      return { ok: true, reward };
+    }
     const products = npc.inv && npc.inv.craftedPills, index = products && products.findIndex(p => p.id === id);
     if (index == null || index < 0) return { ok: false };
     const p = products[index], CPE = g.CPE;
@@ -9709,7 +9742,9 @@ JD.EXPANSION=JD.EXPANSION||data;
     const reward = Math.floor(Math.max(0, Math.min(baseReward, maxReward)) * 10) / 10;
     if (!ECO.add(W, p.key, p.qty, p.q)) return { ok: false };
     products.splice(index, 1); if (reward) CPE.mint(W, npc, reward, 'บริจาคโอสถส่วนตัว', true);
-    CPE.S(W).donated += reward; return { ok: true, reward };
+    CPE.S(W).donated += reward;
+    W.log('economy', npc.h.name.given + ' บริจาค「' + ECO.name(p.key) + '」เข้าคลังสำนัก ได้รับ ' + Math.round(reward) + ' แต้มคุณูปการ', [npc.id]);
+    return { ok: true, reward };
   };
 
   /** ผลของโอสถ (อ่านจากข้อมูลเกมเก่า) */
@@ -10248,6 +10283,7 @@ JD.EXPANSION=JD.EXPANSION||data;
 
   /* ---------- สภาประจำวัน: เจ้าสำนักตัดสินใจตามตัวตน ---------- */
   SECT.daily = W => {
+    SECT.decayFacilityDemand(W);
     const S = W.sect, m = W.byId[S.masterId];
     if (!m || m.dead) { SECT.succession(W, 'เจ้าสำนักว่าง'); return; }
     if (S.sealedUntil && W.t < S.sealedUntil) { SECT.runByDeputy(W); return; }
@@ -10443,6 +10479,25 @@ JD.EXPANSION=JD.EXPANSION||data;
     return S.facilityDemand;
   };
 
+  SECT.decayFacilityDemand = W => {
+    const S = W.sect;
+    if (!S || !S.facilityDemand) return;
+    for (const bid in S.facilityDemand) {
+      const fd = S.facilityDemand[bid];
+      const lastH = fd.lastCongestionHour || 0;
+      const daysSince = lastH > 0 ? (W.t - lastH) / 1440 : 999;
+      if (daysSince >= 2) {
+        fd.failedAttempts = 0;
+        fd.unmetDemands = 0;
+        fd.congestedHours = 0;
+      } else if (daysSince >= 1) {
+        fd.failedAttempts = Math.max(0, Math.floor((fd.failedAttempts || 0) * 0.5));
+        fd.unmetDemands = Math.max(0, Math.floor((fd.unmetDemands || 0) * 0.5));
+        fd.congestedHours = Math.max(0, Math.floor((fd.congestedHours || 0) * 0.5));
+      }
+    }
+  };
+
   SECT.recordFacilityDemand = (W, bldOrAct, reason, npc) => {
     SECT.ensureFacilityDemand(W);
     let bid = ACT_TO_BLD[bldOrAct] || bldOrAct;
@@ -10482,18 +10537,25 @@ JD.EXPANSION=JD.EXPANSION||data;
       let s = W.rng.next() * 0.15;
       let reasons = [];
 
-      // 1. ตรวจสอบความต้องการจริงจากการใช้งานล้น / หาจุดใช้งานไม่ได้
-      if (fd.failedAttempts >= 2) {
-        s += Math.min(1.6, fd.failedAttempts * 0.3);
-        reasons.push('หาสถานีไม่ได้ ' + fd.failedAttempts + ' ครั้ง');
+      // ตรวจสอบความสดใหม่ของสัญญาณความต้องการ: สัญญาณค้างเกิน 2 วันหมดอายุ ไม่ใช้ตัดสินใจ
+      const lastH = fd.lastCongestionHour || 0;
+      const daysSince = lastH > 0 ? (W.t - lastH) / 1440 : 999;
+      const effFailed = daysSince >= 2 ? 0 : daysSince >= 1 ? Math.floor((fd.failedAttempts || 0) * 0.5) : (fd.failedAttempts || 0);
+      const effUnmet = daysSince >= 2 ? 0 : daysSince >= 1 ? Math.floor((fd.unmetDemands || 0) * 0.5) : (fd.unmetDemands || 0);
+      const effCongested = daysSince >= 2 ? 0 : daysSince >= 1 ? Math.floor((fd.congestedHours || 0) * 0.5) : (fd.congestedHours || 0);
+
+      // 1. ตรวจสอบความต้องการจริงจากการใช้งานล้น / หาจุดใช้งานไม่ได้ (ไม่ตัดสินจากเหตุการณ์เต็มเพียงครั้งเดียว)
+      if (effFailed >= 2) {
+        s += Math.min(1.6, effFailed * 0.3);
+        reasons.push('หาสถานีไม่ได้ ' + effFailed + ' ครั้ง');
       }
-      if (fd.unmetDemands >= 2) {
-        s += Math.min(1.2, fd.unmetDemands * 0.25);
-        reasons.push('ความต้องการไม่ได้รับการตอบสนอง ' + fd.unmetDemands + ' ครั้ง');
+      if (effUnmet >= 2) {
+        s += Math.min(1.2, effUnmet * 0.25);
+        reasons.push('ความต้องการไม่ได้รับการตอบสนอง ' + effUnmet + ' ครั้ง');
       }
-      if (fd.congestedHours >= 3) {
-        s += Math.min(1.4, fd.congestedHours * 0.15);
-        reasons.push('แออัดต่อเนื่อง ' + fd.congestedHours + ' ชม.');
+      if (effCongested >= 3) {
+        s += Math.min(1.4, effCongested * 0.15);
+        reasons.push('แออัดต่อเนื่อง ' + effCongested + ' ชม.');
       }
 
       // 2. เงื่อนไขโครงสร้างเฉพาะอาคาร
@@ -10525,7 +10587,7 @@ JD.EXPANSION=JD.EXPANSION||data;
       s *= (0.7 + (pol.expansion || 50) / 100 * 0.6);
 
       // กฎเหล็ก: หากไม่มีสัญญาณความต้องการจริง ไม่สร้างแบบสุ่ม
-      const hasRealDemand = fd.failedAttempts >= 2 || fd.congestedHours >= 3 || (id === 'dorm_outer' && pop > b.stations.length * 0.85) || (id === 'farm' && (ECO.count(W, 'grain') + ECO.count(W, 'meal') / 3) < pop * 3);
+      const hasRealDemand = effFailed >= 2 || effCongested >= 3 || (id === 'dorm_outer' && pop > b.stations.length * 0.85) || (id === 'farm' && (ECO.count(W, 'grain') + ECO.count(W, 'meal') / 3) < pop * 3);
       if (!hasRealDemand) return;
 
       if (s > bs) {
@@ -10554,6 +10616,7 @@ JD.EXPANSION=JD.EXPANSION||data;
       fd.failedAttempts = 0;
       fd.unmetDemands = 0;
       fd.congestedHours = 0;
+      fd.lastCongestionHour = 0;
     }
     W.log('decision', m.h.name.given + ' อนุมัติขยาย' + best.b.nameTh + ' เป็นระดับ ' + (best.b.level + 1) + ' (ใช้ ' + best.cost + ' ศิลา) หลังพบความแออัดต่อเนื่อง (' + best.reason + ')', [m.id]);
   };
@@ -11306,8 +11369,20 @@ JD.EXPANSION=JD.EXPANSION||data;
       tick(n, W, ctx) { n.h.state.energy = Math.max(0, n.h.state.energy - 0.04); n.h.state.rest -= 0.02; AI.vf(n, { knowledgeCraft: 0.05, sectDuty: 0.02 }); if (W.t % 45 === 0) HC.trainBody(n, 'dexterity', 0.8); },
       done(n, W, ctx) {
         const r = ECO.recipeById[ctx.rid]; const res = ECO.finishCraft(W, n, r, ctx); if (res.rejected) return;
-        if (res.ok) { W.log('craft', n.h.name.given + ' ผลิต ' + res.text, [n.id]); HC.experience(n, 'craft_success', 0.4); n.merit += 1.5 * r.tier; W.sect.produced = (W.sect.produced || 0) + 1; if (r.tier >= 3 && res.q > 1.15) AI.mem(W, n, 'ผลิต ' + res.text + ' ได้คุณภาพยอดเยี่ยม', 0.5); }
-        else { HC.feel(n, { mood: -5 }); }
+        if (res.ok) {
+          if (r.tier >= 2 && res.q >= 1.15) {
+            W.log('craft', n.h.name.given + ' หลอมโอสถบรรลุผลยอดเยี่ยม กำเนิด「' + res.text + '」คุณภาพชั้นเลิศ', [n.id]);
+            AI.mem(W, n, 'ผลิต ' + res.text + ' ได้คุณภาพยอดเยี่ยม', 0.5);
+          } else {
+            W.log('craft', n.h.name.given + ' ผลิต ' + res.text + ' สำเร็จ นำเข้าคลังสำนัก', [n.id]);
+          }
+          HC.experience(n, 'craft_success', 0.4);
+          n.merit += 1.5 * r.tier;
+          W.sect.produced = (W.sect.produced || 0) + 1;
+        } else {
+          W.log('craft', n.h.name.given + ' ควบคุมเพลิงผิดจังหวะ การผลิต' + (r ? '「' + r.outNameTh + '」' : '') + ' ล้มเหลว สูญเสียวัตถุดิบบางส่วน', [n.id]);
+          HC.feel(n, { mood: -5 });
+        }
       },
       important: false
     };
@@ -11338,7 +11413,18 @@ JD.EXPANSION=JD.EXPANSION||data;
     dur: n => 150 + Math.round(E(n, 'personality.discipline') * 0.8),
     tick(n, W, ctx) {
       n.h.state.energy = Math.max(0, n.h.state.energy - 0.06); n.h.state.rest -= 0.03; HC.practice(n, 'herbalism', 1 / 60, 1);
-      if (W.t % 60 === 0) { if (ctx.herb) { const got = ECO.harvestHerb(W, n, 1); ctx.got = (ctx.got || 0) + got.length; } else { ctx.got = (ctx.got || 0) + ECO.harvestGrain(W, n, 1); } HC.trainBody(n, 'endurance', 0.8); }
+      if (W.t % 60 === 0) {
+        if (ctx.herb) {
+          const got = ECO.harvestHerb(W, n, 1);
+          ctx.got = (ctx.got || 0) + got.length;
+          if (got.length && (W.t + n.n) % 3 === 0) {
+            W.log('craft', n.h.name.given + ' เก็บเกี่ยวสมุนไพรวิญญาณ ' + ECO.name(got[0]) + ' จากแปลงสมุนไพร', [n.id]);
+          }
+        } else {
+          ctx.got = (ctx.got || 0) + ECO.harvestGrain(W, n, 1);
+        }
+        HC.trainBody(n, 'endurance', 0.8);
+      }
       AI.vf(n, { sectDuty: 0.03, freedom: 0.01 });
       if (n.h.state.energy < 12) return 'done';
     },
@@ -11444,6 +11530,12 @@ JD.EXPANSION=JD.EXPANSION||data;
       if (n.inj) n.inj.forEach(i => { i.until -= 3.2; });
       if (healer && !healer.dead && W.t % 120 === 0) HC.practice(healer, 'MEDICINE', 0.5, 1.2);
       if (s.hp >= hm * 0.97 && (!n.inj || !n.inj.length)) return 'done';
+    },
+    done(n, W) {
+      const hm = CULT.hpMax(n);
+      if (n.h.state.hp >= hm * 0.95 && (!n.inj || !n.inj.length)) {
+        W.log('heal', n.h.name.given + ' พักรักษาตัวที่หอหมอยาจนร่างกายและลมปราณฟื้นคืนสมบูรณ์', [n.id]);
+      }
     },
     inside: true
   };
@@ -11759,9 +11851,18 @@ JD.EXPANSION=JD.EXPANSION||data;
     HC.feel(n, { stress: 5 * sev, mood: -6 * sev });
     if (sev >= 3 && W.rng.chance(0.3)) n.h.body.marks.push('รอยแผลที่' + p);
     HC.bump(n);
+    const sevTxt = sev === 1 ? 'บาดเจ็บเล็กน้อย' : sev === 2 ? 'บาดเจ็บปานกลาง' : 'บาดเจ็บสาหัส';
+    W.log('injury', n.h.name.given + ' ได้รับ' + sevTxt + ' (แผลที่' + p + (why ? ' — ' + why : '') + ')', [n.id]);
   };
   AI.healTick = (W, n) => { // ทุกชั่วโมง
-    if (n.inj && n.inj.length) { n.inj.forEach(i => { i.until -= 60 * (0.8 + E(n, 'physiology.recoveryRate') / 100 * 0.4); }); n.inj = n.inj.filter(i => i.until > 0); }
+    if (n.inj && n.inj.length) {
+      const had = n.inj.length;
+      n.inj.forEach(i => { i.until -= 60 * (0.8 + E(n, 'physiology.recoveryRate') / 100 * 0.4); });
+      n.inj = n.inj.filter(i => i.until > 0);
+      if (had > 0 && n.inj.length === 0 && !n.dead) {
+        W.log('heal', n.h.name.given + ' ฟื้นฟูสภาพร่างกายจนหายดีจากอาการบาดเจ็บ', [n.id]);
+      }
+    }
   };
   AI.kill = (W, n, why) => {
     if (n.dead) return;
@@ -11769,7 +11870,13 @@ JD.EXPANSION=JD.EXPANSION||data;
     n.dead = true; n.deathDay = W.day; n.deathWhy = why; n.hidden = false; n.path = null;
     if (n.post) { W.sect.posts[n.post] = null; n.post = null; }
     AI.freeBed(W, n);
-    W.log('death', n.h.name.given + ' เสียชีวิต (' + why + ')', [n.id]);
+    const dPhrases = [
+      n.h.name.given + ' เสียชีวิตลง (' + why + ') ท่ามกลางความอาลัยของศิษย์ร่วมสำนัก',
+      n.h.name.given + ' สิ้นใจอย่างสงบในสำนัก (' + why + ') ละสังขารคืนสู่ฟ้าดิน',
+      n.h.name.given + ' ดับขันธ์ลาโลก (' + why + ') ดวงวิญญาณหวนคืนสู่ห้วงวัฏสงสาร'
+    ];
+    const dTxt = dPhrases[Math.abs(((n.n || 0) + (W.t || 0)) % dPhrases.length)];
+    W.log('death', dTxt, [n.id]);
     W.deaths = (W.deaths || 0) + 1;
     // ผลกระทบต่อคนใกล้ชิด
     W.npcs.forEach(o => { if (o.dead || o === n) return; const r = o.h.mind.relations[n.id]; if (r && (r.a > 40 || r.bond === 'สหาย' || r.bond === 'คนรัก' || r.bond === 'คู่ครอง' || r.bond === 'อาจารย์' || r.bond === 'ศิษย์')) { HC.experience(o, 'lost_loved', clamp(r.a / 70, 0.3, 1.5)); AI.mem(W, o, n.h.name.given + ' เสียชีวิต (' + why + ')', 1, n.id); o.grief = (o.grief || 0) + 4; } else if (o.rank >= 1) HC.experience(o, 'saw_death', 0.2); });
@@ -14707,12 +14814,28 @@ JD.EXPANSION=JD.EXPANSION||data;
     if (e.energyRestore) { s.energy = Math.min(100, s.energy + e.energyRestore); r.msgs.push('คลายเหนื่อย'); } if (e.restRestore) s.rest = Math.min(100, s.rest + e.restRestore);
     return r;
   };
-  const consume = (W, n, key) => { const q = (n.inv.pillQuality && n.inv.pillQuality[key]) || 1; n.inv.pills[key]--; if (n.inv.pills[key] <= 0) { delete n.inv.pills[key]; if (n.inv.pillQuality) delete n.inv.pillQuality[key]; } return ECO.applyQualityPill(W, n, key, q); };
+  const consume = (W, n, key) => {
+    const q = (n.inv.pillQuality && n.inv.pillQuality[key]) || 1;
+    n.inv.pills[key]--;
+    if (n.inv.pills[key] <= 0) {
+      delete n.inv.pills[key];
+      if (n.inv.pillQuality) delete n.inv.pillQuality[key];
+    }
+    const res = ECO.applyQualityPill(W, n, key, q);
+    if (res && (W.t + (n.n || 0)) % 2 === 0) {
+      W.log('train', n.h.name.given + ' ใช้โอสถ「' + ECO.name(key) + '」เพื่อรักษาฟื้นฟูร่างกาย', [n.id]);
+    }
+    return res;
+  };
   const firstOf = (n, list) => list.find(k => n.inv && n.inv.pills && n.inv.pills[k] > 0);
   CPE.consumeCrafted = (W, n, p) => {
-    const list = n.inv && n.inv.craftedPills, i = list && list.indexOf(p); if (i == null || i < 0 || p.intent !== 'keep' || !(p.qty > 0)) return null;
-    const result = ECO.applyQualityPill(W, n, p.key, p.q); if (!result) return null;
-    if (--p.qty <= 0) list.splice(i, 1); return result;
+    const list = n.inv && n.inv.craftedPills, i = list && list.indexOf(p);
+    if (i == null || i < 0 || p.intent !== 'keep' || !(p.qty > 0)) return null;
+    const result = ECO.applyQualityPill(W, n, p.key, p.q);
+    if (!result) return null;
+    if (--p.qty <= 0) list.splice(i, 1);
+    W.log('train', n.h.name.given + ' ใช้โอสถที่ตนปรุง「' + ECO.name(p.key) + '」เพื่อหนุนการบำเพ็ญ', [n.id]);
+    return result;
   };
   function pickCrafted(n, effect) { return (n.inv && n.inv.craftedPills || []).find(p => p.intent === 'keep' && p.qty > 0 && ECO.pillInfo(p.key)?.effect[effect]); }
   CPE.autoUse = (W, n) => {
@@ -14881,6 +15004,9 @@ JD.EXPANSION=JD.EXPANSION||data;
         passedOverCount: passedOver.length
       });
       if (S.welfareHistory.length > 30) S.welfareHistory.pop();
+      if (given > 0 && W.rng.chance(0.4)) {
+        W.log('economy', 'หอคลังแจกจ่ายโอสถสวัสดิการพื้นฐานให้แก่สมาชิก ' + given + ' คน', recipients.slice(0, 3).map(r => r.id));
+      }
     }
 
     if (given) {
@@ -16535,65 +16661,343 @@ JD.EXPANSION=JD.EXPANSION||data;
 </script>
 <script>
 /* js/wildlife.js */
-/* สัตว์อสูรบนแผนที่เดียวกับสำนัก แยกจากคณะเดินทางนอกสำนัก */
-(function(g){
- 'use strict';
- const {U,MAP,AI,CULT,COMBAT,JD,HC,ECO}=g;
- const WILD={};
- const zones={meadow:{x0:38,x1:96,y0:139,y1:153,min:1,max:2},ridge:{x0:140,x1:202,y0:139,y1:153,min:3,max:5},legend:{x0:140,x1:202,y0:139,y1:153,min:6,max:7}};
- WILD.zones=zones;
- WILD.init=W=>{if(!W.wildlife)W.wildlife={seq:0,beasts:[],kills:0};};
- WILD.spawn=(W,zoneId)=>{
-  WILD.init(W);const z=zones[zoneId];if(!z)return null;
-  const pool=JD.BEASTS.species.filter(s=>s.tier>=z.min&&s.tier<=z.max&&Array.isArray(s.drops)&&s.drops.some(id=>ECO.matById[id]));if(!pool.length)return null;
-  const species=W.rng.pick(pool),x=W.rng.int(z.x0,z.x1),y=W.rng.int(z.y0,z.y1),id='wild_'+(++W.wildlife.seq);
-  const b={id,foe:true,wild:true,speciesId:species.id,name:species.nameTh,tier:species.tier,power:species.cp,hpMax:Math.round(species.cp*1.3+30),x:x+.5,y:y+.5,px:x+.5,py:y+.5,zone:zoneId,speed:.5,face:1,aggressive:zoneId!=='meadow'&&species.aggro>=70,legendary:zoneId==='legend',expires:zoneId==='legend'?W.t+W.rng.int(3,10)*1440:null,dead:false,gone:false,skl:[]};b.hp=b.hpMax;W.wildlife.beasts.push(b);
-  if(b.legendary)W.log('explore','★ '+b.name+' ปรากฏตัวนอกสำนัก และอาจจากไปเมื่อใดก็ได้',[]);
-  return b;
- };
- WILD.startFight=(W,n,b)=>{
-  if(!n||n.dead||n.away||n.travel||!b||b.dead||b.gone||b.fighting||n.act.id==='fight')return false;
-  if(n.y<=W.map.wall.y1||b.y<=W.map.wall.y1||Math.hypot(n.x-b.x,n.y-b.y)>3)return false;
-  W.foes.push(b);W.foeById[b.id]=b;
-  const f=COMBAT.startFight(W,[n.id],[b.id],'wild',{serious:true,ctx:{beastId:b.id,hunterId:n.id}});b.fighting=f.id;
-  W.log('combat',n.h.name.given+' เผชิญ '+b.name+' นอกสำนัก',[n.id]);return true;
- };
- WILD.finish=(W,f,winner)=>{
-  if(!f||f.wildSettled)return;f.wildSettled=true;
-  const b=W.foeById[f.ctx.beastId],n=W.byId[f.ctx.hunterId];if(!b)return;
-  if(b.dead&&winner==='A'&&n&&!n.dead){
-   const species=JD.BEASTS.species.find(s=>s.id===b.speciesId);n.inv.mats=n.inv.mats||{};
-   const drops=species?species.drops.filter(id=>ECO.matById[id]):[];
-   if(drops.length){const id=W.rng.pick(drops);n.inv.mats[id]=(n.inv.mats[id]||0)+1;W.log('combat',n.h.name.given+' ล่า '+b.name+' ได้ '+ECO.name(id),[n.id]);}
-   if (species && g.CONTENT && g.CONTENT.organByBeastId[species.id]) {
-    const out = {}; const result = g.CONTENT.harvestOrgan(W,{kind:'hunt',journal:[]},[n],out,null,species);
-    if (result.recovered && out.organs) { n.inv.organs=n.inv.organs||{}; for (const [id,q] of Object.entries(out.organs)) n.inv.organs[id]=(n.inv.organs[id]||0)+q; W.log('combat',n.h.name.given+' ชำแหละได้ '+result.nameTh,[n.id]); }
-   }
-   W.wildlife.kills++;
+/* wildlife.js — สัตว์อสูรบนแผนที่เดียวกับสำนัก แยกจากคณะเดินทางนอกสำนัก */
+(function (g) {
+  'use strict';
+  const { U, MAP, AI, CULT, COMBAT, JD, HC, ECO } = g;
+  const WILD = {};
+
+  function isOutsideWall(map, x, y) {
+    if (!map || !map.wall) return true;
+    const w = map.wall;
+    return x < w.x0 || x > w.x1 || y < w.y0 || y > w.y1;
   }
-  W.foes=W.foes.filter(x=>x.id!==b.id);delete W.foeById[b.id];b.fighting=null;
-  if(b.dead){b.gone=true;}else{b.fled=false;b.yield=false;b.act=null;}
- };
- WILD.clampCombat=W=>{ for(const b of W.wildlife?.beasts||[])if(b.fighting){const z=zones[b.zone];b.x=U.clamp(b.x,z.x0,z.x1);b.y=U.clamp(b.y,z.y0,z.y1);} };
- WILD.tick=W=>{
-  WILD.init(W);const state=W.wildlife;
-  if(W.t%60===0){for(const zone of ['meadow','ridge'])if(state.beasts.filter(b=>b.zone===zone&&!b.gone).length<3)WILD.spawn(W,zone);if(!state.beasts.some(b=>b.legendary&&!b.gone)&&W.rng.chance(.002))WILD.spawn(W,'legend');}
-  for(const b of state.beasts){
-   if(b.gone||b.dead)continue;
-   if(b.fighting){const f=W.fights.find(x=>x.id===b.fighting&&!x.over);if(f){b.y=Math.max(W.map.wall.y1+1.5,b.y);continue;}b.fighting=null;}
-   if(b.legendary&&W.t>=b.expires){b.gone=true;W.log('explore',b.name+' จากพื้นที่นอกสำนักไปแล้ว',[]);continue;}
-   if(b.aggressive&&W.t%15===0){const n=W.npcs.find(n=>!n.dead&&!n.away&&!n.hidden&&!n.travel&&n.y>W.map.wall.y1+1&&n.act.id!=='fight'&&Math.hypot(n.x-b.x,n.y-b.y)<2);if(n)WILD.startFight(W,n,b);}
-   if(!b.fighting&&W.t%90===0){const z=zones[b.zone];b.px=b.x;b.py=b.y;b.x=U.clamp(b.x+W.rng.int(-2,2),z.x0,z.x1);b.y=U.clamp(b.y+W.rng.int(-1,1),z.y0,z.y1);}
-  }
-  state.beasts=state.beasts.filter(b=>!b.gone&&!b.dead);
- };
- AI.ACTS.wildHunt={nameTh:'ล่าอสูรใกล้สำนัก',icon:'🐺',color:'#b67862',
-  can:(n,W)=>!!(W.wildlife&&n.rank>=1&&!n.dead&&!n.away&&!n.inj?.length&&n.h.state.hp>CULT.hpMax(n)*.6&&W.wildlife.beasts.some(b=>!b.dead&&!b.gone&&!b.fighting&&CULT.power(n)>=b.power*.8)),
-  score(n,W,S){S.add('ชอบล่าและต่อสู้',(HC.eff(n,'interests.combat')-35)/40+(HC.eff(n,'interests.exploring')-40)/60);S.add('ต้องการวัตถุดิบ',.3);},
-  where(W,n){const candidates=W.wildlife.beasts.filter(b=>!b.dead&&!b.gone&&!b.fighting&&CULT.power(n)>=b.power*.8);candidates.sort((a,b)=>Math.hypot(n.x-a.x,n.y-a.y)-Math.hypot(n.x-b.x,n.y-b.y));const b=candidates[0];return b?{pos:{x:b.x,y:b.y},beastId:b.id}:null;},
-  start(n,W,ctx){const b=W.wildlife.beasts.find(b=>b.id===ctx.beastId);return !!b&&WILD.startFight(W,n,b);},dur:()=>1,tick(){},done(){} };
- g.WILD=WILD;if(typeof module==='object'&&module.exports)module.exports=WILD;
-})(typeof globalThis!=='undefined'?globalThis:this);
+
+  const zones = {
+    meadow: {
+      id: 'meadow',
+      nameTh: 'ทุ่งหญ้าหน้าสำนัก',
+      dir: 'south',
+      x0: 38, x1: 96, y0: 139, y1: 153,
+      min: 1, max: 2,
+      peaceful: true,
+      pools: [
+        { id: 'meadow_wolves', nameTh: 'ฝูงหมาป่าหมอกวายุ', min: 1, max: 1, speciesIds: ['BEAST_MIST_WOLF'], weight: 50 },
+        { id: 'meadow_boars', nameTh: 'หมูป่าเกราะเหล็กไหล', min: 2, max: 2, speciesIds: ['BEAST_IRON_BOAR'], weight: 35 },
+        { id: 'meadow_stags', nameTh: 'กวางวิญญาณหมอกมรกต', min: 2, max: 3, speciesIds: ['BEAST_MIST_JADE_STAG', 'BEAST_IRON_BOAR'], weight: 15 }
+      ]
+    },
+    ridge: {
+      id: 'ridge',
+      nameTh: 'แนวผาหินใต้สำนัก',
+      dir: 'south',
+      x0: 140, x1: 202, y0: 139, y1: 153,
+      min: 3, max: 5,
+      pools: [
+        { id: 'ridge_serpents', nameTh: 'ดงเหลือมมรกตเจ็ดพิษ', min: 3, max: 3, speciesIds: ['BEAST_EMERALD_PYTHON', 'BEAST_YIN_SHADOW_BAT_3'], weight: 40 },
+        { id: 'ridge_scorpions', nameTh: 'อาณาเขตแมงป่องเพลิง', min: 4, max: 4, speciesIds: ['BEAST_SAND_SCORPION', 'BEAST_LAVA_FLAME_TORTOISE_4'], weight: 35 },
+        { id: 'ridge_thunder', nameTh: 'สันผาอสูรอัสนี', min: 4, max: 5, speciesIds: ['BEAST_THUNDER_DRAKE_LIZARD', 'BEAST_THUNDER_HORN_STAG_4', 'BEAST_THUNDER_ROC'], weight: 25 }
+      ]
+    },
+    legend: {
+      id: 'legend',
+      nameTh: 'แดนอสูรบรรพกาลเร้นลับ',
+      dir: 'south',
+      x0: 140, x1: 202, y0: 139, y1: 153,
+      min: 6, max: 7,
+      legendary: true,
+      pools: [
+        { id: 'legend_beasts', nameTh: 'อสูรบรรพกาลใต้พิภพ', min: 6, max: 6, speciesIds: ['BEAST_BLOOD_TIGER', 'BEAST_MYTHIC_TAOTIE_SHADOW', 'KING_BLOOD_TIGER_CENTRAL'], weight: 60 },
+        { id: 'legend_celestial', nameTh: 'มังกรสมุทรและราชันย์เทพอสูร', min: 7, max: 7, speciesIds: ['BEAST_ABYSSAL_DRAGON', 'BEAST_MYTHIC_CELESTIAL_QILIN_SOVEREIGN', 'KING_KUNLUN_DRAGON'], weight: 40 }
+      ]
+    },
+    west_grove: {
+      id: 'west_grove',
+      nameTh: 'ป่าไผ่หมอกครามประจิม',
+      dir: 'west',
+      x0: 5, x1: 25, y0: 30, y1: 125,
+      min: 2, max: 4,
+      pools: [
+        { id: 'west_hound_pool', nameTh: 'ฝูงอสูรหมาป่าโลหิตและหมูป่า', min: 2, max: 3, speciesIds: ['BEAST_IRON_BOAR', 'BEAST_BLOOD_FIEND_HOUND_4'], weight: 45 },
+        { id: 'west_treant_pool', nameTh: 'ดงงูพฤกษาพันปีและกวางเมฆาคราม', min: 3, max: 4, speciesIds: ['BEAST_ANCIENT_TREANT_SERPENT_4', 'BEAST_THUNDER_HORN_STAG_4', 'BEAST_MIST_JADE_STAG'], weight: 35 },
+        { id: 'west_shadow_pool', nameTh: 'ถ้ำค้างคาวเงาหยินรัตติกาล', min: 3, max: 3, speciesIds: ['BEAST_YIN_SHADOW_BAT_3', 'BEAST_EMERALD_PYTHON'], weight: 20 }
+      ]
+    },
+    east_crag: {
+      id: 'east_crag',
+      nameTh: 'หน้าผาหินแกร่งบูรพา',
+      dir: 'east',
+      x0: 215, x1: 235, y0: 30, y1: 125,
+      min: 3, max: 5,
+      pools: [
+        { id: 'east_tortoise_pool', nameTh: 'ดงเต่าศิลาเพลิงพิภพ', min: 4, max: 4, speciesIds: ['BEAST_LAVA_FLAME_TORTOISE_4', 'BEAST_SAND_SCORPION'], weight: 40 },
+        { id: 'east_drake_pool', nameTh: 'ผากิ้งก่ามังกรและเหยี่ยวดารา', min: 4, max: 5, speciesIds: ['BEAST_THUNDER_DRAKE_LIZARD', 'BEAST_ASTRAL_VOID_HAWK_5'], weight: 35 },
+        { id: 'east_leviathan_pool', nameTh: 'แอ่งน้ำเต่ามังกรสมุทรดึกดำบรรพ์', min: 5, max: 5, speciesIds: ['BEAST_ABYSSAL_LEVIATHAN_TURTLE', 'KING_EMERALD_SERPENT_SOUTH'], weight: 25 }
+      ]
+    },
+    north_peak: {
+      id: 'north_peak',
+      nameTh: 'ยอดเขาเหมันต์อุดร',
+      dir: 'north',
+      x0: 35, x1: 205, y0: 3, y1: 15,
+      min: 4, max: 6,
+      pools: [
+        { id: 'north_bear_pool', nameTh: 'หุบผาหมีขาวเหมันต์', min: 4, max: 4, speciesIds: ['BEAST_FROST_BEAR'], weight: 45 },
+        { id: 'north_kirin_pool', nameTh: 'ยอดเขากิเลนเหมันต์ดาราเร้น', min: 5, max: 5, speciesIds: ['BEAST_FROST_MIST_KIRIN', 'BEAST_ASTRAL_VOID_HAWK_5'], weight: 35 },
+        { id: 'north_sovereign_pool', nameTh: 'สันเขาพญาหมีเหมันต์ทลายสวรรค์', min: 5, max: 6, speciesIds: ['KING_FROST_SOVEREIGN_BEAR', 'BEAST_MYTHIC_TAOTIE_SHADOW'], weight: 20, legendary: true }
+      ]
+    }
+  };
+  WILD.zones = zones;
+
+  WILD.init = W => {
+    if (!W.wildlife) W.wildlife = { seq: 0, beasts: [], kills: 0 };
+  };
+
+  WILD.spawn = (W, zoneId, poolId) => {
+    WILD.init(W);
+    const active = W.wildlife.beasts.filter(b => !b.gone && !b.dead);
+    if (active.length >= 12) return null;
+    const z = zones[zoneId];
+    if (!z) return null;
+
+    let pool = null;
+    if (poolId && z.pools) {
+      pool = z.pools.find(p => p.id === poolId);
+    }
+    if (!pool && z.pools && z.pools.length) {
+      pool = W.rng.weighted ? W.rng.weighted(z.pools, p => p.weight || 10) : W.rng.pick(z.pools);
+    }
+
+    const minTier = pool ? pool.min : z.min;
+    const maxTier = pool ? pool.max : z.max;
+    const allCands = (JD.BEASTS.species || []).concat(JD.BEASTS.kings || []);
+    let cands = allCands.filter(s => {
+      if (pool && pool.speciesIds && pool.speciesIds.length) {
+        if (!pool.speciesIds.includes(s.id)) return false;
+      }
+      return s.tier >= minTier && s.tier <= maxTier && Array.isArray(s.drops) && s.drops.some(id => ECO.matById[id]);
+    });
+
+    if (!cands.length) {
+      cands = (JD.BEASTS.species || []).filter(s => s.tier >= z.min && s.tier <= z.max && Array.isArray(s.drops) && s.drops.some(id => ECO.matById[id]));
+    }
+    if (!cands.length) return null;
+
+    const species = W.rng.pick(cands);
+    let x = W.rng.int(z.x0, z.x1), y = W.rng.int(z.y0, z.y1);
+    if (W.map && MAP.blocked(W.map, x, y)) {
+      const free = MAP.nearestFree(W.map, x, y);
+      if (free && isOutsideWall(W.map, free.x, free.y)) { x = free.x; y = free.y; }
+    }
+
+    const id = 'wild_' + (++W.wildlife.seq);
+    const isLegend = !!(pool && pool.legendary) || !!z.legendary || species.tier >= 6 || String(species.id).startsWith('KING_');
+    const isAggressive = (z.peaceful || species.tier <= 2) ? false : ((species.aggro || 60) >= 70);
+
+    const b = {
+      id,
+      foe: true,
+      wild: true,
+      speciesId: species.id,
+      name: species.nameTh,
+      tier: species.tier,
+      power: species.cp,
+      hpMax: Math.round(species.cp * 1.3 + 30),
+      x: x + 0.5,
+      y: y + 0.5,
+      px: x + 0.5,
+      py: y + 0.5,
+      zone: zoneId,
+      pool: pool ? pool.id : null,
+      speed: 0.5,
+      face: 1,
+      aggressive: isAggressive,
+      legendary: isLegend,
+      expires: isLegend ? (W.t + W.rng.int(3, 10) * 1440) : null,
+      dead: false,
+      gone: false,
+      skl: []
+    };
+    b.hp = b.hpMax;
+    W.wildlife.beasts.push(b);
+
+    if (b.legendary) {
+      W.log('explore', '★ ' + b.name + ' ปรากฏตัวใน' + z.nameTh + ' และอาจจากไปเมื่อใดก็ได้', []);
+    }
+    return b;
+  };
+
+  WILD.startFight = (W, n, b) => {
+    if (!n || n.dead || n.away || n.travel || !b || b.dead || b.gone || b.fighting || n.act.id === 'fight') return false;
+    if (!isOutsideWall(W.map, n.x, n.y) || !isOutsideWall(W.map, b.x, b.y) || Math.hypot(n.x - b.x, n.y - b.y) > 3) return false;
+
+    W.foes.push(b);
+    W.foeById[b.id] = b;
+    const f = COMBAT.startFight(W, [n.id], [b.id], 'wild', { serious: true, ctx: { beastId: b.id, hunterId: n.id } });
+    b.fighting = f.id;
+    const z = zones[b.zone];
+    const zName = z ? z.nameTh : 'นอกสำนัก';
+    W.log('combat', n.h.name.given + ' เผชิญหน้า ' + b.name + ' ใน' + zName, [n.id]);
+    return true;
+  };
+
+  WILD.finish = (W, f, winner) => {
+    if (!f || f.wildSettled) return;
+    f.wildSettled = true;
+
+    const b = W.foeById[f.ctx.beastId], n = W.byId[f.ctx.hunterId];
+    if (!b) return;
+
+    if (b.dead && winner === 'A' && n && !n.dead) {
+      const allSpecies = (JD.BEASTS.species || []).concat(JD.BEASTS.kings || []);
+      const species = allSpecies.find(s => s.id === b.speciesId);
+      n.inv.mats = n.inv.mats || {};
+      const drops = species ? (species.drops || []).filter(id => ECO.matById[id]) : [];
+      let dropName = '';
+      if (drops.length) {
+        const id = W.rng.pick(drops);
+        n.inv.mats[id] = (n.inv.mats[id] || 0) + 1;
+        dropName = ECO.name(id);
+      }
+      let organName = '';
+      if (species && g.CONTENT && g.CONTENT.organByBeastId && g.CONTENT.organByBeastId[species.id]) {
+        const out = {};
+        const result = g.CONTENT.harvestOrgan(W, { kind: 'hunt', journal: [] }, [n], out, null, species);
+        if (result.recovered && out.organs) {
+          n.inv.organs = n.inv.organs || {};
+          for (const [id, q] of Object.entries(out.organs)) {
+            n.inv.organs[id] = (n.inv.organs[id] || 0) + q;
+          }
+          organName = result.nameTh;
+          W.log('craft', n.h.name.given + ' ชำแหละ ' + b.name + ' ได้วัตถุดิบวิญญาณ ' + result.nameTh, [n.id]);
+        }
+      }
+      const z = zones[b.zone];
+      const zName = z ? z.nameTh : 'นอกสำนัก';
+      const dropText = [dropName, organName].filter(Boolean).join(' และ ') || 'วัตถุดิบอสูร';
+      W.log('combat', n.h.name.given + ' ล่าสังหาร ' + b.name + ' ใน' + zName + ' สำเร็จ ได้รับ ' + dropText, [n.id]);
+      W.wildlife.kills = (W.wildlife.kills || 0) + 1;
+      HC.experience(n, 'combat_win', 0.8);
+      n.merit += Math.max(1, Math.round(b.tier * 1.5));
+    } else if (n && !n.dead && (winner === 'B' || n.h.state.hp < CULT.hpMax(n) * 0.35 || f.fled)) {
+      const z = zones[b.zone];
+      const zName = z ? z.nameTh : 'นอกสำนัก';
+      W.log('combat', n.h.name.given + ' พลาดท่าต่อ ' + b.name + ' ใน' + zName + ' ต้องล่าถอยกลับสำนัก', [n.id]);
+    }
+
+    W.foes = W.foes.filter(x => x.id !== b.id);
+    delete W.foeById[b.id];
+    b.fighting = null;
+    if (b.dead) {
+      b.gone = true;
+    } else {
+      b.fled = false;
+      b.yield = false;
+      b.act = null;
+    }
+  };
+
+  WILD.clampCombat = W => {
+    for (const b of (W.wildlife?.beasts || [])) {
+      if (b.fighting) {
+        const z = zones[b.zone];
+        if (z) {
+          b.x = U.clamp(b.x, z.x0, z.x1);
+          b.y = U.clamp(b.y, z.y0, z.y1);
+          if (z.dir === 'south' && W.map && W.map.wall) b.y = Math.max(W.map.wall.y1 + 1.2, b.y);
+          if (z.dir === 'north' && W.map && W.map.wall) b.y = Math.min(W.map.wall.y0 - 1.2, b.y);
+          if (z.dir === 'west' && W.map && W.map.wall) b.x = Math.min(W.map.wall.x0 - 1.2, b.x);
+          if (z.dir === 'east' && W.map && W.map.wall) b.x = Math.max(W.map.wall.x1 + 1.2, b.x);
+        }
+      }
+    }
+  };
+
+  WILD.tick = W => {
+    WILD.init(W);
+    const state = W.wildlife;
+
+    if (W.t % 60 === 0) {
+      const active = state.beasts.filter(b => !b.gone && !b.dead);
+      if (active.length < 10) {
+        for (const zone of ['meadow', 'ridge', 'west_grove', 'east_crag', 'north_peak']) {
+          if (state.beasts.filter(b => b.zone === zone && !b.gone && !b.dead).length < 2) {
+            WILD.spawn(W, zone);
+            break;
+          }
+        }
+      }
+      if (!state.beasts.some(b => b.legendary && !b.gone && !b.dead) && W.rng.chance(0.002)) {
+        WILD.spawn(W, 'legend');
+      }
+    }
+
+    for (const b of state.beasts) {
+      if (b.gone || b.dead) continue;
+      if (b.fighting) {
+        const f = W.fights.find(x => x.id === b.fighting && !x.over);
+        if (f) {
+          const z = zones[b.zone];
+          if (z && z.dir === 'south' && W.map && W.map.wall) b.y = Math.max(W.map.wall.y1 + 1.2, b.y);
+          continue;
+        }
+        b.fighting = null;
+      }
+      if (b.legendary && W.t >= b.expires) {
+        b.gone = true;
+        const z = zones[b.zone];
+        const zName = z ? z.nameTh : 'นอกสำนัก';
+        W.log('explore', b.name + ' จากพื้นที่' + zName + ' ไปแล้ว', []);
+        continue;
+      }
+      if (b.aggressive && W.t % 15 === 0) {
+        const n = W.npcs.find(n => !n.dead && !n.away && !n.hidden && !n.travel && isOutsideWall(W.map, n.x, n.y) && n.act.id !== 'fight' && Math.hypot(n.x - b.x, n.y - b.y) < 2.5);
+        if (n) WILD.startFight(W, n, b);
+      }
+      if (!b.fighting && W.t % 90 === 0) {
+        const z = zones[b.zone];
+        if (z) {
+          b.px = b.x; b.py = b.y;
+          const nx = U.clamp(b.x + W.rng.int(-2, 2), z.x0, z.x1);
+          const ny = U.clamp(b.y + W.rng.int(-1, 1), z.y0, z.y1);
+          if (isOutsideWall(W.map, nx, ny)) {
+            b.x = nx; b.y = ny;
+          }
+        }
+      }
+    }
+    state.beasts = state.beasts.filter(b => !b.gone && !b.dead);
+  };
+
+  AI.ACTS.wildHunt = {
+    nameTh: 'ล่าอสูรใกล้สำนัก',
+    icon: '🐺',
+    color: '#b67862',
+    can: (n, W) => !!(W.wildlife && n.rank >= 1 && !n.dead && !n.away && !(n.inj && n.inj.length) && n.h.state.hp > CULT.hpMax(n) * 0.6 && W.wildlife.beasts.some(b => !b.dead && !b.gone && !b.fighting && CULT.power(n) >= b.power * 0.8)),
+    score(n, W, S) {
+      S.add('ชอบล่าและต่อสู้', (HC.eff(n, 'interests.combat') - 35) / 40 + (HC.eff(n, 'interests.exploring') - 40) / 60);
+      S.add('ต้องการวัตถุดิบ', 0.35);
+      if (n.rank <= 2) S.add('ฝึกฝนความกล้า', 0.2);
+    },
+    where(W, n) {
+      const candidates = (W.wildlife.beasts || []).filter(b => !b.dead && !b.gone && !b.fighting && CULT.power(n) >= b.power * 0.8);
+      candidates.sort((a, b) => Math.hypot(n.x - a.x, n.y - a.y) - Math.hypot(n.x - b.x, n.y - b.y));
+      const b = candidates[0];
+      return b ? { pos: { x: b.x, y: b.y }, beastId: b.id } : null;
+    },
+    start(n, W, ctx) {
+      const b = W.wildlife.beasts.find(b => b.id === ctx.beastId);
+      return !!b && WILD.startFight(W, n, b);
+    },
+    dur: () => 1,
+    tick() {},
+    done() {}
+  };
+
+  g.WILD = WILD;
+  if (typeof module === 'object' && module.exports) module.exports = WILD;
+})(typeof globalThis !== 'undefined' ? globalThis : this);
 
 </script>
 <script>
@@ -16749,6 +17153,7 @@ JD.EXPANSION=JD.EXPANSION||data;
         const ratio = occ / stList.length;
         if (ratio >= 0.95) {
           fd.congestedHours = (fd.congestedHours || 0) + 1;
+          fd.lastCongestionHour = W.t;
           if (fd.congestedHours >= 3) {
             fd.unmetDemands = (fd.unmetDemands || 0) + 1;
           }
@@ -17624,10 +18029,12 @@ JD.EXPANSION=JD.EXPANSION||data;
 
   const LOG_GROUPS = {
     all: ['ทั้งหมด', null],
-    sect: ['สำนัก', ['decision', 'appoint', 'promote', 'demote', 'succession', 'politics', 'punish', 'expel', 'challenge', 'disciple', 'finance', 'research', 'build', 'system', 'desert']],
-    people: ['ผู้คน', ['relation', 'marriage', 'recruit', 'death', 'awaken']],
-    train: ['ฝึกฝน', ['breakthrough', 'learn', 'insight', 'craft', 'gear']],
-    world: ['นอกสำนัก', ['mission', 'raid', 'combat', 'duel', 'tournament', 'spar', 'event', 'explore']]
+    people: ['👥 ผู้คน', ['relation', 'marriage', 'recruit', 'death', 'injury', 'heal', 'awaken', 'desert', 'disciple', 'punish', 'expel']],
+    combat: ['⚔️ ต่อสู้/ล่า', ['combat', 'hunt', 'beast', 'explore', 'raid', 'duel', 'spar', 'tournament', 'conflict', 'challenge']],
+    craft: ['⚗️ การผลิต', ['craft', 'harvest', 'alchemy', 'forge', 'organ', 'learn', 'research', 'insight', 'breakthrough']],
+    economy: ['🪙 เศรษฐกิจ', ['economy', 'trade', 'finance', 'shop', 'gear', 'welfare', 'donation', 'surplus', 'shortage', 'salary']],
+    building: ['🏯 อาคาร', ['build', 'building', 'decision', 'appoint', 'dismiss', 'promote', 'demote', 'succession', 'politics', 'scandal', 'crisis', 'banquet', 'seclusion', 'system']],
+    major: ['⭐ สำคัญ', ['death', 'breakthrough', 'succession', 'crisis', 'raid', 'challenge', 'tournament', 'marriage', 'expel', 'build']]
   };
   const TOAST_TYPES = ['explore', 'death', 'breakthrough', 'raid', 'succession', 'challenge', 'tournament', 'marriage', 'desert', 'expel', 'research', 'build'];
 
@@ -17698,7 +18105,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     UI.sheet = kind; UI.tab = active; $('sheet').classList.add('show'); $('sheet').classList.toggle('tall', !!tall); $('shTitle').innerHTML = title;
     $('shTabs').style.display = tabs && tabs.length ? 'flex' : 'none';
     $('shTabs').innerHTML = (tabs || []).map(t => '<button data-t="' + t[0] + '" class="' + (t[0] === active ? 'on' : '') + '">' + t[1] + '</button>').join('');
-    $('shTabs').onclick = e => { const b = e.target.closest('button'); if (b) { UI.tab = b.dataset.t; UI.render(); } };
+    $('shTabs').onclick = e => { const b = e.target.closest('button'); if (b) { UI.tab = b.dataset.t; if (UI.sheet === 'log') UI.logFilters = new Set([UI.tab]); UI.render(); } };
     document.querySelectorAll('#hudBottom button').forEach(b => b.classList.toggle('on', b.dataset.nav === kind));
     $('selInfo').classList.remove('show');
   }
@@ -17726,6 +18133,27 @@ JD.EXPANSION=JD.EXPANSION||data;
     else if (a === 'new') { UI.close(); UI.showStart(); }
     else if (a === 'tool') UI.tool(arg);
     else if (a === 'cmp') { UI.cmpId = arg; UI.render(); }
+    else if (a === 'logfilter') { UI.toggleLogFilter(arg); }
+  };
+  UI.toggleLogFilter = cat => {
+    if (!UI.logFilters) UI.logFilters = new Set(['all']);
+    if (cat === 'all') {
+      UI.logFilters = new Set(['all']);
+      UI.tab = 'all';
+    } else {
+      UI.logFilters.delete('all');
+      if (UI.logFilters.has(cat)) {
+        UI.logFilters.delete(cat);
+        if (UI.logFilters.size === 0) {
+          UI.logFilters.add('all');
+          UI.tab = 'all';
+        }
+      } else {
+        UI.logFilters.add(cat);
+        UI.tab = cat;
+      }
+    }
+    UI.render();
   };
   UI.render = () => {
     const G = UI.G, W = G.W, body = $('shBody'); if (!UI.sheet) return; const keepScroll = body.scrollTop;
@@ -17893,9 +18321,31 @@ JD.EXPANSION=JD.EXPANSION||data;
 
   /* ----- บันทึก ----- */
   UI.rLog = () => {
-    const W = UI.G.W, grp = LOG_GROUPS[UI.tab][1]; let list = W.logs; if (grp) list = list.filter(l => grp.includes(l.type));
-    list = list.slice(-120).reverse(); if (!list.length) return '<div class="muted">ยังไม่มีเหตุการณ์</div>';
-    return list.map(l => '<div class="logrow"><span class="tm">' + dayStamp(l.t) + ' ' + U.pad2(Math.floor((l.t % 1440) / 60)) + ':' + U.pad2(l.t % 60) + '</span>' + linkify(W, l.text, l.ids) + '</div>').join('');
+    const W = UI.G.W;
+    if (!UI.logFilters) UI.logFilters = new Set([UI.tab || 'all']);
+    if (UI.tab && LOG_GROUPS[UI.tab] && (!UI.logFilters.has(UI.tab) && UI.logFilters.size === 1 && UI.logFilters.has('all') && UI.tab !== 'all')) {
+      UI.logFilters = new Set([UI.tab]);
+    }
+
+    let h = '<div class="log-filter-bar" style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">';
+    for (const k in LOG_GROUPS) {
+      const active = UI.logFilters.has(k);
+      h += '<button type="button" class="chip ' + (active ? 'ok' : '') + '" data-do="logfilter" data-arg="' + k + '" style="cursor:pointer;padding:6px 11px;font-size:12px;' + (active ? 'border-color:var(--gold);font-weight:bold;background:rgba(233,205,133,.18)' : '') + '">' + LOG_GROUPS[k][0] + '</button>';
+    }
+    h += '</div>';
+
+    let list = W.logs || [];
+    if (!UI.logFilters.has('all')) {
+      const allowed = new Set();
+      for (const k of UI.logFilters) {
+        const types = LOG_GROUPS[k] && LOG_GROUPS[k][1];
+        if (types) types.forEach(t => allowed.add(t));
+      }
+      list = list.filter(l => allowed.has(l.type));
+    }
+    list = list.slice(-150).reverse();
+    if (!list.length) return h + '<div class="muted">ยังไม่มีเหตุการณ์ในหมวดที่เลือก</div>';
+    return h + list.map(l => '<div class="logrow"><span class="tm">' + dayStamp(l.t) + ' ' + U.pad2(Math.floor((l.t % 1440) / 60)) + ':' + U.pad2(l.t % 60) + '</span>' + linkify(W, l.text, l.ids) + '</div>').join('');
   };
 
   /* ----- ยุทธภพ ----- */

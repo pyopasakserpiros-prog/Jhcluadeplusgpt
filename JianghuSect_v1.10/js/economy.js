@@ -240,7 +240,22 @@
     const product = { id: String(npc.inv.personalCraftSeq), key, qty, q, purchasedCost: quote.cost, ownValue: quote.ownValue, intent: intent === 'donate' ? 'donate' : 'keep' };
     npc.inv.craftedPills.push(product); return { ok: true, product };
   };
-  ECO.donatePersonalProduct = (W, npc, id) => {
+  ECO.donatePersonalProduct = (W, npc, id, qty) => {
+    if (npc && npc.inv && npc.inv.mats && (npc.inv.mats[id] || 0) > 0) {
+      qty = Number.isFinite(qty) && qty > 0 ? Math.floor(qty) : 1;
+      const count = Math.min(qty, npc.inv.mats[id]);
+      const CPE = g.CPE;
+      const reward = CPE ? CPE.reward(W, id, count) : 5;
+      npc.inv.mats[id] -= count;
+      if (npc.inv.mats[id] <= 0) delete npc.inv.mats[id];
+      ECO.add(W, id, count);
+      if (CPE && reward > 0) {
+        CPE.mint(W, npc, reward, 'บริจาควัตถุดิบเข้าคลังสำนัก', true);
+        CPE.S(W).donated += reward;
+      }
+      W.log('economy', (npc.h && npc.h.name && npc.h.name.given || 'สมาชิก') + ' บริจาค「' + ECO.name(id) + '」×' + count + ' เข้าคลังสำนัก ได้รับ ' + Math.round(reward) + ' แต้มคุณูปการ', [npc.id]);
+      return { ok: true, reward };
+    }
     const products = npc.inv && npc.inv.craftedPills, index = products && products.findIndex(p => p.id === id);
     if (index == null || index < 0) return { ok: false };
     const p = products[index], CPE = g.CPE;
@@ -259,7 +274,9 @@
     const reward = Math.floor(Math.max(0, Math.min(baseReward, maxReward)) * 10) / 10;
     if (!ECO.add(W, p.key, p.qty, p.q)) return { ok: false };
     products.splice(index, 1); if (reward) CPE.mint(W, npc, reward, 'บริจาคโอสถส่วนตัว', true);
-    CPE.S(W).donated += reward; return { ok: true, reward };
+    CPE.S(W).donated += reward;
+    W.log('economy', npc.h.name.given + ' บริจาค「' + ECO.name(p.key) + '」เข้าคลังสำนัก ได้รับ ' + Math.round(reward) + ' แต้มคุณูปการ', [npc.id]);
+    return { ok: true, reward };
   };
 
   /** ผลของโอสถ (อ่านจากข้อมูลเกมเก่า) */

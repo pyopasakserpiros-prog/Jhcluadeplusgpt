@@ -149,12 +149,30 @@
       const d = Math.abs(x - 118) / 24, edge = y - WY1;
       if (d < 1 - edge * 0.004) { M.terrain[idx(x, y)] = T.GRASS; M.block[idx(x, y)] = 0; }
     }
-    // พื้นที่ล่าสองฝั่งนอกกำแพง เชื่อมต่อผ่านลานด้านใต้
-    for (let y = WY1 + 1; y < H; y++) for (let x = 2; x < W - 2; x++) { M.terrain[idx(x,y)] = T.GRASS; M.block[idx(x,y)] = 0; }
-    // ช่องประตู (เปิดผ่านกำแพงล่าง)
+    // พื้นที่ล่าและป่ารอบสำนัก เชื่อมต่อกันรอบกำแพงทั้ง 4 ด้าน (ใต้ ซ้าย ขวา บน)
+    for (let y = WY1 + 1; y < H; y++) for (let x = 2; x < W - 2; x++) { M.terrain[idx(x, y)] = T.GRASS; M.block[idx(x, y)] = 0; }
+    for (let y = 2; y <= WY1; y++) for (let x = 2; x < WX0; x++) { M.terrain[idx(x, y)] = T.GRASS; M.block[idx(x, y)] = 0; }
+    for (let y = 2; y <= WY1; y++) for (let x = WX1 + 1; x < W - 2; x++) { M.terrain[idx(x, y)] = T.GRASS; M.block[idx(x, y)] = 0; }
+    for (let y = 2; y < WY0; y++) for (let x = 2; x < W - 2; x++) { M.terrain[idx(x, y)] = T.GRASS; M.block[idx(x, y)] = 0; }
+
+    // ช่องประตูกำแพงด้านต่าง ๆ (เปิดเชื่อมต่อออกสู่พื้นที่ล่ารอบสำนัก)
+    // 1. ประตูทิศใต้ (ทางเข้าหลัก)
     const GX0 = 93 + OX, GX1 = 98 + OX;
     for (let y = WY1 - 1; y <= WY1; y++) for (let x = GX0; x <= GX1; x++) { M.terrain[idx(x, y)] = T.ARCH; M.block[idx(x, y)] = 0; }
     for (let y = WY1 + 1; y < H; y++) for (let x = 116; x <= 120; x++) { M.terrain[idx(x, y)] = T.ROAD; M.block[idx(x, y)] = 0; }
+
+    // 2. ประตูทิศประจิม (ตะวันตก - สู่ป่าไผ่หมอกคราม)
+    for (let y = 78; y <= 82; y++) for (let x = WX0; x <= WX0 + 1; x++) { M.terrain[idx(x, y)] = T.ARCH; M.block[idx(x, y)] = 0; }
+    for (let y = 79; y <= 81; y++) for (let x = 14; x < WX0; x++) { M.terrain[idx(x, y)] = T.ROAD; M.block[idx(x, y)] = 0; }
+
+    // 3. ประตูทิศบูรพา (ตะวันออก - สู่ผาหินแกร่ง)
+    for (let y = 78; y <= 82; y++) for (let x = WX1 - 1; x <= WX1; x++) { M.terrain[idx(x, y)] = T.ARCH; M.block[idx(x, y)] = 0; }
+    for (let y = 79; y <= 81; y++) for (let x = WX1 + 1; x <= 226; x++) { M.terrain[idx(x, y)] = T.ROAD; M.block[idx(x, y)] = 0; }
+
+    // 4. ประตูทิศอุดร (ทางเหนือ - สู่ยอดเขาเหมันต์)
+    for (let y = WY0; y <= WY0 + 1; y++) for (let x = 116; x <= 120; x++) { M.terrain[idx(x, y)] = T.ARCH; M.block[idx(x, y)] = 0; }
+    for (let y = 4; y < WY0; y++) for (let x = 117; x <= 119; x++) { M.terrain[idx(x, y)] = T.ROAD; M.block[idx(x, y)] = 0; }
+    for (let y = WY0 + 2; y <= 28 + OY; y++) for (let x = 117; x <= 119; x++) { if (M.block[idx(x, y)] === 0) M.terrain[idx(x, y)] = T.ROAD; }
 
     // 2) อาคารบนพื้นที่
     let bidn = 0;

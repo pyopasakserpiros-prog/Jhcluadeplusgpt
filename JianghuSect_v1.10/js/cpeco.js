@@ -432,12 +432,28 @@
     if (e.energyRestore) { s.energy = Math.min(100, s.energy + e.energyRestore); r.msgs.push('คลายเหนื่อย'); } if (e.restRestore) s.rest = Math.min(100, s.rest + e.restRestore);
     return r;
   };
-  const consume = (W, n, key) => { const q = (n.inv.pillQuality && n.inv.pillQuality[key]) || 1; n.inv.pills[key]--; if (n.inv.pills[key] <= 0) { delete n.inv.pills[key]; if (n.inv.pillQuality) delete n.inv.pillQuality[key]; } return ECO.applyQualityPill(W, n, key, q); };
+  const consume = (W, n, key) => {
+    const q = (n.inv.pillQuality && n.inv.pillQuality[key]) || 1;
+    n.inv.pills[key]--;
+    if (n.inv.pills[key] <= 0) {
+      delete n.inv.pills[key];
+      if (n.inv.pillQuality) delete n.inv.pillQuality[key];
+    }
+    const res = ECO.applyQualityPill(W, n, key, q);
+    if (res && (W.t + (n.n || 0)) % 2 === 0) {
+      W.log('train', n.h.name.given + ' ใช้โอสถ「' + ECO.name(key) + '」เพื่อรักษาฟื้นฟูร่างกาย', [n.id]);
+    }
+    return res;
+  };
   const firstOf = (n, list) => list.find(k => n.inv && n.inv.pills && n.inv.pills[k] > 0);
   CPE.consumeCrafted = (W, n, p) => {
-    const list = n.inv && n.inv.craftedPills, i = list && list.indexOf(p); if (i == null || i < 0 || p.intent !== 'keep' || !(p.qty > 0)) return null;
-    const result = ECO.applyQualityPill(W, n, p.key, p.q); if (!result) return null;
-    if (--p.qty <= 0) list.splice(i, 1); return result;
+    const list = n.inv && n.inv.craftedPills, i = list && list.indexOf(p);
+    if (i == null || i < 0 || p.intent !== 'keep' || !(p.qty > 0)) return null;
+    const result = ECO.applyQualityPill(W, n, p.key, p.q);
+    if (!result) return null;
+    if (--p.qty <= 0) list.splice(i, 1);
+    W.log('train', n.h.name.given + ' ใช้โอสถที่ตนปรุง「' + ECO.name(p.key) + '」เพื่อหนุนการบำเพ็ญ', [n.id]);
+    return result;
   };
   function pickCrafted(n, effect) { return (n.inv && n.inv.craftedPills || []).find(p => p.intent === 'keep' && p.qty > 0 && ECO.pillInfo(p.key)?.effect[effect]); }
   CPE.autoUse = (W, n) => {
@@ -606,6 +622,9 @@
         passedOverCount: passedOver.length
       });
       if (S.welfareHistory.length > 30) S.welfareHistory.pop();
+      if (given > 0 && W.rng.chance(0.4)) {
+        W.log('economy', 'หอคลังแจกจ่ายโอสถสวัสดิการพื้นฐานให้แก่สมาชิก ' + given + ' คน', recipients.slice(0, 3).map(r => r.id));
+      }
     }
 
     if (given) {

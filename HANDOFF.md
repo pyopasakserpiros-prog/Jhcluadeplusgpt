@@ -7,9 +7,9 @@
 - **Branch**: `main-1` (tracking `origin/main-1`)
 - **Initial Baseline Commit**: `f6f9839`
 - **Current Verification Status**:
-  - `test/autonomous_economy_facilities.js`: **ALL 13 SCENARIOS VERIFIED PASSING** in Termux on Node.js v26.3.1 (Exit Code: 0).
+  - `test/autonomous_economy_facilities.js`: **ALL 17 SCENARIOS VERIFIED PASSING** in Termux on Node.js v26.3.1 (Exit Code: 0).
   - `test/run_all.js`: **33/37 TEST GROUPS PASSING** (100% pass rate for all pure Node.js runtime, simulation, economy, data, and syntax checks; only 4 desktop Playwright-dependent tests fail due to Termux mobile environment constraints).
-  - `JianghuSect_single.html`: Built and verified via `tools/build_single.js` (1,276 KB standalone distribution).
+  - `JianghuSect_single.html`: Built and verified via `tools/build_single.js` (1,293 KB standalone distribution).
 - **Hard Invariants**:
   - `js/human_core.js` strictly unmodified and byte-locked (fingerprint `155:2f9c9dd7 == 155:2f9c9dd7`, verified by `core_lock` suite).
   - No changes, resets, or merges to `main` or Codex's branches.
@@ -95,9 +95,22 @@
 - **Stock Tab**: Displays *Inventory Intelligence* card with 4-state badges (`🟢 ส่วนเกินคลัง`, `🔴 ขาดแคลน`, `🟡 สำรองจำเป็น`) and reserve thresholds.
 - **Shop Tab**: Displays CP circulation ledger (`แต้มหมุนเวียน`, `แต้มปลดเกษียณ`, `สกัดอาร์บิทราจ`) and external trade activity.
 - **Building Tab**: Displays facility demand and congestion warnings (`⚠️ แออัด X ชม./พลาด Y ครั้ง`).
+- **Log Tab**: Interactive multi-select category filter chips (`ทั้งหมด`, `👥 ผู้คน`, `⚔️ ต่อสู้/ล่า`, `⚗️ การผลิต`, `🪙 เศรษฐกิจ`, `🏯 อาคาร`, `⭐ สำคัญ`) with touch-friendly targets and memory-bounded ring buffer.
 
-### G. Regression Test Suite (`test/autonomous_economy_facilities.js`)
-Covers all 13 required scenarios:
+### G. 4-Direction Outer Wildlife & Multi-Pool System (`js/wildlife.js`, `js/world_map.js`)
+- **Perimeter Expansion**: Walkable terrain and road paths around all four outer wall perimeters: West (`west_grove`), East (`east_crag`), North (`north_peak`), and South (`meadow`, `ridge`, `legend`).
+- **Wall Gates**: 4 unblocked traversable arch gates (`T.ARCH`, block = 0) with connected roads at West ($x=30, y=80$), East ($x=210, y=80$), North ($x=118, y=18$), and South ($x=118, y=132$).
+- **Multi-Pool Architecture**: Every zone contains 2–3 distinct weighted pools with strictly matching tier bands. Low tiers are non-aggressive.
+- **Rules & Boundaries**: Beasts never enter sect walls. Combat clamping bounds beasts to outer zones. Legendary beasts persist for hidden duration without vanishing during active combat.
+- **Loot Integration**: Hunt drops (`mats`, `organs`) enter personal inventory (`n.inv.mats`, `n.inv.organs`) and can be donated via `ECO.donatePersonalProduct` to earn CP and feed sect stock. Population capped at $\le 12$ active beasts.
+
+### H. Facility Demand Decay & Congestion Bug Fix (`js/sect.js`)
+- **Decay Routine**: `SECT.decayFacilityDemand(W)` in `SECT.daily`: clears stale demand (`failedAttempts = 0`, `unmetDemands = 0`, `congestedHours = 0`) if inactive $\ge 2$ days; halves if inactive $\ge 1$ day.
+- **Decision Freshness**: `SECT.upgradeBuilding(W, m)` computes effective demand from elapsed time (`effFailed`, `effCongested`), preventing isolated single spikes and stale past congestion from triggering upgrades.
+- **Concurrency & Reset**: Checks `underConstruction` to prevent duplicate concurrent upgrades; resets demand counters upon upgrade start.
+
+### I. Regression Test Suite (`test/autonomous_economy_facilities.js`)
+Covers all 17 verified scenarios:
 1. Inventory overflow and surplus sales.
 2. Shortages and external purchasing.
 3. No merchant availability handling.
@@ -111,6 +124,10 @@ Covers all 13 required scenarios:
 11. Multiple simultaneous NPC demands.
 12. Save/load continuity.
 13. Multiple deterministic simulation seeds (`eco-det-seed-1`, `eco-det-seed-2`).
+14. Facility demand decay resets stale congestion.
+15. Active sustained congestion triggers upgrade lifecycle and prevents duplicate expansion.
+16. Multi-zone outer beasts, multi-pools, perimeter gates, and loot flow.
+17. Rich wuxia event logging and multi-category filtering.
 Wired into `test/run_all.js`.
 
 ---
@@ -119,10 +136,10 @@ Wired into `test/run_all.js`.
 
 The watcher script [`~/agy-dev/test_watcher.sh`](file:///data/data/com.termux/files/home/agy-dev/test_watcher.sh) dynamically supports multiple autonomous workflows without requiring manual terminal interaction:
 
-1. **Economy & Facility Expansion Suite** (Fast 13-scenario test):
+1. **Economy & Facility Expansion Suite** (Fast 17-scenario test):
    - Trigger: Create `~/agy-dev/.run_tests` (empty, `1`, or `economy`).
    - Executes: `node test/autonomous_economy_facilities.js`.
-   - Verified result: **13/13 scenarios PASS**.
+   - Verified result: **17/17 scenarios PASS**.
 2. **Full Regression Suite** (37 test groups):
    - Trigger: Create `~/agy-dev/.run_all` or write `all` into `~/agy-dev/.run_tests`.
    - Executes: `node test/run_all.js`.
@@ -130,14 +147,14 @@ The watcher script [`~/agy-dev/test_watcher.sh`](file:///data/data/com.termux/fi
 3. **Single-File Distribution Build**:
    - Trigger: Create `~/agy-dev/.run_build` or write `build` into `~/agy-dev/.run_tests`.
    - Executes: `node tools/build_single.js`.
-   - Verified result: Rebuilds `JianghuSect_single.html` (1,276 KB).
+   - Verified result: Rebuilds `JianghuSect_single.html` (1,293 KB).
 
 ### Git Commit & Push Instructions (Awaiting User Approval):
 ```bash
 cd ~/agy-dev
 git status
 git add .
-git commit -m "Implement autonomous economy, demand-driven facility expansion, and extended test watcher"
+git commit -m "Implement rich event logs with multi-filters, 4-direction wildlife multi-pools, and facility demand decay"
 git push origin main-1
 ```
 
@@ -145,18 +162,17 @@ git push origin main-1
 
 ## 5. Modified Files List
 
-1. `JianghuSect_v1.10/js/economy.js` (Inventory intelligence, dynamic reserve floor, anti-arbitrage safeguard)
+1. `JianghuSect_v1.10/js/economy.js` (Inventory intelligence, dynamic reserve floor, anti-arbitrage safeguard, personal product and material donation)
 2. `JianghuSect_v1.10/js/external_market.js` (Autonomous surplus selling, shortage buying, welfare medicine protection)
-3. `JianghuSect_v1.10/js/cpeco.js` (CP circulation tracking, retirement, anti-arbitrage price floors)
-4. `JianghuSect_v1.10/js/sect.js` (Facility demand tracking, demand-driven building upgrades)
-5. `JianghuSect_v1.10/js/ai.js` (Station congestion detection, dorm allocation failure tracking)
-6. `JianghuSect_v1.10/js/sim.js` (Hourly congestion sampling, physical station expansion, CP retirement hooks)
-7. `JianghuSect_v1.10/js/ui.js` (Inventory intelligence card, CP circulation metrics, facility congestion warnings)
-8. `JianghuSect_v1.10/test/autonomous_economy_facilities.js` (All 13 regression scenarios + test bridge)
-9. `JianghuSect_v1.10/test/run_all.js` (Wired `autonomous_economy_facilities` into full runner)
-10. `JianghuSect_v1.10/JianghuSect_single.html` (Rebuilt standalone distribution)
-11. `test_watcher.sh` (Extended multi-target watcher for economy, full suite, and standalone build)
-12. `README.md` (Updated test status and environment documentation)
-13. `HANDOFF.md` (Updated root-cause analyses, verified results, and execution guides)
-10. `README.md`
-11. `HANDOFF.md`
+3. `JianghuSect_v1.10/js/cpeco.js` (CP circulation tracking, retirement, anti-arbitrage price floors, pill consumption logs)
+4. `JianghuSect_v1.10/js/sect.js` (Facility demand tracking, demand-driven building upgrades, demand decay routine)
+5. `JianghuSect_v1.10/js/sim.js` (Hourly congestion sampling, physical station expansion, CP retirement hooks)
+6. `JianghuSect_v1.10/js/world_map.js` (Outer perimeter walkable terrain and 3 new perimeter gates: West, East, North)
+7. `JianghuSect_v1.10/js/wildlife.js` (Multi-zone outer beasts across 4 sides, multi-pools, perimeter combat clamping, cap <= 12, wuxia combat logs)
+8. `JianghuSect_v1.10/js/ai.js` (Station congestion detection, rich wuxia event logs for injury, recovery, death, crafting purity/failure, herb harvest)
+9. `JianghuSect_v1.10/js/ui.js` (Multi-select event log filtering with touch chips, inventory intelligence card, CP circulation metrics, facility congestion warnings)
+10. `JianghuSect_v1.10/test/autonomous_economy_facilities.js` (All 17 regression scenarios + test bridge)
+11. `JianghuSect_v1.10/test/results/assertions.json` (Updated regression assertions)
+12. `JianghuSect_v1.10/JianghuSect_single.html` (Rebuilt standalone distribution: 1,293 KB)
+13. `README.md` (Updated feature documentation and verified test status)
+14. `HANDOFF.md` (Complete architecture, root causes, test results, and continuation instructions)

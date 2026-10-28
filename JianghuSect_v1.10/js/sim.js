@@ -149,6 +149,7 @@
         const ratio = occ / stList.length;
         if (ratio >= 0.95) {
           fd.congestedHours = (fd.congestedHours || 0) + 1;
+          fd.lastCongestionHour = W.t;
           if (fd.congestedHours >= 3) {
             fd.unmetDemands = (fd.unmetDemands || 0) + 1;
           }

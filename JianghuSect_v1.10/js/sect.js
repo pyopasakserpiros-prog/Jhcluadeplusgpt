@@ -195,6 +195,7 @@
 
   /* ---------- สภาประจำวัน: เจ้าสำนักตัดสินใจตามตัวตน ---------- */
   SECT.daily = W => {
+    SECT.decayFacilityDemand(W);
     const S = W.sect, m = W.byId[S.masterId];
     if (!m || m.dead) { SECT.succession(W, 'เจ้าสำนักว่าง'); return; }
     if (S.sealedUntil && W.t < S.sealedUntil) { SECT.runByDeputy(W); return; }
@@ -390,6 +391,25 @@
     return S.facilityDemand;
   };
 
+  SECT.decayFacilityDemand = W => {
+    const S = W.sect;
+    if (!S || !S.facilityDemand) return;
+    for (const bid in S.facilityDemand) {
+      const fd = S.facilityDemand[bid];
+      const lastH = fd.lastCongestionHour || 0;
+      const daysSince = lastH > 0 ? (W.t - lastH) / 1440 : 999;
+      if (daysSince >= 2) {
+        fd.failedAttempts = 0;
+        fd.unmetDemands = 0;
+        fd.congestedHours = 0;
+      } else if (daysSince >= 1) {
+        fd.failedAttempts = Math.max(0, Math.floor((fd.failedAttempts || 0) * 0.5));
+        fd.unmetDemands = Math.max(0, Math.floor((fd.unmetDemands || 0) * 0.5));
+        fd.congestedHours = Math.max(0, Math.floor((fd.congestedHours || 0) * 0.5));
+      }
+    }
+  };
+
   SECT.recordFacilityDemand = (W, bldOrAct, reason, npc) => {
     SECT.ensureFacilityDemand(W);
     let bid = ACT_TO_BLD[bldOrAct] || bldOrAct;
@@ -429,18 +449,25 @@
       let s = W.rng.next() * 0.15;
       let reasons = [];
 
-      // 1. ตรวจสอบความต้องการจริงจากการใช้งานล้น / หาจุดใช้งานไม่ได้
-      if (fd.failedAttempts >= 2) {
-        s += Math.min(1.6, fd.failedAttempts * 0.3);
-        reasons.push('หาสถานีไม่ได้ ' + fd.failedAttempts + ' ครั้ง');
+      // ตรวจสอบความสดใหม่ของสัญญาณความต้องการ: สัญญาณค้างเกิน 2 วันหมดอายุ ไม่ใช้ตัดสินใจ
+      const lastH = fd.lastCongestionHour || 0;
+      const daysSince = lastH > 0 ? (W.t - lastH) / 1440 : 999;
+      const effFailed = daysSince >= 2 ? 0 : daysSince >= 1 ? Math.floor((fd.failedAttempts || 0) * 0.5) : (fd.failedAttempts || 0);
+      const effUnmet = daysSince >= 2 ? 0 : daysSince >= 1 ? Math.floor((fd.unmetDemands || 0) * 0.5) : (fd.unmetDemands || 0);
+      const effCongested = daysSince >= 2 ? 0 : daysSince >= 1 ? Math.floor((fd.congestedHours || 0) * 0.5) : (fd.congestedHours || 0);
+
+      // 1. ตรวจสอบความต้องการจริงจากการใช้งานล้น / หาจุดใช้งานไม่ได้ (ไม่ตัดสินจากเหตุการณ์เต็มเพียงครั้งเดียว)
+      if (effFailed >= 2) {
+        s += Math.min(1.6, effFailed * 0.3);
+        reasons.push('หาสถานีไม่ได้ ' + effFailed + ' ครั้ง');
       }
-      if (fd.unmetDemands >= 2) {
-        s += Math.min(1.2, fd.unmetDemands * 0.25);
-        reasons.push('ความต้องการไม่ได้รับการตอบสนอง ' + fd.unmetDemands + ' ครั้ง');
+      if (effUnmet >= 2) {
+        s += Math.min(1.2, effUnmet * 0.25);
+        reasons.push('ความต้องการไม่ได้รับการตอบสนอง ' + effUnmet + ' ครั้ง');
       }
-      if (fd.congestedHours >= 3) {
-        s += Math.min(1.4, fd.congestedHours * 0.15);
-        reasons.push('แออัดต่อเนื่อง ' + fd.congestedHours + ' ชม.');
+      if (effCongested >= 3) {
+        s += Math.min(1.4, effCongested * 0.15);
+        reasons.push('แออัดต่อเนื่อง ' + effCongested + ' ชม.');
       }
 
       // 2. เงื่อนไขโครงสร้างเฉพาะอาคาร
@@ -472,7 +499,7 @@
       s *= (0.7 + (pol.expansion || 50) / 100 * 0.6);
 
       // กฎเหล็ก: หากไม่มีสัญญาณความต้องการจริง ไม่สร้างแบบสุ่ม
-      const hasRealDemand = fd.failedAttempts >= 2 || fd.congestedHours >= 3 || (id === 'dorm_outer' && pop > b.stations.length * 0.85) || (id === 'farm' && (ECO.count(W, 'grain') + ECO.count(W, 'meal') / 3) < pop * 3);
+      const hasRealDemand = effFailed >= 2 || effCongested >= 3 || (id === 'dorm_outer' && pop > b.stations.length * 0.85) || (id === 'farm' && (ECO.count(W, 'grain') + ECO.count(W, 'meal') / 3) < pop * 3);
       if (!hasRealDemand) return;
 
       if (s > bs) {
@@ -501,6 +528,7 @@
       fd.failedAttempts = 0;
       fd.unmetDemands = 0;
       fd.congestedHours = 0;
+      fd.lastCongestionHour = 0;
     }
     W.log('decision', m.h.name.given + ' อนุมัติขยาย' + best.b.nameTh + ' เป็นระดับ ' + (best.b.level + 1) + ' (ใช้ ' + best.cost + ' ศิลา) หลังพบความแออัดต่อเนื่อง (' + best.reason + ')', [m.id]);
   };

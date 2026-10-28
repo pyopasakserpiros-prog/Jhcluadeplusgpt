@@ -385,8 +385,20 @@
       tick(n, W, ctx) { n.h.state.energy = Math.max(0, n.h.state.energy - 0.04); n.h.state.rest -= 0.02; AI.vf(n, { knowledgeCraft: 0.05, sectDuty: 0.02 }); if (W.t % 45 === 0) HC.trainBody(n, 'dexterity', 0.8); },
       done(n, W, ctx) {
         const r = ECO.recipeById[ctx.rid]; const res = ECO.finishCraft(W, n, r, ctx); if (res.rejected) return;
-        if (res.ok) { W.log('craft', n.h.name.given + ' ผลิต ' + res.text, [n.id]); HC.experience(n, 'craft_success', 0.4); n.merit += 1.5 * r.tier; W.sect.produced = (W.sect.produced || 0) + 1; if (r.tier >= 3 && res.q > 1.15) AI.mem(W, n, 'ผลิต ' + res.text + ' ได้คุณภาพยอดเยี่ยม', 0.5); }
-        else { HC.feel(n, { mood: -5 }); }
+        if (res.ok) {
+          if (r.tier >= 2 && res.q >= 1.15) {
+            W.log('craft', n.h.name.given + ' หลอมโอสถบรรลุผลยอดเยี่ยม กำเนิด「' + res.text + '」คุณภาพชั้นเลิศ', [n.id]);
+            AI.mem(W, n, 'ผลิต ' + res.text + ' ได้คุณภาพยอดเยี่ยม', 0.5);
+          } else {
+            W.log('craft', n.h.name.given + ' ผลิต ' + res.text + ' สำเร็จ นำเข้าคลังสำนัก', [n.id]);
+          }
+          HC.experience(n, 'craft_success', 0.4);
+          n.merit += 1.5 * r.tier;
+          W.sect.produced = (W.sect.produced || 0) + 1;
+        } else {
+          W.log('craft', n.h.name.given + ' ควบคุมเพลิงผิดจังหวะ การผลิต' + (r ? '「' + r.outNameTh + '」' : '') + ' ล้มเหลว สูญเสียวัตถุดิบบางส่วน', [n.id]);
+          HC.feel(n, { mood: -5 });
+        }
       },
       important: false
     };
@@ -417,7 +429,18 @@
     dur: n => 150 + Math.round(E(n, 'personality.discipline') * 0.8),
     tick(n, W, ctx) {
       n.h.state.energy = Math.max(0, n.h.state.energy - 0.06); n.h.state.rest -= 0.03; HC.practice(n, 'herbalism', 1 / 60, 1);
-      if (W.t % 60 === 0) { if (ctx.herb) { const got = ECO.harvestHerb(W, n, 1); ctx.got = (ctx.got || 0) + got.length; } else { ctx.got = (ctx.got || 0) + ECO.harvestGrain(W, n, 1); } HC.trainBody(n, 'endurance', 0.8); }
+      if (W.t % 60 === 0) {
+        if (ctx.herb) {
+          const got = ECO.harvestHerb(W, n, 1);
+          ctx.got = (ctx.got || 0) + got.length;
+          if (got.length && (W.t + n.n) % 3 === 0) {
+            W.log('craft', n.h.name.given + ' เก็บเกี่ยวสมุนไพรวิญญาณ ' + ECO.name(got[0]) + ' จากแปลงสมุนไพร', [n.id]);
+          }
+        } else {
+          ctx.got = (ctx.got || 0) + ECO.harvestGrain(W, n, 1);
+        }
+        HC.trainBody(n, 'endurance', 0.8);
+      }
       AI.vf(n, { sectDuty: 0.03, freedom: 0.01 });
       if (n.h.state.energy < 12) return 'done';
     },
@@ -523,6 +546,12 @@
       if (n.inj) n.inj.forEach(i => { i.until -= 3.2; });
       if (healer && !healer.dead && W.t % 120 === 0) HC.practice(healer, 'MEDICINE', 0.5, 1.2);
       if (s.hp >= hm * 0.97 && (!n.inj || !n.inj.length)) return 'done';
+    },
+    done(n, W) {
+      const hm = CULT.hpMax(n);
+      if (n.h.state.hp >= hm * 0.95 && (!n.inj || !n.inj.length)) {
+        W.log('heal', n.h.name.given + ' พักรักษาตัวที่หอหมอยาจนร่างกายและลมปราณฟื้นคืนสมบูรณ์', [n.id]);
+      }
     },
     inside: true
   };
@@ -838,9 +867,18 @@
     HC.feel(n, { stress: 5 * sev, mood: -6 * sev });
     if (sev >= 3 && W.rng.chance(0.3)) n.h.body.marks.push('รอยแผลที่' + p);
     HC.bump(n);
+    const sevTxt = sev === 1 ? 'บาดเจ็บเล็กน้อย' : sev === 2 ? 'บาดเจ็บปานกลาง' : 'บาดเจ็บสาหัส';
+    W.log('injury', n.h.name.given + ' ได้รับ' + sevTxt + ' (แผลที่' + p + (why ? ' — ' + why : '') + ')', [n.id]);
   };
   AI.healTick = (W, n) => { // ทุกชั่วโมง
-    if (n.inj && n.inj.length) { n.inj.forEach(i => { i.until -= 60 * (0.8 + E(n, 'physiology.recoveryRate') / 100 * 0.4); }); n.inj = n.inj.filter(i => i.until > 0); }
+    if (n.inj && n.inj.length) {
+      const had = n.inj.length;
+      n.inj.forEach(i => { i.until -= 60 * (0.8 + E(n, 'physiology.recoveryRate') / 100 * 0.4); });
+      n.inj = n.inj.filter(i => i.until > 0);
+      if (had > 0 && n.inj.length === 0 && !n.dead) {
+        W.log('heal', n.h.name.given + ' ฟื้นฟูสภาพร่างกายจนหายดีจากอาการบาดเจ็บ', [n.id]);
+      }
+    }
   };
   AI.kill = (W, n, why) => {
     if (n.dead) return;
@@ -848,7 +886,13 @@
     n.dead = true; n.deathDay = W.day; n.deathWhy = why; n.hidden = false; n.path = null;
     if (n.post) { W.sect.posts[n.post] = null; n.post = null; }
     AI.freeBed(W, n);
-    W.log('death', n.h.name.given + ' เสียชีวิต (' + why + ')', [n.id]);
+    const dPhrases = [
+      n.h.name.given + ' เสียชีวิตลง (' + why + ') ท่ามกลางความอาลัยของศิษย์ร่วมสำนัก',
+      n.h.name.given + ' สิ้นใจอย่างสงบในสำนัก (' + why + ') ละสังขารคืนสู่ฟ้าดิน',
+      n.h.name.given + ' ดับขันธ์ลาโลก (' + why + ') ดวงวิญญาณหวนคืนสู่ห้วงวัฏสงสาร'
+    ];
+    const dTxt = dPhrases[Math.abs(((n.n || 0) + (W.t || 0)) % dPhrases.length)];
+    W.log('death', dTxt, [n.id]);
     W.deaths = (W.deaths || 0) + 1;
     // ผลกระทบต่อคนใกล้ชิด
     W.npcs.forEach(o => { if (o.dead || o === n) return; const r = o.h.mind.relations[n.id]; if (r && (r.a > 40 || r.bond === 'สหาย' || r.bond === 'คนรัก' || r.bond === 'คู่ครอง' || r.bond === 'อาจารย์' || r.bond === 'ศิษย์')) { HC.experience(o, 'lost_loved', clamp(r.a / 70, 0.3, 1.5)); AI.mem(W, o, n.h.name.given + ' เสียชีวิต (' + why + ')', 1, n.id); o.grief = (o.grief || 0) + 4; } else if (o.rank >= 1) HC.experience(o, 'saw_death', 0.2); });
