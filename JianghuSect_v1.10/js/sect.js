@@ -20,14 +20,36 @@
     alchemy: { nameTh: 'ผู้อาวุโสหอโอสถ', hall: 'alchemy', desc: 'กำหนดการปรุงโอสถ ดูแลคุณภาพและสต็อกยา' },
     forge: { nameTh: 'ผู้อาวุโสโรงหลอม', hall: 'forge', desc: 'ดูแลหลอมอาวุธ เกราะ ยันต์ ค่ายกล' },
     scripture: { nameTh: 'ผู้อาวุโสหอคัมภีร์', hall: 'scripture', desc: 'คุมตำราวิชา วิจัยตำรับใหม่ ควบคุมการเข้าถึงวิชา' },
-    discipline: { nameTh: 'ผู้อาวุโสหอวินัย', hall: 'discipline', desc: 'บังคับใช้กฎ ลงโทษ สืบสวนทุจริต' },
+    discipline: { nameTh: 'ผู้คุมกฎสำนัก', hall: 'discipline', desc: 'บังคับใช้กฎ ลงโทษ สืบสวนทุจริต' },
     treasury: { nameTh: 'ผู้อาวุโสหอคลัง', hall: 'treasury', desc: 'คุมศิลาวิญญาณ จัดสรรเบี้ยหวัด สั่งซื้อวัตถุดิบ' },
-    mission: { nameTh: 'ผู้อาวุโสหอภารกิจ', hall: 'mission_hall', desc: 'จัดคณะเดินทางนอกสำนัก ค้าขาย ล่าอสูร หาศิษย์ใหม่' },
+    mission: { nameTh: 'ผู้อาวุโสฝ่ายกิจการนอกสำนัก', hall: 'mission_hall', desc: 'จัดคณะเดินทางนอกสำนัก ค้าขาย ล่าอสูร หาศิษย์ใหม่' },
     guard: { nameTh: 'หัวหน้าองครักษ์', hall: 'gate', desc: 'เฝ้าประตู สำนัก ตรวจตรา ป้องกันศัตรู' },
     registry: { nameTh: 'ผู้อาวุโสหอทะเบียน', hall: 'main_hall', desc: 'พิจารณาผู้สมัครเข้าสำนัก จัดทำทะเบียนศิษย์ แทนเจ้าสำนัก' },
     healer: { nameTh: 'หมอหลวงสำนัก', hall: 'infirmary', desc: 'รักษาผู้บาดเจ็บ ดูแลสุขภาพทั้งสำนัก' }
   };
+  SECT.PLANNED_POSTS={
+    diplomacy:{nameTh:'ฝ่ายการทูต',requires:'ระบบภารกิจและข้อตกลงทางการทูตที่มอบหมายเฉพาะฝ่าย'},
+    intelligence:{nameTh:'ฝ่ายข่าวกรอง',requires:'ระบบข่าวและการยืนยันแหล่งข่าว'},
+    beastcare:{nameTh:'ฝ่ายสัตว์วิญญาณ',requires:'ระบบจับ เลี้ยง และดูแลสัตว์'},
+    formation:{nameTh:'ฝ่ายค่ายกลป้องกัน',requires:'ระบบค่ายกลประจำพื้นที่และการบำรุงรักษา'},
+    disciples:{nameTh:'ฝ่ายศิษย์สืบทอด',requires:'ระบบหลักสูตรและการมอบหมายศิษย์รายฝ่าย'}
+  };
+  Object.assign(SECT.POSTS, {
+    commander:{nameTh:'แม่ทัพสำนัก',hall:'training_ground',desc:'ประเมินศัตรู ระดมกำลัง และนำการป้องกันสำนัก'},
+    provision: {nameTh:'ผู้อาวุโสฝ่ายเสบียง',hall:'main_hall',desc:'ตรวจอาหารสำรอง วางแผนเพาะปลูกและประกอบอาหาร'},
+    herbal: {nameTh:'ผู้อาวุโสฝ่ายสมุนไพร',hall:'main_hall',desc:'ประเมินสมุนไพรที่ขาดและประสานการปลูกหรือเก็บ'},
+    wildwarden: {nameTh:'ผู้อาวุโสฝ่ายลาดตระเวนอสูร',hall:'gate',desc:'ตรวจพื้นที่อสูร แจ้งความเสี่ยงและความพร้อมของผู้ล่า'},
+    steward: {nameTh:'ผู้อาวุโสฝ่ายอาคารสถานที่',hall:'main_hall',desc:'ตรวจสถานีแออัดและเสนอขยายโดยเจ้าสำนักอนุมัติ'}
+  });
   SECT.POST_IDS = Object.keys(SECT.POSTS);
+  // A future office becomes assignable only after its implementation joins POSTS.
+  SECT.officeState = (W, id) => {
+    if (!SECT.POSTS[id]) return {enabled:false, reason:SECT.PLANNED_POSTS[id]?.requires || 'ยังไม่มีระบบรองรับตำแหน่งนี้'};
+    const min = id === 'commander' ? 12 : ['provision','herbal','wildwarden','steward'].includes(id) ? 16 : 0;
+    const pop = W.npcs.filter(n => !n.dead && !n.exiled).length;
+    return {enabled:pop >= min, reason:pop < min ? 'รอสมาชิกอย่างน้อย '+min+' คน' : ''};
+  };
+
   SECT.rankOf = npc => SECT.RANKS[npc.rank];
   SECT.title = npc => npc.rank === 6 ? 'เจ้าสำนัก' : npc.rank === 5 ? 'รองเจ้าสำนัก' : npc.post ? SECT.POSTS[npc.post].nameTh : npc.assist ? 'ผู้ช่วย' + SECT.POSTS[npc.assist].nameTh.replace(/^ผู้อาวุโส|^หัวหน้า|^หมอหลวง/, '') : SECT.RANKS[npc.rank].nameTh;
 
@@ -91,6 +113,11 @@
     const martial = Math.max(sk.SWORD, sk.BLADE, sk.SPEAR, sk.FIST_PALM, sk.BODY_REFINING);
     const stage = n.cult ? n.cult.stage : 0;
     switch (post) {
+      case 'commander': return e('social.leadership')*.3+e('intellect.judgement')*.25+e('personality.courage')*.2+e('personality.loyalty')*.15+stage*4;
+      case 'provision': return (sk.cooking||0)*.35+e('intellect.planning')*.25+e('intellect.numeracy')*.15+e('personality.discipline')*.25;
+      case 'herbal': return (sk.herbalism||0)*.4+e('interests.herbs')*.25+e('intellect.planning')*.2+e('personality.caution')*.15;
+      case 'wildwarden': return (sk.survival||0)*.3+e('intellect.perceptiveness')*.25+e('intellect.judgement')*.25+e('personality.courage')*.2;
+      case 'steward': return (sk.administration||0)*.3+e('interests.building')*.25+e('intellect.planning')*.3+e('personality.integrity')*.15;
       case 'martial': return martial * .35 + e('aptitudes.combat') * .2 + e('social.teaching') * .2 + stage * 6 + e('personality.discipline') * .1;
       case 'alchemy': return sk.ALCHEMY * .45 + e('aptitudes.crafting') * .2 + e('intellect.reasoning') * .1 + e('interests.alchemy') * .1 + stage * 3;
       case 'forge': return sk.FORGING * .4 + (sk.ARRAY + sk.TALISMAN) * .1 + e('aptitudes.crafting') * .2 + e('physiology.dexterity') * .1 + stage * 3;
@@ -113,8 +140,9 @@
     return merit * meritK + rel * (1 - meritK) * 0.55 + (n.cult ? n.cult.stage * 2 : 0) - (n.h.state.heartDemon > 40 ? 6 : 0);
   };
   SECT.relationScore = (a, b) => { const r = a.h.mind.relations[b.id]; return r ? r.a * 0.6 + r.t * 0.2 + r.r * 0.2 : 0; };
-  SECT.eligible = (W, post, n) => { const small = W.npcs.length < 14; return !n.dead && !n.away && !n.sealed && n.rank >= (small ? 1 : 2) && n.id !== W.sect.masterId && n.id !== W.sect.deputyId && !n.post && (n.cult ? n.cult.stage >= (small ? 1 : 2) : n.rank >= 3) && !n.exiled; };
+  SECT.eligible = (W, post, n) => { if(!SECT.officeState(W,post).enabled)return false; const small = W.npcs.length < 14; return !n.dead && !n.away && !n.sealed && !n.sealedBt && !(n.jail>W.t) && n.rank >= (small ? 1 : 2) && n.id !== W.sect.masterId && n.id !== W.sect.deputyId && !n.post && (n.cult ? n.cult.stage >= (small ? 1 : 2) : n.rank >= 3) && !n.exiled; };
   SECT.appoint = (W, post, n, why) => {
+    if(!SECT.officeState(W,post).enabled)return false;
     const old = SECT.holder(W, post); if (old && old.id === n.id) return;
     if (old) { old.post = null; if (old.rank === 4) old.rank = 3; }
     n.post = post; n.assist = null; if (n.rank < 4) n.rank = 4;
@@ -205,7 +233,7 @@
       const h = SECT.holder(W, post);
       if (h && h.dead) { S.posts[post] = null; }
     });
-    const vacant = SECT.POST_IDS.filter(p => !SECT.holder(W, p));
+    const vacant = SECT.POST_IDS.filter(p => SECT.officeState(W,p).enabled&&!SECT.holder(W,p));
     if (vacant.length && W.rng.chance(0.5)) {
       const post = (vacant.includes('registry') && W.npcs.length >= 6 && W.rng.chance(0.6)) ? 'registry' : W.rng.pick(vacant);
       const cands = W.npcs.filter(n => SECT.eligible(W, post, n));
@@ -319,11 +347,13 @@
     // ตรวจทุจริต (เจ้าสำนักเข้มงวด/ระแวง)
     if (!cd('audit')) opts.push({ k: 'audit', u: (e('personality.caution') + e('personality.integrity') + (100 - e('personality.trustfulness'))) / 300 - .2 + (S.suspicion || 0) / 100, run: () => SECT.audit(W, m) });
     if (!opts.length) return;
-    opts.forEach(o => o.u += W.rng.float(-.08, .08));
+    opts.forEach(o => {if(g.COG)o.u+=g.COG.officeBias(W,m,o.k);o.u += W.rng.float(-.08, .08);});
     opts.sort((a, b) => b.u - a.u);
-    const pick = opts[0];
+    const thought=clamp((HC.eff(m,'personality.rationality')+HC.eff(m,'intellect.judgement'))/200,0,1);
+    const pick=thought>.8?opts[0]:W.rng.weighted(opts.slice(0,3),o=>Math.exp((o.u-opts[0].u)/(.08+(1-thought)*.22)));
     if (pick.u > 0.36 && W.rng.chance(0.35)) {
       S.cd[pick.k] = W.day + ({ banquet: 60, tournament: 90, seclusion: 30, upgrade: 75, research: 40, drive: 60, discipleOf: 120, audit: 50 }[pick.k] || 30);
+      if(g.COG)g.COG.officeDecision(W,m,pick.k,['พิจารณาจากนโยบาย สถานการณ์ และนิสัยของเจ้าสำนัก']);
       pick.run();
     }
   };
@@ -771,14 +801,17 @@
     const S = W.sect; S.orders = S.orders || {};
     const hallWants = {};
     ['alchemy', 'forge'].forEach(h => {
-      const head = SECT.holder(W, h);
+      const appointed = SECT.holder(W,h);
+      const head = g.COG && !g.COG.available(appointed,W) ? null : appointed;
       const o = ECO.pickOrder(W, h, head);
-      S.orders[h] = o.recipe ? { rid: o.recipe.id, why: o.why } : null;
+      S.orders[h] = o.recipe ? { rid: o.recipe.id, why: o.why, by: head?.id||null } : null;
+      if(head&&!head.dead&&!head.away&&!head.sealed&&g.COG)g.COG.officeDecision(W,head,'วางแผนผลิต '+(o.recipe?o.recipe.nameTh:'รอวัตถุดิบ'),[o.why||'ยังไม่มีตำรับที่พร้อมผลิต']);
       Object.keys(o.want || {}).forEach(k => {
         hallWants[k] = Math.max(hallWants[k] || 0, o.want[k]);
       });
     });
     SECT.updateShortageDirectives(W, hallWants);
+    if(g.COG)g.COG.reviewOffices(W);
     // หอคลัง: สั่งซื้อวัตถุดิบ/เสบียงตามที่ขาด (ผ่านคาราวาน)
     const tre = SECT.holder(W, 'treasury');
     S.buyList = [];

@@ -1,12 +1,42 @@
 {
   "date": "2026-10-28",
-  "node": "v26.3.1",
+  "node": "v24.19.0",
   "results": [
     {
       "test": "core_lock",
       "status": "PASS",
       "exitCode": 0,
       "output": "PASS fingerprint 155:2f9c9dd7 == 155:2f9c9dd7\nPASS personality 14 / values 8 / aptitudes 6\nPASS validate 3 npcs\nPASS compare A≠B (25%), A=A (100%)\nPASS save carries fingerprint"
+    },
+    {
+      "test": "legendary_spawn_gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS legendary shared rarity gate across all zones"
+    },
+    {
+      "test": "npc_cognition",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS cognition: read-only explanation, authority, emergencies, goal continuity, outcome memory, bounded save-safe state"
+    },
+    {
+      "test": "npc_offices",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS new offices: real appointments, suitability, work locations, useful directives, authority and personality"
+    },
+    {
+      "test": "npc_command",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS commander leads real raid and future offices remain dormant"
+    },
+    {
+      "test": "npc_social_help",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS social help: real transferred medicine, preserved quality, no free pills or points"
     },
     {
       "test": "cp_economy",
@@ -124,9 +154,9 @@
     },
     {
       "test": "skill_visual_browser",
-      "status": "FAIL",
-      "exitCode": 1,
-      "output": "node:internal/modules/cjs/loader:1522\n  throw err;\n  ^\n\nError: Cannot find module 'playwright'\nRequire stack:\n- /data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/skill_visual_browser.js\n    at Module._resolveFilename (node:internal/modules/cjs/loader:1519:15)\n    at wrapResolveFilename (node:internal/modules/cjs/loader:1073:27)\n    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1097:10)\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1124:12)\n    at Module._load (node:internal/modules/cjs/loader:1296:5)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.require (node:internal/modules/cjs/loader:1619:12)\n    at require (node:internal/modules/helpers:191:16)\n    at Object.<anonymous> (/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/skill_visual_browser.js:3:18)\n    at Module._compile (node:internal/modules/cjs/loader:1873:14) {\n  code: 'MODULE_NOT_FOUND',\n  requireStack: [\n    '/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/skill_visual_browser.js'\n  ]\n}\n\nNode.js v26.3.1"
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS browser skill visuals: two shared styles, pause, expiry, no replay, load baseline and 24-effect cap"
     },
     {
       "test": "cave_pools",
@@ -172,21 +202,21 @@
     },
     {
       "test": "browser_mobile_perf",
-      "status": "FAIL",
-      "exitCode": 1,
-      "output": "node:internal/modules/cjs/loader:1522\n  throw err;\n  ^\n\nError: Cannot find module 'playwright'\nRequire stack:\n- /data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/browser_mobile_perf.js\n    at Module._resolveFilename (node:internal/modules/cjs/loader:1519:15)\n    at wrapResolveFilename (node:internal/modules/cjs/loader:1073:27)\n    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1097:10)\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1124:12)\n    at Module._load (node:internal/modules/cjs/loader:1296:5)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.require (node:internal/modules/cjs/loader:1619:12)\n    at require (node:internal/modules/helpers:191:16)\n    at Object.<anonymous> (/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/browser_mobile_perf.js:22:22)\n    at Module._compile (node:internal/modules/cjs/loader:1873:14) {\n  code: 'MODULE_NOT_FOUND',\n  requireStack: [\n    '/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/browser_mobile_perf.js'\n  ]\n}\n\nNode.js v26.3.1"
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS browser_mobile_perf: 360px/412px/1280px viewports, gestures, 24 panel tabs, save/load, 0x-48x speeds, 80-NPC stress (1.315 ms/tick, 190.1x cap)"
     },
     {
       "test": "input_cancellation",
-      "status": "FAIL",
-      "exitCode": 1,
-      "output": "node:internal/modules/cjs/loader:1522\n  throw err;\n  ^\n\nError: Cannot find module 'playwright'\nRequire stack:\n- /data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/input_cancellation.js\n    at Module._resolveFilename (node:internal/modules/cjs/loader:1519:15)\n    at wrapResolveFilename (node:internal/modules/cjs/loader:1073:27)\n    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1097:10)\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1124:12)\n    at Module._load (node:internal/modules/cjs/loader:1296:5)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.require (node:internal/modules/cjs/loader:1619:12)\n    at require (node:internal/modules/helpers:191:16)\n    at Object.<anonymous> (/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/input_cancellation.js:5:22)\n    at Module._compile (node:internal/modules/cjs/loader:1873:14) {\n  code: 'MODULE_NOT_FOUND',\n  requireStack: [\n    '/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/input_cancellation.js'\n  ]\n}\n\nNode.js v26.3.1"
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS input cancellation: selection/follow preserved, ordinary tap works, minimap drag stops"
     },
     {
       "test": "startup_ui",
-      "status": "FAIL",
-      "exitCode": 1,
-      "output": "node:internal/modules/cjs/loader:1522\n  throw err;\n  ^\n\nError: Cannot find module 'playwright'\nRequire stack:\n- /data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/startup_ui.js\n    at Module._resolveFilename (node:internal/modules/cjs/loader:1519:15)\n    at wrapResolveFilename (node:internal/modules/cjs/loader:1073:27)\n    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1097:10)\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1124:12)\n    at Module._load (node:internal/modules/cjs/loader:1296:5)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.require (node:internal/modules/cjs/loader:1619:12)\n    at require (node:internal/modules/helpers:191:16)\n    at Object.<anonymous> (/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/startup_ui.js:5:22)\n    at Module._compile (node:internal/modules/cjs/loader:1873:14) {\n  code: 'MODULE_NOT_FOUND',\n  requireStack: [\n    '/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/startup_ui.js'\n  ]\n}\n\nNode.js v26.3.1"
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS startup load menu exposes only actions available without a world\nPASS cancelling startup load restores the same selectable candidates\nPASS gameplay navigation before loading returns safely to startup\nPASS loading a saved slot enters the world and retains the normal game menu\nPASS a corrupt saved slot remains recoverable\nPASS a failed file import can be retried with a valid save\nPASS a successful import dismisses an open startup overlay"
     },
     {
       "test": "demon_heartsoul_paths",
@@ -204,7 +234,7 @@
       "test": "standalone",
       "status": "PASS",
       "exitCode": 0,
-      "output": "PASS standalone:30 actual inline scripts, no external runtime files, initialized globals,external market,24-hour native simulation and save/load"
+      "output": "PASS standalone:31 actual inline scripts, no external runtime files, initialized globals,external market,24-hour native simulation and save/load"
     },
     {
       "test": "recipe_coverage",
@@ -221,7 +251,7 @@
     {
       "test": "syntax",
       "status": "PASS",
-      "files": 88,
+      "files": 94,
       "failures": []
     }
   ]

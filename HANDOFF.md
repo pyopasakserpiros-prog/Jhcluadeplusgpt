@@ -1,5 +1,14 @@
 # JIANGHU SECT — AUTONOMOUS ECONOMY & FACILITY EXPANSION HANDOFF
 
+## Current handoff — v1.10.10 NPC cognition / main-1 (2026-10-28)
+
+Start with [`JianghuSect_v1.10/docs/NPC_HUMANLIKE_AI.md`](JianghuSect_v1.10/docs/NPC_HUMANLIKE_AI.md). It documents shipped behavior, office authority, locked future offices, test commands, and deliberately deferred Gemini ideas. The blueprint below is historical design input, not an unfinished requirement checklist. Preserve `main`; develop `main-1`.
+
+New `js/cognition.js` connects personality-weighted intentions, bounded event memory, real medicine gifts, office plans and role-aware choices to existing AI/economy. Adds active commander/provision/herbal/wildwarden/steward offices, visible discipline/external-affairs titles, and five locked future offices. `SECT.officeState` is the common UI/appointment gate. Future office unlock requires a real implementation in `POSTS`, not a timer. Raids select a physically participating commander and eligible fallback after retreat; no automatic legendary group hunt yet.
+
+Five new regression groups plus expanded UI checks; the single-file bundle now has 31 scripts. Runtime version is 1.10.10; source-content catalog remains 1.10.9 intentionally. No human_core byte changes. Legendary ordinary-refill bypass fixed. Long simulation trade-history assertion corrected to actual existing cap80. Browser environment helper is machine-local, not a game dependency. Full verification details are in the linked patch document and test/results artifacts.
+
+
 ## 1. Executive Summary & Authoritative Baseline
 
 - **Repository**: `https://github.com/pyopasakserpiros-prog/Jhcluadeplusgpt.git`
@@ -184,8 +193,8 @@ git push origin main-1
 ## 6. Next Development Blueprint: Human-Like NPC Decision AI
 
 For the AI agent continuing development on NPC decision-making (`js/ai.js`), read the complete architectural proposal and implementation specification in:
-- [**`AI_DECISION_DESIGN_NOTE.md`**](file:///data/data/com.termux/files/home/agy-dev/AI_DECISION_DESIGN_NOTE.md) (Root design note)
-- [**`JianghuSect_v1.10/docs/AI_HUMAN_DECISION_BLUEPRINT_TH.md`**](file:///data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/docs/AI_HUMAN_DECISION_BLUEPRINT_TH.md) (Docs summary)
+- [**`AI_DECISION_DESIGN_NOTE.md`**](AI_DECISION_DESIGN_NOTE.md) (Root design note)
+- [**`JianghuSect_v1.10/docs/AI_HUMAN_DECISION_BLUEPRINT_TH.md`**](JianghuSect_v1.10/docs/AI_HUMAN_DECISION_BLUEPRINT_TH.md) (Docs summary)
 
 Key areas covered in the blueprint:
 1. **Multi-Step Personal Goals (`n.goal`)**: `GOAL_BREAKTHROUGH_PREP`, `GOAL_SAVE_FOR_SCRIPTURE`, `GOAL_NURTURE_DISCIPLE`, `GOAL_SURPASS_RIVAL`, and `GOAL_SECT_CRISIS_RELIEF`.

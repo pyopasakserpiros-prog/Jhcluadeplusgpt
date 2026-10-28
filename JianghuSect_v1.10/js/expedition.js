@@ -43,9 +43,13 @@
     if (n.rank >= 2) opts.push({ k: 'diplomacy', w: Math.max(0.1, (e('social.charisma') + e('interests.socializing') + e('social.diplomacy' in {} ? '' : 'personality.empathy') - 130) / 50) });
     if (n.rank >= 3) opts.push({ k: 'recruit', w: Math.max(0.1, (e('interests.teaching') - 35) / 30 + (e('values.sectDuty') - 45) / 50 + (e('intellect.judgement') - 45) / 60) });
     if (pw > 80) opts.push({ k: 'bounty', w: Math.max(0.1, (e('values.wealthResource') - 40) / 30 + (e('interests.combat') - 40) / 50) });
+    const elder=SECT.holder(W,'mission'),master=W.byId[W.sect.masterId];
+    const approver=g.COG?[elder,master,W.byId[W.sect.deputyId]].find(x=>g.COG.available(x,W)):(elder||master);
+    if(!approver)return;
+    if(g.COG)opts.forEach(o=>o.w*=Math.max(.2,1+g.COG.missionBias(W,approver,o.k)));
     const pick = W.rng.weighted(opts, o => o.w).k;
     // อนุมัติ: ผู้อาวุโสหอภารกิจ/เจ้าสำนักพิจารณาตามนโยบายและตัวตนของตน
-    const approver = SECT.holder(W, 'mission') || W.byId[W.sect.masterId];
+    if(g.COG)g.COG.officeDecision(W,approver,'พิจารณาภารกิจ '+X.MISSIONS[pick].nameTh,['ตรวจความพร้อม ผู้สมัคร นโยบายและความเสี่ยง']);
     let p = 0.6 + (W.sect.policy.expansion - 50) / 200 + (W.sect.policy.risk - 50) / 250 - (W.sect.policy.strictness - 50) / 300;
     if (pick === 'hunt' || pick === 'bounty') p += (E(approver, 'personality.courage') - 50) / 250;
     if (n.post && SECT.holder(W, n.post) === n && !n.assist) p -= 0.15;
@@ -376,11 +380,12 @@
     X.rally(W, f); return f;
   };
   X.rally = (W, f) => {
+    const commander=g.COG?g.COG.rallyLeader(W,f):null;
     const mast = W.byId[W.sect.masterId]; const guardHead = SECT.holder(W, 'guard');
     W.npcs.forEach(n => {
-      if (n.dead || n.away || n.exiled || n.act && n.act.id === 'fight' || n.sealedBt || n.jail > W.t) return;
+      if (n.dead || n.away || n.exiled || n.fled || n.yield || n.act && n.act.id === 'fight' || n.sealed || n.sealedBt || n.jail > W.t) return;
       const pw = CULT.power(n), hpR = n.h.state.hp / CULT.hpMax(n);
-      let will = (E(n, 'personality.courage') - 40) / 60 + AI.dutyWeight(n) * 0.6 + (E(n, 'values.sectDuty') - 45) / 120 + (n.rank >= 3 ? 0.35 : 0) - (hpR < 0.6 ? 0.6 : 0) - (E(n, 'personality.caution') - 55) / 200 + (n.rank === 0 ? -0.6 : 0) + (pw < 25 ? -0.5 : 0) + (guardHead && !guardHead.dead ? 0.15 : 0) + (mast && mast.id === n.id ? 0.4 : 0);
+      let will = (E(n, 'personality.courage') - 40) / 60 + AI.dutyWeight(n) * 0.6 + (E(n, 'values.sectDuty') - 45) / 120 + (n.rank >= 3 ? 0.35 : 0) - (hpR < 0.6 ? 0.6 : 0) - (E(n, 'personality.caution') - 55) / 200 + (n.rank === 0 ? -0.6 : 0) + (pw < 25 ? -0.5 : 0) + (guardHead && !guardHead.dead ? 0.15 : 0) + (mast && mast.id === n.id ? 0.4 : 0) + (commander ? E(commander,'social.leadership')/600 - (f.ctx.formation==='ตั้งรับรักษากำลัง'&&hpR<.65?.45:0) : 0);
       if (will > 0.55 + W.rng.gauss(0, 0.12) && f.A.length < 14) { COMBAT.join(W, f, n.id, 'A'); n.h.state.stress += 3; AI.mem(W, n, 'ออกรบปกป้องสำนัก', 0.7); }
       else { // หลบเข้าที่พัก
         if (!(n.act && ['sleep', 'sentence'].includes(n.act.id))) { AI.interruptFor(W, n); const s = n.bed != null ? W.map.stations[n.bed] : null; if (s) { AI.begin(W, n, 'hide', { st: s }, [['หลบภัย', 9]]); } }

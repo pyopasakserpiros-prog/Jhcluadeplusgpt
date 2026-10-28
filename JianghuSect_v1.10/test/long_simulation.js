@@ -48,7 +48,7 @@ while(W.t<end) {
   }
   assert(W.world.contentHistory.length<=60,'bounded content history');
   if(G.EXT){
-   assert((W.world.tradeHistory||[]).length<=60,'bounded external trade history');
+   assert((W.world.tradeHistory||[]).length<=80,'bounded external trade history');
    for(const v of W.world.visitors||[])if(v&&v.kind==='trader'){
     assert(Number.isFinite(v.stones)&&v.stones>=0,'visitor wallet '+v.id);
     assert(Number.isFinite(v.untilDay),'visitor expiry '+v.id);

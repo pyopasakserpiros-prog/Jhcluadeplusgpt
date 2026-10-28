@@ -418,6 +418,7 @@
       s -= r.tier > 3 ? (r.tier - 3) * 0.12 : 0; // ของสูงเกินกำลังสำนักเริ่มต้น
       if (!ECO.inputsOk(W, r)) { s -= 0.25; }
       if (head) { const iid = hall === 'alchemy' ? 'alchemy' : 'forging'; s += (HC.eff(head, 'interests.' + iid) - 50) / 400; }
+      if(head&&g.COG)s+=g.COG.orderBias(W,head,r);
       s += W.rng.next() * 0.12;
       best.push({ r, s, why });
     });

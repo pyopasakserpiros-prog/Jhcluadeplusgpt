@@ -406,7 +406,8 @@
     const c = n.cult; if (!c) return null; const cap = Math.min(c.stage, SECT.canLearnTier(W, n));
     let ids = CULT.learnable(n, W.sect.library).map(id => CULT.tech(id)).filter(t => (t.reqTier || t.tier) <= cap);
     ids = ids.filter(t => CPE.techPrice(W, t) <= (n.cp || 0)); if (!ids.length) return null;
-    ids.sort((a, b) => b.power * (b.sub === c.sub ? 1.4 : 1) - a.power * (a.sub === c.sub ? 1.4 : 1)); return ids[0];
+    const goal=n.cognition?.goal; if(goal?.id==='scripture'){const desired=ids.find(t=>t.id===goal.targetId);if(desired)return desired;}
+    ids.sort((a,b)=>g.COG?g.COG.techPreference(n,b)-g.COG.techPreference(n,a):b.power-a.power); return ids[0];
   };
   const SA = A.study, oStart = SA.start;
   SA.start = function (n, W, ctx) {
@@ -679,7 +680,8 @@
       const value = Math.min(CPE.reward(W, key, r.yield || 1), quote.cost + quote.ownValue * 1.2);
       if (!need && value <= quote.cost) continue;
       const score = need ? 1.8 : 0.8 + Math.min(0.9, (value - quote.cost) / 40);
-      if (!best || score > best.score) best = { r, intent, score };
+      const preference=n.cognition?.goal?.id==='craft'&&n.cognition.goal.targetId===r.id?.toString()?0.6:0;
+      if (!best || score+preference > best.score) best = { r, intent, score:score+preference };
     }
     return best;
   }
@@ -691,7 +693,7 @@
     start(n,W,ctx) { return !!ECO.personalCraftQuote(W,n,ECO.recipeById[ctx.rid]); },
     dur(n,W,ctx) { const r=ECO.recipeById[ctx.rid]; return r ? Math.round(ECO.craftHours(r,n.h.skills.ALCHEMY||0)*60) : 0; },
     tick(n) { n.h.state.energy=Math.max(0,n.h.state.energy-0.04); },
-    done(n,W,ctx) { const out=ECO.personalCraft(W,n,ECO.recipeById[ctx.rid],ctx.intent); if(out.ok) W.log('craft',n.h.name.given+' ปรุงโอสถส่วนตัวสำเร็จ (คุณภาพ '+Math.round(out.product.q*100)+'%)',[n.id]); }
+    done(n,W,ctx) { const out=ECO.personalCraft(W,n,ECO.recipeById[ctx.rid],ctx.intent); if(out.ok) {n.stats=n.stats||{};n.stats.crafted=(n.stats.crafted||0)+1;} if(out.ok) W.log('craft',n.h.name.given+' ปรุงโอสถส่วนตัวสำเร็จ (คุณภาพ '+Math.round(out.product.q*100)+'%)',[n.id]); }
   };
   A.personalPillDonation = {
     nameTh:'บริจาคโอสถส่วนตัว',icon:'🎁',color:'#c6a4f5',

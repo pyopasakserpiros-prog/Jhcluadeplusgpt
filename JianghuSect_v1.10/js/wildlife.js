@@ -91,7 +91,9 @@
     if (!W.wildlife) W.wildlife = { seq: 0, beasts: [], kills: 0 };
   };
 
-  WILD.spawn = (W, zoneId, poolId) => {
+  WILD.spawn = (W, zoneId, poolId, opts) => {
+    opts = opts || {};
+    const legendSpecies = s => s.tier >= 6 || String(s.id).startsWith('KING_');
     WILD.init(W);
     const active = W.wildlife.beasts.filter(b => !b.gone && !b.dead);
     if (active.length >= 12) return null;
@@ -103,9 +105,13 @@
       pool = z.pools.find(p => p.id === poolId);
     }
     if (!pool && z.pools && z.pools.length) {
-      pool = W.rng.weighted ? W.rng.weighted(z.pools, p => p.weight || 10) : W.rng.pick(z.pools);
+      const choices = z.pools.filter(p => (!opts.ordinary || (!p.legendary&&!z.legendary)) && (!opts.legendary || p.legendary || z.legendary));
+      if (!choices.length) return null;
+      pool = W.rng.weighted ? W.rng.weighted(choices, p => p.weight || 10) : W.rng.pick(choices);
     }
 
+    if(opts.ordinary&&(z.legendary||pool?.legendary))return null;
+    if(opts.legendary&&!z.legendary&&!pool?.legendary)return null;
     const minTier = pool ? pool.min : z.min;
     const maxTier = pool ? pool.max : z.max;
     const allCands = (JD.BEASTS.species || []).concat(JD.BEASTS.kings || []);
@@ -113,11 +119,13 @@
       if (pool && pool.speciesIds && pool.speciesIds.length) {
         if (!pool.speciesIds.includes(s.id)) return false;
       }
+      if (opts.ordinary && legendSpecies(s)) return false;
+      if (opts.legendary && !legendSpecies(s) && !(pool && pool.legendary) && !z.legendary) return false;
       return s.tier >= minTier && s.tier <= maxTier && Array.isArray(s.drops) && s.drops.some(id => ECO.matById[id]);
     });
 
     if (!cands.length) {
-      cands = (JD.BEASTS.species || []).filter(s => s.tier >= z.min && s.tier <= z.max && Array.isArray(s.drops) && s.drops.some(id => ECO.matById[id]));
+      cands = (JD.BEASTS.species || []).filter(s => s.tier >= z.min && s.tier <= z.max && (!opts.ordinary || !legendSpecies(s)) && (!opts.legendary || legendSpecies(s)) && Array.isArray(s.drops) && s.drops.some(id => ECO.matById[id]));
     }
     if (!cands.length) return null;
 
@@ -130,6 +138,7 @@
 
     const id = 'wild_' + (++W.wildlife.seq);
     const isLegend = !!(pool && pool.legendary) || !!z.legendary || species.tier >= 6 || String(species.id).startsWith('KING_');
+    if (isLegend && active.some(b => b.legendary)) return null;
     const isAggressive = (z.peaceful || species.tier <= 2) ? false : ((species.aggro || 60) >= 70);
 
     const b = {
@@ -214,12 +223,14 @@
       const zName = z ? z.nameTh : 'นอกสำนัก';
       const dropText = [dropName, organName].filter(Boolean).join(' และ ') || 'วัตถุดิบอสูร';
       W.log('combat', n.h.name.given + ' ล่าสังหาร ' + b.name + ' ใน' + zName + ' สำเร็จ ได้รับ ' + dropText, [n.id]);
+      if(g.COG)g.COG.remember(W,n,{kind:'hunt_win',zoneId:b.zone,subjectId:b.speciesId,severity:.4});
       W.wildlife.kills = (W.wildlife.kills || 0) + 1;
       HC.experience(n, 'combat_win', 0.8);
       n.merit += Math.max(1, Math.round(b.tier * 1.5));
     } else if (n && !n.dead && (winner === 'B' || n.h.state.hp < CULT.hpMax(n) * 0.35 || f.fled)) {
       const z = zones[b.zone];
       const zName = z ? z.nameTh : 'นอกสำนัก';
+      if(g.COG)g.COG.remember(W,n,{kind:'hunt_loss',zoneId:b.zone,subjectId:b.speciesId,severity:1});
       W.log('combat', n.h.name.given + ' พลาดท่าต่อ ' + b.name + ' ใน' + zName + ' ต้องล่าถอยกลับสำนัก', [n.id]);
     }
 
@@ -260,13 +271,14 @@
       if (active.length < 10) {
         for (const zone of ['meadow', 'ridge', 'west_grove', 'east_crag', 'north_peak']) {
           if (state.beasts.filter(b => b.zone === zone && !b.gone && !b.dead).length < 2) {
-            WILD.spawn(W, zone);
+            WILD.spawn(W, zone, null, { ordinary: true });
             break;
           }
         }
       }
       if (!state.beasts.some(b => b.legendary && !b.gone && !b.dead) && W.rng.chance(0.002)) {
-        WILD.spawn(W, 'legend');
+        const rareZones = Object.keys(zones).filter(id => zones[id].legendary || zones[id].pools.some(p => p.legendary));
+        WILD.spawn(W, W.rng.pick(rareZones), null, { legendary: true });
       }
     }
 
@@ -319,7 +331,7 @@
     },
     where(W, n) {
       const candidates = (W.wildlife.beasts || []).filter(b => !b.dead && !b.gone && !b.fighting && CULT.power(n) >= b.power * 0.8);
-      candidates.sort((a, b) => Math.hypot(n.x - a.x, n.y - a.y) - Math.hypot(n.x - b.x, n.y - b.y));
+      candidates.sort((a,b)=>g.COG?g.COG.huntValue(W,n,b)-g.COG.huntValue(W,n,a):Math.hypot(n.x-a.x,n.y-a.y)-Math.hypot(n.x-b.x,n.y-b.y));
       const b = candidates[0];
       return b ? { pos: { x: b.x, y: b.y }, beastId: b.id } : null;
     },

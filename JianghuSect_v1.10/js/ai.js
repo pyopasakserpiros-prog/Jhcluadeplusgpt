@@ -485,7 +485,7 @@
   };
   A.duty = {
     nameTh: 'ทำงานตามตำแหน่ง', icon: '📋', color: '#c9a227',
-    can: (n, W) => !!(n.post || n.assist || n.rank >= 5) && !n.sealed && (hourOf(W) >= 7.5 && hourOf(W) < 18.5),
+    can: (n, W) => (g.COG ? g.COG.role(W,n).id !== 'member' : !!(n.post || n.assist || n.rank >= 5)) && !n.sealed && (hourOf(W) >= 7.5 && hourOf(W) < 18.5),
     score(n, W, S) {
       S.add('หน้าที่ตำแหน่ง', 1.25 * dutyWeight(n));
       if (n.rank >= 5) S.add('ผู้นำสำนัก', 0.3);
@@ -493,7 +493,9 @@
       if (n.post && (W.sect.lastDuty[n.id] || -9999) > W.t - 150) S.add('เพิ่งทำเสร็จ', -1.4);
     },
     where(W, n) {
-      const hall = n.rank >= 5 ? 'main_hall' : SECT.POSTS[n.post || n.assist].hall;
+      const role=g.COG?g.COG.role(W,n).id:null;
+      const hall = role ? (['master','deputy'].includes(role)?'main_hall':SECT.POSTS[role]?.hall) : n.rank >= 5 ? 'main_hall' : SECT.POSTS[n.post || n.assist]?.hall;
+      if(!hall)return null;
       const bk = hall === 'training_ground' || hall === 'gate' || hall === 'infirmary' || hall === 'alchemy' || hall === 'forge' ? null : hall;
       if (bk) { const s = AI.freeStation(W, n, 'work', bk); return s ? { st: s } : null; }
       if (hall === 'training_ground') { const s = AI.freeStation(W, n, 'spar', 'training_ground'); return s ? { st: s, kind: 'class' } : null; }
@@ -509,7 +511,7 @@
       if (ctx.kind === 'class') { HC.practice(n, 'administration', 1 / 120, 1); AI.teachClass(W, n); }
       if (ctx.kind === 'craftmgmt') { const h = n.post || n.assist; if (h === 'alchemy') HC.practice(n, 'ALCHEMY', 1 / 60, 1.1); else { HC.practice(n, 'FORGING', 1 / 60, 1.1); HC.practice(n, 'ARRAY', 1 / 60, 1.1); HC.practice(n, 'TALISMAN', 1 / 60, 1.1); } }
     },
-    done(n, W) { W.sect.lastDuty[n.id] = W.t; n.merit += 2; W.sect.efficiency = (W.sect.efficiency || 0) + 1; }
+    done(n, W) { if(g.COG)g.COG.performDuty(W,n); W.sect.lastDuty[n.id] = W.t; n.merit += 2; W.sect.efficiency = (W.sect.efficiency || 0) + 1; }
   };
   AI.teachClass = (W, n) => { /* หัวหน้าหอยุทธ์ได้ทักษะสอน + ฝึกลูกศิษย์ใกล้ ๆ ผ่าน q ใน practice */ if (W.t % 30 === 0) HC.practice(n, 'diplomacy', 0.2, 0.5); };
 
@@ -938,6 +940,7 @@
   };
 
   AI.decide = (W, n) => {
+    if (g.COG) g.COG.prepare(W, n);
     const cands = [];
     for (const id in A) {
       if (id === 'hide' || id === 'pair') continue;
@@ -945,15 +948,16 @@
       if (n.cool[id] && n.cool[id] > W.t) continue;
       if (a.can && !a.can(n, W)) continue;
       const S = Sc(); a.score(n, W, S);
+      if (g.COG) g.COG.modifiers(W,n,id).forEach(x => S.add(x[0],x[1]));
       // กันแกว่ง: ซ้ำบ่อยลดคะแนน
       let rep = 0; for (const r of n.recent) if (r === id) rep++;
       if (rep) S.add('ทำบ่อยแล้ว', -0.16 * rep * (1 - E(n, 'personality.discipline') / 200));
       cands.push({ id, S });
     }
     // กิจกรรมคู่ (พบปะ)
-    if (!(n.cool.pair > W.t)) { const S = Sc(); A.pair.score(n, W, S); cands.push({ id: 'pair', S }); }
+    if (!(n.cool.pair > W.t)) { const S = Sc(); A.pair.score(n, W, S); if(g.COG)g.COG.modifiers(W,n,'pair').forEach(x=>S.add(x[0],x[1])); cands.push({ id: 'pair', S }); }
     // ผู้ตัดสินเลือก: softmax ตามนิสัย
-    const temp = clamp(0.12 + E(n, 'temperament.sensationSeeking') / 600 + E(n, 'personality.creativity') / 900 - E(n, 'personality.discipline') / 700 + E(n, 'temperament.emotionalReactivity') / 1000, 0.05, 0.4);
+    const temp = g.COG ? g.COG.choiceTemperature(n) : clamp(0.12 + E(n, 'temperament.sensationSeeking') / 600 + E(n, 'personality.creativity') / 900 - E(n, 'personality.discipline') / 700 + E(n, 'temperament.emotionalReactivity') / 1000, 0.05, 0.4);
     cands.sort((x, y) => y.S.u - x.S.u);
     const top = cands.slice(0, 6); const mx = top[0].S.u;
     const order = []; const pool = top.slice();
@@ -961,14 +965,15 @@
     for (const c of order) {
       const why = c.S.why.slice().sort((p, q) => Math.abs(q[1]) - Math.abs(p[1])).slice(0, 4);
       n.lastScores = cands.slice(0, 7).map(x => ({ id: x.id, u: Math.round(x.S.u * 100) / 100 }));
-      if (c.id === 'pair') { if (AI.socialStart(W, n)) { n.why = why; return true; } n.cool.pair = W.t + 45; continue; }
+      if (c.id === 'pair') { if (AI.socialStart(W, n)) { n.why = why; if(g.COG)g.COG.chosen(W,n,'pair',why); return true; } n.cool.pair = W.t + 45; continue; }
       const a = A[c.id]; const w = a.where ? a.where(W, n) : { pos: { x: n.x, y: n.y } };
       if (!w) {
+        if(g.COG)g.COG.blocked(W,n,c.id);
         if (g.SECT && g.SECT.recordFacilityDemand) g.SECT.recordFacilityDemand(W, c.id, 'failed_station', n);
         n.cool[c.id] = W.t + 25;
         continue;
       }
-      if (AI.begin(W, n, c.id, w, why)) { n.why = why; return true; }
+      if (AI.begin(W, n, c.id, w, why)) { n.why = why; if(g.COG)g.COG.chosen(W,n,c.id,why); return true; }
     }
     n.act = { id: 'idle', stage: 'do', left: 20, total: 20, ctx: {}, why: [] };
     return false;
@@ -1057,6 +1062,7 @@
     if (res === 'abort') { AI.release(W, n); n.cool.pair = W.t + 60; n.act = { id: 'idle', stage: 'do', left: 0, total: 0, ctx: {}, why: [] }; return; }
     if (res === 'done' || (ac.id !== 'pair' && ac.left <= 0)) {
       if (a.done) a.done(n, W, ac.ctx);
+      if(g.COG)g.COG.finished(W,n,ac.id);
       if (ac.id !== 'pair') n.cool[ac.id] = W.t + (a.cooldown || 0);
       AI.release(W, n); n.hidden = false;
       n.act = { id: 'idle', stage: 'do', left: 0, total: 0, ctx: {}, why: [] };
