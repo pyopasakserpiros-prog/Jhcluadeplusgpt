@@ -149,6 +149,8 @@
       const d = Math.abs(x - 118) / 24, edge = y - WY1;
       if (d < 1 - edge * 0.004) { M.terrain[idx(x, y)] = T.GRASS; M.block[idx(x, y)] = 0; }
     }
+    // พื้นที่ล่าสองฝั่งนอกกำแพง เชื่อมต่อผ่านลานด้านใต้
+    for (let y = WY1 + 1; y < H; y++) for (let x = 2; x < W - 2; x++) { M.terrain[idx(x,y)] = T.GRASS; M.block[idx(x,y)] = 0; }
     // ช่องประตู (เปิดผ่านกำแพงล่าง)
     const GX0 = 93 + OX, GX1 = 98 + OX;
     for (let y = WY1 - 1; y <= WY1; y++) for (let x = GX0; x <= GX1; x++) { M.terrain[idx(x, y)] = T.ARCH; M.block[idx(x, y)] = 0; }

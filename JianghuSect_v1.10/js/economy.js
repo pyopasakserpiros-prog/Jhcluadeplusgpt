@@ -35,9 +35,10 @@
 
   /* ---------- คลัง ---------- */
   ECO.count = (W, id) => { const n = W.sect.stock[id]; return Number.isFinite(n) && n > 0 ? n : 0; };
-  ECO.add = (W, id, n) => {
+  ECO.add = (W, id, n, quality) => {
     if (typeof id !== 'string' || !id || !Number.isFinite(n) || n <= 0) return false;
-    const total = ECO.count(W, id) + n; if (!Number.isFinite(total)) return false;
+    const before = ECO.count(W, id), total = before + n; if (!Number.isFinite(total)) return false;
+    if (ECO.isPill(id)) { const map = W.sect.pillQuality || (W.sect.pillQuality = {}), old = Number.isFinite(map[id]) ? map[id] : 1, q = Number.isFinite(quality) ? clamp(quality, 0.7, 1.5) : 1; map[id] = (before * old + n * q) / total; }
     if (id === '__proto__' || id === 'constructor' || id === 'prototype') Object.defineProperty(W.sect.stock, id, { value: total, writable: true, enumerable: true, configurable: true });
     else W.sect.stock[id] = total;
     return true;
@@ -45,7 +46,7 @@
   ECO.take = (W, id, n) => {
     if (typeof id !== 'string' || !id || !Number.isFinite(n) || n < 0) return false;
     const have = ECO.count(W, id); if (have < n) return false;
-    if (have > n) W.sect.stock[id] = have - n; else delete W.sect.stock[id]; return true;
+    if (have > n) W.sect.stock[id] = have - n; else { delete W.sect.stock[id]; if (W.sect.pillQuality) delete W.sect.pillQuality[id]; } return true;
   };
   ECO.pay = (W, amt, why) => { if (W.sect.stones < amt) return false; W.sect.stones -= amt; W.sect.ledger.push({ t: W.t, amt: -amt, why }); trimLedger(W); return true; };
   ECO.earn = (W, amt, why) => { W.sect.stones += amt; W.sect.ledger.push({ t: W.t, amt: +amt, why }); trimLedger(W); };
@@ -197,7 +198,7 @@
     if (r.outType === 'PILL') {
       const n = (r.yield || 1) + (W.rng.chance(clamp((skill - r.minMastery) / 120, 0, 0.5)) ? 1 : 0) + (r.starter ? 1 : 0);
       const key = r.outItemId ? r.outItemId : 'P:' + r.id;
-      ECO.add(W, key, n); out.text = ECO.name(key) + ' ×' + n; out.key = key; out.n = n;
+      ECO.add(W, key, n, q); out.text = ECO.name(key) + ' ×' + n; out.key = key; out.n = n;
     } else if (r.outType === 'EQUIPMENT') {
       const gear = ECO.mintGear(r, q); gear.q = Math.round(q * 100) / 100;
       W.sect.gear.push(gear); out.text = gear.nameTh + ' (คุณภาพ ' + gear.q + ')'; out.gear = gear;
@@ -205,6 +206,50 @@
     npc.stats = npc.stats || {}; npc.stats.crafted = (npc.stats.crafted || 0) + 1;
     return out;
   };
+  // Personal production uses owned inputs first, purchasing only the missing units.
+  ECO.personalCraftQuote = (W, npc, r) => {
+    const CPE = g.CPE, inputs = recipeInputs(r, 1);
+    if (!CPE || !npc || !npc.inv || !inputs || r.outType !== 'PILL') return null;
+    if (!ECO.craftEligible(W, npc, r, 'alchemy') || (npc.h.skills[r.craft] || 0) + 20 < r.minMastery) return null;
+    const mats = npc.inv.mats || {}, missing = [], owned = []; let cost = 0, ownValue = 0;
+    for (const input of inputs) {
+      const have = Math.min(input.count, Math.max(0, Number.isFinite(mats[input.matId]) ? mats[input.matId] : 0));
+      const need = input.count - have;
+      if (have) { owned.push({ id: input.matId, n: have }); ownValue += CPE.reward(W, input.matId, have); }
+      if (need) { if (ECO.count(W, input.matId) < need) return null; const price = CPE.priceOf(W, input.matId) * need; missing.push({ id: input.matId, n: need, price }); cost += price; }
+    }
+    if (!Number.isFinite(cost) || (npc.cp || 0) < cost) return null;
+    return { owned, missing, cost, ownValue };
+  };
+  ECO.personalCraft = (W, npc, r, intent) => {
+    const quote = ECO.personalCraftQuote(W, npc, r), CPE = g.CPE;
+    if (!quote) return { ok: false, reason: 'inputs' };
+    if (!CPE.spend(W, npc, quote.cost, 'ซื้อวัตถุดิบผลิตส่วนตัว')) return { ok: false, reason: 'points' };
+    quote.missing.forEach(i => ECO.take(W, i.id, i.n));
+    quote.owned.forEach(i => { npc.inv.mats[i.id] -= i.n; if (npc.inv.mats[i.id] <= 0) delete npc.inv.mats[i.id]; });
+    const skill = npc.h.skills[r.craft] || 0, ok = W.rng.next() < ECO.successChance(npc, r);
+    HC.practice(npc, r.craft, ECO.craftHours(r, skill), 1.1);
+    if (!ok) return { ok: false, reason: 'failed', cost: quote.cost };
+    const q = clamp(0.85 + (skill - r.minMastery) / 160 + W.rng.gauss(0, 0.06), 0.7, 1.5);
+    const qty = (r.yield || 1) + (W.rng.chance(clamp((skill - r.minMastery) / 120, 0, 0.5)) ? 1 : 0) + (r.starter ? 1 : 0);
+    const key = r.outItemId || 'P:' + r.id;
+    npc.inv.craftedPills = npc.inv.craftedPills || [];
+    npc.inv.personalCraftSeq = (npc.inv.personalCraftSeq || 0) + 1;
+    const product = { id: String(npc.inv.personalCraftSeq), key, qty, q, purchasedCost: quote.cost, ownValue: quote.ownValue, intent: intent === 'donate' ? 'donate' : 'keep' };
+    npc.inv.craftedPills.push(product); return { ok: true, product };
+  };
+  ECO.donatePersonalProduct = (W, npc, id) => {
+    const products = npc.inv && npc.inv.craftedPills, index = products && products.findIndex(p => p.id === id);
+    if (index == null || index < 0) return { ok: false };
+    const p = products[index], CPE = g.CPE;
+    if (!CPE || !ECO.pillInfo(p.key) || !Number.isFinite(p.qty) || p.qty <= 0 || !Number.isFinite(p.q) || !Number.isFinite(p.purchasedCost) || !Number.isFinite(p.ownValue)) return { ok: false };
+    // Purchased-only loops cannot mint points: only owned inputs earn surplus.
+    const reward = Math.floor(Math.max(0, Math.min(CPE.reward(W, p.key, p.qty) * p.q, p.purchasedCost + p.ownValue * 1.2 * p.q)) * 10) / 10;
+    if (!ECO.add(W, p.key, p.qty, p.q)) return { ok: false };
+    products.splice(index, 1); if (reward) CPE.mint(W, npc, reward, 'บริจาคโอสถส่วนตัว', true);
+    CPE.S(W).donated += reward; return { ok: true, reward };
+  };
+
   /** ผลของโอสถ (อ่านจากข้อมูลเกมเก่า) */
   ECO.pillInfo = key => {
     if (key.startsWith('P:')) { const r = recipeById[key.slice(2)]; return r ? { tier: r.tier, effect: r.effect || {}, name: r.outNameTh } : null; }
@@ -239,10 +284,24 @@
     HC.bump(npc);
     return { info, msgs };
   };
+  ECO.pillQuality = (W, key) => clamp((W.sect.pillQuality && W.sect.pillQuality[key]) || 1, 0.7, 1.5);
+  ECO.addPersonalPill = (npc, key, quality) => {
+    const bag = npc.inv.pills || (npc.inv.pills = {}), map = npc.inv.pillQuality || (npc.inv.pillQuality = {}), count = bag[key] || 0;
+    map[key] = ((map[key] || 1) * count + (quality || 1)) / (count + 1); bag[key] = count + 1;
+  };
+  ECO.applyQualityPill = (W, npc, key, quality) => {
+    const s = npc.h.state, before = { hp:s.hp, qi:s.qi, energy:s.energy, rest:s.rest, heartDemon:s.heartDemon }, result = ECO.applyPill(W, npc, key);
+    if (!result) return result;
+    const q = clamp(Number.isFinite(quality) ? quality : 1, 0.7, 1.5);
+    for (const k of Object.keys(before)) if (Number.isFinite(before[k]) && Number.isFinite(s[k])) s[k] = before[k] + (s[k] - before[k]) * q;
+    s.hp = clamp(s.hp, 0, CULT.hpMax(npc)); if (npc.cult && Number.isFinite(s.qi)) s.qi = clamp(s.qi, 0, CULT.qiMax(npc));
+    for (const k of ['energy','rest','heartDemon']) if (Number.isFinite(s[k])) s[k] = clamp(s[k], 0, 100);
+    return result;
+  };
   // ใช้โอสถจากคลังสำนัก: หักสต็อกหนึ่งเม็ดแล้วใช้ผลของโอสถ
   ECO.usePill = (W, npc, key) => {
-    if (!ECO.pillInfo(key) || !ECO.take(W, key, 1)) return null;
-    return ECO.applyPill(W, npc, key);
+    const quality = ECO.pillQuality(W, key); if (!ECO.pillInfo(key) || !ECO.take(W, key, 1)) return null;
+    return ECO.applyQualityPill(W, npc, key, quality);
   };
 
   /* ---------- แหล่งผลิตในสำนัก ---------- */

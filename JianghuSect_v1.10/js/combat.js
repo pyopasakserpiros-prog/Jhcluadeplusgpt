@@ -514,6 +514,7 @@
     if (W.foes && W.foes.length) {
       W.foes = W.foes.filter(x => !x.isSummon || !x.dead);
     }
+    if (f.kind === 'wild' && g.WILD) g.WILD.finish(W, f, ws);
     if (f.cb) f.cb(W, f, ws, winners, losers);
   };
 

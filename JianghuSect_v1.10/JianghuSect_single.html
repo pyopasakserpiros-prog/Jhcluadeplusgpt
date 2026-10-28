@@ -8550,6 +8550,8 @@ JD.EXPANSION=JD.EXPANSION||data;
       const d = Math.abs(x - 118) / 24, edge = y - WY1;
       if (d < 1 - edge * 0.004) { M.terrain[idx(x, y)] = T.GRASS; M.block[idx(x, y)] = 0; }
     }
+    // พื้นที่ล่าสองฝั่งนอกกำแพง เชื่อมต่อผ่านลานด้านใต้
+    for (let y = WY1 + 1; y < H; y++) for (let x = 2; x < W - 2; x++) { M.terrain[idx(x,y)] = T.GRASS; M.block[idx(x,y)] = 0; }
     // ช่องประตู (เปิดผ่านกำแพงล่าง)
     const GX0 = 93 + OX, GX1 = 98 + OX;
     for (let y = WY1 - 1; y <= WY1; y++) for (let x = GX0; x <= GX1; x++) { M.terrain[idx(x, y)] = T.ARCH; M.block[idx(x, y)] = 0; }
@@ -9483,9 +9485,10 @@ JD.EXPANSION=JD.EXPANSION||data;
 
   /* ---------- คลัง ---------- */
   ECO.count = (W, id) => { const n = W.sect.stock[id]; return Number.isFinite(n) && n > 0 ? n : 0; };
-  ECO.add = (W, id, n) => {
+  ECO.add = (W, id, n, quality) => {
     if (typeof id !== 'string' || !id || !Number.isFinite(n) || n <= 0) return false;
-    const total = ECO.count(W, id) + n; if (!Number.isFinite(total)) return false;
+    const before = ECO.count(W, id), total = before + n; if (!Number.isFinite(total)) return false;
+    if (ECO.isPill(id)) { const map = W.sect.pillQuality || (W.sect.pillQuality = {}), old = Number.isFinite(map[id]) ? map[id] : 1, q = Number.isFinite(quality) ? clamp(quality, 0.7, 1.5) : 1; map[id] = (before * old + n * q) / total; }
     if (id === '__proto__' || id === 'constructor' || id === 'prototype') Object.defineProperty(W.sect.stock, id, { value: total, writable: true, enumerable: true, configurable: true });
     else W.sect.stock[id] = total;
     return true;
@@ -9493,7 +9496,7 @@ JD.EXPANSION=JD.EXPANSION||data;
   ECO.take = (W, id, n) => {
     if (typeof id !== 'string' || !id || !Number.isFinite(n) || n < 0) return false;
     const have = ECO.count(W, id); if (have < n) return false;
-    if (have > n) W.sect.stock[id] = have - n; else delete W.sect.stock[id]; return true;
+    if (have > n) W.sect.stock[id] = have - n; else { delete W.sect.stock[id]; if (W.sect.pillQuality) delete W.sect.pillQuality[id]; } return true;
   };
   ECO.pay = (W, amt, why) => { if (W.sect.stones < amt) return false; W.sect.stones -= amt; W.sect.ledger.push({ t: W.t, amt: -amt, why }); trimLedger(W); return true; };
   ECO.earn = (W, amt, why) => { W.sect.stones += amt; W.sect.ledger.push({ t: W.t, amt: +amt, why }); trimLedger(W); };
@@ -9645,7 +9648,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     if (r.outType === 'PILL') {
       const n = (r.yield || 1) + (W.rng.chance(clamp((skill - r.minMastery) / 120, 0, 0.5)) ? 1 : 0) + (r.starter ? 1 : 0);
       const key = r.outItemId ? r.outItemId : 'P:' + r.id;
-      ECO.add(W, key, n); out.text = ECO.name(key) + ' ×' + n; out.key = key; out.n = n;
+      ECO.add(W, key, n, q); out.text = ECO.name(key) + ' ×' + n; out.key = key; out.n = n;
     } else if (r.outType === 'EQUIPMENT') {
       const gear = ECO.mintGear(r, q); gear.q = Math.round(q * 100) / 100;
       W.sect.gear.push(gear); out.text = gear.nameTh + ' (คุณภาพ ' + gear.q + ')'; out.gear = gear;
@@ -9653,6 +9656,50 @@ JD.EXPANSION=JD.EXPANSION||data;
     npc.stats = npc.stats || {}; npc.stats.crafted = (npc.stats.crafted || 0) + 1;
     return out;
   };
+  // Personal production uses owned inputs first, purchasing only the missing units.
+  ECO.personalCraftQuote = (W, npc, r) => {
+    const CPE = g.CPE, inputs = recipeInputs(r, 1);
+    if (!CPE || !npc || !npc.inv || !inputs || r.outType !== 'PILL') return null;
+    if (!ECO.craftEligible(W, npc, r, 'alchemy') || (npc.h.skills[r.craft] || 0) + 20 < r.minMastery) return null;
+    const mats = npc.inv.mats || {}, missing = [], owned = []; let cost = 0, ownValue = 0;
+    for (const input of inputs) {
+      const have = Math.min(input.count, Math.max(0, Number.isFinite(mats[input.matId]) ? mats[input.matId] : 0));
+      const need = input.count - have;
+      if (have) { owned.push({ id: input.matId, n: have }); ownValue += CPE.reward(W, input.matId, have); }
+      if (need) { if (ECO.count(W, input.matId) < need) return null; const price = CPE.priceOf(W, input.matId) * need; missing.push({ id: input.matId, n: need, price }); cost += price; }
+    }
+    if (!Number.isFinite(cost) || (npc.cp || 0) < cost) return null;
+    return { owned, missing, cost, ownValue };
+  };
+  ECO.personalCraft = (W, npc, r, intent) => {
+    const quote = ECO.personalCraftQuote(W, npc, r), CPE = g.CPE;
+    if (!quote) return { ok: false, reason: 'inputs' };
+    if (!CPE.spend(W, npc, quote.cost, 'ซื้อวัตถุดิบผลิตส่วนตัว')) return { ok: false, reason: 'points' };
+    quote.missing.forEach(i => ECO.take(W, i.id, i.n));
+    quote.owned.forEach(i => { npc.inv.mats[i.id] -= i.n; if (npc.inv.mats[i.id] <= 0) delete npc.inv.mats[i.id]; });
+    const skill = npc.h.skills[r.craft] || 0, ok = W.rng.next() < ECO.successChance(npc, r);
+    HC.practice(npc, r.craft, ECO.craftHours(r, skill), 1.1);
+    if (!ok) return { ok: false, reason: 'failed', cost: quote.cost };
+    const q = clamp(0.85 + (skill - r.minMastery) / 160 + W.rng.gauss(0, 0.06), 0.7, 1.5);
+    const qty = (r.yield || 1) + (W.rng.chance(clamp((skill - r.minMastery) / 120, 0, 0.5)) ? 1 : 0) + (r.starter ? 1 : 0);
+    const key = r.outItemId || 'P:' + r.id;
+    npc.inv.craftedPills = npc.inv.craftedPills || [];
+    npc.inv.personalCraftSeq = (npc.inv.personalCraftSeq || 0) + 1;
+    const product = { id: String(npc.inv.personalCraftSeq), key, qty, q, purchasedCost: quote.cost, ownValue: quote.ownValue, intent: intent === 'donate' ? 'donate' : 'keep' };
+    npc.inv.craftedPills.push(product); return { ok: true, product };
+  };
+  ECO.donatePersonalProduct = (W, npc, id) => {
+    const products = npc.inv && npc.inv.craftedPills, index = products && products.findIndex(p => p.id === id);
+    if (index == null || index < 0) return { ok: false };
+    const p = products[index], CPE = g.CPE;
+    if (!CPE || !ECO.pillInfo(p.key) || !Number.isFinite(p.qty) || p.qty <= 0 || !Number.isFinite(p.q) || !Number.isFinite(p.purchasedCost) || !Number.isFinite(p.ownValue)) return { ok: false };
+    // Purchased-only loops cannot mint points: only owned inputs earn surplus.
+    const reward = Math.floor(Math.max(0, Math.min(CPE.reward(W, p.key, p.qty) * p.q, p.purchasedCost + p.ownValue * 1.2 * p.q)) * 10) / 10;
+    if (!ECO.add(W, p.key, p.qty, p.q)) return { ok: false };
+    products.splice(index, 1); if (reward) CPE.mint(W, npc, reward, 'บริจาคโอสถส่วนตัว', true);
+    CPE.S(W).donated += reward; return { ok: true, reward };
+  };
+
   /** ผลของโอสถ (อ่านจากข้อมูลเกมเก่า) */
   ECO.pillInfo = key => {
     if (key.startsWith('P:')) { const r = recipeById[key.slice(2)]; return r ? { tier: r.tier, effect: r.effect || {}, name: r.outNameTh } : null; }
@@ -9687,10 +9734,24 @@ JD.EXPANSION=JD.EXPANSION||data;
     HC.bump(npc);
     return { info, msgs };
   };
+  ECO.pillQuality = (W, key) => clamp((W.sect.pillQuality && W.sect.pillQuality[key]) || 1, 0.7, 1.5);
+  ECO.addPersonalPill = (npc, key, quality) => {
+    const bag = npc.inv.pills || (npc.inv.pills = {}), map = npc.inv.pillQuality || (npc.inv.pillQuality = {}), count = bag[key] || 0;
+    map[key] = ((map[key] || 1) * count + (quality || 1)) / (count + 1); bag[key] = count + 1;
+  };
+  ECO.applyQualityPill = (W, npc, key, quality) => {
+    const s = npc.h.state, before = { hp:s.hp, qi:s.qi, energy:s.energy, rest:s.rest, heartDemon:s.heartDemon }, result = ECO.applyPill(W, npc, key);
+    if (!result) return result;
+    const q = clamp(Number.isFinite(quality) ? quality : 1, 0.7, 1.5);
+    for (const k of Object.keys(before)) if (Number.isFinite(before[k]) && Number.isFinite(s[k])) s[k] = before[k] + (s[k] - before[k]) * q;
+    s.hp = clamp(s.hp, 0, CULT.hpMax(npc)); if (npc.cult && Number.isFinite(s.qi)) s.qi = clamp(s.qi, 0, CULT.qiMax(npc));
+    for (const k of ['energy','rest','heartDemon']) if (Number.isFinite(s[k])) s[k] = clamp(s[k], 0, 100);
+    return result;
+  };
   // ใช้โอสถจากคลังสำนัก: หักสต็อกหนึ่งเม็ดแล้วใช้ผลของโอสถ
   ECO.usePill = (W, npc, key) => {
-    if (!ECO.pillInfo(key) || !ECO.take(W, key, 1)) return null;
-    return ECO.applyPill(W, npc, key);
+    const quality = ECO.pillQuality(W, key); if (!ECO.pillInfo(key) || !ECO.take(W, key, 1)) return null;
+    return ECO.applyQualityPill(W, npc, key, quality);
   };
 
   /* ---------- แหล่งผลิตในสำนัก ---------- */
@@ -11385,6 +11446,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     // ทรัพย์สินกลับสำนัก
     ECO.earn(W, Math.round((n.inv.stones || 0) * 0.5), 'มรดกของ ' + n.h.name.given); n.inv.stones = 0;
     for (const k in (n.inv.pills || {})) ECO.add(W, k, n.inv.pills[k]); n.inv.pills = {};
+    for (const p of (n.inv.craftedPills || [])) if (p && p.key && p.qty > 0) ECO.add(W, p.key, p.qty); n.inv.craftedPills = [];
     for (const k in (n.inv.mats || {})) ECO.add(W, k, n.inv.mats[k]); n.inv.mats = {};
     for (const id of (n.inv.techs || [])) if (CULT.tech(id) && !W.sect.library.includes(id)) W.sect.library.push(id); n.inv.techs = [];
     for (const id of (n.inv.recipes || [])) if (ECO.recipeById[id] && !W.sect.knownRecipes.includes(id)) { W.sect.knownRecipes.push(id); if (W.world && W.world.contentMetrics) W.world.contentMetrics.formulas++; } n.inv.recipes = [];
@@ -12065,6 +12127,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     if (W.foes && W.foes.length) {
       W.foes = W.foes.filter(x => !x.isSummon || !x.dead);
     }
+    if (f.kind === 'wild' && g.WILD) g.WILD.finish(W, f, ws);
     if (f.cb) f.cb(W, f, ws, winners, losers);
   };
 
@@ -13920,7 +13983,8 @@ JD.EXPANSION=JD.EXPANSION||data;
   CPE.scarcity = (W, id) => clamp((CPE.target(W, id) + 2) / (ECO.count(W, id) + 2), 0.5, 2.5);
   CPE.reward = (W, id, n, stockBefore) => {
     const tgt = CPE.target(W, id), stock = stockBefore == null ? ECO.count(W, id) : stockBefore;
-    const sc = clamp((tgt + 2) / (stock + 2), 0.2, 2.5);
+    // Keep a small positive reward, but let severe oversupply reduce payout further.
+    const sc = clamp((tgt + 2) / (stock + 2), 0.05, 2.5);
     return ECO.base(id) * 0.22 * sc * (n == null ? 1 : n);
   };
   const recipeByOutput = (() => { const m = {}; Object.keys(ECO.recipeById).forEach(k => { const r = ECO.recipeById[k]; if (r.outItemId) m[r.outItemId] = r; }); return m; })();
@@ -14134,7 +14198,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     const quote=p.kind==='pill'?CPE.priceOf(W,p.key):CPE.gearPrice(W,p.gear || {});
     if(p.price!==quote || (p.kind==='pill' && (!ECO.isPill(p.key) || !ECO.pillInfo(p.key)))) return false;
     const c = CPE.S(W);
-    if (p.kind === 'pill') { if (!ECO.take(W, p.key, 1)) return false; if (!CPE.spend(W, n, p.price, 'ซื้อ' + ECO.name(p.key))) { ECO.add(W, p.key, 1); return false; } n.inv.pills = n.inv.pills || {}; n.inv.pills[p.key] = (n.inv.pills[p.key] || 0) + 1; }
+    if (p.kind === 'pill') { const quality = ECO.pillQuality(W, p.key); if (!ECO.take(W, p.key, 1)) return false; if (!CPE.spend(W, n, p.price, 'ซื้อ' + ECO.name(p.key))) { ECO.add(W, p.key, 1, quality); return false; } ECO.addPersonalPill(n, p.key, quality); }
     else { const i = W.sect.gear.indexOf(p.gear); if (i < 0) return false; if (!CPE.spend(W, n, p.price, 'ซื้อ' + p.gear.nameTh)) return false; W.sect.gear.splice(i, 1); const cur = n.equip[p.gear.slot]; if (cur) W.sect.gear.push(cur); n.equip[p.gear.slot] = p.gear; ST.dirty(n); W.log('gear', n.h.name.given + ' แลกคุณูปการซื้อ「' + p.gear.nameTh + '」จากร้านสำนัก', [n.id]); }
     c.sales++; HC.feel(n, { mood: 1.5 }); AI.mem(W, n, 'ซื้อ' + (p.kind === 'pill' ? ECO.name(p.key) : p.gear.nameTh) + 'ด้วยแต้มคุณูปการ', 0.25); return true;
   };
@@ -14292,10 +14356,21 @@ JD.EXPANSION=JD.EXPANSION||data;
     if (e.energyRestore) { s.energy = Math.min(100, s.energy + e.energyRestore); r.msgs.push('คลายเหนื่อย'); } if (e.restRestore) s.rest = Math.min(100, s.rest + e.restRestore);
     return r;
   };
-  const consume = (W, n, key) => { n.inv.pills[key]--; if (n.inv.pills[key] <= 0) delete n.inv.pills[key]; return ECO.applyPill(W, n, key); };
+  const consume = (W, n, key) => { const q = (n.inv.pillQuality && n.inv.pillQuality[key]) || 1; n.inv.pills[key]--; if (n.inv.pills[key] <= 0) { delete n.inv.pills[key]; if (n.inv.pillQuality) delete n.inv.pillQuality[key]; } return ECO.applyQualityPill(W, n, key, q); };
   const firstOf = (n, list) => list.find(k => n.inv && n.inv.pills && n.inv.pills[k] > 0);
+  CPE.consumeCrafted = (W, n, p) => {
+    const list = n.inv && n.inv.craftedPills, i = list && list.indexOf(p); if (i == null || i < 0 || p.intent !== 'keep' || !(p.qty > 0)) return null;
+    const result = ECO.applyQualityPill(W, n, p.key, p.q); if (!result) return null;
+    if (--p.qty <= 0) list.splice(i, 1); return result;
+  };
+  function pickCrafted(n, effect) { return (n.inv && n.inv.craftedPills || []).find(p => p.intent === 'keep' && p.qty > 0 && ECO.pillInfo(p.key)?.effect[effect]); }
   CPE.autoUse = (W, n) => {
-    if (n.dead || !n.inv || !n.inv.pills || !Object.keys(n.inv.pills).length || (n.act && n.act.id === 'fight')) return; const s = n.h.state, R = JD.CP.RECOVERY, hm = CULT.hpMax(n);
+    if (n.dead || !n.inv || (n.act && n.act.id === 'fight')) return;
+    if (!(n.inv.craftedPills && n.inv.craftedPills.length) && !(n.inv.pills && Object.keys(n.inv.pills).length)) return;
+    const s = n.h.state, R = JD.CP.RECOVERY, hm = CULT.hpMax(n);
+    const owned = s.hp < hm * 0.5 && pickCrafted(n, 'healHealth') || n.cult && n.cult.toxic > 40 && pickCrafted(n, 'clearToxic') || s.heartDemon > 45 && pickCrafted(n, 'clearHeartDemon') || s.energy < 18 && pickCrafted(n, 'energyRestore');
+    if (owned) return CPE.consumeCrafted(W, n, owned);
+    if (!n.inv.pills || !Object.keys(n.inv.pills).length) return;
     let k;
     if (n.inj && n.inj.length && (k = firstOf(n, R.wound))) return consume(W, n, k);
     if (s.hp < hm * 0.5 && (k = firstOf(n, R.hp))) return consume(W, n, k);
@@ -14304,14 +14379,39 @@ JD.EXPANSION=JD.EXPANSION||data;
     if (s.energy < 18 && (k = firstOf(n, R.vigor))) return consume(W, n, k);
   };
   CPE.fightUse = (W, n, ctx) => {
-    if (!n.inv || !n.inv.pills || (ctx.pillAt || 0) > W.t) return false; const s = n.h.state, R = JD.CP.RECOVERY; let k;
+    if (!n.inv || (ctx.pillAt || 0) > W.t) return false; const s = n.h.state, R = JD.CP.RECOVERY; let k;
+    const owned = s.hp < CULT.hpMax(n) * 0.38 && pickCrafted(n, 'healHealth') || n.cult && s.qi != null && s.qi < CULT.qiMax(n) * 0.2 && pickCrafted(n, 'qiRestore');
+    if (owned && CPE.consumeCrafted(W, n, owned)) { ctx.pillAt = W.t + 6; n.fx = {t:W.t,text:'💊'}; return true; }
+    if (!n.inv.pills) return false;
     if (s.hp < CULT.hpMax(n) * 0.38 && (k = firstOf(n, R.hp))) { ctx.pillAt = W.t + 6; consume(W, n, k); n.fx = { t: W.t, text: '💊' }; return true; }
     if (n.cult && s.qi != null && s.qi < CULT.qiMax(n) * 0.2 && (k = firstOf(n, R.qi))) { ctx.pillAt = W.t + 6; consume(W, n, k); n.fx = { t: W.t, text: '💊' }; return true; }
     return false;
   };
+  // Only the master, treasury elder, or an explicitly recorded acting officer
+  // may make allocations. Temporary absences never permanently change posts.
+  CPE.welfareOfficer = W => {
+    const S = W.sect, available = n => !!n && !n.dead && !n.away && !n.exiled && !n.sealed && !n.sealedBt && !(n.jail > W.t);
+    const elder = SECT.holder(W, 'treasury'), master = W.byId[S.masterId], deputy = W.byId[S.deputyId];
+    const eligible = W.npcs.filter(n => available(n) && n.rank >= 1);
+    const best = list => list.sort((a,b) => SECT.relevance('treasury', b) - SECT.relevance('treasury', a) || a.id.localeCompare(b.id))[0];
+    let officer, role, acting = false;
+    if (available(elder)) { officer = elder; role = 'treasury'; }
+    else if (elder && (officer = best(eligible.filter(n => n.assist === 'treasury')))) { role = 'acting_treasury'; acting = true; }
+    else if (available(master)) { officer = master; role = 'master'; }
+    else if (available(deputy)) { officer = deputy; role = 'acting_master'; acting = true; }
+    else if ((officer = best(eligible.filter(n => n.assist === 'treasury')) || best(eligible))) { role = 'acting_treasury'; acting = true; }
+    else { role = 'unavailable'; acting = false; }
+    const id = officer ? officer.id : null, previous = S.welfareAuthority;
+    if (!previous || previous.id !== id || previous.role !== role) {
+      S.welfareAuthority = { id, role, acting, since: W.day };
+      if (officer) W.log('appoint', officer.h.name.given + (acting ? ' รับหน้าที่รักษาการดูแลการแจกจ่ายโอสถ' : ' รับผิดชอบการแจกจ่ายโอสถ'), [id]);
+      else if (previous && previous.id) W.log('appoint', 'ไม่มีผู้มีสิทธิ์ดูแลการแจกจ่ายโอสถชั่วคราว', []);
+    }
+    return officer || null;
+  };
   CPE.welfareDaily = W => {
     if (g.SECT && g.SECT.ensureDirectives) g.SECT.ensureDirectives(W);
-    const S = W.sect, c = CPE.S(W), tr = SECT.holder(W, 'treasury') || W.byId[S.masterId], R = JD.CP.RECOVERY;
+    const S = W.sect, c = CPE.S(W), tr = CPE.welfareOfficer(W), R = JD.CP.RECOVERY;
     if (!tr) return;
     const mer = S.policy.meritocracy / 100;
     const trIntegrity = E(tr, 'personality.integrity');
@@ -14333,8 +14433,8 @@ JD.EXPANSION=JD.EXPANSION||data;
       if (!k) return false;
       n.inv.pills = n.inv.pills || {};
       if (n.inv.pills[k] >= 2) return false;
-      ECO.take(W, k, 1);
-      n.inv.pills[k] = (n.inv.pills[k] || 0) + 1;
+      const quality = ECO.pillQuality(W, k); ECO.take(W, k, 1);
+      ECO.addPersonalPill(n, k, quality);
       given++;
       recipients.push({ id: n.id, name: n.h.name.given, item: k, needScore: Math.round(needScore), biasScore: Math.round(relScore) });
       return true;
@@ -14422,6 +14522,8 @@ JD.EXPANSION=JD.EXPANSION||data;
         day: W.day,
         treasurerId: tr.id,
         treasurerName: tr.h.name.given,
+        acting: S.welfareAuthority.acting,
+        authorityRole: S.welfareAuthority.role,
         meritocracy: Math.round(mer * 100),
         given,
         recipients,
@@ -14465,6 +14567,50 @@ JD.EXPANSION=JD.EXPANSION||data;
     const pMod = CPE.S(W).price > 1.2 ? 1 / Math.pow(CPE.S(W).price, 0.5) : 1;
     W.npcs.forEach(n => { if (n.dead || n.exiled) return; CPE.mint(W, n, (pay[n.rank] || 10) * (n.post ? 1.25 : 1) * (0.9 + W.sect.policy.generosity / 500) * pMod, 'เบี้ยหวัดคุณูปการ', true); });
     return paid;
+  };
+  // Individual artisans use their own ingredients first and pay for any missing stock.
+  function personalCraftChoice(W, n) {
+    if (!n.inv || !n.cult || n.dead || n.away || n.h.state.energy < 20) return null;
+    if ((n.inv.craftedPills || []).length >= 3 || (!(n.inv.recipes && n.inv.recipes.length) && !(n.recipes && n.recipes.length))) return null;
+    const ids = Array.from(new Set([...(n.inv.recipes || []), ...(n.recipes || [])]));
+    let best = null;
+    for (const id of ids) {
+      const r = ECO.recipeById[id]; if (!r || r.craft !== 'ALCHEMY' || r.outType !== 'PILL') continue;
+      const quote = ECO.personalCraftQuote(W, n, r); if (!quote || !quote.owned.length) continue;
+      const key = r.outItemId || 'P:' + r.id, info = ECO.pillInfo(key); if (!info) continue;
+      const need = n.h.state.hp < CULT.hpMax(n) * 0.75 && info.effect.healHealth || n.cult.toxic > 25 && info.effect.clearToxic || n.h.state.heartDemon > 30 && info.effect.clearHeartDemon;
+      const intent = need ? 'keep' : 'donate';
+      const value = Math.min(CPE.reward(W, key, r.yield || 1), quote.cost + quote.ownValue * 1.2);
+      if (!need && value <= quote.cost) continue;
+      const score = need ? 1.8 : 0.8 + Math.min(0.9, (value - quote.cost) / 40);
+      if (!best || score > best.score) best = { r, intent, score };
+    }
+    return best;
+  }
+  A.personalBrew = {
+    nameTh: 'ปรุงโอสถส่วนตัว', icon: '⚗️', color: '#8ad7ae',
+    can: (n, W) => !!personalCraftChoice(W, n),
+    score(n, W, S) { const c = personalCraftChoice(W,n); if (c) S.add('ผลิตโอสถจากวัตถุดิบส่วนตัว', c.score); },
+    where(W,n) { const c = personalCraftChoice(W,n), st = c && AI.freeStation(W,n,'cauldron','alchemy'); return st ? { st, rid:c.r.id, intent:c.intent } : null; },
+    start(n,W,ctx) { return !!ECO.personalCraftQuote(W,n,ECO.recipeById[ctx.rid]); },
+    dur(n,W,ctx) { const r=ECO.recipeById[ctx.rid]; return r ? Math.round(ECO.craftHours(r,n.h.skills.ALCHEMY||0)*60) : 0; },
+    tick(n) { n.h.state.energy=Math.max(0,n.h.state.energy-0.04); },
+    done(n,W,ctx) { const out=ECO.personalCraft(W,n,ECO.recipeById[ctx.rid],ctx.intent); if(out.ok) W.log('craft',n.h.name.given+' ปรุงโอสถส่วนตัวสำเร็จ (คุณภาพ '+Math.round(out.product.q*100)+'%)',[n.id]); }
+  };
+  A.personalPillDonation = {
+    nameTh:'บริจาคโอสถส่วนตัว',icon:'🎁',color:'#c6a4f5',
+    can:n => !!(n.inv && (n.inv.craftedPills||[]).some(p=>p.intent==='donate')),
+    score(n,W,S) { S.add('นำโอสถที่ผลิตไปบริจาค',1.8); },
+    where(W,n) { const st=AI.freeStation(W,n,'browse','market') || AI.freeStation(W,n,'desk','treasury'); return st ? {st} : null; },
+    dur:()=>20,
+    done(n,W) { for (const p of [...(n.inv.craftedPills||[])]) if(p.intent==='donate') { const result=ECO.donatePersonalProduct(W,n,p.id); if(result.ok) W.log('finance',n.h.name.given+' บริจาคโอสถส่วนตัว ได้ '+Math.round(result.reward)+' คป.',[n.id]); } }
+  };
+  A.personalPillUse = {
+    nameTh:'ใช้โอสถส่วนตัว',icon:'💊',color:'#7fd1b9',
+    can(n) { return !!(n.inv && (n.inv.craftedPills||[]).some(p=>p.intent==='keep' && ECO.pillInfo(p.key)?.effect.healHealth) && n.h.state.hp < CULT.hpMax(n)*0.8); },
+    score(n,W,S) { S.add('บาดเจ็บและมีโอสถส่วนตัว',2.4); },
+    where(W,n) { return {pos:{x:n.x,y:n.y}}; },dur:()=>1,
+    done(n,W) { const list=n.inv.craftedPills||[], i=list.findIndex(p=>p.intent==='keep' && ECO.pillInfo(p.key)?.effect.healHealth); if(i<0)return; CPE.consumeCrafted(W,n,list[i]); }
   };
   g.CPE = CPE;
   if (typeof module === 'object' && module.exports) module.exports = CPE;
@@ -15962,6 +16108,69 @@ JD.EXPANSION=JD.EXPANSION||data;
 
 </script>
 <script>
+/* js/wildlife.js */
+/* สัตว์อสูรบนแผนที่เดียวกับสำนัก แยกจากคณะเดินทางนอกสำนัก */
+(function(g){
+ 'use strict';
+ const {U,MAP,AI,CULT,COMBAT,JD,HC,ECO}=g;
+ const WILD={};
+ const zones={meadow:{x0:38,x1:96,y0:139,y1:153,min:1,max:2},ridge:{x0:140,x1:202,y0:139,y1:153,min:3,max:5},legend:{x0:140,x1:202,y0:139,y1:153,min:6,max:7}};
+ WILD.zones=zones;
+ WILD.init=W=>{if(!W.wildlife)W.wildlife={seq:0,beasts:[],kills:0};};
+ WILD.spawn=(W,zoneId)=>{
+  WILD.init(W);const z=zones[zoneId];if(!z)return null;
+  const pool=JD.BEASTS.species.filter(s=>s.tier>=z.min&&s.tier<=z.max&&Array.isArray(s.drops)&&s.drops.some(id=>ECO.matById[id]));if(!pool.length)return null;
+  const species=W.rng.pick(pool),x=W.rng.int(z.x0,z.x1),y=W.rng.int(z.y0,z.y1),id='wild_'+(++W.wildlife.seq);
+  const b={id,foe:true,wild:true,speciesId:species.id,name:species.nameTh,tier:species.tier,power:species.cp,hpMax:Math.round(species.cp*1.3+30),x:x+.5,y:y+.5,px:x+.5,py:y+.5,zone:zoneId,speed:.5,face:1,aggressive:zoneId!=='meadow'&&species.aggro>=70,legendary:zoneId==='legend',expires:zoneId==='legend'?W.t+W.rng.int(3,10)*1440:null,dead:false,gone:false,skl:[]};b.hp=b.hpMax;W.wildlife.beasts.push(b);
+  if(b.legendary)W.log('explore','★ '+b.name+' ปรากฏตัวนอกสำนัก และอาจจากไปเมื่อใดก็ได้',[]);
+  return b;
+ };
+ WILD.startFight=(W,n,b)=>{
+  if(!n||n.dead||n.away||n.travel||!b||b.dead||b.gone||b.fighting||n.act.id==='fight')return false;
+  if(n.y<=W.map.wall.y1||b.y<=W.map.wall.y1||Math.hypot(n.x-b.x,n.y-b.y)>3)return false;
+  W.foes.push(b);W.foeById[b.id]=b;
+  const f=COMBAT.startFight(W,[n.id],[b.id],'wild',{serious:true,ctx:{beastId:b.id,hunterId:n.id}});b.fighting=f.id;
+  W.log('combat',n.h.name.given+' เผชิญ '+b.name+' นอกสำนัก',[n.id]);return true;
+ };
+ WILD.finish=(W,f,winner)=>{
+  if(!f||f.wildSettled)return;f.wildSettled=true;
+  const b=W.foeById[f.ctx.beastId],n=W.byId[f.ctx.hunterId];if(!b)return;
+  if(b.dead&&winner==='A'&&n&&!n.dead){
+   const species=JD.BEASTS.species.find(s=>s.id===b.speciesId);n.inv.mats=n.inv.mats||{};
+   const drops=species?species.drops.filter(id=>ECO.matById[id]):[];
+   if(drops.length){const id=W.rng.pick(drops);n.inv.mats[id]=(n.inv.mats[id]||0)+1;W.log('combat',n.h.name.given+' ล่า '+b.name+' ได้ '+ECO.name(id),[n.id]);}
+   if (species && g.CONTENT && g.CONTENT.organByBeastId[species.id]) {
+    const out = {}; const result = g.CONTENT.harvestOrgan(W,{kind:'hunt',journal:[]},[n],out,null,species);
+    if (result.recovered && out.organs) { n.inv.organs=n.inv.organs||{}; for (const [id,q] of Object.entries(out.organs)) n.inv.organs[id]=(n.inv.organs[id]||0)+q; W.log('combat',n.h.name.given+' ชำแหละได้ '+result.nameTh,[n.id]); }
+   }
+   W.wildlife.kills++;
+  }
+  W.foes=W.foes.filter(x=>x.id!==b.id);delete W.foeById[b.id];b.fighting=null;
+  if(b.dead){b.gone=true;}else{b.fled=false;b.yield=false;b.act=null;}
+ };
+ WILD.clampCombat=W=>{ for(const b of W.wildlife?.beasts||[])if(b.fighting){const z=zones[b.zone];b.x=U.clamp(b.x,z.x0,z.x1);b.y=U.clamp(b.y,z.y0,z.y1);} };
+ WILD.tick=W=>{
+  WILD.init(W);const state=W.wildlife;
+  if(W.t%60===0){for(const zone of ['meadow','ridge'])if(state.beasts.filter(b=>b.zone===zone&&!b.gone).length<3)WILD.spawn(W,zone);if(!state.beasts.some(b=>b.legendary&&!b.gone)&&W.rng.chance(.002))WILD.spawn(W,'legend');}
+  for(const b of state.beasts){
+   if(b.gone||b.dead)continue;
+   if(b.fighting){const f=W.fights.find(x=>x.id===b.fighting&&!x.over);if(f){b.y=Math.max(W.map.wall.y1+1.5,b.y);continue;}b.fighting=null;}
+   if(b.legendary&&W.t>=b.expires){b.gone=true;W.log('explore',b.name+' จากพื้นที่นอกสำนักไปแล้ว',[]);continue;}
+   if(b.aggressive&&W.t%15===0){const n=W.npcs.find(n=>!n.dead&&!n.away&&!n.hidden&&!n.travel&&n.y>W.map.wall.y1+1&&n.act.id!=='fight'&&Math.hypot(n.x-b.x,n.y-b.y)<2);if(n)WILD.startFight(W,n,b);}
+   if(!b.fighting&&W.t%90===0){const z=zones[b.zone];b.px=b.x;b.py=b.y;b.x=U.clamp(b.x+W.rng.int(-2,2),z.x0,z.x1);b.y=U.clamp(b.y+W.rng.int(-1,1),z.y0,z.y1);}
+  }
+  state.beasts=state.beasts.filter(b=>!b.gone&&!b.dead);
+ };
+ AI.ACTS.wildHunt={nameTh:'ล่าอสูรใกล้สำนัก',icon:'🐺',color:'#b67862',
+  can:(n,W)=>!!(W.wildlife&&n.rank>=1&&!n.dead&&!n.away&&!n.inj?.length&&n.h.state.hp>CULT.hpMax(n)*.6&&W.wildlife.beasts.some(b=>!b.dead&&!b.gone&&!b.fighting&&CULT.power(n)>=b.power*.8)),
+  score(n,W,S){S.add('ชอบล่าและต่อสู้',(HC.eff(n,'interests.combat')-35)/40+(HC.eff(n,'interests.exploring')-40)/60);S.add('ต้องการวัตถุดิบ',.3);},
+  where(W,n){const candidates=W.wildlife.beasts.filter(b=>!b.dead&&!b.gone&&!b.fighting&&CULT.power(n)>=b.power*.8);candidates.sort((a,b)=>Math.hypot(n.x-a.x,n.y-a.y)-Math.hypot(n.x-b.x,n.y-b.y));const b=candidates[0];return b?{pos:{x:b.x,y:b.y},beastId:b.id}:null;},
+  start(n,W,ctx){const b=W.wildlife.beasts.find(b=>b.id===ctx.beastId);return !!b&&WILD.startFight(W,n,b);},dur:()=>1,tick(){},done(){} };
+ g.WILD=WILD;if(typeof module==='object'&&module.exports)module.exports=WILD;
+})(typeof globalThis!=='undefined'?globalThis:this);
+
+</script>
+<script>
 /* js/sim.js */
 /* sim.js — แกนกลางของโลก: สร้างโลก, นาฬิกา/ปฏิทิน, วงจรจำลอง (1 tick = 1 นาทีเกม), บันทึก/โหลด
  * ทุกระบบอ่าน-เขียนสถานะผ่านวัตถุ W เดียว (single source of truth) */
@@ -16080,7 +16289,9 @@ JD.EXPANSION=JD.EXPANSION||data;
       if (n.away) continue;
       AI.step(W, n);
     }
+    if (g.WILD) g.WILD.tick(W);
     if (W.foes.length) EXPED.raidTick(W);
+    if (g.WILD) g.WILD.clampCombat(W);
     COMBAT.tick(W);
     if (W.t % 60 === 0) SIM.hourly(W);
   };
@@ -16221,7 +16432,7 @@ JD.EXPANSION=JD.EXPANSION||data;
   /* ---------- บันทึก/โหลด ---------- */
   SIM.serialize = W => {
     const M = W.map;
-    const snap = { ...(W._saveExtras || {}), v: SIM.VERSION, runtimeTiming: W.runtimeTiming, hc: HC.FINGERPRINT, seed: W.seed, t: W.t, speed: W.speed, rng: W.rng.getState(), seqN: W.seqN, logSeq: W.logSeq, deaths: W.deaths, avgSat: W.avgSat, avgMood: W.avgMood, weather: W.weather, market: W.market, sect: W.sect, world: W.world, threat: W.threat, explore: W.explore, npcs: W.npcs, graveyard: W.graveyard, gone: W.gone, logs: W.logs.slice(-600), duelQueue: W.duelQueue, fights: W.fights, foes: W.foes, foeSeq: W.foeSeq, fightSeq: W.fightSeq,
+    const snap = { ...(W._saveExtras || {}), wildlife: W.wildlife, v: SIM.VERSION, runtimeTiming: W.runtimeTiming, hc: HC.FINGERPRINT, seed: W.seed, t: W.t, speed: W.speed, rng: W.rng.getState(), seqN: W.seqN, logSeq: W.logSeq, deaths: W.deaths, avgSat: W.avgSat, avgMood: W.avgMood, weather: W.weather, market: W.market, sect: W.sect, world: W.world, threat: W.threat, explore: W.explore, npcs: W.npcs, graveyard: W.graveyard, gone: W.gone, logs: W.logs.slice(-600), duelQueue: W.duelQueue, fights: W.fights, foes: W.foes, foeSeq: W.foeSeq, fightSeq: W.fightSeq,
       map: { extra: M.extraSt || [], buildings: M.buildings.map(b => ({ id: b.id, level: b.level, hp: b.hp, building: b.building || null })) } };
     return JSON.stringify(snap, (k, v) => (k[0] === '_' && k !== '_ver') ? undefined : v);
   };
@@ -16253,6 +16464,8 @@ JD.EXPANSION=JD.EXPANSION||data;
       // เริ่มจากโลกเปล่า แล้วทับสถานะ
       W.rng.setState(s.rng); W.t = s.t; if (g.STATS) g.STATS.now = W.t; W.day = Math.floor(W.t / 1440); W.season = SIM.calendar(W.t).season; HC.nowDay = W.day; W.speed = s.speed == null ? 1 : s.speed; W.seqN = s.seqN; W.logSeq = s.logSeq; W.deaths = s.deaths; W.avgSat = s.avgSat; W.avgMood = s.avgMood; W.weather = s.weather; W.market = s.market; W.sect = s.sect; W.world = s.world; W.threat = s.threat; if (s.explore) W.explore = s.explore; W.graveyard = s.graveyard; W.gone = s.gone; W.logs = s.logs; W.duelQueue = s.duelQueue || []; W.fights = s.fights || []; W.foes = s.foes || []; W.foeSeq = s.foeSeq; W.fightSeq = s.fightSeq;
       W.foeById = {}; W.foes.forEach(u => W.foeById[u.id] = u);
+      W.wildlife = s.wildlife || {seq:0,beasts:[],kills:0};
+      W.wildlife.beasts = W.wildlife.beasts.map(b => W.foeById[b.id] || b);
       W.npcs = s.npcs; W.byId = {}; W.npcs.forEach(n => { W.byId[n.id] = n; });
       // แผนที่: ใส่ระดับอาคาร + สถานีที่ขยาย
       const M = W.map; M.extraSt = [];
@@ -16265,7 +16478,7 @@ JD.EXPANSION=JD.EXPANSION||data;
       W.npcs.forEach(n => { n.px = n.x; n.py = n.y; if (n.bed != null && M.stations[n.bed]) M.stations[n.bed].owner = n.id; if (n.act && n.act.st != null && M.stations[n.act.st]) { M.stations[n.act.st].occ = n.id; if (M.stations[n.act.st].inside && n.hidden) { M.buildings[M.stations[n.act.st].bid].inside.push(n.id); } } });
       W.log = (type, text, ids) => SIM.log(W, type, text, ids); W.fame = v => { W.sect.fame = Math.max(0, (W.sect.fame || 0) + v); }; W.makeNpc = o => SIM.addNpc(W, o);
       // Preserve unknown top-level extension data; never silently discard future metadata.
-      const knownKeys = new Set(['v','hc','seed','t','speed','rng','seqN','logSeq','deaths','avgSat','avgMood','weather','market','sect','world','threat','explore','npcs','graveyard','gone','logs','duelQueue','fights','foes','foeSeq','fightSeq','map','runtimeTiming']);
+      const knownKeys = new Set(['v','hc','seed','t','speed','rng','seqN','logSeq','deaths','avgSat','avgMood','weather','market','sect','world','threat','explore','npcs','graveyard','gone','logs','duelQueue','fights','foes','foeSeq','fightSeq','map','runtimeTiming','wildlife']);
       W._saveExtras = Object.fromEntries(Object.entries(s).filter(([k]) => !knownKeys.has(k)));
       if (s.runtimeTiming) W.runtimeTiming = s.runtimeTiming;
       const legacyContent = !s.sect.contentVersion;
@@ -16608,10 +16821,11 @@ JD.EXPANSION=JD.EXPANSION||data;
       W.map.buildings.forEach(b => { if ((b.x + b.w) * TS < c.x - hw - 24 || b.x * TS > c.x + hw + 24 || (b.y + b.h) * TS < c.y - hh - 24 || b.y * TS > c.y + hh + 60) return; items.push({ y: MAP.BTYPES[b.type].open ? b.y - 100 : b.y + b.h, b, k: 'b' }); });
       W.npcs.forEach(n => { if (n.dead || n.away || (n.hidden && !n.travel)) return; const p = this.npcPos(n); if (p.x * TS < c.x - hw - 40 || p.x * TS > c.x + hw + 40 || p.y * TS < c.y - hh - 60 || p.y * TS > c.y + hh + 40) return; items.push({ y: p.y, n, p, k: 'n' }); });
       (W.foes || []).forEach(f => { if (!f.gone && !f.dead) items.push({ y: f.y, f, k: 'f' }); });
+      (W.wildlife?.beasts || []).forEach(b => { if (!b.fighting && !b.dead && !b.gone && Math.abs(b.x * TS - c.x) < hw + 50 && Math.abs(b.y * TS - c.y) < hh + 50) items.push({y:b.y,w:b,k:'w'}); });
       W.map.decor.forEach(d => { if (d.kind === 'lantern' || d.kind === 'banner' || d.kind === 'fountain') { if (Math.abs(d.x * TS - c.x) < hw + 40 && Math.abs(d.y * TS - c.y) < hh + 40) items.push({ y: d.y + 0.5, d, k: 'd' }); } });
       items.sort((a, b) => a.y - b.y);
       const night = this.nightFactor(hour);
-      for (const it of items) { if (it.k === 'b') this.drawBuilding(ctx, it.b, hour, night); else if (it.k === 'n') this.drawNpc(ctx, it.n, it.p, hour); else if (it.k === 'f') this.drawFoe(ctx, it.f); else this.drawDeco(ctx, it.d, night); }
+      for (const it of items) { if (it.k === 'b') this.drawBuilding(ctx, it.b, hour, night); else if (it.k === 'n') this.drawNpc(ctx, it.n, it.p, hour); else if (it.k === 'f') { if (it.f.wild) this.drawWild(ctx, it.f); else this.drawFoe(ctx, it.f); } else if (it.k === 'w') this.drawWild(ctx, it.w); else this.drawDeco(ctx, it.d, night); }
       this.drawCastEffects(ctx);
       this.drawMarkers(ctx);
       // กลางคืน
@@ -16847,6 +17061,16 @@ JD.EXPANSION=JD.EXPANSION||data;
       else if (act === 'brew' || act === 'forge') { ctx.fillStyle = act === 'forge' ? '#ff9a4a' : '#8de0a0'; ctx.beginPath(); ctx.arc(hx + 3, hy - 2 - (t * 6 % 4), 1.4, 0, 7); ctx.fill(); }
     },
     hpBar(ctx, x, y, f, w) { f = clamp(f, 0, 1); ctx.fillStyle = 'rgba(0,0,0,.65)'; ctx.fillRect(x - w / 2 - 1, y - 1, w + 2, 4); ctx.fillStyle = f > 0.5 ? '#5fd35f' : f > 0.25 ? '#e8c43a' : '#e0463a'; ctx.fillRect(x - w / 2, y, w * f, 2); },
+    drawWild(ctx, b) {
+      const x=b.x*TS,y=b.y*TS, id=b.speciesId||'', large=b.tier>=6, body=large?'#78518b':b.tier>=3?'#b27b55':'#9d8b70';
+      ctx.save();ctx.translate(x,y);ctx.fillStyle='rgba(0,0,0,.2)';ctx.beginPath();ctx.ellipse(0,1,10,4,0,0,7);ctx.fill();
+      if (/PYTHON|SNAKE|SERPENT/.test(id)) {ctx.strokeStyle=body;ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(-10,-2);ctx.bezierCurveTo(-4,-12,1,4,8,-6);ctx.stroke();ctx.fillStyle='#e9c586';ctx.beginPath();ctx.arc(8,-7,4,0,7);ctx.fill();}
+      else if (/ROC|BIRD|PHOENIX/.test(id)) {ctx.fillStyle=body;ctx.beginPath();ctx.moveTo(-12,-10);ctx.quadraticCurveTo(0,-2,12,-10);ctx.lineTo(5,0);ctx.lineTo(-5,0);ctx.closePath();ctx.fill();ctx.fillStyle='#e2c78e';ctx.beginPath();ctx.arc(0,-7,4,0,7);ctx.fill();}
+      else {ctx.fillStyle=body;ctx.beginPath();ctx.ellipse(0,-7,large?12:9,large?8:6,0,0,7);ctx.fill();ctx.fillRect(-7,-4,3,5);ctx.fillRect(5,-4,3,5);ctx.fillStyle=large?'#9870ad':'#ccb294';ctx.beginPath();ctx.arc(7,-10,large?6:5,0,7);ctx.fill();ctx.fillStyle='#3b302d';ctx.beginPath();ctx.moveTo(4,-13);ctx.lineTo(5,-18);ctx.lineTo(9,-13);ctx.fill();ctx.fillRect(9,-11,2,2);}
+      if(b.legendary){ctx.strokeStyle='rgba(219,160,255,.8)';ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(0,0,15,6,0,0,7);ctx.stroke();}
+      if(this.cam.z>.8){ctx.fillStyle='rgba(20,35,29,.75)';ctx.font='9px '+FONT;ctx.textAlign='center';ctx.fillText(b.name+' · '+b.tier,0,-24);}
+      ctx.restore();
+    },
     drawFoe(ctx, f) {
       const x = f.x * TS, y = f.y * TS, z = this.cam.z; const t = this.t + f.x;
       if (z < 0.42) { ctx.fillStyle = '#e0463a'; ctx.beginPath(); ctx.arc(x, y - 4, Math.max(2.5 / z, 5), 0, 7); ctx.fill(); return; }

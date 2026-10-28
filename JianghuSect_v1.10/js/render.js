@@ -313,10 +313,11 @@
       W.map.buildings.forEach(b => { if ((b.x + b.w) * TS < c.x - hw - 24 || b.x * TS > c.x + hw + 24 || (b.y + b.h) * TS < c.y - hh - 24 || b.y * TS > c.y + hh + 60) return; items.push({ y: MAP.BTYPES[b.type].open ? b.y - 100 : b.y + b.h, b, k: 'b' }); });
       W.npcs.forEach(n => { if (n.dead || n.away || (n.hidden && !n.travel)) return; const p = this.npcPos(n); if (p.x * TS < c.x - hw - 40 || p.x * TS > c.x + hw + 40 || p.y * TS < c.y - hh - 60 || p.y * TS > c.y + hh + 40) return; items.push({ y: p.y, n, p, k: 'n' }); });
       (W.foes || []).forEach(f => { if (!f.gone && !f.dead) items.push({ y: f.y, f, k: 'f' }); });
+      (W.wildlife?.beasts || []).forEach(b => { if (!b.fighting && !b.dead && !b.gone && Math.abs(b.x * TS - c.x) < hw + 50 && Math.abs(b.y * TS - c.y) < hh + 50) items.push({y:b.y,w:b,k:'w'}); });
       W.map.decor.forEach(d => { if (d.kind === 'lantern' || d.kind === 'banner' || d.kind === 'fountain') { if (Math.abs(d.x * TS - c.x) < hw + 40 && Math.abs(d.y * TS - c.y) < hh + 40) items.push({ y: d.y + 0.5, d, k: 'd' }); } });
       items.sort((a, b) => a.y - b.y);
       const night = this.nightFactor(hour);
-      for (const it of items) { if (it.k === 'b') this.drawBuilding(ctx, it.b, hour, night); else if (it.k === 'n') this.drawNpc(ctx, it.n, it.p, hour); else if (it.k === 'f') this.drawFoe(ctx, it.f); else this.drawDeco(ctx, it.d, night); }
+      for (const it of items) { if (it.k === 'b') this.drawBuilding(ctx, it.b, hour, night); else if (it.k === 'n') this.drawNpc(ctx, it.n, it.p, hour); else if (it.k === 'f') { if (it.f.wild) this.drawWild(ctx, it.f); else this.drawFoe(ctx, it.f); } else if (it.k === 'w') this.drawWild(ctx, it.w); else this.drawDeco(ctx, it.d, night); }
       this.drawCastEffects(ctx);
       this.drawMarkers(ctx);
       // กลางคืน
@@ -552,6 +553,16 @@
       else if (act === 'brew' || act === 'forge') { ctx.fillStyle = act === 'forge' ? '#ff9a4a' : '#8de0a0'; ctx.beginPath(); ctx.arc(hx + 3, hy - 2 - (t * 6 % 4), 1.4, 0, 7); ctx.fill(); }
     },
     hpBar(ctx, x, y, f, w) { f = clamp(f, 0, 1); ctx.fillStyle = 'rgba(0,0,0,.65)'; ctx.fillRect(x - w / 2 - 1, y - 1, w + 2, 4); ctx.fillStyle = f > 0.5 ? '#5fd35f' : f > 0.25 ? '#e8c43a' : '#e0463a'; ctx.fillRect(x - w / 2, y, w * f, 2); },
+    drawWild(ctx, b) {
+      const x=b.x*TS,y=b.y*TS, id=b.speciesId||'', large=b.tier>=6, body=large?'#78518b':b.tier>=3?'#b27b55':'#9d8b70';
+      ctx.save();ctx.translate(x,y);ctx.fillStyle='rgba(0,0,0,.2)';ctx.beginPath();ctx.ellipse(0,1,10,4,0,0,7);ctx.fill();
+      if (/PYTHON|SNAKE|SERPENT/.test(id)) {ctx.strokeStyle=body;ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(-10,-2);ctx.bezierCurveTo(-4,-12,1,4,8,-6);ctx.stroke();ctx.fillStyle='#e9c586';ctx.beginPath();ctx.arc(8,-7,4,0,7);ctx.fill();}
+      else if (/ROC|BIRD|PHOENIX/.test(id)) {ctx.fillStyle=body;ctx.beginPath();ctx.moveTo(-12,-10);ctx.quadraticCurveTo(0,-2,12,-10);ctx.lineTo(5,0);ctx.lineTo(-5,0);ctx.closePath();ctx.fill();ctx.fillStyle='#e2c78e';ctx.beginPath();ctx.arc(0,-7,4,0,7);ctx.fill();}
+      else {ctx.fillStyle=body;ctx.beginPath();ctx.ellipse(0,-7,large?12:9,large?8:6,0,0,7);ctx.fill();ctx.fillRect(-7,-4,3,5);ctx.fillRect(5,-4,3,5);ctx.fillStyle=large?'#9870ad':'#ccb294';ctx.beginPath();ctx.arc(7,-10,large?6:5,0,7);ctx.fill();ctx.fillStyle='#3b302d';ctx.beginPath();ctx.moveTo(4,-13);ctx.lineTo(5,-18);ctx.lineTo(9,-13);ctx.fill();ctx.fillRect(9,-11,2,2);}
+      if(b.legendary){ctx.strokeStyle='rgba(219,160,255,.8)';ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(0,0,15,6,0,0,7);ctx.stroke();}
+      if(this.cam.z>.8){ctx.fillStyle='rgba(20,35,29,.75)';ctx.font='9px '+FONT;ctx.textAlign='center';ctx.fillText(b.name+' · '+b.tier,0,-24);}
+      ctx.restore();
+    },
     drawFoe(ctx, f) {
       const x = f.x * TS, y = f.y * TS, z = this.cam.z; const t = this.t + f.x;
       if (z < 0.42) { ctx.fillStyle = '#e0463a'; ctx.beginPath(); ctx.arc(x, y - 4, Math.max(2.5 / z, 5), 0, 7); ctx.fill(); return; }

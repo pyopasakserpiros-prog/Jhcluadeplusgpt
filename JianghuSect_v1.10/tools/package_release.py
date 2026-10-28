@@ -29,7 +29,7 @@ for p in source_files:assert p.suffix.lower() not in ['.webp','.png','.woff2','.
 assert not list(ROOT.rglob('*RECOVERED*'))
 original_hc='a0d393284fb4b136848e5b80e12f3edd2c4f9437c419c793c2a7e75d881c0542'
 assert hashlib.sha256((ROOT/'js/human_core.js').read_bytes()).hexdigest()==original_hc
-report.write_text(json.dumps({'status':'PASS','version':'1.10.9','checks':['required-files','all-entrypoint-dependencies','offline-standalone-execution','source-originals52','no-source-player-save-or-art','human-core-byte-lock','zip-crc-and-content-verified-after-build'],'selectedOriginalFiles':len(source_files),'entrypointScripts':29,'originalArchiveEmbedded':False,'sourceContinuationAvailable':True},indent=2)+'\n')
+report.write_text(json.dumps({'status':'PASS','version':'1.10.9','checks':['required-files','all-entrypoint-dependencies','offline-standalone-execution','source-originals52','no-source-player-save-or-art','human-core-byte-lock','zip-crc-and-content-verified-after-build'],'selectedOriginalFiles':len(source_files),'entrypointScripts':30,'originalArchiveEmbedded':False,'sourceContinuationAvailable':True},indent=2)+'\n')
 allfiles=files();assert not any(p.suffix=='.zip' for p in allfiles),'unexpected nested archive'
 with zipfile.ZipFile(OUT,'w',zipfile.ZIP_DEFLATED,compresslevel=9) as z:
     for p in allfiles:z.write(p,'JianghuSect_v1.10/'+p.relative_to(ROOT).as_posix())

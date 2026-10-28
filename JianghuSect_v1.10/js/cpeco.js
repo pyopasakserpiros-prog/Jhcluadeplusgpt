@@ -45,7 +45,8 @@
   CPE.scarcity = (W, id) => clamp((CPE.target(W, id) + 2) / (ECO.count(W, id) + 2), 0.5, 2.5);
   CPE.reward = (W, id, n, stockBefore) => {
     const tgt = CPE.target(W, id), stock = stockBefore == null ? ECO.count(W, id) : stockBefore;
-    const sc = clamp((tgt + 2) / (stock + 2), 0.2, 2.5);
+    // Keep a small positive reward, but let severe oversupply reduce payout further.
+    const sc = clamp((tgt + 2) / (stock + 2), 0.05, 2.5);
     return ECO.base(id) * 0.22 * sc * (n == null ? 1 : n);
   };
   const recipeByOutput = (() => { const m = {}; Object.keys(ECO.recipeById).forEach(k => { const r = ECO.recipeById[k]; if (r.outItemId) m[r.outItemId] = r; }); return m; })();
@@ -259,7 +260,7 @@
     const quote=p.kind==='pill'?CPE.priceOf(W,p.key):CPE.gearPrice(W,p.gear || {});
     if(p.price!==quote || (p.kind==='pill' && (!ECO.isPill(p.key) || !ECO.pillInfo(p.key)))) return false;
     const c = CPE.S(W);
-    if (p.kind === 'pill') { if (!ECO.take(W, p.key, 1)) return false; if (!CPE.spend(W, n, p.price, 'ซื้อ' + ECO.name(p.key))) { ECO.add(W, p.key, 1); return false; } n.inv.pills = n.inv.pills || {}; n.inv.pills[p.key] = (n.inv.pills[p.key] || 0) + 1; }
+    if (p.kind === 'pill') { const quality = ECO.pillQuality(W, p.key); if (!ECO.take(W, p.key, 1)) return false; if (!CPE.spend(W, n, p.price, 'ซื้อ' + ECO.name(p.key))) { ECO.add(W, p.key, 1, quality); return false; } ECO.addPersonalPill(n, p.key, quality); }
     else { const i = W.sect.gear.indexOf(p.gear); if (i < 0) return false; if (!CPE.spend(W, n, p.price, 'ซื้อ' + p.gear.nameTh)) return false; W.sect.gear.splice(i, 1); const cur = n.equip[p.gear.slot]; if (cur) W.sect.gear.push(cur); n.equip[p.gear.slot] = p.gear; ST.dirty(n); W.log('gear', n.h.name.given + ' แลกคุณูปการซื้อ「' + p.gear.nameTh + '」จากร้านสำนัก', [n.id]); }
     c.sales++; HC.feel(n, { mood: 1.5 }); AI.mem(W, n, 'ซื้อ' + (p.kind === 'pill' ? ECO.name(p.key) : p.gear.nameTh) + 'ด้วยแต้มคุณูปการ', 0.25); return true;
   };
@@ -417,10 +418,21 @@
     if (e.energyRestore) { s.energy = Math.min(100, s.energy + e.energyRestore); r.msgs.push('คลายเหนื่อย'); } if (e.restRestore) s.rest = Math.min(100, s.rest + e.restRestore);
     return r;
   };
-  const consume = (W, n, key) => { n.inv.pills[key]--; if (n.inv.pills[key] <= 0) delete n.inv.pills[key]; return ECO.applyPill(W, n, key); };
+  const consume = (W, n, key) => { const q = (n.inv.pillQuality && n.inv.pillQuality[key]) || 1; n.inv.pills[key]--; if (n.inv.pills[key] <= 0) { delete n.inv.pills[key]; if (n.inv.pillQuality) delete n.inv.pillQuality[key]; } return ECO.applyQualityPill(W, n, key, q); };
   const firstOf = (n, list) => list.find(k => n.inv && n.inv.pills && n.inv.pills[k] > 0);
+  CPE.consumeCrafted = (W, n, p) => {
+    const list = n.inv && n.inv.craftedPills, i = list && list.indexOf(p); if (i == null || i < 0 || p.intent !== 'keep' || !(p.qty > 0)) return null;
+    const result = ECO.applyQualityPill(W, n, p.key, p.q); if (!result) return null;
+    if (--p.qty <= 0) list.splice(i, 1); return result;
+  };
+  function pickCrafted(n, effect) { return (n.inv && n.inv.craftedPills || []).find(p => p.intent === 'keep' && p.qty > 0 && ECO.pillInfo(p.key)?.effect[effect]); }
   CPE.autoUse = (W, n) => {
-    if (n.dead || !n.inv || !n.inv.pills || !Object.keys(n.inv.pills).length || (n.act && n.act.id === 'fight')) return; const s = n.h.state, R = JD.CP.RECOVERY, hm = CULT.hpMax(n);
+    if (n.dead || !n.inv || (n.act && n.act.id === 'fight')) return;
+    if (!(n.inv.craftedPills && n.inv.craftedPills.length) && !(n.inv.pills && Object.keys(n.inv.pills).length)) return;
+    const s = n.h.state, R = JD.CP.RECOVERY, hm = CULT.hpMax(n);
+    const owned = s.hp < hm * 0.5 && pickCrafted(n, 'healHealth') || n.cult && n.cult.toxic > 40 && pickCrafted(n, 'clearToxic') || s.heartDemon > 45 && pickCrafted(n, 'clearHeartDemon') || s.energy < 18 && pickCrafted(n, 'energyRestore');
+    if (owned) return CPE.consumeCrafted(W, n, owned);
+    if (!n.inv.pills || !Object.keys(n.inv.pills).length) return;
     let k;
     if (n.inj && n.inj.length && (k = firstOf(n, R.wound))) return consume(W, n, k);
     if (s.hp < hm * 0.5 && (k = firstOf(n, R.hp))) return consume(W, n, k);
@@ -429,14 +441,39 @@
     if (s.energy < 18 && (k = firstOf(n, R.vigor))) return consume(W, n, k);
   };
   CPE.fightUse = (W, n, ctx) => {
-    if (!n.inv || !n.inv.pills || (ctx.pillAt || 0) > W.t) return false; const s = n.h.state, R = JD.CP.RECOVERY; let k;
+    if (!n.inv || (ctx.pillAt || 0) > W.t) return false; const s = n.h.state, R = JD.CP.RECOVERY; let k;
+    const owned = s.hp < CULT.hpMax(n) * 0.38 && pickCrafted(n, 'healHealth') || n.cult && s.qi != null && s.qi < CULT.qiMax(n) * 0.2 && pickCrafted(n, 'qiRestore');
+    if (owned && CPE.consumeCrafted(W, n, owned)) { ctx.pillAt = W.t + 6; n.fx = {t:W.t,text:'💊'}; return true; }
+    if (!n.inv.pills) return false;
     if (s.hp < CULT.hpMax(n) * 0.38 && (k = firstOf(n, R.hp))) { ctx.pillAt = W.t + 6; consume(W, n, k); n.fx = { t: W.t, text: '💊' }; return true; }
     if (n.cult && s.qi != null && s.qi < CULT.qiMax(n) * 0.2 && (k = firstOf(n, R.qi))) { ctx.pillAt = W.t + 6; consume(W, n, k); n.fx = { t: W.t, text: '💊' }; return true; }
     return false;
   };
+  // Only the master, treasury elder, or an explicitly recorded acting officer
+  // may make allocations. Temporary absences never permanently change posts.
+  CPE.welfareOfficer = W => {
+    const S = W.sect, available = n => !!n && !n.dead && !n.away && !n.exiled && !n.sealed && !n.sealedBt && !(n.jail > W.t);
+    const elder = SECT.holder(W, 'treasury'), master = W.byId[S.masterId], deputy = W.byId[S.deputyId];
+    const eligible = W.npcs.filter(n => available(n) && n.rank >= 1);
+    const best = list => list.sort((a,b) => SECT.relevance('treasury', b) - SECT.relevance('treasury', a) || a.id.localeCompare(b.id))[0];
+    let officer, role, acting = false;
+    if (available(elder)) { officer = elder; role = 'treasury'; }
+    else if (elder && (officer = best(eligible.filter(n => n.assist === 'treasury')))) { role = 'acting_treasury'; acting = true; }
+    else if (available(master)) { officer = master; role = 'master'; }
+    else if (available(deputy)) { officer = deputy; role = 'acting_master'; acting = true; }
+    else if ((officer = best(eligible.filter(n => n.assist === 'treasury')) || best(eligible))) { role = 'acting_treasury'; acting = true; }
+    else { role = 'unavailable'; acting = false; }
+    const id = officer ? officer.id : null, previous = S.welfareAuthority;
+    if (!previous || previous.id !== id || previous.role !== role) {
+      S.welfareAuthority = { id, role, acting, since: W.day };
+      if (officer) W.log('appoint', officer.h.name.given + (acting ? ' รับหน้าที่รักษาการดูแลการแจกจ่ายโอสถ' : ' รับผิดชอบการแจกจ่ายโอสถ'), [id]);
+      else if (previous && previous.id) W.log('appoint', 'ไม่มีผู้มีสิทธิ์ดูแลการแจกจ่ายโอสถชั่วคราว', []);
+    }
+    return officer || null;
+  };
   CPE.welfareDaily = W => {
     if (g.SECT && g.SECT.ensureDirectives) g.SECT.ensureDirectives(W);
-    const S = W.sect, c = CPE.S(W), tr = SECT.holder(W, 'treasury') || W.byId[S.masterId], R = JD.CP.RECOVERY;
+    const S = W.sect, c = CPE.S(W), tr = CPE.welfareOfficer(W), R = JD.CP.RECOVERY;
     if (!tr) return;
     const mer = S.policy.meritocracy / 100;
     const trIntegrity = E(tr, 'personality.integrity');
@@ -458,8 +495,8 @@
       if (!k) return false;
       n.inv.pills = n.inv.pills || {};
       if (n.inv.pills[k] >= 2) return false;
-      ECO.take(W, k, 1);
-      n.inv.pills[k] = (n.inv.pills[k] || 0) + 1;
+      const quality = ECO.pillQuality(W, k); ECO.take(W, k, 1);
+      ECO.addPersonalPill(n, k, quality);
       given++;
       recipients.push({ id: n.id, name: n.h.name.given, item: k, needScore: Math.round(needScore), biasScore: Math.round(relScore) });
       return true;
@@ -547,6 +584,8 @@
         day: W.day,
         treasurerId: tr.id,
         treasurerName: tr.h.name.given,
+        acting: S.welfareAuthority.acting,
+        authorityRole: S.welfareAuthority.role,
         meritocracy: Math.round(mer * 100),
         given,
         recipients,
@@ -590,6 +629,50 @@
     const pMod = CPE.S(W).price > 1.2 ? 1 / Math.pow(CPE.S(W).price, 0.5) : 1;
     W.npcs.forEach(n => { if (n.dead || n.exiled) return; CPE.mint(W, n, (pay[n.rank] || 10) * (n.post ? 1.25 : 1) * (0.9 + W.sect.policy.generosity / 500) * pMod, 'เบี้ยหวัดคุณูปการ', true); });
     return paid;
+  };
+  // Individual artisans use their own ingredients first and pay for any missing stock.
+  function personalCraftChoice(W, n) {
+    if (!n.inv || !n.cult || n.dead || n.away || n.h.state.energy < 20) return null;
+    if ((n.inv.craftedPills || []).length >= 3 || (!(n.inv.recipes && n.inv.recipes.length) && !(n.recipes && n.recipes.length))) return null;
+    const ids = Array.from(new Set([...(n.inv.recipes || []), ...(n.recipes || [])]));
+    let best = null;
+    for (const id of ids) {
+      const r = ECO.recipeById[id]; if (!r || r.craft !== 'ALCHEMY' || r.outType !== 'PILL') continue;
+      const quote = ECO.personalCraftQuote(W, n, r); if (!quote || !quote.owned.length) continue;
+      const key = r.outItemId || 'P:' + r.id, info = ECO.pillInfo(key); if (!info) continue;
+      const need = n.h.state.hp < CULT.hpMax(n) * 0.75 && info.effect.healHealth || n.cult.toxic > 25 && info.effect.clearToxic || n.h.state.heartDemon > 30 && info.effect.clearHeartDemon;
+      const intent = need ? 'keep' : 'donate';
+      const value = Math.min(CPE.reward(W, key, r.yield || 1), quote.cost + quote.ownValue * 1.2);
+      if (!need && value <= quote.cost) continue;
+      const score = need ? 1.8 : 0.8 + Math.min(0.9, (value - quote.cost) / 40);
+      if (!best || score > best.score) best = { r, intent, score };
+    }
+    return best;
+  }
+  A.personalBrew = {
+    nameTh: 'ปรุงโอสถส่วนตัว', icon: '⚗️', color: '#8ad7ae',
+    can: (n, W) => !!personalCraftChoice(W, n),
+    score(n, W, S) { const c = personalCraftChoice(W,n); if (c) S.add('ผลิตโอสถจากวัตถุดิบส่วนตัว', c.score); },
+    where(W,n) { const c = personalCraftChoice(W,n), st = c && AI.freeStation(W,n,'cauldron','alchemy'); return st ? { st, rid:c.r.id, intent:c.intent } : null; },
+    start(n,W,ctx) { return !!ECO.personalCraftQuote(W,n,ECO.recipeById[ctx.rid]); },
+    dur(n,W,ctx) { const r=ECO.recipeById[ctx.rid]; return r ? Math.round(ECO.craftHours(r,n.h.skills.ALCHEMY||0)*60) : 0; },
+    tick(n) { n.h.state.energy=Math.max(0,n.h.state.energy-0.04); },
+    done(n,W,ctx) { const out=ECO.personalCraft(W,n,ECO.recipeById[ctx.rid],ctx.intent); if(out.ok) W.log('craft',n.h.name.given+' ปรุงโอสถส่วนตัวสำเร็จ (คุณภาพ '+Math.round(out.product.q*100)+'%)',[n.id]); }
+  };
+  A.personalPillDonation = {
+    nameTh:'บริจาคโอสถส่วนตัว',icon:'🎁',color:'#c6a4f5',
+    can:n => !!(n.inv && (n.inv.craftedPills||[]).some(p=>p.intent==='donate')),
+    score(n,W,S) { S.add('นำโอสถที่ผลิตไปบริจาค',1.8); },
+    where(W,n) { const st=AI.freeStation(W,n,'browse','market') || AI.freeStation(W,n,'desk','treasury'); return st ? {st} : null; },
+    dur:()=>20,
+    done(n,W) { for (const p of [...(n.inv.craftedPills||[])]) if(p.intent==='donate') { const result=ECO.donatePersonalProduct(W,n,p.id); if(result.ok) W.log('finance',n.h.name.given+' บริจาคโอสถส่วนตัว ได้ '+Math.round(result.reward)+' คป.',[n.id]); } }
+  };
+  A.personalPillUse = {
+    nameTh:'ใช้โอสถส่วนตัว',icon:'💊',color:'#7fd1b9',
+    can(n) { return !!(n.inv && (n.inv.craftedPills||[]).some(p=>p.intent==='keep' && ECO.pillInfo(p.key)?.effect.healHealth) && n.h.state.hp < CULT.hpMax(n)*0.8); },
+    score(n,W,S) { S.add('บาดเจ็บและมีโอสถส่วนตัว',2.4); },
+    where(W,n) { return {pos:{x:n.x,y:n.y}}; },dur:()=>1,
+    done(n,W) { const list=n.inv.craftedPills||[], i=list.findIndex(p=>p.intent==='keep' && ECO.pillInfo(p.key)?.effect.healHealth); if(i<0)return; CPE.consumeCrafted(W,n,list[i]); }
   };
   g.CPE = CPE;
   if (typeof module === 'object' && module.exports) module.exports = CPE;

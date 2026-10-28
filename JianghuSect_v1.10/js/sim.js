@@ -115,7 +115,9 @@
       if (n.away) continue;
       AI.step(W, n);
     }
+    if (g.WILD) g.WILD.tick(W);
     if (W.foes.length) EXPED.raidTick(W);
+    if (g.WILD) g.WILD.clampCombat(W);
     COMBAT.tick(W);
     if (W.t % 60 === 0) SIM.hourly(W);
   };
@@ -256,7 +258,7 @@
   /* ---------- บันทึก/โหลด ---------- */
   SIM.serialize = W => {
     const M = W.map;
-    const snap = { ...(W._saveExtras || {}), v: SIM.VERSION, runtimeTiming: W.runtimeTiming, hc: HC.FINGERPRINT, seed: W.seed, t: W.t, speed: W.speed, rng: W.rng.getState(), seqN: W.seqN, logSeq: W.logSeq, deaths: W.deaths, avgSat: W.avgSat, avgMood: W.avgMood, weather: W.weather, market: W.market, sect: W.sect, world: W.world, threat: W.threat, explore: W.explore, npcs: W.npcs, graveyard: W.graveyard, gone: W.gone, logs: W.logs.slice(-600), duelQueue: W.duelQueue, fights: W.fights, foes: W.foes, foeSeq: W.foeSeq, fightSeq: W.fightSeq,
+    const snap = { ...(W._saveExtras || {}), wildlife: W.wildlife, v: SIM.VERSION, runtimeTiming: W.runtimeTiming, hc: HC.FINGERPRINT, seed: W.seed, t: W.t, speed: W.speed, rng: W.rng.getState(), seqN: W.seqN, logSeq: W.logSeq, deaths: W.deaths, avgSat: W.avgSat, avgMood: W.avgMood, weather: W.weather, market: W.market, sect: W.sect, world: W.world, threat: W.threat, explore: W.explore, npcs: W.npcs, graveyard: W.graveyard, gone: W.gone, logs: W.logs.slice(-600), duelQueue: W.duelQueue, fights: W.fights, foes: W.foes, foeSeq: W.foeSeq, fightSeq: W.fightSeq,
       map: { extra: M.extraSt || [], buildings: M.buildings.map(b => ({ id: b.id, level: b.level, hp: b.hp, building: b.building || null })) } };
     return JSON.stringify(snap, (k, v) => (k[0] === '_' && k !== '_ver') ? undefined : v);
   };
@@ -288,6 +290,8 @@
       // เริ่มจากโลกเปล่า แล้วทับสถานะ
       W.rng.setState(s.rng); W.t = s.t; if (g.STATS) g.STATS.now = W.t; W.day = Math.floor(W.t / 1440); W.season = SIM.calendar(W.t).season; HC.nowDay = W.day; W.speed = s.speed == null ? 1 : s.speed; W.seqN = s.seqN; W.logSeq = s.logSeq; W.deaths = s.deaths; W.avgSat = s.avgSat; W.avgMood = s.avgMood; W.weather = s.weather; W.market = s.market; W.sect = s.sect; W.world = s.world; W.threat = s.threat; if (s.explore) W.explore = s.explore; W.graveyard = s.graveyard; W.gone = s.gone; W.logs = s.logs; W.duelQueue = s.duelQueue || []; W.fights = s.fights || []; W.foes = s.foes || []; W.foeSeq = s.foeSeq; W.fightSeq = s.fightSeq;
       W.foeById = {}; W.foes.forEach(u => W.foeById[u.id] = u);
+      W.wildlife = s.wildlife || {seq:0,beasts:[],kills:0};
+      W.wildlife.beasts = W.wildlife.beasts.map(b => W.foeById[b.id] || b);
       W.npcs = s.npcs; W.byId = {}; W.npcs.forEach(n => { W.byId[n.id] = n; });
       // แผนที่: ใส่ระดับอาคาร + สถานีที่ขยาย
       const M = W.map; M.extraSt = [];
@@ -300,7 +304,7 @@
       W.npcs.forEach(n => { n.px = n.x; n.py = n.y; if (n.bed != null && M.stations[n.bed]) M.stations[n.bed].owner = n.id; if (n.act && n.act.st != null && M.stations[n.act.st]) { M.stations[n.act.st].occ = n.id; if (M.stations[n.act.st].inside && n.hidden) { M.buildings[M.stations[n.act.st].bid].inside.push(n.id); } } });
       W.log = (type, text, ids) => SIM.log(W, type, text, ids); W.fame = v => { W.sect.fame = Math.max(0, (W.sect.fame || 0) + v); }; W.makeNpc = o => SIM.addNpc(W, o);
       // Preserve unknown top-level extension data; never silently discard future metadata.
-      const knownKeys = new Set(['v','hc','seed','t','speed','rng','seqN','logSeq','deaths','avgSat','avgMood','weather','market','sect','world','threat','explore','npcs','graveyard','gone','logs','duelQueue','fights','foes','foeSeq','fightSeq','map','runtimeTiming']);
+      const knownKeys = new Set(['v','hc','seed','t','speed','rng','seqN','logSeq','deaths','avgSat','avgMood','weather','market','sect','world','threat','explore','npcs','graveyard','gone','logs','duelQueue','fights','foes','foeSeq','fightSeq','map','runtimeTiming','wildlife']);
       W._saveExtras = Object.fromEntries(Object.entries(s).filter(([k]) => !knownKeys.has(k)));
       if (s.runtimeTiming) W.runtimeTiming = s.runtimeTiming;
       const legacyContent = !s.sect.contentVersion;

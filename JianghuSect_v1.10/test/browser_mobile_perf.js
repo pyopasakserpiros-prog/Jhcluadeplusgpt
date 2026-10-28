@@ -308,15 +308,20 @@ const { chromium } = require('playwright');
       SIM.placeNear(G.W, n, pl.x + pl.w / 2, pl.y + pl.h / 2, 14);
       n.act.left = G.W.seqN % 45;
     }
+    const initialPopulation = G.W.npcs.filter(n => !n.dead).length;
+    // Natural deaths may occur during this real simulation; track minimum population.
+    let minPopulation = initialPopulation;
     // Warm up 120 ticks so all 80 NPCs are distributed across stations and paths
     for (let i = 0; i < 120; i++) SIM.tick(G.W);
 
+    minPopulation = Math.min(minPopulation, G.W.npcs.filter(n => !n.dead).length);
     // Measure raw synchronous tick throughput over 720 ticks (12 game hours)
     const t0 = performance.now();
     let maxTickMs = 0;
     for (let i = 0; i < 720; i++) {
       const s0 = performance.now();
       SIM.tick(G.W);
+      if ((i + 1) % 60 === 0) minPopulation = Math.min(minPopulation, G.W.npcs.filter(n => !n.dead).length);
       const dt = performance.now() - s0;
       if (dt > maxTickMs) maxTickMs = dt;
     }
@@ -351,6 +356,7 @@ const { chromium } = require('playwright');
     G.speed = 1;
     return {
       population: G.W.npcs.filter(n => !n.dead).length,
+      initialPopulation, minPopulation,
       avgMsPerTick: Math.round(avgMsPerTick * 1000) / 1000,
       maxTickMs: Math.round(maxTickMs * 100) / 100,
       maxSustainableTicksPerSec: Math.round(1000 / avgMsPerTick),
@@ -359,7 +365,8 @@ const { chromium } = require('playwright');
     };
   });
 
-  assert.strictEqual(largePopBench.population, 80, 'Large population stress test must have 80 alive NPCs');
+  assert.strictEqual(largePopBench.initialPopulation, 80, 'Large population stress test must start with 80 alive NPCs');
+  assert(largePopBench.minPopulation >= 76, `At least 95% of the initial 80 NPCs must remain alive during the measured workload, got ${largePopBench.minPopulation}`);
   assert(largePopBench.avgMsPerTick < 3.0, `80-NPC avgMsPerTick in headless Chromium must be < 3.0ms (48x budget), got ${largePopBench.avgMsPerTick}ms`);
   assert(largePopBench.maxSustainableTicksPerSec >= 300, `80-NPC max sustainable ticks/s in headless Chromium must be >= 300, got ${largePopBench.maxSustainableTicksPerSec}`);
   assert.strictEqual(pageErrors.length, 0, 'Zero page errors allowed: ' + pageErrors.join('; '));

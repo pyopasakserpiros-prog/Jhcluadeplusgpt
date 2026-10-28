@@ -58,8 +58,8 @@
       "targetTicksPerSec": 4,
       "measuredTicksPerSec": 4,
       "completedTicks": 2,
-      "fps": 60,
-      "pendingTicks": 0.4
+      "fps": 59.9,
+      "pendingTicks": 0.47
     },
     "2x": {
       "speed": 2,
@@ -67,7 +67,7 @@
       "measuredTicksPerSec": 8,
       "completedTicks": 4,
       "fps": 60,
-      "pendingTicks": 0.93
+      "pendingTicks": 0.8
     },
     "4x": {
       "speed": 4,
@@ -82,55 +82,57 @@
       "targetTicksPerSec": 32,
       "measuredTicksPerSec": 32,
       "completedTicks": 19,
-      "fps": 60.1,
-      "pendingTicks": 0.73
+      "fps": 60,
+      "pendingTicks": 0.2
     },
     "16x": {
       "speed": 16,
       "targetTicksPerSec": 64,
-      "measuredTicksPerSec": 64.1,
+      "measuredTicksPerSec": 64,
       "completedTicks": 39,
-      "fps": 60.1,
+      "fps": 60,
       "pendingTicks": 0.47
     },
     "32x": {
       "speed": 32,
       "targetTicksPerSec": 128,
-      "measuredTicksPerSec": 128.8,
-      "completedTicks": 78,
-      "fps": 60.4,
-      "pendingTicks": 0.94
+      "measuredTicksPerSec": 127.9,
+      "completedTicks": 76,
+      "fps": 60,
+      "pendingTicks": 0.8
     },
     "48x": {
       "speed": 48,
       "targetTicksPerSec": 192,
       "measuredTicksPerSec": 192,
-      "completedTicks": 118,
+      "completedTicks": 115,
       "fps": 60,
-      "pendingTicks": 0.41
+      "pendingTicks": 0.2
     }
   },
   "largePopBench": {
     "population": 80,
-    "avgMsPerTick": 0.508,
-    "maxTickMs": 19.6,
-    "maxSustainableTicksPerSec": 1970,
-    "maxSustainableSpeedMultiplier": 492.6,
+    "initialPopulation": 80,
+    "minPopulation": 80,
+    "avgMsPerTick": 0.707,
+    "maxTickMs": 23.2,
+    "maxSustainableTicksPerSec": 1414,
+    "maxSustainableSpeedMultiplier": 353.5,
     "liveSpeeds": {
       "16x": {
-        "measuredTicksPerSec": 65,
-        "fps": 58.3,
-        "pendingTicks": 0.47
+        "measuredTicksPerSec": 65.3,
+        "fps": 60.4,
+        "pendingTicks": 0.54
       },
       "32x": {
-        "measuredTicksPerSec": 123,
-        "fps": 56.6,
-        "pendingTicks": 0.79
+        "measuredTicksPerSec": 125.8,
+        "fps": 59.7,
+        "pendingTicks": 0.94
       },
       "48x": {
-        "measuredTicksPerSec": 188.8,
-        "fps": 57.5,
-        "pendingTicks": 0.22
+        "measuredTicksPerSec": 190.7,
+        "fps": 59.7,
+        "pendingTicks": 0.18
       }
     }
   },
