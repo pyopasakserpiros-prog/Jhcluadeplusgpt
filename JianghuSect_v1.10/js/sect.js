@@ -343,28 +343,166 @@
     W.sect.sealedUntil = W.t + d * 1440; m.sealed = true; m.sealEnd = W.sect.sealedUntil;
     W.log('decision', m.h.name.given + ' ปิดด่านเพื่อทะลวงขั้น ' + d + ' วัน รองเจ้าสำนักและผู้อาวุโสดูแลกิจการ', [m.id]);
   };
+  const ACT_TO_BLD = {
+    sleep: 'dorm_outer',
+    cultivate: 'meditation_hall',
+    meditate: 'meditation_hall',
+    brew: 'alchemy',
+    brewBasic: 'alchemy',
+    personalBrew: 'alchemy',
+    forge: 'forge',
+    farm: 'farm',
+    mine: 'mine',
+    eat: 'canteen',
+    cook: 'canteen',
+    read: 'scripture',
+    study: 'scripture',
+    guidedStudy: 'scripture',
+    heal: 'infirmary',
+    treat: 'infirmary',
+    practice: 'training_ground',
+    spar: 'training_ground',
+    train: 'training_ground',
+    shop: 'market',
+    browse: 'market'
+  };
+
+  SECT.ensureFacilityDemand = W => {
+    const S = W.sect;
+    if (!S) return null;
+    if (!S.facilityDemand) S.facilityDemand = {};
+    if (W.map && W.map.buildings) {
+      W.map.buildings.forEach(b => {
+        if (!S.facilityDemand[b.id]) {
+          S.facilityDemand[b.id] = {
+            failedAttempts: 0,
+            unmetDemands: 0,
+            congestedHours: 0,
+            consecutiveCongestionDays: 0,
+            lastCongestionHour: 0,
+            occupancyHistory: [],
+            lastEvaluatedDay: 0,
+            lastUpgradedDay: 0
+          };
+        }
+      });
+    }
+    return S.facilityDemand;
+  };
+
+  SECT.recordFacilityDemand = (W, bldOrAct, reason, npc) => {
+    SECT.ensureFacilityDemand(W);
+    let bid = ACT_TO_BLD[bldOrAct] || bldOrAct;
+    if (npc && bldOrAct === 'sleep') {
+      bid = npc.rank >= 4 ? 'dorm_core' : npc.rank >= 2 ? 'dorm_inner' : 'dorm_outer';
+    }
+    const b = W.map && W.map.byId && W.map.byId[bid];
+    if (!b) return;
+    const fd = W.sect.facilityDemand[bid];
+    if (!fd) return;
+    fd.failedAttempts = (fd.failedAttempts || 0) + 1;
+    fd.unmetDemands = (fd.unmetDemands || 0) + 1;
+    fd.lastCongestionHour = W.t;
+  };
+
   SECT.upgradeBuilding = (W, m) => {
-    const pop = W.npcs.filter(n => !n.dead).length;
-    const wants = ['dorm_outer', 'meditation_hall', 'alchemy', 'forge', 'herb_garden', 'farm', 'mine', 'canteen', 'infirmary', 'training_ground'];
-    let best = null, bs = -1;
+    SECT.ensureFacilityDemand(W);
+    const S = W.sect, pol = S.policy, pop = W.npcs.filter(n => !n.dead).length;
+    const cashReserve = Math.max(500, pop * 25) + 800;
+    const wants = ['dorm_outer', 'meditation_hall', 'alchemy', 'forge', 'herb_garden', 'farm', 'mine', 'canteen', 'infirmary', 'training_ground', 'dorm_inner', 'dorm_core', 'scripture'];
+
+    // ป้องกันคำสั่งซ้ำซ้อน: หากมีอาคารใดกำลังก่อสร้างอยู่ ให้ชะลอการสั่งก่อสร้างเพิ่ม
+    const underConstruction = wants.some(id => W.map.byId[id] && W.map.byId[id].building);
+    if (underConstruction) return;
+
+    let best = null, bs = -1, bestBlockedByTreasury = null;
+
     wants.forEach(id => {
-      const b = W.map.byId[id]; if (b.level >= 3) return;
+      const b = W.map.byId[id];
+      if (!b || b.level >= 3 || b.building) return;
+
+      const fd = S.facilityDemand[id] || {};
+      // Cooldown ป้องกัน expansion loop
+      if (W.day - (fd.lastUpgradedDay || 0) < 20) return;
+
       const cost = 600 * b.level * b.level;
-      if (W.sect.stones < cost + 800) return;
-      let s = W.rng.next() * .2;
-      if (id === 'dorm_outer' && pop > b.stations.length * 0.9) s += 1;
-      if (id === 'meditation_hall') s += W.sect.policy.focus.martial * .6 + .25;
-      if (id === 'alchemy') s += HC.eff(m, 'interests.alchemy') / 150;
-      if (id === 'forge') s += HC.eff(m, 'interests.forging') / 150;
-      if (id === 'farm' && ECO.count(W, 'grain') + ECO.count(W, 'meal') / 3 < pop * 3) s += .9;
-      if (id === 'mine') s += W.sect.policy.focus.commerce * .6;
-      if (id === 'training_ground') s += W.sect.policy.focus.martial * .5;
-      if (s > bs) { bs = s; best = { id, b, cost }; }
+      let s = W.rng.next() * 0.15;
+      let reasons = [];
+
+      // 1. ตรวจสอบความต้องการจริงจากการใช้งานล้น / หาจุดใช้งานไม่ได้
+      if (fd.failedAttempts >= 2) {
+        s += Math.min(1.6, fd.failedAttempts * 0.3);
+        reasons.push('หาสถานีไม่ได้ ' + fd.failedAttempts + ' ครั้ง');
+      }
+      if (fd.unmetDemands >= 2) {
+        s += Math.min(1.2, fd.unmetDemands * 0.25);
+        reasons.push('ความต้องการไม่ได้รับการตอบสนอง ' + fd.unmetDemands + ' ครั้ง');
+      }
+      if (fd.congestedHours >= 3) {
+        s += Math.min(1.4, fd.congestedHours * 0.15);
+        reasons.push('แออัดต่อเนื่อง ' + fd.congestedHours + ' ชม.');
+      }
+
+      // 2. เงื่อนไขโครงสร้างเฉพาะอาคาร
+      if (id === 'dorm_outer') {
+        const dormStations = b.stations.length;
+        if (pop > dormStations * 0.85) {
+          s += 1.2 + (pop - dormStations) * 0.1;
+          reasons.push('สมาชิกเกินความจุเตียงพัก');
+        }
+      } else if (id === 'farm') {
+        const food = ECO.count(W, 'grain') + ECO.count(W, 'meal') / 3;
+        if (food < pop * 3) {
+          s += 1.1 + (pop * 3 - food) * 0.05;
+          reasons.push('เสบียงอาหารมีไม่พอ');
+        }
+      } else if (id === 'meditation_hall') {
+        s += (pol.focus.martial || 0) * 0.5;
+      } else if (id === 'alchemy') {
+        s += (pol.focus.craft || 0) * 0.4 + HC.eff(m, 'interests.alchemy') / 180;
+      } else if (id === 'forge') {
+        s += (pol.focus.craft || 0) * 0.4 + HC.eff(m, 'interests.forging') / 180;
+      } else if (id === 'mine') {
+        s += (pol.focus.commerce || 0) * 0.5;
+      } else if (id === 'training_ground') {
+        s += (pol.focus.martial || 0) * 0.45;
+      }
+
+      // นโยบายขยายสำนักส่งเสริมการขยายอาคาร
+      s *= (0.7 + (pol.expansion || 50) / 100 * 0.6);
+
+      // กฎเหล็ก: หากไม่มีสัญญาณความต้องการจริง ไม่สร้างแบบสุ่ม
+      const hasRealDemand = fd.failedAttempts >= 2 || fd.congestedHours >= 3 || (id === 'dorm_outer' && pop > b.stations.length * 0.85) || (id === 'farm' && (ECO.count(W, 'grain') + ECO.count(W, 'meal') / 3) < pop * 3);
+      if (!hasRealDemand) return;
+
+      if (s > bs) {
+        const rText = reasons.length ? reasons.join('、') : 'ความต้องการใช้งานเพิ่มขึ้น';
+        if (W.sect.stones < cost + cashReserve) {
+          bestBlockedByTreasury = { id, b, cost, reason: rText, needed: cost + cashReserve };
+        } else {
+          bs = s;
+          best = { id, b, cost, reason: rText };
+        }
+      }
     });
-    if (!best) return;
+
+    if (!best) {
+      if (bestBlockedByTreasury && W.rng.chance(0.4)) {
+        W.log('decision', m.h.name.given + ' ชะลอการขยาย' + bestBlockedByTreasury.b.nameTh + ' แม้พบความต้องการสูง (' + bestBlockedByTreasury.reason + ') เนื่องจากต้องสำรองศิลาคงคลังขั้นต่ำ ' + cashReserve + ' ศิลา (ปัจจุบันมี ' + Math.round(W.sect.stones) + ' ศิลา ต้องการ ' + bestBlockedByTreasury.needed + ' ศิลา)', [m.id]);
+      }
+      return;
+    }
+
     if (!ECO.pay(W, best.cost, 'ขยาย' + best.b.nameTh)) return;
     best.b.building = { until: W.t + 8 * 1440, to: best.b.level + 1 };
-    W.log('decision', m.h.name.given + ' สั่งขยาย' + best.b.nameTh + ' เป็นระดับ ' + (best.b.level + 1) + ' (ใช้ ' + best.cost + ' ศิลา ใช้เวลา 8 วัน)', [m.id]);
+    const fd = S.facilityDemand[best.id];
+    if (fd) {
+      fd.lastUpgradedDay = W.day;
+      fd.failedAttempts = 0;
+      fd.unmetDemands = 0;
+      fd.congestedHours = 0;
+    }
+    W.log('decision', m.h.name.given + ' อนุมัติขยาย' + best.b.nameTh + ' เป็นระดับ ' + (best.b.level + 1) + ' (ใช้ ' + best.cost + ' ศิลา) หลังพบความแออัดต่อเนื่อง (' + best.reason + ')', [m.id]);
   };
   SECT.startResearch = (W, m) => {
     const S = W.sect; if (S.research) return;

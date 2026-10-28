@@ -13,7 +13,10 @@
 
   CPE.S = W => {
     const S = W.sect;
-    if (!S.cp) S.cp = { minted: 0, burned: 0, price: 1, markup: 1, welfare: 0.5, log: [], dayMint: 0, dayBurn: 0, welfareGiven: 0, donated: 0, sales: 0, techSales: 0, studyFees: 0, studyServices: 0, trainingFees: 0, trainingServices: 0, recipeFees: 0, recipeAuthorizations: 0, freeLib: S.library ? S.library.filter(id => { const t = CULT.tech(id); return t && t.tier <= 1; }) : [], hist: [] };
+    if (!S.cp) S.cp = { minted: 0, burned: 0, circulation: 0, retired: 0, arbitrageBlocked: 0, price: 1, markup: 1, welfare: 0.5, log: [], dayMint: 0, dayBurn: 0, welfareGiven: 0, donated: 0, sales: 0, techSales: 0, studyFees: 0, studyServices: 0, trainingFees: 0, trainingServices: 0, recipeFees: 0, recipeAuthorizations: 0, freeLib: S.library ? S.library.filter(id => { const t = CULT.tech(id); return t && t.tier <= 1; }) : [], hist: [] };
+    if (S.cp.circulation == null) S.cp.circulation = 0;
+    if (S.cp.retired == null) S.cp.retired = 0;
+    if (S.cp.arbitrageBlocked == null) S.cp.arbitrageBlocked = 0;
     if (S.cp.studyFees == null) S.cp.studyFees = 0;
     if (S.cp.studyServices == null) S.cp.studyServices = 0;
     if (S.cp.trainingFees == null) S.cp.trainingFees = 0;
@@ -22,7 +25,7 @@
     if (S.cp.recipeAuthorizations == null) S.cp.recipeAuthorizations = 0;
     if (!Array.isArray(S.cp.hist)) S.cp.hist = [];
     if (!Array.isArray(S.cp.log)) S.cp.log = [];
-    ['minted', 'burned', 'dayMint', 'dayBurn', 'welfareGiven', 'donated', 'sales', 'techSales', 'recipeFees', 'recipeAuthorizations'].forEach(k => { if (!Number.isFinite(S.cp[k])) S.cp[k] = 0; });
+    ['minted', 'burned', 'circulation', 'retired', 'arbitrageBlocked', 'dayMint', 'dayBurn', 'welfareGiven', 'donated', 'sales', 'techSales', 'recipeFees', 'recipeAuthorizations'].forEach(k => { if (!Number.isFinite(S.cp[k])) S.cp[k] = 0; });
     if (!Number.isFinite(S.cp.price)) S.cp.price = 1;
     if (!Number.isFinite(S.cp.markup)) S.cp.markup = 1;
     return S.cp;
@@ -32,6 +35,17 @@
   const note = (W, text) => { const c = CPE.S(W); c.log.push({ t: W.t, text }); if (c.log.length > 40) c.log.shift(); };
   CPE.mint = (W, n, amt, why, quiet) => { amt = Math.round(amt * 10) / 10; if (!(amt > 0)) return 0; const c = CPE.S(W); n.cp = (n.cp || 0) + amt; c.minted += amt; c.dayMint += amt; n.cpEarned = (n.cpEarned || 0) + amt; if (!quiet && amt >= 30) note(W, n.h.name.given + ' ได้ ' + Math.round(amt) + ' คป. (' + why + ')'); return amt; };
   CPE.spend = (W, n, amt, why) => { if (!Number.isFinite(amt) || amt < 0 || !Number.isFinite(n.cp || 0) || (n.cp || 0) < amt) return false; const c = CPE.S(W); n.cp -= amt; c.burned += amt; c.dayBurn += amt; if (amt >= 40) note(W, n.h.name.given + ' ใช้ ' + Math.round(amt) + ' คป. ' + why); return true; };
+  CPE.retireNpc = (W, n, reason) => {
+    if (!n || !(n.cp > 0)) return 0;
+    const c = CPE.S(W);
+    const amt = Math.round(n.cp * 10) / 10;
+    c.retired = (c.retired || 0) + amt;
+    n.cp = 0;
+    if (amt >= 20) {
+      note(W, (n.h && n.h.name && n.h.name.given || 'สมาชิก') + ' สิ้นสภาพ ปลดเกษียณแต้มคุณูปการ ' + amt + ' คป. (' + (reason || 'ออกจากสำนัก') + ')');
+    }
+    return amt;
+  };
 
   /* ----- ความขาดแคลน/ราคา ----- */
   CPE.target = (W, id) => {
@@ -56,7 +70,7 @@
     if (r) base = Math.max(base, ECO.inputCost(W, r) * 0.45 / (r.yield || 1));
     // ของขาดต้องแพงขึ้น ส่วนของล้นคลังต้องถูกลง — และราคาขายในร้านต้องสูงกว่าค่ารับบริจาคเสมอเพื่อป้องกัน arbitrage
     const raw = Math.round(base * 0.9 * c.price * c.markup * clamp(Math.pow(CPE.scarcity(W, id), 0.5), 0.8, 1.6));
-    const minNoArb = Math.ceil(CPE.reward(W, id, 1) * 1.25) + 1;
+    const minNoArb = Math.ceil(CPE.reward(W, id, 1) * 1.3) + 2;
     return Math.max(2, minNoArb, raw);
   };
   CPE.gearPrice = (W, it) => { const c = CPE.S(W); return Math.max(5, Math.round((it.value || 20 * Math.pow(1.9, (it.tier || 1) - 1)) * 0.9 * (it.q || 1) * clamp((it.dur == null ? 100 : it.dur) / 100, 0.3, 1) * c.price * c.markup)); };
@@ -620,7 +634,8 @@
     const median = balances.length ? balances.slice().sort((a, b) => a - b)[balances.length >> 1] : 0;
     if (avg > tgt * 1.25) c.price = Math.min(4, c.price * 1.004);
     else if (avg < tgt * 0.78) c.price = Math.max(0.6, c.price / 1.0045);
-    c.hist.push({ d: W.day, avg: Math.round(avg), median: Math.round(median), price: Math.round(c.price * 100) / 100, mint: Math.round(c.dayMint), burn: Math.round(c.dayBurn) }); if (c.hist.length > 60) c.hist.shift();
+    c.circulation = Math.round(al.reduce((s, n) => s + (n.cp || 0), 0) * 10) / 10;
+    c.hist.push({ d: W.day, avg: Math.round(avg), median: Math.round(median), price: Math.round(c.price * 100) / 100, mint: Math.round(c.dayMint), burn: Math.round(c.dayBurn), circulation: c.circulation, retired: Math.round(c.retired || 0) }); if (c.hist.length > 60) c.hist.shift();
     c.dayMint = 0; c.dayBurn = 0;
   };
   const oPay = SECT.paySalaries;

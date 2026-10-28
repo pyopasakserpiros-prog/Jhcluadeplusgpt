@@ -46,7 +46,9 @@
   ECO.take = (W, id, n) => {
     if (typeof id !== 'string' || !id || !Number.isFinite(n) || n < 0) return false;
     const have = ECO.count(W, id); if (have < n) return false;
-    if (have > n) W.sect.stock[id] = have - n; else { delete W.sect.stock[id]; if (W.sect.pillQuality) delete W.sect.pillQuality[id]; } return true;
+    if (have > n) W.sect.stock[id] = have - n; else { delete W.sect.stock[id]; if (W.sect.pillQuality) delete W.sect.pillQuality[id]; }
+    if (W.sect && W.sect.stockTracker && n > 0) W.sect.stockTracker.recordUsage(id, n, W.day);
+    return true;
   };
   ECO.pay = (W, amt, why) => { if (W.sect.stones < amt) return false; W.sect.stones -= amt; W.sect.ledger.push({ t: W.t, amt: -amt, why }); trimLedger(W); return true; };
   ECO.earn = (W, amt, why) => { W.sect.stones += amt; W.sect.ledger.push({ t: W.t, amt: +amt, why }); trimLedger(W); };
@@ -242,9 +244,19 @@
     const products = npc.inv && npc.inv.craftedPills, index = products && products.findIndex(p => p.id === id);
     if (index == null || index < 0) return { ok: false };
     const p = products[index], CPE = g.CPE;
-    if (!CPE || !ECO.pillInfo(p.key) || !Number.isFinite(p.qty) || p.qty <= 0 || !Number.isFinite(p.q) || !Number.isFinite(p.purchasedCost) || !Number.isFinite(p.ownValue)) return { ok: false };
-    // Purchased-only loops cannot mint points: only owned inputs earn surplus.
-    const reward = Math.floor(Math.max(0, Math.min(CPE.reward(W, p.key, p.qty) * p.q, p.purchasedCost + p.ownValue * 1.2 * p.q)) * 10) / 10;
+    if (!CPE || !ECO.pillInfo(p.key) || !Number.isFinite(p.qty) || p.qty <= 0 || !Number.isFinite(p.q)) return { ok: false };
+    const purchasedCost = Number.isFinite(p.purchasedCost) ? p.purchasedCost : (Number.isFinite(p.storeBoughtCost) ? p.storeBoughtCost : 0);
+    const ownValue = Number.isFinite(p.ownValue) ? p.ownValue : 0;
+    // Purchased-only loops cannot mint points: pure store-purchased inputs yield strictly < 100% of purchase cost (net negative return).
+    // Only genuine owned ingredients allow surplus contribution value.
+    const maxReward = ownValue > 0
+      ? purchasedCost * 0.9 + ownValue * 1.15 * p.q
+      : purchasedCost * 0.88;
+    const baseReward = CPE.reward(W, p.key, p.qty) * p.q;
+    if ((purchasedCost > 0 || baseReward > maxReward) && CPE.S) {
+      const c = CPE.S(W); c.arbitrageBlocked = (c.arbitrageBlocked || 0) + 1;
+    }
+    const reward = Math.floor(Math.max(0, Math.min(baseReward, maxReward)) * 10) / 10;
     if (!ECO.add(W, p.key, p.qty, p.q)) return { ok: false };
     products.splice(index, 1); if (reward) CPE.mint(W, npc, reward, 'บริจาคโอสถส่วนตัว', true);
     CPE.S(W).donated += reward; return { ok: true, reward };
@@ -399,6 +411,187 @@
     const want = {};
     best.slice(0, 3).forEach(x => { x.r.inputs.forEach(i => { const lack = i.count * 2 - ECO.count(W, i.matId); if (lack > 0) want[i.matId] = Math.max(want[i.matId] || 0, lack); }); });
     return { recipe: top ? top.r : null, why: top ? top.why : '', want };
+  };
+
+  /* ---------- ความฉลาดและการจำแนกสถานะคลัง (Inventory Intelligence) ---------- */
+  ECO.ensureStockTracker = W => {
+    if (!W || !W.sect) return null;
+    if (!W.sect.stockTracker) {
+      W.sect.stockTracker = {
+        history: {},
+        usage: {}
+      };
+    }
+    const st = W.sect.stockTracker;
+    if (!st.history) st.history = {};
+    if (!st.usage) st.usage = {};
+    if (typeof st.recordUsage !== 'function') {
+      st.recordUsage = function(id, qty, day) {
+        if (!id || !Number.isFinite(qty) || qty <= 0) return;
+        const list = this.history[id] = this.history[id] || [];
+        const curDay = Number.isFinite(day) ? day : 0;
+        const existing = list.find(entry => entry.day === curDay);
+        if (existing) existing.qty += qty;
+        else list.push({ day: curDay, qty });
+        if (list.length > 30) list.splice(0, list.length - 30);
+        this.usage[id] = (this.usage[id] || 0) + qty;
+      };
+    }
+    if (typeof st.getRollingUsage !== 'function') {
+      st.getRollingUsage = function(id, days, currentDay) {
+        const list = this.history[id];
+        if (!list || !list.length) return 0;
+        const dCount = Number.isFinite(days) && days > 0 ? days : 14;
+        const cDay = Number.isFinite(currentDay) ? currentDay : 0;
+        const minDay = cDay - dCount;
+        let sum = 0;
+        for (let i = 0; i < list.length; i++) {
+          if (list[i].day >= minDay) sum += list[i].qty;
+        }
+        return sum / dCount;
+      };
+    }
+    return st;
+  };
+
+  ECO.reserveFloor = (W, id) => {
+    const pop = Math.max(1, (W && W.npcs ? W.npcs.filter(n => !n.dead && !n.exiled).length : 1));
+    const rd = W && W.sect && W.sect.reserveDirectives ? W.sect.reserveDirectives : {};
+    if (id === 'grain') return pop * (rd.minGrainDays || 14);
+    if (id === 'meal') return rd.minMealReserve || 20;
+    if (rd.medicine && rd.medicine[id] != null) return rd.medicine[id];
+    if (id.startsWith('P:BASIC_')) return Math.max(2, Math.ceil(pop * 0.1));
+    const m = matById[id];
+    if (m) {
+      const baseTgt = m.tier <= 1 ? 16 : m.tier === 2 ? 9 : m.tier === 3 ? 5 : 3;
+      return Math.max(2, Math.floor(baseTgt * 0.5));
+    }
+    return Math.max(2, Math.floor((g.CPE ? g.CPE.target(W, id) : 8) * 0.5));
+  };
+
+  ECO.inventoryIntelligence = (W, forceRefresh) => {
+    if (!W || !W.sect) {
+      return {
+        evaluatedAt: 0,
+        items: {},
+        shortages: [],
+        shortage: [],
+        reserves: [],
+        reserveRequired: [],
+        balanced: [],
+        surplus: []
+      };
+    }
+    if (!forceRefresh && W.sect.inventoryIntelligence && W.sect.inventoryIntelligence.evaluatedAt === W.day) {
+      return W.sect.inventoryIntelligence;
+    }
+    ECO.ensureStockTracker(W);
+    const tracker = W.sect.stockTracker;
+    const pop = Math.max(1, W.npcs.filter(n => !n.dead && !n.exiled).length);
+    const trackedKeys = new Set(Object.keys(W.sect.stock || {}));
+    ['grain', 'meal', 'P:BASIC_HP', 'P:BASIC_WOUND', 'P:BASIC_DETOX', 'P:BASIC_CALM'].forEach(k => trackedKeys.add(k));
+    (W.sect.buyList || []).forEach(b => { if (b && b.id) trackedKeys.add(b.id); });
+    (W.sect.shortageDirectives || []).forEach(sd => { if (sd && sd.id) trackedKeys.add(sd.id); });
+
+    const items = {}, shortages = [], reserves = [], balanced = [], surplus = [];
+    trackedKeys.forEach(id => {
+      const cur = ECO.count(W, id);
+      const resFloor = ECO.reserveFloor(W, id);
+      const tgt = g.CPE ? g.CPE.target(W, id) : 8;
+      const dailyUsage = tracker ? tracker.getRollingUsage(id, 14, W.day) : 0;
+      const turnover = Math.round((dailyUsage * 30 / Math.max(1, cur)) * 100) / 100;
+
+      let state = 'balanced', reason = '';
+      if (cur < resFloor) {
+        state = 'shortage';
+        const deficit = resFloor - cur;
+        reason = 'ต่ำกว่าเกณฑ์สำรองความปลอดภัย (' + cur + '/' + resFloor + ')';
+        shortages.push({
+          id,
+          nameTh: ECO.name(id),
+          current: cur,
+          stock: cur,
+          reserve: resFloor,
+          floor: resFloor,
+          target: tgt,
+          deficit,
+          turnover,
+          reason
+        });
+      } else if (cur < tgt) {
+        state = 'reserve-required';
+        reason = 'อยู่ในขอบเขตสำรอง ห้ามจำหน่ายภายนอก (' + cur + '/' + tgt + ')';
+        reserves.push({
+          id,
+          nameTh: ECO.name(id),
+          current: cur,
+          stock: cur,
+          reserve: resFloor,
+          floor: resFloor,
+          target: tgt,
+          turnover,
+          reason
+        });
+      } else if (cur > Math.round(tgt * 1.6) + 2) {
+        state = 'surplus';
+        const excess = cur - Math.round(tgt * 1.5);
+        reason = 'มีส่วนเกินพร้อมจำหน่ายภายนอก (ส่วนเกิน ~' + excess + ' หน่วย)';
+        surplus.push({
+          id,
+          nameTh: ECO.name(id),
+          current: cur,
+          stock: cur,
+          reserve: resFloor,
+          floor: resFloor,
+          target: tgt,
+          excess,
+          surplusQty: excess,
+          turnover,
+          reason
+        });
+      } else {
+        state = 'balanced';
+        reason = 'ปริมาณสมดุลตามเกณฑ์ปกติ';
+        balanced.push({
+          id,
+          nameTh: ECO.name(id),
+          current: cur,
+          stock: cur,
+          reserve: resFloor,
+          floor: resFloor,
+          target: tgt,
+          turnover,
+          reason
+        });
+      }
+      items[id] = {
+        id,
+        nameTh: ECO.name(id),
+        state,
+        current: cur,
+        stock: cur,
+        reserve: resFloor,
+        floor: resFloor,
+        target: tgt,
+        turnover,
+        dailyUsage,
+        reason
+      };
+    });
+
+    const report = {
+      evaluatedAt: W.day,
+      items,
+      shortages,
+      shortage: shortages,
+      reserves,
+      reserveRequired: reserves,
+      balanced,
+      surplus,
+      pop
+    };
+    W.sect.inventoryIntelligence = report;
+    return report;
   };
 
   g.ECO = ECO;

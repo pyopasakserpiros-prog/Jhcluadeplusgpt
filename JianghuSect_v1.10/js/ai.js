@@ -80,6 +80,7 @@
       for (const sid of b.stations) { const s = W.map.stations[sid]; if (s.kind === 'bed' && s.owner == null) { s.owner = n.id; n.bed = s.id; return; } }
     }
     n.bed = null;
+    if (g.SECT && g.SECT.recordFacilityDemand) g.SECT.recordFacilityDemand(W, 'dorm_outer', 'no_bed', n);
   };
   AI.freeBed = (W, n) => { if (n.bed != null) { const s = W.map.stations[n.bed]; if (s) s.owner = null; n.bed = null; } };
 
@@ -853,6 +854,7 @@
     W.npcs.forEach(o => { if (o.dead || o === n) return; const r = o.h.mind.relations[n.id]; if (r && (r.a > 40 || r.bond === 'สหาย' || r.bond === 'คนรัก' || r.bond === 'คู่ครอง' || r.bond === 'อาจารย์' || r.bond === 'ศิษย์')) { HC.experience(o, 'lost_loved', clamp(r.a / 70, 0.3, 1.5)); AI.mem(W, o, n.h.name.given + ' เสียชีวิต (' + why + ')', 1, n.id); o.grief = (o.grief || 0) + 4; } else if (o.rank >= 1) HC.experience(o, 'saw_death', 0.2); });
     if (n.id === W.sect.masterId) { SECT.succession(W, 'เจ้าสำนักเสียชีวิต'); }
     if (n.id === W.sect.deputyId) W.sect.deputyId = null;
+    if (g.CPE && g.CPE.retireNpc) g.CPE.retireNpc(W, n, 'เสียชีวิต');
     // ทรัพย์สินกลับสำนัก
     ECO.earn(W, Math.round((n.inv.stones || 0) * 0.5), 'มรดกของ ' + n.h.name.given); n.inv.stones = 0;
     for (const k in (n.inv.pills || {})) ECO.add(W, k, n.inv.pills[k]); n.inv.pills = {};
@@ -917,7 +919,11 @@
       n.lastScores = cands.slice(0, 7).map(x => ({ id: x.id, u: Math.round(x.S.u * 100) / 100 }));
       if (c.id === 'pair') { if (AI.socialStart(W, n)) { n.why = why; return true; } n.cool.pair = W.t + 45; continue; }
       const a = A[c.id]; const w = a.where ? a.where(W, n) : { pos: { x: n.x, y: n.y } };
-      if (!w) { n.cool[c.id] = W.t + 25; continue; }
+      if (!w) {
+        if (g.SECT && g.SECT.recordFacilityDemand) g.SECT.recordFacilityDemand(W, c.id, 'failed_station', n);
+        n.cool[c.id] = W.t + 25;
+        continue;
+      }
       if (AI.begin(W, n, c.id, w, why)) { n.why = why; return true; }
     }
     n.act = { id: 'idle', stage: 'do', left: 20, total: 20, ctx: {}, why: [] };

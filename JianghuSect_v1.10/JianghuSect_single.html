@@ -9496,7 +9496,9 @@ JD.EXPANSION=JD.EXPANSION||data;
   ECO.take = (W, id, n) => {
     if (typeof id !== 'string' || !id || !Number.isFinite(n) || n < 0) return false;
     const have = ECO.count(W, id); if (have < n) return false;
-    if (have > n) W.sect.stock[id] = have - n; else { delete W.sect.stock[id]; if (W.sect.pillQuality) delete W.sect.pillQuality[id]; } return true;
+    if (have > n) W.sect.stock[id] = have - n; else { delete W.sect.stock[id]; if (W.sect.pillQuality) delete W.sect.pillQuality[id]; }
+    if (W.sect && W.sect.stockTracker && n > 0) W.sect.stockTracker.recordUsage(id, n, W.day);
+    return true;
   };
   ECO.pay = (W, amt, why) => { if (W.sect.stones < amt) return false; W.sect.stones -= amt; W.sect.ledger.push({ t: W.t, amt: -amt, why }); trimLedger(W); return true; };
   ECO.earn = (W, amt, why) => { W.sect.stones += amt; W.sect.ledger.push({ t: W.t, amt: +amt, why }); trimLedger(W); };
@@ -9692,9 +9694,19 @@ JD.EXPANSION=JD.EXPANSION||data;
     const products = npc.inv && npc.inv.craftedPills, index = products && products.findIndex(p => p.id === id);
     if (index == null || index < 0) return { ok: false };
     const p = products[index], CPE = g.CPE;
-    if (!CPE || !ECO.pillInfo(p.key) || !Number.isFinite(p.qty) || p.qty <= 0 || !Number.isFinite(p.q) || !Number.isFinite(p.purchasedCost) || !Number.isFinite(p.ownValue)) return { ok: false };
-    // Purchased-only loops cannot mint points: only owned inputs earn surplus.
-    const reward = Math.floor(Math.max(0, Math.min(CPE.reward(W, p.key, p.qty) * p.q, p.purchasedCost + p.ownValue * 1.2 * p.q)) * 10) / 10;
+    if (!CPE || !ECO.pillInfo(p.key) || !Number.isFinite(p.qty) || p.qty <= 0 || !Number.isFinite(p.q)) return { ok: false };
+    const purchasedCost = Number.isFinite(p.purchasedCost) ? p.purchasedCost : (Number.isFinite(p.storeBoughtCost) ? p.storeBoughtCost : 0);
+    const ownValue = Number.isFinite(p.ownValue) ? p.ownValue : 0;
+    // Purchased-only loops cannot mint points: pure store-purchased inputs yield strictly < 100% of purchase cost (net negative return).
+    // Only genuine owned ingredients allow surplus contribution value.
+    const maxReward = ownValue > 0
+      ? purchasedCost * 0.9 + ownValue * 1.15 * p.q
+      : purchasedCost * 0.88;
+    const baseReward = CPE.reward(W, p.key, p.qty) * p.q;
+    if ((purchasedCost > 0 || baseReward > maxReward) && CPE.S) {
+      const c = CPE.S(W); c.arbitrageBlocked = (c.arbitrageBlocked || 0) + 1;
+    }
+    const reward = Math.floor(Math.max(0, Math.min(baseReward, maxReward)) * 10) / 10;
     if (!ECO.add(W, p.key, p.qty, p.q)) return { ok: false };
     products.splice(index, 1); if (reward) CPE.mint(W, npc, reward, 'บริจาคโอสถส่วนตัว', true);
     CPE.S(W).donated += reward; return { ok: true, reward };
@@ -9849,6 +9861,187 @@ JD.EXPANSION=JD.EXPANSION||data;
     const want = {};
     best.slice(0, 3).forEach(x => { x.r.inputs.forEach(i => { const lack = i.count * 2 - ECO.count(W, i.matId); if (lack > 0) want[i.matId] = Math.max(want[i.matId] || 0, lack); }); });
     return { recipe: top ? top.r : null, why: top ? top.why : '', want };
+  };
+
+  /* ---------- ความฉลาดและการจำแนกสถานะคลัง (Inventory Intelligence) ---------- */
+  ECO.ensureStockTracker = W => {
+    if (!W || !W.sect) return null;
+    if (!W.sect.stockTracker) {
+      W.sect.stockTracker = {
+        history: {},
+        usage: {}
+      };
+    }
+    const st = W.sect.stockTracker;
+    if (!st.history) st.history = {};
+    if (!st.usage) st.usage = {};
+    if (typeof st.recordUsage !== 'function') {
+      st.recordUsage = function(id, qty, day) {
+        if (!id || !Number.isFinite(qty) || qty <= 0) return;
+        const list = this.history[id] = this.history[id] || [];
+        const curDay = Number.isFinite(day) ? day : 0;
+        const existing = list.find(entry => entry.day === curDay);
+        if (existing) existing.qty += qty;
+        else list.push({ day: curDay, qty });
+        if (list.length > 30) list.splice(0, list.length - 30);
+        this.usage[id] = (this.usage[id] || 0) + qty;
+      };
+    }
+    if (typeof st.getRollingUsage !== 'function') {
+      st.getRollingUsage = function(id, days, currentDay) {
+        const list = this.history[id];
+        if (!list || !list.length) return 0;
+        const dCount = Number.isFinite(days) && days > 0 ? days : 14;
+        const cDay = Number.isFinite(currentDay) ? currentDay : 0;
+        const minDay = cDay - dCount;
+        let sum = 0;
+        for (let i = 0; i < list.length; i++) {
+          if (list[i].day >= minDay) sum += list[i].qty;
+        }
+        return sum / dCount;
+      };
+    }
+    return st;
+  };
+
+  ECO.reserveFloor = (W, id) => {
+    const pop = Math.max(1, (W && W.npcs ? W.npcs.filter(n => !n.dead && !n.exiled).length : 1));
+    const rd = W && W.sect && W.sect.reserveDirectives ? W.sect.reserveDirectives : {};
+    if (id === 'grain') return pop * (rd.minGrainDays || 14);
+    if (id === 'meal') return rd.minMealReserve || 20;
+    if (rd.medicine && rd.medicine[id] != null) return rd.medicine[id];
+    if (id.startsWith('P:BASIC_')) return Math.max(2, Math.ceil(pop * 0.1));
+    const m = matById[id];
+    if (m) {
+      const baseTgt = m.tier <= 1 ? 16 : m.tier === 2 ? 9 : m.tier === 3 ? 5 : 3;
+      return Math.max(2, Math.floor(baseTgt * 0.5));
+    }
+    return Math.max(2, Math.floor((g.CPE ? g.CPE.target(W, id) : 8) * 0.5));
+  };
+
+  ECO.inventoryIntelligence = (W, forceRefresh) => {
+    if (!W || !W.sect) {
+      return {
+        evaluatedAt: 0,
+        items: {},
+        shortages: [],
+        shortage: [],
+        reserves: [],
+        reserveRequired: [],
+        balanced: [],
+        surplus: []
+      };
+    }
+    if (!forceRefresh && W.sect.inventoryIntelligence && W.sect.inventoryIntelligence.evaluatedAt === W.day) {
+      return W.sect.inventoryIntelligence;
+    }
+    ECO.ensureStockTracker(W);
+    const tracker = W.sect.stockTracker;
+    const pop = Math.max(1, W.npcs.filter(n => !n.dead && !n.exiled).length);
+    const trackedKeys = new Set(Object.keys(W.sect.stock || {}));
+    ['grain', 'meal', 'P:BASIC_HP', 'P:BASIC_WOUND', 'P:BASIC_DETOX', 'P:BASIC_CALM'].forEach(k => trackedKeys.add(k));
+    (W.sect.buyList || []).forEach(b => { if (b && b.id) trackedKeys.add(b.id); });
+    (W.sect.shortageDirectives || []).forEach(sd => { if (sd && sd.id) trackedKeys.add(sd.id); });
+
+    const items = {}, shortages = [], reserves = [], balanced = [], surplus = [];
+    trackedKeys.forEach(id => {
+      const cur = ECO.count(W, id);
+      const resFloor = ECO.reserveFloor(W, id);
+      const tgt = g.CPE ? g.CPE.target(W, id) : 8;
+      const dailyUsage = tracker ? tracker.getRollingUsage(id, 14, W.day) : 0;
+      const turnover = Math.round((dailyUsage * 30 / Math.max(1, cur)) * 100) / 100;
+
+      let state = 'balanced', reason = '';
+      if (cur < resFloor) {
+        state = 'shortage';
+        const deficit = resFloor - cur;
+        reason = 'ต่ำกว่าเกณฑ์สำรองความปลอดภัย (' + cur + '/' + resFloor + ')';
+        shortages.push({
+          id,
+          nameTh: ECO.name(id),
+          current: cur,
+          stock: cur,
+          reserve: resFloor,
+          floor: resFloor,
+          target: tgt,
+          deficit,
+          turnover,
+          reason
+        });
+      } else if (cur < tgt) {
+        state = 'reserve-required';
+        reason = 'อยู่ในขอบเขตสำรอง ห้ามจำหน่ายภายนอก (' + cur + '/' + tgt + ')';
+        reserves.push({
+          id,
+          nameTh: ECO.name(id),
+          current: cur,
+          stock: cur,
+          reserve: resFloor,
+          floor: resFloor,
+          target: tgt,
+          turnover,
+          reason
+        });
+      } else if (cur > Math.round(tgt * 1.6) + 2) {
+        state = 'surplus';
+        const excess = cur - Math.round(tgt * 1.5);
+        reason = 'มีส่วนเกินพร้อมจำหน่ายภายนอก (ส่วนเกิน ~' + excess + ' หน่วย)';
+        surplus.push({
+          id,
+          nameTh: ECO.name(id),
+          current: cur,
+          stock: cur,
+          reserve: resFloor,
+          floor: resFloor,
+          target: tgt,
+          excess,
+          surplusQty: excess,
+          turnover,
+          reason
+        });
+      } else {
+        state = 'balanced';
+        reason = 'ปริมาณสมดุลตามเกณฑ์ปกติ';
+        balanced.push({
+          id,
+          nameTh: ECO.name(id),
+          current: cur,
+          stock: cur,
+          reserve: resFloor,
+          floor: resFloor,
+          target: tgt,
+          turnover,
+          reason
+        });
+      }
+      items[id] = {
+        id,
+        nameTh: ECO.name(id),
+        state,
+        current: cur,
+        stock: cur,
+        reserve: resFloor,
+        floor: resFloor,
+        target: tgt,
+        turnover,
+        dailyUsage,
+        reason
+      };
+    });
+
+    const report = {
+      evaluatedAt: W.day,
+      items,
+      shortages,
+      shortage: shortages,
+      reserves,
+      reserveRequired: reserves,
+      balanced,
+      surplus,
+      pop
+    };
+    W.sect.inventoryIntelligence = report;
+    return report;
   };
 
   g.ECO = ECO;
@@ -10203,28 +10396,166 @@ JD.EXPANSION=JD.EXPANSION||data;
     W.sect.sealedUntil = W.t + d * 1440; m.sealed = true; m.sealEnd = W.sect.sealedUntil;
     W.log('decision', m.h.name.given + ' ปิดด่านเพื่อทะลวงขั้น ' + d + ' วัน รองเจ้าสำนักและผู้อาวุโสดูแลกิจการ', [m.id]);
   };
+  const ACT_TO_BLD = {
+    sleep: 'dorm_outer',
+    cultivate: 'meditation_hall',
+    meditate: 'meditation_hall',
+    brew: 'alchemy',
+    brewBasic: 'alchemy',
+    personalBrew: 'alchemy',
+    forge: 'forge',
+    farm: 'farm',
+    mine: 'mine',
+    eat: 'canteen',
+    cook: 'canteen',
+    read: 'scripture',
+    study: 'scripture',
+    guidedStudy: 'scripture',
+    heal: 'infirmary',
+    treat: 'infirmary',
+    practice: 'training_ground',
+    spar: 'training_ground',
+    train: 'training_ground',
+    shop: 'market',
+    browse: 'market'
+  };
+
+  SECT.ensureFacilityDemand = W => {
+    const S = W.sect;
+    if (!S) return null;
+    if (!S.facilityDemand) S.facilityDemand = {};
+    if (W.map && W.map.buildings) {
+      W.map.buildings.forEach(b => {
+        if (!S.facilityDemand[b.id]) {
+          S.facilityDemand[b.id] = {
+            failedAttempts: 0,
+            unmetDemands: 0,
+            congestedHours: 0,
+            consecutiveCongestionDays: 0,
+            lastCongestionHour: 0,
+            occupancyHistory: [],
+            lastEvaluatedDay: 0,
+            lastUpgradedDay: 0
+          };
+        }
+      });
+    }
+    return S.facilityDemand;
+  };
+
+  SECT.recordFacilityDemand = (W, bldOrAct, reason, npc) => {
+    SECT.ensureFacilityDemand(W);
+    let bid = ACT_TO_BLD[bldOrAct] || bldOrAct;
+    if (npc && bldOrAct === 'sleep') {
+      bid = npc.rank >= 4 ? 'dorm_core' : npc.rank >= 2 ? 'dorm_inner' : 'dorm_outer';
+    }
+    const b = W.map && W.map.byId && W.map.byId[bid];
+    if (!b) return;
+    const fd = W.sect.facilityDemand[bid];
+    if (!fd) return;
+    fd.failedAttempts = (fd.failedAttempts || 0) + 1;
+    fd.unmetDemands = (fd.unmetDemands || 0) + 1;
+    fd.lastCongestionHour = W.t;
+  };
+
   SECT.upgradeBuilding = (W, m) => {
-    const pop = W.npcs.filter(n => !n.dead).length;
-    const wants = ['dorm_outer', 'meditation_hall', 'alchemy', 'forge', 'herb_garden', 'farm', 'mine', 'canteen', 'infirmary', 'training_ground'];
-    let best = null, bs = -1;
+    SECT.ensureFacilityDemand(W);
+    const S = W.sect, pol = S.policy, pop = W.npcs.filter(n => !n.dead).length;
+    const cashReserve = Math.max(500, pop * 25) + 800;
+    const wants = ['dorm_outer', 'meditation_hall', 'alchemy', 'forge', 'herb_garden', 'farm', 'mine', 'canteen', 'infirmary', 'training_ground', 'dorm_inner', 'dorm_core', 'scripture'];
+
+    // ป้องกันคำสั่งซ้ำซ้อน: หากมีอาคารใดกำลังก่อสร้างอยู่ ให้ชะลอการสั่งก่อสร้างเพิ่ม
+    const underConstruction = wants.some(id => W.map.byId[id] && W.map.byId[id].building);
+    if (underConstruction) return;
+
+    let best = null, bs = -1, bestBlockedByTreasury = null;
+
     wants.forEach(id => {
-      const b = W.map.byId[id]; if (b.level >= 3) return;
+      const b = W.map.byId[id];
+      if (!b || b.level >= 3 || b.building) return;
+
+      const fd = S.facilityDemand[id] || {};
+      // Cooldown ป้องกัน expansion loop
+      if (W.day - (fd.lastUpgradedDay || 0) < 20) return;
+
       const cost = 600 * b.level * b.level;
-      if (W.sect.stones < cost + 800) return;
-      let s = W.rng.next() * .2;
-      if (id === 'dorm_outer' && pop > b.stations.length * 0.9) s += 1;
-      if (id === 'meditation_hall') s += W.sect.policy.focus.martial * .6 + .25;
-      if (id === 'alchemy') s += HC.eff(m, 'interests.alchemy') / 150;
-      if (id === 'forge') s += HC.eff(m, 'interests.forging') / 150;
-      if (id === 'farm' && ECO.count(W, 'grain') + ECO.count(W, 'meal') / 3 < pop * 3) s += .9;
-      if (id === 'mine') s += W.sect.policy.focus.commerce * .6;
-      if (id === 'training_ground') s += W.sect.policy.focus.martial * .5;
-      if (s > bs) { bs = s; best = { id, b, cost }; }
+      let s = W.rng.next() * 0.15;
+      let reasons = [];
+
+      // 1. ตรวจสอบความต้องการจริงจากการใช้งานล้น / หาจุดใช้งานไม่ได้
+      if (fd.failedAttempts >= 2) {
+        s += Math.min(1.6, fd.failedAttempts * 0.3);
+        reasons.push('หาสถานีไม่ได้ ' + fd.failedAttempts + ' ครั้ง');
+      }
+      if (fd.unmetDemands >= 2) {
+        s += Math.min(1.2, fd.unmetDemands * 0.25);
+        reasons.push('ความต้องการไม่ได้รับการตอบสนอง ' + fd.unmetDemands + ' ครั้ง');
+      }
+      if (fd.congestedHours >= 3) {
+        s += Math.min(1.4, fd.congestedHours * 0.15);
+        reasons.push('แออัดต่อเนื่อง ' + fd.congestedHours + ' ชม.');
+      }
+
+      // 2. เงื่อนไขโครงสร้างเฉพาะอาคาร
+      if (id === 'dorm_outer') {
+        const dormStations = b.stations.length;
+        if (pop > dormStations * 0.85) {
+          s += 1.2 + (pop - dormStations) * 0.1;
+          reasons.push('สมาชิกเกินความจุเตียงพัก');
+        }
+      } else if (id === 'farm') {
+        const food = ECO.count(W, 'grain') + ECO.count(W, 'meal') / 3;
+        if (food < pop * 3) {
+          s += 1.1 + (pop * 3 - food) * 0.05;
+          reasons.push('เสบียงอาหารมีไม่พอ');
+        }
+      } else if (id === 'meditation_hall') {
+        s += (pol.focus.martial || 0) * 0.5;
+      } else if (id === 'alchemy') {
+        s += (pol.focus.craft || 0) * 0.4 + HC.eff(m, 'interests.alchemy') / 180;
+      } else if (id === 'forge') {
+        s += (pol.focus.craft || 0) * 0.4 + HC.eff(m, 'interests.forging') / 180;
+      } else if (id === 'mine') {
+        s += (pol.focus.commerce || 0) * 0.5;
+      } else if (id === 'training_ground') {
+        s += (pol.focus.martial || 0) * 0.45;
+      }
+
+      // นโยบายขยายสำนักส่งเสริมการขยายอาคาร
+      s *= (0.7 + (pol.expansion || 50) / 100 * 0.6);
+
+      // กฎเหล็ก: หากไม่มีสัญญาณความต้องการจริง ไม่สร้างแบบสุ่ม
+      const hasRealDemand = fd.failedAttempts >= 2 || fd.congestedHours >= 3 || (id === 'dorm_outer' && pop > b.stations.length * 0.85) || (id === 'farm' && (ECO.count(W, 'grain') + ECO.count(W, 'meal') / 3) < pop * 3);
+      if (!hasRealDemand) return;
+
+      if (s > bs) {
+        const rText = reasons.length ? reasons.join('、') : 'ความต้องการใช้งานเพิ่มขึ้น';
+        if (W.sect.stones < cost + cashReserve) {
+          bestBlockedByTreasury = { id, b, cost, reason: rText, needed: cost + cashReserve };
+        } else {
+          bs = s;
+          best = { id, b, cost, reason: rText };
+        }
+      }
     });
-    if (!best) return;
+
+    if (!best) {
+      if (bestBlockedByTreasury && W.rng.chance(0.4)) {
+        W.log('decision', m.h.name.given + ' ชะลอการขยาย' + bestBlockedByTreasury.b.nameTh + ' แม้พบความต้องการสูง (' + bestBlockedByTreasury.reason + ') เนื่องจากต้องสำรองศิลาคงคลังขั้นต่ำ ' + cashReserve + ' ศิลา (ปัจจุบันมี ' + Math.round(W.sect.stones) + ' ศิลา ต้องการ ' + bestBlockedByTreasury.needed + ' ศิลา)', [m.id]);
+      }
+      return;
+    }
+
     if (!ECO.pay(W, best.cost, 'ขยาย' + best.b.nameTh)) return;
     best.b.building = { until: W.t + 8 * 1440, to: best.b.level + 1 };
-    W.log('decision', m.h.name.given + ' สั่งขยาย' + best.b.nameTh + ' เป็นระดับ ' + (best.b.level + 1) + ' (ใช้ ' + best.cost + ' ศิลา ใช้เวลา 8 วัน)', [m.id]);
+    const fd = S.facilityDemand[best.id];
+    if (fd) {
+      fd.lastUpgradedDay = W.day;
+      fd.failedAttempts = 0;
+      fd.unmetDemands = 0;
+      fd.congestedHours = 0;
+    }
+    W.log('decision', m.h.name.given + ' อนุมัติขยาย' + best.b.nameTh + ' เป็นระดับ ' + (best.b.level + 1) + ' (ใช้ ' + best.cost + ' ศิลา) หลังพบความแออัดต่อเนื่อง (' + best.reason + ')', [m.id]);
   };
   SECT.startResearch = (W, m) => {
     const S = W.sect; if (S.research) return;
@@ -10670,6 +11001,7 @@ JD.EXPANSION=JD.EXPANSION||data;
       for (const sid of b.stations) { const s = W.map.stations[sid]; if (s.kind === 'bed' && s.owner == null) { s.owner = n.id; n.bed = s.id; return; } }
     }
     n.bed = null;
+    if (g.SECT && g.SECT.recordFacilityDemand) g.SECT.recordFacilityDemand(W, 'dorm_outer', 'no_bed', n);
   };
   AI.freeBed = (W, n) => { if (n.bed != null) { const s = W.map.stations[n.bed]; if (s) s.owner = null; n.bed = null; } };
 
@@ -11443,6 +11775,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     W.npcs.forEach(o => { if (o.dead || o === n) return; const r = o.h.mind.relations[n.id]; if (r && (r.a > 40 || r.bond === 'สหาย' || r.bond === 'คนรัก' || r.bond === 'คู่ครอง' || r.bond === 'อาจารย์' || r.bond === 'ศิษย์')) { HC.experience(o, 'lost_loved', clamp(r.a / 70, 0.3, 1.5)); AI.mem(W, o, n.h.name.given + ' เสียชีวิต (' + why + ')', 1, n.id); o.grief = (o.grief || 0) + 4; } else if (o.rank >= 1) HC.experience(o, 'saw_death', 0.2); });
     if (n.id === W.sect.masterId) { SECT.succession(W, 'เจ้าสำนักเสียชีวิต'); }
     if (n.id === W.sect.deputyId) W.sect.deputyId = null;
+    if (g.CPE && g.CPE.retireNpc) g.CPE.retireNpc(W, n, 'เสียชีวิต');
     // ทรัพย์สินกลับสำนัก
     ECO.earn(W, Math.round((n.inv.stones || 0) * 0.5), 'มรดกของ ' + n.h.name.given); n.inv.stones = 0;
     for (const k in (n.inv.pills || {})) ECO.add(W, k, n.inv.pills[k]); n.inv.pills = {};
@@ -11507,7 +11840,11 @@ JD.EXPANSION=JD.EXPANSION||data;
       n.lastScores = cands.slice(0, 7).map(x => ({ id: x.id, u: Math.round(x.S.u * 100) / 100 }));
       if (c.id === 'pair') { if (AI.socialStart(W, n)) { n.why = why; return true; } n.cool.pair = W.t + 45; continue; }
       const a = A[c.id]; const w = a.where ? a.where(W, n) : { pos: { x: n.x, y: n.y } };
-      if (!w) { n.cool[c.id] = W.t + 25; continue; }
+      if (!w) {
+        if (g.SECT && g.SECT.recordFacilityDemand) g.SECT.recordFacilityDemand(W, c.id, 'failed_station', n);
+        n.cool[c.id] = W.t + 25;
+        continue;
+      }
       if (AI.begin(W, n, c.id, w, why)) { n.why = why; return true; }
     }
     n.act = { id: 'idle', stage: 'do', left: 20, total: 20, ctx: {}, why: [] };
@@ -13951,7 +14288,10 @@ JD.EXPANSION=JD.EXPANSION||data;
 
   CPE.S = W => {
     const S = W.sect;
-    if (!S.cp) S.cp = { minted: 0, burned: 0, price: 1, markup: 1, welfare: 0.5, log: [], dayMint: 0, dayBurn: 0, welfareGiven: 0, donated: 0, sales: 0, techSales: 0, studyFees: 0, studyServices: 0, trainingFees: 0, trainingServices: 0, recipeFees: 0, recipeAuthorizations: 0, freeLib: S.library ? S.library.filter(id => { const t = CULT.tech(id); return t && t.tier <= 1; }) : [], hist: [] };
+    if (!S.cp) S.cp = { minted: 0, burned: 0, circulation: 0, retired: 0, arbitrageBlocked: 0, price: 1, markup: 1, welfare: 0.5, log: [], dayMint: 0, dayBurn: 0, welfareGiven: 0, donated: 0, sales: 0, techSales: 0, studyFees: 0, studyServices: 0, trainingFees: 0, trainingServices: 0, recipeFees: 0, recipeAuthorizations: 0, freeLib: S.library ? S.library.filter(id => { const t = CULT.tech(id); return t && t.tier <= 1; }) : [], hist: [] };
+    if (S.cp.circulation == null) S.cp.circulation = 0;
+    if (S.cp.retired == null) S.cp.retired = 0;
+    if (S.cp.arbitrageBlocked == null) S.cp.arbitrageBlocked = 0;
     if (S.cp.studyFees == null) S.cp.studyFees = 0;
     if (S.cp.studyServices == null) S.cp.studyServices = 0;
     if (S.cp.trainingFees == null) S.cp.trainingFees = 0;
@@ -13960,7 +14300,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     if (S.cp.recipeAuthorizations == null) S.cp.recipeAuthorizations = 0;
     if (!Array.isArray(S.cp.hist)) S.cp.hist = [];
     if (!Array.isArray(S.cp.log)) S.cp.log = [];
-    ['minted', 'burned', 'dayMint', 'dayBurn', 'welfareGiven', 'donated', 'sales', 'techSales', 'recipeFees', 'recipeAuthorizations'].forEach(k => { if (!Number.isFinite(S.cp[k])) S.cp[k] = 0; });
+    ['minted', 'burned', 'circulation', 'retired', 'arbitrageBlocked', 'dayMint', 'dayBurn', 'welfareGiven', 'donated', 'sales', 'techSales', 'recipeFees', 'recipeAuthorizations'].forEach(k => { if (!Number.isFinite(S.cp[k])) S.cp[k] = 0; });
     if (!Number.isFinite(S.cp.price)) S.cp.price = 1;
     if (!Number.isFinite(S.cp.markup)) S.cp.markup = 1;
     return S.cp;
@@ -13970,6 +14310,17 @@ JD.EXPANSION=JD.EXPANSION||data;
   const note = (W, text) => { const c = CPE.S(W); c.log.push({ t: W.t, text }); if (c.log.length > 40) c.log.shift(); };
   CPE.mint = (W, n, amt, why, quiet) => { amt = Math.round(amt * 10) / 10; if (!(amt > 0)) return 0; const c = CPE.S(W); n.cp = (n.cp || 0) + amt; c.minted += amt; c.dayMint += amt; n.cpEarned = (n.cpEarned || 0) + amt; if (!quiet && amt >= 30) note(W, n.h.name.given + ' ได้ ' + Math.round(amt) + ' คป. (' + why + ')'); return amt; };
   CPE.spend = (W, n, amt, why) => { if (!Number.isFinite(amt) || amt < 0 || !Number.isFinite(n.cp || 0) || (n.cp || 0) < amt) return false; const c = CPE.S(W); n.cp -= amt; c.burned += amt; c.dayBurn += amt; if (amt >= 40) note(W, n.h.name.given + ' ใช้ ' + Math.round(amt) + ' คป. ' + why); return true; };
+  CPE.retireNpc = (W, n, reason) => {
+    if (!n || !(n.cp > 0)) return 0;
+    const c = CPE.S(W);
+    const amt = Math.round(n.cp * 10) / 10;
+    c.retired = (c.retired || 0) + amt;
+    n.cp = 0;
+    if (amt >= 20) {
+      note(W, (n.h && n.h.name && n.h.name.given || 'สมาชิก') + ' สิ้นสภาพ ปลดเกษียณแต้มคุณูปการ ' + amt + ' คป. (' + (reason || 'ออกจากสำนัก') + ')');
+    }
+    return amt;
+  };
 
   /* ----- ความขาดแคลน/ราคา ----- */
   CPE.target = (W, id) => {
@@ -13994,7 +14345,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     if (r) base = Math.max(base, ECO.inputCost(W, r) * 0.45 / (r.yield || 1));
     // ของขาดต้องแพงขึ้น ส่วนของล้นคลังต้องถูกลง — และราคาขายในร้านต้องสูงกว่าค่ารับบริจาคเสมอเพื่อป้องกัน arbitrage
     const raw = Math.round(base * 0.9 * c.price * c.markup * clamp(Math.pow(CPE.scarcity(W, id), 0.5), 0.8, 1.6));
-    const minNoArb = Math.ceil(CPE.reward(W, id, 1) * 1.25) + 1;
+    const minNoArb = Math.ceil(CPE.reward(W, id, 1) * 1.3) + 2;
     return Math.max(2, minNoArb, raw);
   };
   CPE.gearPrice = (W, it) => { const c = CPE.S(W); return Math.max(5, Math.round((it.value || 20 * Math.pow(1.9, (it.tier || 1) - 1)) * 0.9 * (it.q || 1) * clamp((it.dur == null ? 100 : it.dur) / 100, 0.3, 1) * c.price * c.markup)); };
@@ -14558,7 +14909,8 @@ JD.EXPANSION=JD.EXPANSION||data;
     const median = balances.length ? balances.slice().sort((a, b) => a - b)[balances.length >> 1] : 0;
     if (avg > tgt * 1.25) c.price = Math.min(4, c.price * 1.004);
     else if (avg < tgt * 0.78) c.price = Math.max(0.6, c.price / 1.0045);
-    c.hist.push({ d: W.day, avg: Math.round(avg), median: Math.round(median), price: Math.round(c.price * 100) / 100, mint: Math.round(c.dayMint), burn: Math.round(c.dayBurn) }); if (c.hist.length > 60) c.hist.shift();
+    c.circulation = Math.round(al.reduce((s, n) => s + (n.cp || 0), 0) * 10) / 10;
+    c.hist.push({ d: W.day, avg: Math.round(avg), median: Math.round(median), price: Math.round(c.price * 100) / 100, mint: Math.round(c.dayMint), burn: Math.round(c.dayBurn), circulation: c.circulation, retired: Math.round(c.retired || 0) }); if (c.hist.length > 60) c.hist.shift();
     c.dayMint = 0; c.dayBurn = 0;
   };
   const oPay = SECT.paySalaries;
@@ -14738,11 +15090,14 @@ JD.EXPANSION=JD.EXPANSION||data;
   };
 
   EXT.reserveForSect = (W, id) => {
-    const pop = W.npcs.filter(n => !n.dead && !n.exiled).length;
-    if (id === 'grain') return Math.max(30, pop * 4);
-    if (id === 'meal') return Math.max(10, pop * 2);
-    if (BASIC_PILLS.has(id)) return Math.max(2, Math.ceil(pop * 0.12));
-    return Math.max(2, Math.floor((g.CPE ? g.CPE.target(W, id) : 8) * 0.55));
+    const floor = ECO.reserveFloor ? ECO.reserveFloor(W, id) : 2;
+    const pop = Math.max(1, W.npcs ? W.npcs.filter(n => !n.dead && !n.exiled).length : 1);
+    let base = floor;
+    if (id === 'grain') base = Math.max(floor, pop * 14);
+    else if (id === 'meal') base = Math.max(floor, pop * 2);
+    else if (BASIC_PILLS.has(id)) base = Math.max(floor, Math.ceil(pop * 0.15));
+    else base = Math.max(floor, Math.floor((g.CPE ? g.CPE.target(W, id) : 8) * 0.6));
+    return base;
   };
   function treasurySkill(W) {
     const tr = SECT.holder(W, 'treasury') || W.byId[W.sect.masterId];
@@ -14750,28 +15105,38 @@ JD.EXPANSION=JD.EXPANSION||data;
   }
   function purchaseNeeds(W, v) {
     const out = [], seen = new Set();
-    const add = (id, n, priority) => {
+    const add = (id, n, priority, reason) => {
       if (!id || seen.has(id) || !EXT.isTradable(id) || !(v.stock[id] > 0)) return;
       const q = Math.max(0, Math.floor(n)); if (!q) return;
-      seen.add(id); out.push({ id, n: q, priority: priority || 0 });
+      seen.add(id); out.push({ id, n: q, priority: priority || 0, reason: reason || 'ความต้องการตามแผนงานสำนัก' });
     };
+    // 1. Direct shortages from shortageDirectives (provisions, emergency medicines, hall inputs, bottlenecks)
+    (W.sect.shortageDirectives || []).slice(0, 8).forEach(sd => {
+      if (!sd || !EXT.isTradable(sd.id)) return;
+      const pri = sd.priority === 'critical' ? 20 : sd.priority === 'high' ? 14 : 8;
+      add(sd.id, sd.deficit, pri, sd.reason);
+    });
+    // 2. Caravan buy list
     (W.sect.buyList || []).slice(0, 6).forEach(b => {
       if (!b || !EXT.isTradable(b.id)) return;
-      add(b.id, b.n, 10 + (b.id === 'grain' ? 2 : 0));
+      add(b.id, b.n, 10 + (b.id === 'grain' ? 3 : 0), 'รายการสั่งซื้อของหอคลัง');
     });
+    // 3. Fallback scan of trader inventory for critical shortages
     Object.keys(v.stock).forEach(id => {
       if (!EXT.isTradable(id)) return;
-      const count = id === 'grain' ? ECO.count(W, 'grain') : id === 'meal' ? ECO.count(W, 'meal') : ECO.count(W, id);
-      const target = id === 'grain' ? Math.max(30, W.npcs.filter(n => !n.dead).length * 5) : id === 'meal' ? Math.max(10, W.npcs.filter(n => !n.dead).length * 2) : (g.CPE ? g.CPE.target(W, id) : 8);
-      if (count < target * 0.3) add(id, Math.min(4, Math.ceil(target - count)), 4 + (target - count) / Math.max(1, target));
+      const count = ECO.count(W, id);
+      const res = EXT.reserveForSect(W, id);
+      if (count < res * 0.4) {
+        add(id, Math.min(4, Math.ceil(res - count)), 6 + (res - count) / Math.max(1, res), 'สต็อกต่ำกว่า 40% ของเกณฑ์สำรอง');
+      }
     });
-    return out.sort((a, b) => b.priority - a.priority).slice(0, 3);
+    return out.sort((a, b) => b.priority - a.priority).slice(0, 4);
   }
-  function record(W, visitor, side, id, qty, unitPrice, total, npc) {
+  function record(W, visitor, side, id, qty, unitPrice, total, npc, reason) {
     const stats = EXT.ensure(W), history = W.world.tradeHistory;
-    const row = { day: W.day, side, itemId: id, qty, unitPrice, total, traderId: visitor.id, traderName: visitor.nameTh };
+    const row = { day: W.day, side, itemId: id, qty, unitPrice, total, traderId: visitor.id, traderName: visitor.nameTh, reason: reason || '' };
     if (npc) { row.npcId = npc.id; row.npcName = npc.h.name.given; }
-    history.push(row); if (history.length > 60) history.splice(0, history.length - 60);
+    history.push(row); if (history.length > 80) history.splice(0, history.length - 80);
     visitor.tradeCount = (visitor.tradeCount || 0) + 1;
     if (side === 'sect-buy') { stats.sectBought += qty; stats.sectStonesOut += total; }
     else if (side === 'sect-sell') { stats.sectSold += qty; stats.sectStonesIn += total; }
@@ -14785,43 +15150,104 @@ JD.EXPANSION=JD.EXPANSION||data;
     if (!v || v.kind !== 'trader' || v.untilDay < W.day || v.sectTradeDay === W.day) return empty;
     v.sectTradeDay = W.day;
     const S = W.sect, skill = treasurySkill(W), result = Object.assign({}, empty), boughtKeys = new Set();
-    const pop = W.npcs.filter(n => !n.dead && !n.exiled).length, cashReserve = Math.max(250, pop * 18);
+    const pop = Math.max(1, W.npcs.filter(n => !n.dead && !n.exiled).length);
+    const generosity = S.policy ? S.policy.generosity : 50;
+    const cashReserve = Math.max(300, pop * 20) + Math.round(pop * 10 * (1 - generosity / 200));
     let budget = Math.max(0, S.stones - cashReserve);
-    // Import only once per visit; repeated daily purchases were able to drain the treasury faster than wages and food costs recover.
+
+    // 1. Intelligent External Purchasing
+    const needs = purchaseNeeds(W, v);
+    const hasShortage = (S.shortageDirectives || []).length > 0 || needs.length > 0;
+    if ((S.stones < cashReserve || budget <= 0) && hasShortage && !v.sectPostponedLogged) {
+      v.sectPostponedLogged = true;
+      W.log('finance', 'หอคลังชะลอการจัดซื้อสินค้าจาก' + v.nameTh + ' เนื่องจากศิลาสำรองคงเหลือ (' + Math.round(S.stones) + ') ต้องคงไว้เหนือเกณฑ์ปลอดภัย (' + cashReserve + ' ศิลา)', []);
+    }
+
     if (!v.sectBuyDone) {
-      for (const need of purchaseNeeds(W, v)) {
+      for (const need of needs) {
         const unit = EXT.quotePrice(W, need.id, 'sect-buy', skill);
         if (!unit || budget < unit) continue;
-        const qty = Math.min(need.n, v.stock[need.id] || 0, Math.floor(budget / unit));
+        // Avoid purchasing overpriced items (> 1.4x base) unless critical
+        const basePrice = ECO.base(need.id);
+        if (need.priority < 18 && basePrice > 0 && unit > basePrice * 1.4) continue;
+
+        const maxQty = Math.min(need.n, v.stock[need.id] || 0, Math.floor(budget / unit));
+        const qty = Math.max(0, Math.min(maxQty, 8)); // bounded batch to prevent single-item budget drain
         if (!Number.isSafeInteger(qty) || qty <= 0) continue;
         const total = qty * unit;
-        if (v.stones > Number.MAX_SAFE_INTEGER - total || !ECO.pay(W, total, 'ซื้อจากพ่อค้าภายนอก: ' + ECO.name(need.id))) continue;
-        v.stones += total; v.stock[need.id] -= qty; if (!v.stock[need.id]) delete v.stock[need.id];
-        ECO.add(W, need.id, qty); budget -= total; result.bought += qty; result.buyCost += total; boughtKeys.add(need.id);
-        record(W, v, 'sect-buy', need.id, qty, unit, total);
+        if (v.stones > Number.MAX_SAFE_INTEGER - total || !ECO.pay(W, total, 'ซื้อจาก' + v.nameTh + ': ' + ECO.name(need.id))) continue;
+        
+        v.stones += total;
+        v.stock[need.id] -= qty;
+        if (!v.stock[need.id]) delete v.stock[need.id];
+        ECO.add(W, need.id, qty);
+        budget -= total;
+        result.bought += qty;
+        result.buyCost += total;
+        boughtKeys.add(need.id);
+
+        const buyReason = 'สั่งซื้อตามคำสั่งขาดแคลน: ' + need.reason;
+        record(W, v, 'sect-buy', need.id, qty, unit, total, null, buyReason);
+        W.log('finance', 'หอคลังสั่งซื้อ ' + ECO.name(need.id) + ' ×' + qty + ' จาก' + v.nameTh + ' รวม ' + total + ' ศิลา (' + need.reason + ')', []);
       }
       if (result.bought > 0) v.sectBuyDone = true;
     }
-    // Sell only goods above a protected reserve. Never buy and resell the same key in one visit tick.
-    const sellKeys = Object.keys(v.wants || {}).filter(id => EXT.isTradable(id) && !boughtKeys.has(id)).sort((a, b) => (ECO.count(W, b) - EXT.reserveForSect(W, b)) - (ECO.count(W, a) - EXT.reserveForSect(W, a)));
-    for (const id of sellKeys.slice(0, 3)) {
-      const surplus = Math.max(0, ECO.count(W, id) - EXT.reserveForSect(W, id));
+
+    // 2. Autonomous Surplus Selling
+    // Use inventory intelligence to identify genuine surplus above all reserve thresholds.
+    const intel = ECO.inventoryIntelligence ? ECO.inventoryIntelligence(W) : null;
+    const surplusList = intel && Array.isArray(intel.surplus) ? intel.surplus : [];
+    const pol = S.policy || {};
+    const secrecyVeto = pol.secrecy > 65;
+    const commerceFocus = pol.focus && pol.focus.commerce != null ? pol.focus.commerce : 0.5;
+
+    // Collect candidate surplus keys (welfare emergency medicines are strictly protected from external liquidation)
+    const candidateKeys = new Set();
+    surplusList.forEach(s => {
+      if (EXT.isTradable(s.id) && !BASIC_PILLS.has(s.id) && !boughtKeys.has(s.id)) candidateKeys.add(s.id);
+    });
+    Object.keys(v.wants || {}).forEach(id => {
+      if (EXT.isTradable(id) && !BASIC_PILLS.has(id) && !boughtKeys.has(id)) {
+        const excess = ECO.count(W, id) - EXT.reserveForSect(W, id);
+        if (excess > 0) candidateKeys.add(id);
+      }
+    });
+
+    const sellKeys = Array.from(candidateKeys).sort((a, b) => {
+      const excessA = ECO.count(W, a) - EXT.reserveForSect(W, a);
+      const excessB = ECO.count(W, b) - EXT.reserveForSect(W, b);
+      return excessB - excessA;
+    });
+
+    const maxItemsToSell = commerceFocus > 0.6 ? 4 : 3;
+    for (const id of sellKeys.slice(0, maxItemsToSell)) {
+      if (BASIC_PILLS.has(id)) continue; // welfare emergency medicine is strictly protected from external liquidation
+      const mat = ECO.matById[id];
+      if (secrecyVeto && mat && (mat.tier || 1) >= 3) continue; // strategic secrecy veto on rare materials
+
+      const resFloor = EXT.reserveForSect(W, id);
+      const curCount = ECO.count(W, id);
+      const surplus = Math.max(0, curCount - resFloor);
       const unit = EXT.quotePrice(W, id, 'sect-sell', skill);
-      if (!surplus || !unit || v.stones < unit) continue;
-      const qty = Math.min(surplus, v.wants[id] || 0, Math.floor(v.stones / unit));
+      if (!surplus || !unit || v.stones < unit || !(v.wants && v.wants[id] > 0)) continue;
+
+      const wantQty = v.wants[id] || 0;
+      const qty = Math.min(surplus, wantQty, Math.floor(v.stones / unit));
       if (!Number.isSafeInteger(qty) || qty <= 0 || !ECO.take(W, id, qty)) continue;
+
       const total = qty * unit;
-      v.stones -= total; v.wants[id] -= qty; if (!v.wants[id]) delete v.wants[id];
-      ECO.earn(W, total, 'ขายส่วนเกินให้พ่อค้าภายนอก: ' + ECO.name(id));
-      result.sold += qty; result.sellRevenue += total;
-      record(W, v, 'sect-sell', id, qty, unit, total);
+      v.stones -= total;
+      v.wants[id] -= qty;
+      if (!v.wants[id]) delete v.wants[id];
+      ECO.earn(W, total, 'ขายส่วนเกินให้' + v.nameTh + ': ' + ECO.name(id));
+      result.sold += qty;
+      result.sellRevenue += total;
+
+      const sellReason = 'ขายส่วนเกินตามการประเมินคลังสำนัก (คงเหลือ ' + ECO.count(W, id) + '/' + resFloor + ')';
+      record(W, v, 'sect-sell', id, qty, unit, total, null, sellReason);
+      W.log('finance', 'สำนักขายส่วนเกิน ' + ECO.name(id) + ' ×' + qty + ' ให้' + v.nameTh + ' ได้รับ ' + total + ' ศิลา (คงคลังคงเหลือ ' + ECO.count(W, id) + ' เกณฑ์สำรอง ' + resFloor + ')', []);
     }
-    if (result.bought || result.sold) {
-      const parts = [];
-      if (result.bought) parts.push('ซื้อ ' + result.bought + ' หน่วย จ่าย ' + result.buyCost + ' ศิลา');
-      if (result.sold) parts.push('ขายส่วนเกิน ' + result.sold + ' หน่วย ได้ ' + result.sellRevenue + ' ศิลา');
-      W.log('finance', 'ตลาดภายนอกกับ' + v.nameTh + ': ' + parts.join(' · '), []);
-    }
+
     return result;
   };
 
@@ -16252,6 +16678,8 @@ JD.EXPANSION=JD.EXPANSION||data;
     ECO.recipesFor(W, ['ALCHEMY', 'FORGING', 'ARRAY', 'TALISMAN']).forEach(r => r.inputs.forEach(i => { const m = ECO.matById[i.matId]; if (m && m.tier <= 2) S.stock[i.matId] = Math.max(S.stock[i.matId] || 0, 8 + (m.tier === 1 ? 6 : 0)); }));
     // ไม่แจกโอสถจากอากาศเป็นสต็อกเริ่มต้น: ให้สมาชิกหลอมจากวัตถุดิบที่มี หรือหาได้จากภายนอก
     S.policy = SECT.initPolicy(W); if (SECT.ensureDirectives) { SECT.ensureDirectives(W); SECT.updateReserveDirectives(W); }
+    if (g.ECO && g.ECO.ensureStockTracker) g.ECO.ensureStockTracker(W);
+    if (g.SECT && g.SECT.ensureFacilityDemand) g.SECT.ensureFacilityDemand(W);
     g.CPE.init(W); if (g.SECT && g.SECT.ensureDirectives) g.SECT.ensureDirectives(W); g.CONTENT.ensure(W);
     // ตำแหน่งผู้อาวุโส: เลือกผู้เหมาะสมที่สุด
     // วางตำแหน่งเริ่มต้น
@@ -16299,6 +16727,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     AI.cancelAct(W, n); AI.freeBed(W, n); if (n.post) { W.sect.posts[n.post] = null; n.post = null; }
     const i = W.npcs.indexOf(n); if (i >= 0) W.npcs.splice(i, 1); W.gone.push(n.id);
     if (n.id === W.sect.deputyId) W.sect.deputyId = null;
+    if (g.CPE && g.CPE.retireNpc) g.CPE.retireNpc(W, n, 'ออกจากสำนัก');
     for (const k of Object.keys(n.equip || {})) { if (n.equip[k]) W.sect.gear.push(n.equip[k]); } n.equip = {};
     for (const k of Object.keys((n.inv && n.inv.pills) || {})) ECO.add(W, k, n.inv.pills[k]);
     for (const k of Object.keys((n.inv && n.inv.mats) || {})) ECO.add(W, k, n.inv.mats[k]);
@@ -16309,6 +16738,25 @@ JD.EXPANSION=JD.EXPANSION||data;
   SIM.hourly = W => {
     W.npcs.forEach(n => { if (!n.dead) { AI.healTick(W, n); g.STATS.recover(n); g.CPE.autoUse(W, n); if (n.equip) { /* ของสึกหรอ */ for (const k in n.equip) { const it = n.equip[k]; if (it && it.dur != null && n.act.id === 'fight') it.dur = Math.max(0, it.dur - 0.5); } } } });
     W.map.buildings.forEach(b => { if (b.building && W.t >= b.building.until) SIM.finishBuilding(W, b); });
+    if (W.map && W.map.buildings && g.SECT && g.SECT.ensureFacilityDemand) {
+      g.SECT.ensureFacilityDemand(W);
+      W.map.buildings.forEach(b => {
+        const fd = W.sect.facilityDemand && W.sect.facilityDemand[b.id];
+        if (!fd) return;
+        const stList = b.stations.map(id => W.map.stations[id]).filter(Boolean);
+        if (!stList.length) return;
+        const occ = stList.filter(s => s.occ != null).length;
+        const ratio = occ / stList.length;
+        if (ratio >= 0.95) {
+          fd.congestedHours = (fd.congestedHours || 0) + 1;
+          if (fd.congestedHours >= 3) {
+            fd.unmetDemands = (fd.unmetDemands || 0) + 1;
+          }
+        } else if (ratio < 0.6) {
+          fd.congestedHours = 0;
+        }
+      });
+    }
     EXPED.hourly(W);
     // เอาอุปกรณ์จากคลังแจกจ่าย (ตามยศและความเหมาะสม) ทุกชั่วโมง
     if (W.sect.gear.length && W.t % 360 === 0) SIM.distributeGear(W);
@@ -16318,7 +16766,21 @@ JD.EXPANSION=JD.EXPANSION||data;
   SIM.finishBuilding = (W, b) => {
     b.level = b.building.to; b.building = null; b.hp = 100;
     SIM.expandStations(W, b);
-    W.log('build', b.nameTh + ' ขยายเป็นระดับ ' + b.level + ' เสร็จสมบูรณ์', []); W.fame(1);
+    const fd = W.sect.facilityDemand && W.sect.facilityDemand[b.id];
+    if (fd) {
+      fd.congestedHours = 0;
+      fd.failedAttempts = 0;
+      fd.unmetDemands = 0;
+      fd.lastUpgradedDay = W.day;
+    }
+    if (b.stations.some(id => W.map.stations[id] && W.map.stations[id].kind === 'bed')) {
+      W.npcs.forEach(n => {
+        if (!n.dead && !n.away && n.bed == null) {
+          AI.assignBed(W, n);
+        }
+      });
+    }
+    W.log('build', b.nameTh + ' ขยายเป็นระดับ ' + b.level + ' เสร็จสมบูรณ์ (เพิ่มพื้นที่ใช้งานรองรับสมาชิก)', []); W.fame(1);
   };
   SIM.expandStations = (W, b) => {
     const M = W.map; M.extraSt = M.extraSt || [];
@@ -16482,7 +16944,11 @@ JD.EXPANSION=JD.EXPANSION||data;
       W._saveExtras = Object.fromEntries(Object.entries(s).filter(([k]) => !knownKeys.has(k)));
       if (s.runtimeTiming) W.runtimeTiming = s.runtimeTiming;
       const legacyContent = !s.sect.contentVersion;
-      if (g.SECT && g.SECT.ensureDirectives) g.SECT.ensureDirectives(W); g.CONTENT.ensure(W);
+      if (g.SECT && g.SECT.ensureDirectives) g.SECT.ensureDirectives(W);
+      if (g.SECT && g.SECT.ensureFacilityDemand) g.SECT.ensureFacilityDemand(W);
+      if (g.ECO && g.ECO.ensureStockTracker) g.ECO.ensureStockTracker(W);
+      if (g.CPE && g.CPE.S) g.CPE.S(W);
+      g.CONTENT.ensure(W);
       if (legacyContent) W.npcs.forEach(n => {
         const a=n.act, ctx=a&&a.ctx;
         if(a && ['brew','forge','brewBasic'].includes(a.id) && a.stage==='do' && a.started2 && ctx && !ctx.craftReceipt) {
@@ -17359,6 +17825,19 @@ JD.EXPANSION=JD.EXPANSION||data;
       }
       h += '</div>';
 
+      if (ECO.inventoryIntelligence) {
+        const intel = ECO.inventoryIntelligence(W);
+        h += '<h3>📊 ปัญญาประดิษฐ์คลังและอัตราหมุนเวียน (Inventory Intelligence)</h3><div class="card">';
+        h += '<div class="sub" style="margin-bottom:6px">ประเมินอัตราการใช้ย้อนหลัง 14/30 วัน เพื่อแบ่งประเภทสินค้า ป้องกันของขาดและหาของล้นขายตลาดภายนอก</div>';
+        const surp = intel.surplus || [];
+        const short = intel.shortage || [];
+        const resReq = intel.reserveRequired || [];
+        h += '<div><span class="chip" style="border-color:#5fd38a;color:#5fd38a">🟢 ส่วนเกินคลัง (' + surp.length + ')</span> ' + (surp.length ? surp.slice(0, 8).map(x => esc(ECO.name(x.id)) + ' (มี ' + x.stock + '/เกิน ' + x.surplusQty + ')').join(' · ') : '<span class="muted">ไม่มีของล้น</span>') + '</div>';
+        h += '<div style="margin-top:4px"><span class="chip" style="border-color:#e0584a;color:#e0584a">🔴 ขาดแคลน (' + short.length + ')</span> ' + (short.length ? short.slice(0, 8).map(x => esc(ECO.name(x.id)) + ' (มี ' + x.stock + '/เป้า ' + x.floor + ')').join(' · ') : '<span class="muted">ไม่มีของขาด</span>') + '</div>';
+        h += '<div style="margin-top:4px"><span class="chip" style="border-color:#f0a030;color:#f0a030">🟡 สำรองจำเป็น (' + resReq.length + ')</span> ' + (resReq.length ? resReq.slice(0, 6).map(x => esc(ECO.name(x.id)) + ' (' + x.stock + '/' + x.floor + ')').join(' · ') : '<span class="muted">ปกติ</span>') + '</div>';
+        h += '</div>';
+      }
+
       ['alchemy', 'forge'].forEach(hh => { const o = S.orders && S.orders[hh]; const r = o ? ECO.recipeById[o.rid] : null; h += '<div class="card">' + (hh === 'alchemy' ? '⚗️ หอโอสถกำลังผลิต: ' : '🔨 โรงหลอมกำลังผลิต: ') + (r ? '<b>' + esc(r.outNameTh) + '</b> <span class="muted">(' + esc(o.why || '') + ')</span>' : '<span class="muted">ไม่มีคำสั่ง/วัตถุดิบไม่พอ</span>') + '</div>'; });
       const pills = Object.keys(S.stock).filter(k => ECO.isPill(k)).map(k => [k, S.stock[k]]); h += '<h3>โอสถ</h3><div class="card">' + (pills.length ? pills.map(p => '<span class="chip ok">' + esc(ECO.name(p[0])) + ' ×' + p[1] + '</span>').join('') : '<span class="muted">ไม่มี</span>') + '</div>';
       const mats = Object.keys(S.stock).filter(k => !ECO.isPill(k) && k !== 'grain' && k !== 'meal').map(k => [k, S.stock[k]]).sort((a, b) => b[1] - a[1]); h += '<h3>วัตถุดิบ</h3><div class="card">' + (mats.length ? mats.slice(0, 60).map(p => '<span class="chip">' + esc(ECO.name(p[0])) + ' ×' + p[1] + '</span>').join('') : '<span class="muted">ไม่มี</span>') + '</div>';
@@ -17368,7 +17847,7 @@ JD.EXPANSION=JD.EXPANSION||data;
       const c = g.CPE.S(W), al = W.npcs.filter(n => !n.dead && !n.exiled), tot = al.reduce((a, n) => a + (n.cp || 0), 0), tr = SECT.holder(W, 'treasury');
       const recent = (c.hist || []).slice(-30), minted30 = recent.reduce((a, x) => a + (x.mint || 0), 0), burned30 = recent.reduce((a, x) => a + (x.burn || 0), 0);
       const flowLabel = minted30 > burned30 * 1.25 ? 'แต้มกำลังเพิ่มเร็ว' : burned30 > minted30 * 1.1 ? 'แต้มกำลังถูกใช้มาก' : 'แต้มหมุนเวียนใกล้สมดุล';
-      h += '<div class="card"><b>🛒 ร้านค้าสำนัก & แต้มคุณูปการ (คป.)</b><div class="muted">สำนักเสกแต้มจ่ายเป็นค่าตอบแทน แต้มมีค่าเพราะแลกของ/วิชาที่ต้องหามาจากข้างนอกได้ การเรียนวิชา ซื้อสินค้า และขอคำชี้แนะจะเผาแต้มออกจากระบบ</div><div class="grid2"><div>แต้มรวมที่ถือ <b>' + U.fmtNum(Math.round(tot)) + '</b></div><div>เฉลี่ย/คน <b>' + Math.round(tot / Math.max(1, al.length)) + '</b></div><div>เสกสะสม <b>' + U.fmtNum(Math.round(c.minted)) + '</b></div><div>เผาสะสม <b>' + U.fmtNum(Math.round(c.burned)) + '</b></div><div>ดัชนีราคา <b>×' + c.price.toFixed(2) + '</b></div><div>กำไรร้าน <b>×' + c.markup.toFixed(2) + '</b></div><div>แจกสวัสดิการแล้ว <b>' + c.welfareGiven + '</b></div><div>ขายแล้ว <b>' + c.sales + '</b> · ค่าวิชา <b>' + Math.round(c.techSales) + '</b></div><div>บริการชี้แนะ <b>' + (c.studyServices || 0) + ' ครั้ง</b></div><div>เผาค่าชี้แนะ <b>' + U.fmtNum(Math.round(c.studyFees || 0)) + ' คป.</b></div><div>ฝึกปราณแบบเสียแต้ม <b>' + (c.trainingServices || 0) + ' ครั้ง</b></div><div>เผาค่าฝึกปราณ <b>' + U.fmtNum(Math.round(c.trainingFees || 0)) + ' คป.</b></div><div>ขอสิทธิ์ตำรับ <b>' + (c.recipeAuthorizations || 0) + ' ครั้ง</b></div><div>เผาค่าสิทธิ์ตำรับ <b>' + U.fmtNum(Math.round(c.recipeFees || 0)) + ' คป.</b></div></div><div class="muted">30 วันล่าสุด: เสก ' + Math.round(minted30) + ' · เผา ' + Math.round(burned30) + ' · ' + flowLabel + '</div>' + (tr ? '<div class="muted">ผู้ดูแลคลัง: ' + esc(HC.fullName(tr)) + ' · ความใจกว้าง ' + Math.round(c.welfare * 100) + '%</div>' : '') + '</div>';
+      h += '<div class="card"><b>🛒 ร้านค้าสำนัก & แต้มคุณูปการ (คป.)</b><div class="muted">สำนักเสกแต้มจ่ายเป็นค่าตอบแทน แต้มมีค่าเพราะแลกของ/วิชาที่ต้องหามาจากข้างนอกได้ การเรียนวิชา ซื้อสินค้า และขอคำชี้แนะจะเผาแต้มออกจากระบบ</div><div class="grid2"><div>แต้มรวมที่ถือ <b>' + U.fmtNum(Math.round(tot)) + '</b></div><div>เฉลี่ย/คน <b>' + Math.round(tot / Math.max(1, al.length)) + '</b></div><div>เสกสะสม <b>' + U.fmtNum(Math.round(c.minted)) + '</b></div><div>เผาสะสม <b>' + U.fmtNum(Math.round(c.burned)) + '</b></div><div>แต้มหมุนเวียน <b>' + U.fmtNum(Math.round(c.circulation || tot)) + '</b></div><div>แต้มปลดเกษียณ <b>' + U.fmtNum(Math.round(c.retired || 0)) + '</b></div><div>สกัดอาร์บิทราจ <b>' + (c.arbitrageBlocked || 0) + ' ครั้ง</b></div><div>ดัชนีราคา <b>×' + c.price.toFixed(2) + '</b></div><div>กำไรร้าน <b>×' + c.markup.toFixed(2) + '</b></div><div>แจกสวัสดิการแล้ว <b>' + c.welfareGiven + '</b></div><div>ขายแล้ว <b>' + c.sales + '</b> · ค่าวิชา <b>' + Math.round(c.techSales) + '</b></div><div>บริการชี้แนะ <b>' + (c.studyServices || 0) + ' ครั้ง</b></div><div>เผาค่าชี้แนะ <b>' + U.fmtNum(Math.round(c.studyFees || 0)) + ' คป.</b></div><div>ฝึกปราณแบบเสียแต้ม <b>' + (c.trainingServices || 0) + ' ครั้ง</b></div><div>เผาค่าฝึกปราณ <b>' + U.fmtNum(Math.round(c.trainingFees || 0)) + ' คป.</b></div><div>ขอสิทธิ์ตำรับ <b>' + (c.recipeAuthorizations || 0) + ' ครั้ง</b></div><div>เผาค่าสิทธิ์ตำรับ <b>' + U.fmtNum(Math.round(c.recipeFees || 0)) + ' คป.</b></div></div><div class="muted">30 วันล่าสุด: เสก ' + Math.round(minted30) + ' · เผา ' + Math.round(burned30) + ' · ' + flowLabel + '</div>' + (tr ? '<div class="muted">ผู้ดูแลคลัง: ' + esc(HC.fullName(tr)) + ' · ความใจกว้าง ' + Math.round(c.welfare * 100) + '%</div>' : '') + '</div>';
       const need = g.JD.CP.BASIC.map(r => 'P:' + r.id);
       h += '<h3>โอสถพื้นฐาน 8 สูตร (หลอมให้สำนัก แจกเป็นสวัสดิการ/ขาย)</h3><div class="card">' + need.map(k => { const sc = g.CPE.scarcity(W, k); return '<div class="logrow"><span>' + esc(ECO.name(k)) + ' ×' + ECO.count(W, k) + '</span><b style="color:' + (sc > 1.3 ? '#e0584a' : sc < 0.8 ? '#7aa' : '#5fd38a') + '">ขาย ' + g.CPE.priceOf(W, k) + ' · รับบริจาค ' + Math.round(g.CPE.reward(W, k, 1)) + ' คป.</b></div>'; }).join('') + '</div>';
       const herbs = ['MAT_HERB_DEW_GRASS_1', 'MAT_HERB_JADE_LOTUS_2', 'MAT_HERB_BLOOD_GINSENG_3']; h += '<h3>ป้ายรับซื้อ (ค่าบริจาคตามความขาด)</h3><div class="card">' + herbs.map(k => '<div class="logrow"><span>' + esc(ECO.name(k)) + ' ในคลัง ' + ECO.count(W, k) + '</span><b>' + Math.round(g.CPE.reward(W, k, 1)) + ' คป./หน่วย</b></div>').join('') + '</div>';
@@ -17392,7 +17871,12 @@ JD.EXPANSION=JD.EXPANSION||data;
         h += '<h3>ธุรกรรมภายนอกล่าสุด</h3><div class="card">' + (history.length ? history.map(t => '<div class="logrow"><span class="tm">วันที่ ' + t.day + '</span><span>' + (t.side === 'sect-buy' ? 'สำนักซื้อ' : t.side === 'sect-sell' ? 'สำนักขาย' : t.side === 'member-buy' ? esc(t.npcName || 'สมาชิก') + ' ซื้อ' : esc(t.npcName || 'สมาชิก') + ' ขาย') + esc(ECO.name(t.itemId)) + ' ×' + t.qty + ' กับ' + esc(t.traderName) + '</span><b>' + t.total + ' ศิลา</b></div>').join('') : '<span class="muted">ยังไม่มีการซื้อขายภายนอก</span>') + '</div>';
       }
     } else if (tab === 'bld') {
-      h += W.map.buildings.filter(b => b.type !== 'plaza').map(b => '<div class="prow" data-bld="' + b.id + '"><div style="font-size:24px;width:40px;text-align:center">' + MAP.BTYPES[b.type].icon + '</div><div class="pi"><div class="nm">' + esc(b.nameTh) + ' <span class="chip g">ระดับ ' + b.level + '</span></div><div class="sub">' + (b.building ? '🚧 กำลังขยายเป็นระดับ ' + b.building.to : 'ใช้งานอยู่ ' + (b.inside ? b.inside.length : 0) + ' คน · สภาพ ' + Math.round(b.hp) + '%') + '</div></div></div>').join('');
+      if (SECT.ensureFacilityDemand) SECT.ensureFacilityDemand(W);
+      h += W.map.buildings.filter(b => b.type !== 'plaza').map(b => {
+        const fd = S.facilityDemand && S.facilityDemand[b.id];
+        const congText = fd && (fd.congestedHours >= 2 || fd.failedAttempts >= 2) ? ' · <span style="color:#f0a030">⚠️ แออัด (' + fd.congestedHours + ' ชม./พลาด ' + fd.failedAttempts + ')</span>' : '';
+        return '<div class="prow" data-bld="' + b.id + '"><div style="font-size:24px;width:40px;text-align:center">' + MAP.BTYPES[b.type].icon + '</div><div class="pi"><div class="nm">' + esc(b.nameTh) + ' <span class="chip g">ระดับ ' + b.level + '</span></div><div class="sub">' + (b.building ? '🚧 กำลังขยายเป็นระดับ ' + b.building.to : 'ใช้งานอยู่ ' + (b.inside ? b.inside.length : 0) + '/' + b.stations.length + ' จุด · สภาพ ' + Math.round(b.hp) + '%' + congText) + '</div></div></div>';
+      }).join('');
     }
     return h;
   };

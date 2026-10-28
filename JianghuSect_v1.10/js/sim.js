@@ -78,6 +78,8 @@
     ECO.recipesFor(W, ['ALCHEMY', 'FORGING', 'ARRAY', 'TALISMAN']).forEach(r => r.inputs.forEach(i => { const m = ECO.matById[i.matId]; if (m && m.tier <= 2) S.stock[i.matId] = Math.max(S.stock[i.matId] || 0, 8 + (m.tier === 1 ? 6 : 0)); }));
     // ไม่แจกโอสถจากอากาศเป็นสต็อกเริ่มต้น: ให้สมาชิกหลอมจากวัตถุดิบที่มี หรือหาได้จากภายนอก
     S.policy = SECT.initPolicy(W); if (SECT.ensureDirectives) { SECT.ensureDirectives(W); SECT.updateReserveDirectives(W); }
+    if (g.ECO && g.ECO.ensureStockTracker) g.ECO.ensureStockTracker(W);
+    if (g.SECT && g.SECT.ensureFacilityDemand) g.SECT.ensureFacilityDemand(W);
     g.CPE.init(W); if (g.SECT && g.SECT.ensureDirectives) g.SECT.ensureDirectives(W); g.CONTENT.ensure(W);
     // ตำแหน่งผู้อาวุโส: เลือกผู้เหมาะสมที่สุด
     // วางตำแหน่งเริ่มต้น
@@ -125,6 +127,7 @@
     AI.cancelAct(W, n); AI.freeBed(W, n); if (n.post) { W.sect.posts[n.post] = null; n.post = null; }
     const i = W.npcs.indexOf(n); if (i >= 0) W.npcs.splice(i, 1); W.gone.push(n.id);
     if (n.id === W.sect.deputyId) W.sect.deputyId = null;
+    if (g.CPE && g.CPE.retireNpc) g.CPE.retireNpc(W, n, 'ออกจากสำนัก');
     for (const k of Object.keys(n.equip || {})) { if (n.equip[k]) W.sect.gear.push(n.equip[k]); } n.equip = {};
     for (const k of Object.keys((n.inv && n.inv.pills) || {})) ECO.add(W, k, n.inv.pills[k]);
     for (const k of Object.keys((n.inv && n.inv.mats) || {})) ECO.add(W, k, n.inv.mats[k]);
@@ -135,6 +138,25 @@
   SIM.hourly = W => {
     W.npcs.forEach(n => { if (!n.dead) { AI.healTick(W, n); g.STATS.recover(n); g.CPE.autoUse(W, n); if (n.equip) { /* ของสึกหรอ */ for (const k in n.equip) { const it = n.equip[k]; if (it && it.dur != null && n.act.id === 'fight') it.dur = Math.max(0, it.dur - 0.5); } } } });
     W.map.buildings.forEach(b => { if (b.building && W.t >= b.building.until) SIM.finishBuilding(W, b); });
+    if (W.map && W.map.buildings && g.SECT && g.SECT.ensureFacilityDemand) {
+      g.SECT.ensureFacilityDemand(W);
+      W.map.buildings.forEach(b => {
+        const fd = W.sect.facilityDemand && W.sect.facilityDemand[b.id];
+        if (!fd) return;
+        const stList = b.stations.map(id => W.map.stations[id]).filter(Boolean);
+        if (!stList.length) return;
+        const occ = stList.filter(s => s.occ != null).length;
+        const ratio = occ / stList.length;
+        if (ratio >= 0.95) {
+          fd.congestedHours = (fd.congestedHours || 0) + 1;
+          if (fd.congestedHours >= 3) {
+            fd.unmetDemands = (fd.unmetDemands || 0) + 1;
+          }
+        } else if (ratio < 0.6) {
+          fd.congestedHours = 0;
+        }
+      });
+    }
     EXPED.hourly(W);
     // เอาอุปกรณ์จากคลังแจกจ่าย (ตามยศและความเหมาะสม) ทุกชั่วโมง
     if (W.sect.gear.length && W.t % 360 === 0) SIM.distributeGear(W);
@@ -144,7 +166,21 @@
   SIM.finishBuilding = (W, b) => {
     b.level = b.building.to; b.building = null; b.hp = 100;
     SIM.expandStations(W, b);
-    W.log('build', b.nameTh + ' ขยายเป็นระดับ ' + b.level + ' เสร็จสมบูรณ์', []); W.fame(1);
+    const fd = W.sect.facilityDemand && W.sect.facilityDemand[b.id];
+    if (fd) {
+      fd.congestedHours = 0;
+      fd.failedAttempts = 0;
+      fd.unmetDemands = 0;
+      fd.lastUpgradedDay = W.day;
+    }
+    if (b.stations.some(id => W.map.stations[id] && W.map.stations[id].kind === 'bed')) {
+      W.npcs.forEach(n => {
+        if (!n.dead && !n.away && n.bed == null) {
+          AI.assignBed(W, n);
+        }
+      });
+    }
+    W.log('build', b.nameTh + ' ขยายเป็นระดับ ' + b.level + ' เสร็จสมบูรณ์ (เพิ่มพื้นที่ใช้งานรองรับสมาชิก)', []); W.fame(1);
   };
   SIM.expandStations = (W, b) => {
     const M = W.map; M.extraSt = M.extraSt || [];
@@ -308,7 +344,11 @@
       W._saveExtras = Object.fromEntries(Object.entries(s).filter(([k]) => !knownKeys.has(k)));
       if (s.runtimeTiming) W.runtimeTiming = s.runtimeTiming;
       const legacyContent = !s.sect.contentVersion;
-      if (g.SECT && g.SECT.ensureDirectives) g.SECT.ensureDirectives(W); g.CONTENT.ensure(W);
+      if (g.SECT && g.SECT.ensureDirectives) g.SECT.ensureDirectives(W);
+      if (g.SECT && g.SECT.ensureFacilityDemand) g.SECT.ensureFacilityDemand(W);
+      if (g.ECO && g.ECO.ensureStockTracker) g.ECO.ensureStockTracker(W);
+      if (g.CPE && g.CPE.S) g.CPE.S(W);
+      g.CONTENT.ensure(W);
       if (legacyContent) W.npcs.forEach(n => {
         const a=n.act, ctx=a&&a.ctx;
         if(a && ['brew','forge','brewBasic'].includes(a.id) && a.stage==='do' && a.started2 && ctx && !ctx.craftReceipt) {

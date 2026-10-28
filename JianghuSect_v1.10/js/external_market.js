@@ -117,11 +117,14 @@
   };
 
   EXT.reserveForSect = (W, id) => {
-    const pop = W.npcs.filter(n => !n.dead && !n.exiled).length;
-    if (id === 'grain') return Math.max(30, pop * 4);
-    if (id === 'meal') return Math.max(10, pop * 2);
-    if (BASIC_PILLS.has(id)) return Math.max(2, Math.ceil(pop * 0.12));
-    return Math.max(2, Math.floor((g.CPE ? g.CPE.target(W, id) : 8) * 0.55));
+    const floor = ECO.reserveFloor ? ECO.reserveFloor(W, id) : 2;
+    const pop = Math.max(1, W.npcs ? W.npcs.filter(n => !n.dead && !n.exiled).length : 1);
+    let base = floor;
+    if (id === 'grain') base = Math.max(floor, pop * 14);
+    else if (id === 'meal') base = Math.max(floor, pop * 2);
+    else if (BASIC_PILLS.has(id)) base = Math.max(floor, Math.ceil(pop * 0.15));
+    else base = Math.max(floor, Math.floor((g.CPE ? g.CPE.target(W, id) : 8) * 0.6));
+    return base;
   };
   function treasurySkill(W) {
     const tr = SECT.holder(W, 'treasury') || W.byId[W.sect.masterId];
@@ -129,28 +132,38 @@
   }
   function purchaseNeeds(W, v) {
     const out = [], seen = new Set();
-    const add = (id, n, priority) => {
+    const add = (id, n, priority, reason) => {
       if (!id || seen.has(id) || !EXT.isTradable(id) || !(v.stock[id] > 0)) return;
       const q = Math.max(0, Math.floor(n)); if (!q) return;
-      seen.add(id); out.push({ id, n: q, priority: priority || 0 });
+      seen.add(id); out.push({ id, n: q, priority: priority || 0, reason: reason || 'ความต้องการตามแผนงานสำนัก' });
     };
+    // 1. Direct shortages from shortageDirectives (provisions, emergency medicines, hall inputs, bottlenecks)
+    (W.sect.shortageDirectives || []).slice(0, 8).forEach(sd => {
+      if (!sd || !EXT.isTradable(sd.id)) return;
+      const pri = sd.priority === 'critical' ? 20 : sd.priority === 'high' ? 14 : 8;
+      add(sd.id, sd.deficit, pri, sd.reason);
+    });
+    // 2. Caravan buy list
     (W.sect.buyList || []).slice(0, 6).forEach(b => {
       if (!b || !EXT.isTradable(b.id)) return;
-      add(b.id, b.n, 10 + (b.id === 'grain' ? 2 : 0));
+      add(b.id, b.n, 10 + (b.id === 'grain' ? 3 : 0), 'รายการสั่งซื้อของหอคลัง');
     });
+    // 3. Fallback scan of trader inventory for critical shortages
     Object.keys(v.stock).forEach(id => {
       if (!EXT.isTradable(id)) return;
-      const count = id === 'grain' ? ECO.count(W, 'grain') : id === 'meal' ? ECO.count(W, 'meal') : ECO.count(W, id);
-      const target = id === 'grain' ? Math.max(30, W.npcs.filter(n => !n.dead).length * 5) : id === 'meal' ? Math.max(10, W.npcs.filter(n => !n.dead).length * 2) : (g.CPE ? g.CPE.target(W, id) : 8);
-      if (count < target * 0.3) add(id, Math.min(4, Math.ceil(target - count)), 4 + (target - count) / Math.max(1, target));
+      const count = ECO.count(W, id);
+      const res = EXT.reserveForSect(W, id);
+      if (count < res * 0.4) {
+        add(id, Math.min(4, Math.ceil(res - count)), 6 + (res - count) / Math.max(1, res), 'สต็อกต่ำกว่า 40% ของเกณฑ์สำรอง');
+      }
     });
-    return out.sort((a, b) => b.priority - a.priority).slice(0, 3);
+    return out.sort((a, b) => b.priority - a.priority).slice(0, 4);
   }
-  function record(W, visitor, side, id, qty, unitPrice, total, npc) {
+  function record(W, visitor, side, id, qty, unitPrice, total, npc, reason) {
     const stats = EXT.ensure(W), history = W.world.tradeHistory;
-    const row = { day: W.day, side, itemId: id, qty, unitPrice, total, traderId: visitor.id, traderName: visitor.nameTh };
+    const row = { day: W.day, side, itemId: id, qty, unitPrice, total, traderId: visitor.id, traderName: visitor.nameTh, reason: reason || '' };
     if (npc) { row.npcId = npc.id; row.npcName = npc.h.name.given; }
-    history.push(row); if (history.length > 60) history.splice(0, history.length - 60);
+    history.push(row); if (history.length > 80) history.splice(0, history.length - 80);
     visitor.tradeCount = (visitor.tradeCount || 0) + 1;
     if (side === 'sect-buy') { stats.sectBought += qty; stats.sectStonesOut += total; }
     else if (side === 'sect-sell') { stats.sectSold += qty; stats.sectStonesIn += total; }
@@ -164,43 +177,104 @@
     if (!v || v.kind !== 'trader' || v.untilDay < W.day || v.sectTradeDay === W.day) return empty;
     v.sectTradeDay = W.day;
     const S = W.sect, skill = treasurySkill(W), result = Object.assign({}, empty), boughtKeys = new Set();
-    const pop = W.npcs.filter(n => !n.dead && !n.exiled).length, cashReserve = Math.max(250, pop * 18);
+    const pop = Math.max(1, W.npcs.filter(n => !n.dead && !n.exiled).length);
+    const generosity = S.policy ? S.policy.generosity : 50;
+    const cashReserve = Math.max(300, pop * 20) + Math.round(pop * 10 * (1 - generosity / 200));
     let budget = Math.max(0, S.stones - cashReserve);
-    // Import only once per visit; repeated daily purchases were able to drain the treasury faster than wages and food costs recover.
+
+    // 1. Intelligent External Purchasing
+    const needs = purchaseNeeds(W, v);
+    const hasShortage = (S.shortageDirectives || []).length > 0 || needs.length > 0;
+    if ((S.stones < cashReserve || budget <= 0) && hasShortage && !v.sectPostponedLogged) {
+      v.sectPostponedLogged = true;
+      W.log('finance', 'หอคลังชะลอการจัดซื้อสินค้าจาก' + v.nameTh + ' เนื่องจากศิลาสำรองคงเหลือ (' + Math.round(S.stones) + ') ต้องคงไว้เหนือเกณฑ์ปลอดภัย (' + cashReserve + ' ศิลา)', []);
+    }
+
     if (!v.sectBuyDone) {
-      for (const need of purchaseNeeds(W, v)) {
+      for (const need of needs) {
         const unit = EXT.quotePrice(W, need.id, 'sect-buy', skill);
         if (!unit || budget < unit) continue;
-        const qty = Math.min(need.n, v.stock[need.id] || 0, Math.floor(budget / unit));
+        // Avoid purchasing overpriced items (> 1.4x base) unless critical
+        const basePrice = ECO.base(need.id);
+        if (need.priority < 18 && basePrice > 0 && unit > basePrice * 1.4) continue;
+
+        const maxQty = Math.min(need.n, v.stock[need.id] || 0, Math.floor(budget / unit));
+        const qty = Math.max(0, Math.min(maxQty, 8)); // bounded batch to prevent single-item budget drain
         if (!Number.isSafeInteger(qty) || qty <= 0) continue;
         const total = qty * unit;
-        if (v.stones > Number.MAX_SAFE_INTEGER - total || !ECO.pay(W, total, 'ซื้อจากพ่อค้าภายนอก: ' + ECO.name(need.id))) continue;
-        v.stones += total; v.stock[need.id] -= qty; if (!v.stock[need.id]) delete v.stock[need.id];
-        ECO.add(W, need.id, qty); budget -= total; result.bought += qty; result.buyCost += total; boughtKeys.add(need.id);
-        record(W, v, 'sect-buy', need.id, qty, unit, total);
+        if (v.stones > Number.MAX_SAFE_INTEGER - total || !ECO.pay(W, total, 'ซื้อจาก' + v.nameTh + ': ' + ECO.name(need.id))) continue;
+        
+        v.stones += total;
+        v.stock[need.id] -= qty;
+        if (!v.stock[need.id]) delete v.stock[need.id];
+        ECO.add(W, need.id, qty);
+        budget -= total;
+        result.bought += qty;
+        result.buyCost += total;
+        boughtKeys.add(need.id);
+
+        const buyReason = 'สั่งซื้อตามคำสั่งขาดแคลน: ' + need.reason;
+        record(W, v, 'sect-buy', need.id, qty, unit, total, null, buyReason);
+        W.log('finance', 'หอคลังสั่งซื้อ ' + ECO.name(need.id) + ' ×' + qty + ' จาก' + v.nameTh + ' รวม ' + total + ' ศิลา (' + need.reason + ')', []);
       }
       if (result.bought > 0) v.sectBuyDone = true;
     }
-    // Sell only goods above a protected reserve. Never buy and resell the same key in one visit tick.
-    const sellKeys = Object.keys(v.wants || {}).filter(id => EXT.isTradable(id) && !boughtKeys.has(id)).sort((a, b) => (ECO.count(W, b) - EXT.reserveForSect(W, b)) - (ECO.count(W, a) - EXT.reserveForSect(W, a)));
-    for (const id of sellKeys.slice(0, 3)) {
-      const surplus = Math.max(0, ECO.count(W, id) - EXT.reserveForSect(W, id));
+
+    // 2. Autonomous Surplus Selling
+    // Use inventory intelligence to identify genuine surplus above all reserve thresholds.
+    const intel = ECO.inventoryIntelligence ? ECO.inventoryIntelligence(W) : null;
+    const surplusList = intel && Array.isArray(intel.surplus) ? intel.surplus : [];
+    const pol = S.policy || {};
+    const secrecyVeto = pol.secrecy > 65;
+    const commerceFocus = pol.focus && pol.focus.commerce != null ? pol.focus.commerce : 0.5;
+
+    // Collect candidate surplus keys (welfare emergency medicines are strictly protected from external liquidation)
+    const candidateKeys = new Set();
+    surplusList.forEach(s => {
+      if (EXT.isTradable(s.id) && !BASIC_PILLS.has(s.id) && !boughtKeys.has(s.id)) candidateKeys.add(s.id);
+    });
+    Object.keys(v.wants || {}).forEach(id => {
+      if (EXT.isTradable(id) && !BASIC_PILLS.has(id) && !boughtKeys.has(id)) {
+        const excess = ECO.count(W, id) - EXT.reserveForSect(W, id);
+        if (excess > 0) candidateKeys.add(id);
+      }
+    });
+
+    const sellKeys = Array.from(candidateKeys).sort((a, b) => {
+      const excessA = ECO.count(W, a) - EXT.reserveForSect(W, a);
+      const excessB = ECO.count(W, b) - EXT.reserveForSect(W, b);
+      return excessB - excessA;
+    });
+
+    const maxItemsToSell = commerceFocus > 0.6 ? 4 : 3;
+    for (const id of sellKeys.slice(0, maxItemsToSell)) {
+      if (BASIC_PILLS.has(id)) continue; // welfare emergency medicine is strictly protected from external liquidation
+      const mat = ECO.matById[id];
+      if (secrecyVeto && mat && (mat.tier || 1) >= 3) continue; // strategic secrecy veto on rare materials
+
+      const resFloor = EXT.reserveForSect(W, id);
+      const curCount = ECO.count(W, id);
+      const surplus = Math.max(0, curCount - resFloor);
       const unit = EXT.quotePrice(W, id, 'sect-sell', skill);
-      if (!surplus || !unit || v.stones < unit) continue;
-      const qty = Math.min(surplus, v.wants[id] || 0, Math.floor(v.stones / unit));
+      if (!surplus || !unit || v.stones < unit || !(v.wants && v.wants[id] > 0)) continue;
+
+      const wantQty = v.wants[id] || 0;
+      const qty = Math.min(surplus, wantQty, Math.floor(v.stones / unit));
       if (!Number.isSafeInteger(qty) || qty <= 0 || !ECO.take(W, id, qty)) continue;
+
       const total = qty * unit;
-      v.stones -= total; v.wants[id] -= qty; if (!v.wants[id]) delete v.wants[id];
-      ECO.earn(W, total, 'ขายส่วนเกินให้พ่อค้าภายนอก: ' + ECO.name(id));
-      result.sold += qty; result.sellRevenue += total;
-      record(W, v, 'sect-sell', id, qty, unit, total);
+      v.stones -= total;
+      v.wants[id] -= qty;
+      if (!v.wants[id]) delete v.wants[id];
+      ECO.earn(W, total, 'ขายส่วนเกินให้' + v.nameTh + ': ' + ECO.name(id));
+      result.sold += qty;
+      result.sellRevenue += total;
+
+      const sellReason = 'ขายส่วนเกินตามการประเมินคลังสำนัก (คงเหลือ ' + ECO.count(W, id) + '/' + resFloor + ')';
+      record(W, v, 'sect-sell', id, qty, unit, total, null, sellReason);
+      W.log('finance', 'สำนักขายส่วนเกิน ' + ECO.name(id) + ' ×' + qty + ' ให้' + v.nameTh + ' ได้รับ ' + total + ' ศิลา (คงคลังคงเหลือ ' + ECO.count(W, id) + ' เกณฑ์สำรอง ' + resFloor + ')', []);
     }
-    if (result.bought || result.sold) {
-      const parts = [];
-      if (result.bought) parts.push('ซื้อ ' + result.bought + ' หน่วย จ่าย ' + result.buyCost + ' ศิลา');
-      if (result.sold) parts.push('ขายส่วนเกิน ' + result.sold + ' หน่วย ได้ ' + result.sellRevenue + ' ศิลา');
-      W.log('finance', 'ตลาดภายนอกกับ' + v.nameTh + ': ' + parts.join(' · '), []);
-    }
+
     return result;
   };
 
