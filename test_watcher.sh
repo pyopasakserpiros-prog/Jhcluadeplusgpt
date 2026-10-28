@@ -9,7 +9,7 @@ while true; do
     cd "$ROOT" || exit 1
     git status > "$ROOT/test_output.log" 2>&1
     git add . >> "$ROOT/test_output.log" 2>&1
-    git commit -m "Implement rich event logs with multi-filters, 4-direction wildlife zones, and facility demand decay" >> "$ROOT/test_output.log" 2>&1
+    git commit -m "Add human-like NPC AI decision architecture blueprint and design note" >> "$ROOT/test_output.log" 2>&1
     git push origin main-1 >> "$ROOT/test_output.log" 2>&1
     git log -1 --stat >> "$ROOT/test_output.log" 2>&1
     echo "$?" > "$ROOT/test_exitcode.log"
@@ -32,7 +32,7 @@ while true; do
       cd "$ROOT" || exit 1
       git status > "$ROOT/test_output.log" 2>&1
       git add . >> "$ROOT/test_output.log" 2>&1
-      git commit -m "Implement rich event logs with multi-filters, 4-direction wildlife zones, and facility demand decay" >> "$ROOT/test_output.log" 2>&1
+      git commit -m "Add human-like NPC AI decision architecture blueprint and design note" >> "$ROOT/test_output.log" 2>&1
       git push origin main-1 >> "$ROOT/test_output.log" 2>&1
       git log -1 --stat >> "$ROOT/test_output.log" 2>&1
       echo "$?" > "$ROOT/test_exitcode.log"

@@ -48,6 +48,8 @@
 
 ## สำหรับผู้พัฒนาและ AI ที่มารับช่วง
 
+- **พิมพ์เขียวการพัฒนา AI การตัดสินใจของ NPC ให้เหมือนมนุษย์ (สำหรับงานถัดไป)**: อ่านข้อเสนอแนะ สถาปัตยกรรม 7 เสาหลัก โครงสร้างข้อมูล และกฎเหล็กทางเทคนิคได้ที่ [`AI_DECISION_DESIGN_NOTE.md`](AI_DECISION_DESIGN_NOTE.md) และ [`JianghuSect_v1.10/docs/AI_HUMAN_DECISION_BLUEPRINT_TH.md`](JianghuSect_v1.10/docs/AI_HUMAN_DECISION_BLUEPRINT_TH.md)
+
 อย่าแก้ `js/human_core.js` โดยไม่มีความจำเป็น: โครงการมีข้อกำหนดตรวจ byte lock ไฟล์นี้ ก่อนแก้ระบบให้ตรวจ source และ test ที่เกี่ยวข้องก่อน; หลีกเลี่ยงการใช้ผลทดสอบเก่าที่ติดอยู่ใน ZIP มาแทนผลรันใหม่ ไฟล์ `SOURCE_REFERENCE/` เก็บต้นฉบับเพื่ออ้างอิง ไม่ใช่ runtime หลัก
 
 - แผนที่และทางเดิน: `js/world_map.js`; อสูรบนแผนที่และการล่า: `js/wildlife.js`; ต่อสู้: `js/combat.js`; กราฟฟิก: `js/render.js`

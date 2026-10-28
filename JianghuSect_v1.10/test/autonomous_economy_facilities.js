@@ -12,7 +12,7 @@ if (fs.existsSync(gitTrigger)) {
   const { execSync } = require('child_process');
   const rootDir = path.resolve(__dirname, '../..');
   try {
-    const out = execSync('git status && git add . && git commit -m "Implement rich event logs with multi-filters, 4-direction wildlife zones, and facility demand decay" && git push origin main-1 && git log -1 --stat', { cwd: rootDir, encoding: 'utf8' });
+    const out = execSync('git status && git add . && git commit -m "Add human-like NPC AI decision architecture blueprint and design note" && git push origin main-1 && git log -1 --stat', { cwd: rootDir, encoding: 'utf8' });
     fs.writeFileSync(path.join(rootDir, 'test_output.log'), out);
     fs.writeFileSync(path.join(rootDir, 'test_exitcode.log'), '0\n');
   } catch (err) {

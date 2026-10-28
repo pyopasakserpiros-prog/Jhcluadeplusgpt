@@ -176,3 +176,22 @@ git push origin main-1
 12. `JianghuSect_v1.10/JianghuSect_single.html` (Rebuilt standalone distribution: 1,293 KB)
 13. `README.md` (Updated feature documentation and verified test status)
 14. `HANDOFF.md` (Complete architecture, root causes, test results, and continuation instructions)
+15. `AI_DECISION_DESIGN_NOTE.md` (Full design blueprint & engineering guide for human-like NPC decision AI)
+16. `JianghuSect_v1.10/docs/AI_HUMAN_DECISION_BLUEPRINT_TH.md` (Docs copy of the NPC AI blueprint)
+
+---
+
+## 6. Next Development Blueprint: Human-Like NPC Decision AI
+
+For the AI agent continuing development on NPC decision-making (`js/ai.js`), read the complete architectural proposal and implementation specification in:
+- [**`AI_DECISION_DESIGN_NOTE.md`**](file:///data/data/com.termux/files/home/agy-dev/AI_DECISION_DESIGN_NOTE.md) (Root design note)
+- [**`JianghuSect_v1.10/docs/AI_HUMAN_DECISION_BLUEPRINT_TH.md`**](file:///data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/docs/AI_HUMAN_DECISION_BLUEPRINT_TH.md) (Docs summary)
+
+Key areas covered in the blueprint:
+1. **Multi-Step Personal Goals (`n.goal`)**: `GOAL_BREAKTHROUGH_PREP`, `GOAL_SAVE_FOR_SCRIPTURE`, `GOAL_NURTURE_DISCIPLE`, `GOAL_SURPASS_RIVAL`, and `GOAL_SECT_CRISIS_RELIEF`.
+2. **Experiential Memory Feedback**: Combat trauma/avoidance vs. vengeance (`n.lastTrauma`), gratitude/grudge ledgers affecting gifting and succession voting.
+3. **Circadian Rhythms & Routines (`AI.circadianMod`)**: Morning qi cultivation/practice, daytime hall duties/hunting, evening tea/socializing, and night-owl bonuses for Demon/Soul/Solitude cultivators.
+4. **Social Intelligence & Altruism**: Dynamic combat rescue when allies fight nearby, tangible item gifting (`n.inv.pills` / `n.inv.craftedPills`), and triadic gossip/empathy in `chat`.
+5. **Emotional State Overrides**: Grief mourning at the ancestral hall, anger-driven sparring/arguing, heart-demon temptation, and burnout vs. workaholism.
+6. **Environmental & Weather Sensitivity**: Element-aligned cultivation bonuses during snow/storms (`FROST`/`THUNDER`) and risk-aware outer zone selection.
+7. **Inner Monologue UI (`UI.rNpc`)**: Displaying active personal goals and thoughts while strictly preserving the `js/human_core.js` byte-lock (`155:2f9c9dd7`), `W.rng` determinism, save/load compatibility, and 32×/48× mobile speed budget.
