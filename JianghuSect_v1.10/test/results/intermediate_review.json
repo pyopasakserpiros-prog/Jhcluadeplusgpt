@@ -1,0 +1,266 @@
+{
+  "date": "2026-10-27",
+  "targetRoot": "/workspace/scratch/4620f7523869/JianghuSect_v1.10",
+  "readOnlyReview": true,
+  "tests": [
+    {
+      "command": "node test/core_lock.js",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "command": "node test/cp_economy.js",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "command": "node test/craft_transactions.js",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "command": "node test/content_expansion.js",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "command": "node test/runtime_timing.js",
+      "status": "PASS",
+      "exitCode": 0
+    }
+  ],
+  "craftTransactionCases": 17,
+  "soak": {
+    "seed": "seed1",
+    "years": 1,
+    "t": 1037160,
+    "day": 720,
+    "elapsedMs": 129228,
+    "population": 62,
+    "deaths": 5,
+    "issues": [],
+    "content": {
+      "gathered": 191,
+      "hunted": 81,
+      "formulas": 8,
+      "manuals": 8,
+      "expeditions": 131
+    },
+    "knownRecipes": [
+      "SRC110_MW_REC_048",
+      "SRC110_MW_REC_005",
+      "SRC110_MW_REC_044",
+      "SRC110_MW_REC_022",
+      "SRC110_MW_REC_021",
+      "SRC110_MW_REC_006",
+      "SRC110_MW_REC_001",
+      "SRC110_MW_REC_045"
+    ],
+    "regionalSites": {
+      "SRC110_MW_ENV_01_ANCIENT_CANOPY": {
+        "day": 720,
+        "stock": {
+          "SRC110_MW_MAT_HERB_001": 24,
+          "SRC110_MW_MAT_HERB_050": 24,
+          "SRC110_MW_MAT_HERB_008": 12,
+          "SRC110_MW_MAT_HERB_051": 12,
+          "SRC110_MW_MAT_BP_141": 24,
+          "SRC110_MW_MAT_BP_142": 24,
+          "SRC110_MW_MAT_BP_145": 24,
+          "SRC110_MW_MAT_BP_143": 24,
+          "SRC110_MW_MAT_EXO_101": 12,
+          "SRC110_MW_MAT_EXO_126": 12,
+          "SRC110_MW_MAT_EXO_102": 12,
+          "SRC110_MW_MAT_EXO_111": 12,
+          "SRC110_NW_MAT_191": 24
+        },
+        "visits": 70
+      },
+      "SRC110_MW_ENV_03_FROZEN_HIGHLANDS": {
+        "day": 720,
+        "stock": {
+          "SRC110_MW_MAT_BP_153": 12
+        },
+        "visits": 13
+      },
+      "SRC110_MW_ENV_04_VOLCANIC_CALDERA": {
+        "day": 720,
+        "stock": {
+          "SRC110_MW_MAT_HERB_010": 12,
+          "SRC110_MW_MAT_HERB_052": 12,
+          "SRC110_MW_MAT_EXO_117": 12,
+          "SRC110_MW_MAT_ORE_086": 12,
+          "SRC110_MW_MAT_ORE_087": 12
+        },
+        "visits": 28
+      },
+      "SRC110_MW_ENV_11_CELESTIAL_GARDEN_RUINS": {
+        "day": 720,
+        "stock": {
+          "SRC110_MW_MAT_ORE_056": 24,
+          "SRC110_MW_MAT_ORE_058": 24,
+          "SRC110_MW_MAT_EXO_131": 12,
+          "SRC110_MW_MAT_EXO_125": 12,
+          "SRC110_MW_MAT_EXO_130": 12,
+          "SRC110_MW_MAT_ORE_067": 12
+        },
+        "visits": 20
+      }
+    },
+    "rareMaterialsInStock": {
+      "SRC110_MW_MAT_BP_141": 0,
+      "SRC110_MW_MAT_BP_142": 4,
+      "SRC110_MW_MAT_BP_143": 1,
+      "SRC110_MW_MAT_BP_145": 12,
+      "SRC110_MW_MAT_BP_153": 17,
+      "SRC110_MW_MAT_EXO_101": 5,
+      "SRC110_MW_MAT_EXO_102": 3,
+      "SRC110_MW_MAT_EXO_111": 9,
+      "SRC110_MW_MAT_EXO_117": 6,
+      "SRC110_MW_MAT_EXO_125": 6,
+      "SRC110_MW_MAT_EXO_126": 2,
+      "SRC110_MW_MAT_EXO_130": 6,
+      "SRC110_MW_MAT_EXO_131": 2,
+      "SRC110_MW_MAT_HERB_001": 7,
+      "SRC110_MW_MAT_HERB_008": 0,
+      "SRC110_MW_MAT_HERB_010": 10,
+      "SRC110_MW_MAT_HERB_050": 10,
+      "SRC110_MW_MAT_HERB_051": 0,
+      "SRC110_MW_MAT_HERB_052": 11,
+      "SRC110_MW_MAT_ORE_056": 4,
+      "SRC110_MW_MAT_ORE_058": 0,
+      "SRC110_MW_MAT_ORE_067": 3,
+      "SRC110_MW_MAT_ORE_086": 7,
+      "SRC110_MW_MAT_ORE_087": 8,
+      "SRC110_NW_MAT_191": 0
+    },
+    "newManualsInLibrary": [
+      "SRC110_NW_ART_002",
+      "SRC110_NW_ART_047",
+      "SRC110_NW_ART_075",
+      "SRC110_NW_ART_083",
+      "SRC110_NW_ART_126",
+      "SRC110_NW_ART_146",
+      "SRC110_ART_V112_XIAN_MOON_MIRROR_T3",
+      "SRC110_ART_V112_BODY_IRONWOOD_BARK_T3",
+      "SRC110_ART_V112_GOD_LOTUS_SANCTUARY_T3"
+    ],
+    "newSubpaths": [
+      {
+        "id": "n93_665",
+        "sub": "FROST_MOON_IMMORTAL",
+        "stage": 2
+      },
+      {
+        "id": "n116_556",
+        "sub": "FROST_MOON_IMMORTAL",
+        "stage": 3
+      }
+    ],
+    "newCrafts": 7,
+    "contribution": {
+      "minted": 102535.10000001435,
+      "burned": 78240,
+      "price": 4,
+      "markup": 0.75,
+      "welfare": 0.68,
+      "donated": 72079.0035610733,
+      "sales": 1076,
+      "techSales": 13800,
+      "studyFees": 1744,
+      "studyServices": 17,
+      "trainingFees": 26837,
+      "trainingServices": 253
+    },
+    "note": "Wall-clock duration is not a throughput benchmark; original test/soak.js executed with an appended summary and final issues assertion. Craft count refers only to retained logs.",
+    "revisionNote": "Run loaded code before the three review fixes and later UI/medicine integration. It proves that integration snapshot survives one year, not that the final revision has identical trajectories."
+  },
+  "findings": [
+    {
+      "id": "initial-imported-manual-bypass",
+      "status": "FIX_VERIFIED",
+      "source": "js/sim.js:31",
+      "description": "SIM.awaken seeds its starting repertoire from all techniques, including sourcePack discovery manuals. Fresh seeds 7/11/18 have imported learned techniques with no regional visits and no manual in library.",
+      "reproduce": "node /workspace/scratch/4620f7523869/integration_review_repros.cjs initial-manual",
+      "expectedBeforeFix": "Assertion failure",
+      "initialStatus": "REPRODUCED",
+      "verification": "Standalone reproduction now passes against parent fixes; no production edit by reviewer."
+    },
+    {
+      "id": "exploration-replay-side-effects",
+      "status": "FIX_VERIFIED",
+      "source": "js/explore.js:258",
+      "description": "Outer X.resolve routes delve/realm to EX.resolve before guarded native resolve. EX.resolve has no done/settlement guard. Replaying settled delve grants merit again and repeats encounters/logs. CP/material handover is correctly guarded.",
+      "observed": {
+        "meritBefore": 507,
+        "meritAfter": 514,
+        "delvesBefore": 1,
+        "delvesAfter": 2,
+        "logSeqBefore": 3,
+        "logSeqAfter": 4,
+        "cpBefore": 43,
+        "cpAfter": 43
+      },
+      "reproduce": "node /workspace/scratch/4620f7523869/integration_review_repros.cjs settled-exploration",
+      "expectedBeforeFix": "Assertion failure",
+      "initialStatus": "REPRODUCED",
+      "verification": "Standalone reproduction now passes against parent fixes; no production edit by reviewer."
+    },
+    {
+      "id": "empty-resource-region-selection",
+      "status": "FIX_VERIFIED",
+      "source": "js/content.js:38",
+      "description": "Gather can choose frozen (0 gather resources); hunt can choose volcano or ruins (0 hunt resources) because baseline positive weight remains. This wastes mission travel/encounters; discovery can still occur.",
+      "reproduce": "node /workspace/scratch/4620f7523869/integration_review_repros.cjs empty-pool",
+      "initialStatus": "DIAGNOSTIC_DESIGN_CONCERN",
+      "verification": "Standalone reproduction now passes against parent fixes; no production edit by reviewer."
+    }
+  ],
+  "positiveChecks": [
+    "No imported sourcePack materials found in initial stock. Native harvesting is hardcoded to native materials. Native expedition/explore material and manual generic pools now exclude sourcePack.",
+    "All imported recipes have discoverable regional routes and all inputs have one or more regional sources.",
+    "All 8 formulas and 9 manuals reached the library in the 1-year seed1 soak; imported materials were acquired and expansion recipes were crafted autonomously.",
+    "Five requested tests passed, including idempotent handover receipt and craft completion coverage.",
+    "Former seed1 craft-arrival crash point passed; full one-year simulation completed without recorded numeric state issues."
+  ],
+  "limits": [
+    "Soak loaded content and simulation code before parent UI/medicine completion and any review fixes. Run final checks after all changes.",
+    "No real browser/device benchmark; VM timing and CPU soak are separate evidence.",
+    "Exactly-once handover does not prove all expedition resolution side effects are idempotent."
+  ],
+  "postReviewVerification": {
+    "commands": [
+      "node test/core_lock.js",
+      "node test/cp_economy.js",
+      "node test/craft_transactions.js",
+      "node test/content_expansion.js",
+      "node test/runtime_timing.js",
+      "node /workspace/scratch/4620f7523869/integration_review_repros.cjs initial-manual",
+      "node /workspace/scratch/4620f7523869/integration_review_repros.cjs settled-exploration",
+      "node /workspace/scratch/4620f7523869/integration_review_repros.cjs empty-pool"
+    ],
+    "allExitCode": 0,
+    "observed": {
+      "initialImportedTechniques": [],
+      "settledExplorationReplay": {
+        "merit": [
+          507,
+          507
+        ],
+        "delves": [
+          1,
+          1
+        ],
+        "cp": [
+          43,
+          43
+        ],
+        "logs": [
+          3,
+          3
+        ]
+      },
+      "gatherFrozenChoice": null
+    }
+  }
+}

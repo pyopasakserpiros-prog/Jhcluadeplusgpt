@@ -1,0 +1,4 @@
+explore logs 2 time 581 ms
+  🌀 ประตูมิติเปิดที่ลานประตูมิติ! มองเห็นแดน「มหาสมุทรลอยฟ้า」🌊 (พายุมิติ) — ทะเลที่ลอยอยู่กลางอากาศ มีเกาะลอยฟ้า ปลายักษ์ที่ว่ายในเมฆ และเรือเก่าของเซียน
+  🌀 ประตูมิติปิดลงอีกครั้ง — แดน「มหาสมุทรลอยฟ้า」หายไปจากสายตา
+cave {"maxDepth":0,"cap":5,"guard":{},"delves":0,"deaths":0,"fresh":1,"last":-99} spots {"stele":{"visits":0,"frag":0,"lvl":0},"spring":{"visits":0,"charge":100,"max":100,"lvl":0},"ruin":{"visits":0,"lvl":0,"secrets":0},"grove":{"visits":0,"lvl":0}} relics [] gate {"open":false,"until":373,"next":405,"world":"skysea","tide":1,"openings":1} found 0 deaths 0 stones 184

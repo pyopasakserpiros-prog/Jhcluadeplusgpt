@@ -1,0 +1,198 @@
+{
+  "date": "2026-10-28",
+  "node": "v24.19.0",
+  "results": [
+    {
+      "test": "core_lock",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS fingerprint 155:2f9c9dd7 == 155:2f9c9dd7\nPASS personality 14 / values 8 / aptitudes 6\nPASS validate 3 npcs\nPASS compare A≠B (25%), A=A (100%)\nPASS save carries fingerprint"
+    },
+    {
+      "test": "cp_economy",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS contribution economy: scarcity pricing, basic recipes, sourced crafting, truthful handover, personal donation, one-time study payment, no free starting pills, zero-balance preservation, save/load inventory, true pill consumption, premium pill shop, adaptive price index, paid guidance service, paid training sink"
+    },
+    {
+      "test": "speed_controls",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS speed button list: 0×, 1×, 2×, 4×, 8×, 16×, 32×, 48×\nPASS clicking 16× and 32× changes G.speed and refreshes the HUD\nPASS mobile speed-button layout rule and 32× performance test coverage\nNOTE: full simulation throughput still needs a browser/device benchmark"
+    },
+    {
+      "test": "time_controls",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS time controls: 16×, 32×, 48× retained; pending ticks preserved; high-speed rendering throttled; mobile layout responsive"
+    },
+    {
+      "test": "runtime_timing",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS runtime timing: 1/2/4/8/16/32/48x, full stalled elapsed time, 12 ms budget, preserved backlog, pause, save/load, fresh world clocks, legacy save defaults\nPASS runtime error recovery: load/new game clear stale errors and subsequent failures pause again\nPASS legacy browser load restores paused and accelerated saves without runtimeTiming"
+    },
+    {
+      "test": "craft_transactions",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS inventory rejects negative and non-finite quantities\nPASS craft completion without paid inputs produces nothing\nPASS starting one action twice spends its ingredients once\nPASS basic crafting grants output and contribution rewards once\nPASS brew completes its paid recipe and grants native rewards once\nPASS forge completes its paid recipe and grants native rewards once\nPASS paid craft survives save/load and rejects replay after another reload\nPASS a receipt cannot pay for another actor or recipe\nPASS failed crafting can return paid materials only once\nPASS duplicate recipe inputs are reserved atomically\nPASS legacy direct API still requires a consumable reservation\nPASS legacy paid action adoption does not charge its inputs again\nPASS a replacement craft invalidates an interrupted receipt without refunds\nPASS stale actor receipts can be pruned without returning consumed materials\nPASS discoverable recipes require knowledge as well as the normal tier gate\nPASS native crafting revalidates discovered recipe requirements at start\nPASS craft duration uses its captured recipe when the hall order changes"
+    },
+    {
+      "test": "content_expansion",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS content integrity, new branches/combat, discovery gates, renewable stocks, exactly-once handover, compatibility"
+    },
+    {
+      "test": "content_economy",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS new subpaths have distinctive stat and affinity effects\nPASS physical imported goods can be donated, sold, consumed with exact transfers\nPASS stale or forged shop prices cannot charge or create corrupt balances\nPASS wrong cultivation affinity does not buy or consume specialized medicine\nPASS new regional expedition resolves once, roundtrips outcomes and formula access\nPASS paid imported technique selects and charges the same manual only once\nPASS legacy paid crafting migrates without consuming inputs a second time\nPASS 7 content economy integration checks"
+    },
+    {
+      "test": "content_discovery",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS starting curriculum gating and regional acquisition provenance"
+    },
+    {
+      "test": "exploration_replay",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS cave/realm rewards, progress, logs and RNG settle once across reload"
+    },
+    {
+      "test": "ui_content",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS native UI content, discovery locks, personal formula scrolls, external market panel/map marker and existing world/sect tab renderers"
+    },
+    {
+      "test": "legacy_save",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS actual v1.9 synthetic save: identities, progression, inventory, CP, library, RNG, season and paid craft resume"
+    },
+    {
+      "test": "save_integrity",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS a paused save remains paused after loading\nPASS missing legacy speed still defaults to normal playback\nPASS a failed map import preserves the running game clocks\nPASS a failure during extension migration preserves the running game clocks\nPASS rejects nonnumeric simulation time without affecting the running game\nPASS rejects incomplete RNG state without affecting the running game\nPASS rejects duplicate NPC identities without affecting the running game\nPASS rejects missing log storage without affecting the running game\nPASS rejects negative playback speed without affecting the running game\nPASS rejects missing map seed without affecting the running game\nPASS rejects missing NPC sequence without affecting the running game\nPASS rejects missing log sequence without affecting the running game\nPASS a successful import publishes the restored simulation clocks"
+    },
+    {
+      "test": "test_runner",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS test runner: denied spawn, timeout, assertion failure, and successful child process"
+    },
+    {
+      "test": "beast_ecology",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS regional beasts stay in their habitats; native sect raids cannot create rare parts"
+    },
+    {
+      "test": "external_market",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS external market: sect purchase/sale, member purchase/sale, quote safety, save/load, and visit cycle"
+    },
+    {
+      "test": "recipe_scroll_lifecycle",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS recipe scroll lifecycle & anti-arbitrage: single discovery, keep/copy/trade/donate, 0-CP duplicate donation, one-time authorization fee, save/estate recovery, and zero purchase/donate arbitrage"
+    },
+    {
+      "test": "specialization_tracks",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "Testing independent specialization tracks (v1.10.3)...\nPASS 1: Catalog & Track registry preserves all 9 ordinals without position compression\nPASS 2: Track state initialization and awakening lifecycle\nPASS 3: Dual progression and thresholds\nPASS 4: Explicit skill and resource gates validation\nPASS 5: Breakthrough resolution, cost deduction, and failure retreat\nPASS 6: Functional combat power and cross-path power comparison\nPASS 7: Specialization track realm buffs applied to combat stats\nPASS 8: Serialization and save compatibility\nALL SPECIALIZATION TRACK CHECKS PASSED."
+    },
+    {
+      "test": "combat_passives",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "Testing richer path-specific passives & combat profiles (v1.10.4)...\nPASS 1: Explicit combat profiles (support, heal, summon, channel) & summary text\nPASS 2: Support target handler (C.alliesOf) and party buff execution\nPASS 3: Heal target handler (lowestAlly) and debuff cleanse execution\nPASS 4: Summon creation, target aggregation, damage absorption, and clean despawn\nPASS 5: Channeled ability tick execution, interrupt handling, and completion\nPASS 6: Subpath passives alignment and descriptive text matching native effects\nALL COMBAT PASSIVES AND SPECIALIZATION PROFILE CHECKS PASSED."
+    },
+    {
+      "test": "skill_visual_events",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS shared skill visuals: ordinary/forbidden active casts, target binding, cooldown, silence, stun, nonlethal gate, basic attacks"
+    },
+    {
+      "test": "skill_visual_browser",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS browser skill visuals: two shared styles, pause, expiry, no replay, load baseline and 24-effect cap"
+    },
+    {
+      "test": "cave_pools",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS ten cave themes, weighted bounded subsets, seeded variety, actual expedition journal, save/resume, guardians and replay protection"
+    },
+    {
+      "test": "coherent_regions_recipes",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS coherent_regions_recipes: 6 biomes, 10 beasts, 14 recipes, 40 materials, 100% closed-loop ecology and dependency completeness"
+    },
+    {
+      "test": "welfare_production_policies",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "Testing Wider Welfare & Production Policies (v1.10.6)...\nPASS welfare_production_policies: reserve directives, visible shortages, need/bias welfare, premium protection, and save compatibility verified."
+    },
+    {
+      "test": "browser_mobile_perf",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS browser_mobile_perf: 360px/412px/1280px viewports, gestures, 24 panel tabs, save/load, 0x-48x speeds, 80-NPC stress (0.508 ms/tick, 492.6x cap)"
+    },
+    {
+      "test": "input_cancellation",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS input cancellation: selection/follow preserved, ordinary tap works, minimap drag stops"
+    },
+    {
+      "test": "startup_ui",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS startup load menu exposes only actions available without a world\nPASS cancelling startup load restores the same selectable candidates\nPASS gameplay navigation before loading returns safely to startup\nPASS loading a saved slot enters the world and retains the normal game menu\nPASS a corrupt saved slot remains recoverable\nPASS a failed file import can be retried with a valid save\nPASS a successful import dismisses an open startup overlay"
+    },
+    {
+      "test": "demon_heartsoul_paths",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "Testing Priority P3: Native DEMON and HEART_SOUL paths (v1.10.8)...\nPASS 1: Native DEMON and HEART_SOUL major paths (9 stages, 4 subpaths each) registered\nPASS 2: All 8 DEMON and HEART_SOUL subpaths have 9-realm independent tracks with lifestealPct/reflectPct\nPASS 3: Autonomous path selection and awakening for DEMON and HEART_SOUL\nPASS 4: Distinct strategic training costs, risks, and cultivation tick mechanics verified\nPASS 5: Stats parity, mantras, bottleneck pills/treasures, and skill profiles verified\nPASS 6: Combat lifesteal, reflection, blood harvest, and spar tempering verified\nPASS 7: UI rendering and save/load roundtrip verified\nALL DEMON AND HEART_SOUL PATH CHECKS PASSED (v1.10.8)."
+    },
+    {
+      "test": "organs_experiments_politics",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS v1.10.9 rare organs, property experimentation, factions/world politics, synergies, save/load, and UI rendering"
+    },
+    {
+      "test": "standalone",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS standalone:29 actual inline scripts, no external runtime files, initialized globals,external market,24-hour native simulation and save/load"
+    },
+    {
+      "test": "recipe_coverage",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS all 14 imported recipes: native skill gates, actual inputs, functional outputs and replay rejection"
+    },
+    {
+      "test": "syntax",
+      "status": "PASS",
+      "files": 82,
+      "failures": []
+    }
+  ]
+}

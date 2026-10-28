@@ -1,0 +1,438 @@
+/* explore.js — ระบบสำรวจ: จุดสำรวจในสำนัก (แท่นศิลา/น้ำพุ/ซากเจดีย์/ป่าลับ), ถ้ำหมื่นสายหมอก (10 ชั้น มีผู้พิทักษ์),
+ * ประตูมิติสู่ “แดนหมื่นพิภพ” (12 โลก แต่ละโลกมี pool เหตุการณ์/ของ ที่สุ่มเจอได้ไม่ครบ), ของวิเศษประจำสำนัก (relic), สมุดบันทึกการค้นพบ
+ * ทุกอย่างคำนวณจากตัวตน/ความสามารถของผู้เข้าสำรวจจริง ไม่มีฉากภายใน */
+(function (g) {
+  'use strict';
+  const U = g.U, HC = g.HC, CULT = g.CULT, ECO = g.ECO, SECT = g.SECT, AI = g.AI, MAP = g.MAP, X = g.EXPED, JD = g.JD;
+  const clamp = U.clamp, E = (n, p) => HC.eff(n, p);
+  const EX = {};
+
+  /* ======================= ข้อมูล ======================= */
+  EX.SPOTS = {
+    stele: { nameTh: 'แท่นศิลาจารึกโบราณ', icon: '🗿', desc: 'ศิลาจารึกอักษรโบราณ ถอดความได้ทีละน้อย สะสมเศษจารึกครบแล้วจะได้คัมภีร์วิชา', like: ['scholarship', 'meditation'] },
+    spring: { nameTh: 'น้ำพุปราณลับ', icon: '⛲', desc: 'ตาน้ำที่ปราณไหลรินช้า ๆ ใช้ได้จำกัดต่อวัน ผู้ใช้มากน้ำจะแห้งชั่วคราว', like: ['meditation', 'solitude'] },
+    ruin: { nameTh: 'ซากเจดีย์ร้าง', icon: '🏚️', desc: 'ซากสิ่งก่อสร้างของผู้อยู่มาก่อนสำนัก มีของเก่า เงื่อนงำ และผีสางเฝ้าอยู่', like: ['exploring', 'collecting'] },
+    grove: { nameTh: 'ป่าสมุนไพรเร้นลับ', icon: '🌳', desc: 'ป่าลึกหลังกำแพง มีสมุนไพรหายากและสัตว์วิญญาณเล็ก ๆ', like: ['herbs', 'beasts'] },
+    cave: { nameTh: 'ถ้ำหมื่นสายหมอก', icon: '🕳️', desc: 'ถ้ำใหญ่ใต้ภูเขาหลังสำนัก ลึก 10 ชั้น ชั้น 5 และ 10 มีผู้พิทักษ์เฝ้าอยู่', like: ['exploring', 'combat'] },
+    gate: { nameTh: 'ลานประตูมิติ', icon: '🌀', desc: 'แท่นศิลาโบราณที่ประตูมิติจะเปิดขึ้นเป็นครั้งคราว เชื่อมสู่แดนหมื่นพิภพ', like: ['exploring'] }
+  };
+  EX.SPOT_BID = { stele: 'stele', spring: 'spring', ruin: 'ruin', grove: 'grove' };
+
+  // ของวิเศษประจำสำนัก (เจอได้ชิ้นเดียว ถ้าเจอซ้ำแปลงเป็นศิลา)
+  EX.RELICS = {
+    mirror: { nameTh: 'กระจกส่องใจ', desc: 'ใครมองจะเห็นตัวตนจริง ชื่อเสียงสำนักแผ่ไกล', fx: 'fame', val: 0.04 },
+    bell: { nameTh: 'ระฆังสะท้านพิภพ', desc: 'เสียงระฆังกึกก้อง ศัตรูไม่กล้าเข้าใกล้', fx: 'ward', val: 1 },
+    gourd: { nameTh: 'น้ำเต้ามหาสมบัติ', desc: 'ผลิตศิลาวิญญาณวันละเล็กน้อย', fx: 'stones', val: 5 },
+    sack: { nameTh: 'ถุงข้าวไม่รู้จบ', desc: 'เมล็ดข้าวไหลออกไม่หมด', fx: 'grain', val: 7 },
+    banner: { nameTh: 'ธงสรวงสวรรค์', desc: 'ธงแห่งโชคชะตา ชื่อเสียงเพิ่มขึ้นทุกวัน', fx: 'fame', val: 0.05 },
+    lamp: { nameTh: 'ตะเกียงดวงดาว', desc: 'แสงสว่างขับไล่ภัยร้ายรอบสำนัก', fx: 'ward', val: 1 },
+    abacus: { nameTh: 'ลูกคิดกาลเวลา', desc: 'นับเวลาย้อนกลับ ทำให้ทรัพย์งอกเงย', fx: 'stones', val: 8 },
+    jujube: { nameTh: 'พุทราหมื่นปี', desc: 'ต้นไม้เล็กออกผลทุกวัน เลี้ยงคนได้มาก', fx: 'grain', val: 11 },
+    qistone: { nameTh: 'ศิลาปราณบรรพกาล', desc: 'แผ่ปราณบริสุทธิ์ ผู้บำเพ็ญทุกคนก้าวหน้าเร็วขึ้น', fx: 'qi', val: 1 },
+    seal: { nameTh: 'ตราผนึกพิภพ', desc: 'ตราหยกโบราณ เพิ่มบารมีผู้นำ', fx: 'fame', val: 0.06 },
+    cauldron: { nameTh: 'หม้อหลอมเก้าวิญญาณ', desc: 'ปราณกลั่นตัวเป็นศิลา', fx: 'stones', val: 10 },
+    drum: { nameTh: 'กลองอสนีเก่า', desc: 'เสียงกลองข่มศัตรูให้ถอย', fx: 'ward', val: 1 }
+  };
+
+  // ชั้นของถ้ำ: [kind, weight, text]
+  const CAVE_BANDS = [
+    { id: 'c1', nameTh: 'ชั้นหมอกค้างคาว', from: 1, to: 3, enc: [
+      ['fight', 3, 'ฝูงค้างคาวถ้ำ'], ['gather', 3, 'เส้นแร่เรืองแสงข้างผนัง'], ['hazard', 2, 'พื้นหินร่วนยุบตัว'], ['treasure', 2, 'หีบไม้ผุของนักสำรวจรุ่นก่อน'], ['lore', 1, 'ภาพวาดบนผนังถ้ำ'], ['rest', 1, 'ลำธารใสเย็น']],
+      loot: [['stones', 3, 'ศิลาตกค้าง', 10, 40, 1], ['ore', 3, 'แร่ถ้ำ', 2, 0, 1], ['herb', 3, 'เห็ดวิญญาณในถ้ำ', 2, 0, 1], ['pill', 1, 'โอสถของนักสำรวจเก่า', 1, 0, 2], ['beast', 2, 'ปีกค้างคาวอสูร', 2, 0, 1], ['gear', 0.6, 'อาวุธเก่าในถ้ำ', 1, 0, 3]] },
+    { id: 'c2', nameTh: 'ธารใต้พิภพ', from: 4, to: 6, enc: [
+      ['fight', 3, 'งูน้ำอสูรใต้ธาร'], ['fight', 1.5, 'วิญญาณผู้ตายจมน้ำ'], ['hazard', 2, 'กระแสน้ำใต้ดินเชี่ยวกราก'], ['treasure', 2, 'ถ้ำเล็กในแอ่งน้ำ'], ['trial', 1, 'เสียงสะท้อนเรียกชื่อ'], ['rest', 1.5, 'แอ่งน้ำปราณอุ่น'], ['lore', 1, 'จารึกเตือนภัยของผู้เฝ้าถ้ำ']],
+      loot: [['stones', 3, 'ศิลาในแอ่งน้ำ', 25, 80, 1], ['ore', 2, 'แร่น้ำลึก', 3, 0, 1], ['herb', 3, 'บัวใต้ดิน', 3, 0, 2], ['pill', 1.5, 'โอสถเก่าแก่', 2, 0, 2], ['formation', 1, 'เศษค่ายกลโบราณ', 3, 0, 2], ['gear', 1, 'ศาสตราจมน้ำ', 2, 0, 3], ['tech', 0.6, 'คัมภีร์เปียกชื้น', 2, 0, 3], ['boon', 1, 'พรจากธารปราณ', 'qi', 0, 2]] },
+    { id: 'c3', nameTh: 'ห้องศิลาโบราณ', from: 7, to: 9, enc: [
+      ['fight', 3, 'หุ่นศิลาเฝ้าห้อง'], ['fight', 2, 'ทหารผีใต้พิภพ'], ['hazard', 3, 'ค่ายกลสังหารที่ยังทำงาน'], ['treasure', 3, 'ห้องเก็บสมบัติปิดผนึก'], ['trial', 2, 'ปริศนาประตูศิลา'], ['lore', 2, 'ห้องสมุดจารึกใต้ดิน'], ['npc', 1, 'วิญญาณเฒ่าผู้เฝ้าห้อง']],
+      loot: [['stones', 2, 'ศิลาบรรพกาล', 60, 140, 1], ['formation', 2, 'แกนค่ายกลโบราณ', 4, 0, 2], ['ore', 2, 'แร่ลึกใต้ภูเขา', 4, 0, 2], ['pill', 1.5, 'โอสถผนึกในโถ', 3, 0, 3], ['gear', 1.5, 'ศาสตราผนึกในหีบ', 3, 0, 3], ['tech', 1.2, 'คัมภีร์ศิลา', 3, 0, 3], ['relicmat', 0.4, 'ชิ้นส่วนมรดกบรรพกาล', 0, 0, 4], ['boon', 1, 'พรจากศิลาจารึก', 'mind', 0, 3]] }
+  ];
+  const CAVE_GUARD = {
+    5: { nameTh: 'ยักษ์ศิลาผู้พิทักษ์', d: 2.6, relic: 'bell', stones: 250 },
+    10: { nameTh: 'ราชันใต้พิภพ', d: 4.4, relic: 'qistone', stones: 600 }
+  };
+
+  // แต่ละชั้นมีทางแยกของตนเอง ใช้รางวัลตามระดับเดิม แต่จำกัดชนิดให้เข้ากับทางที่พบ
+  // pool = [id, ชื่อ, น้ำหนัก, ดัชนีรางวัลใน band, เหตุการณ์ที่เลือกได้]
+  function caveFloor(floor, nameTh, pools) {
+    const band = CAVE_BANDS[floor <= 3 ? 0 : floor <= 6 ? 1 : 2];
+    const id = 'cave_f' + floor;
+    return { floor, id, nameTh, pools: pools.map(p => {
+      const poolId = id + '_' + p[0];
+      return { id: poolId, nameTh: p[1], weight: p[2], loot: p[3].map(i => band.loot[i]),
+        entries: p[4].map((enc, i) => { enc.id = poolId + ':' + i; return enc; }) };
+    }) };
+  }
+  const CAVE_FLOORS = [
+    caveFloor(1, 'โถงหมอกน้ำค้าง', [
+      ['roost', 'โพรงค้างคาวริมปากถ้ำ', 3, [0, 4], [['fight', 3, 'ค้างคาวเขี้ยวน้ำค้าง'], ['fight', 2, 'หนูหินแย่งรังเก่า'], ['hazard', 2, 'หินร่วงจากเพดานรัง']]],
+      ['camp', 'ค่ายนักสำรวจที่ถูกลืม', 3, [0, 3, 5], [['treasure', 3, 'หีบเสบียงหลังม่านหมอก'], ['lore', 1, 'แผนทางบนผ้าของคนหาย'], ['hazard', 1, 'เชือกดักขาหน้าค่ายร้าง']]],
+      ['dew', 'ลานหินรับหยาดปราณ', 4, [0, 1, 2], [['gather', 3, 'เห็ดหยาดปราณริมแสง'], ['rest', 1, 'แอ่งน้ำค้างใต้ปล่องลม'], ['gather', 2, 'แร่ประกายบนรอยแตกตื้น']]]
+    ]),
+    caveFloor(2, 'เหมืองผลึกเสียงก้อง', [
+      ['burrow', 'รังสัตว์ในปล่องเหมือง', 3, [1, 4], [['fight', 3, 'ด้วงเกราะผลึกเฝ้าปล่อง'], ['fight', 2, 'ตะขาบเงินใต้รางแร่'], ['hazard', 2, 'ฝูงแมลงผลึกตื่นเสียงสะท้อน']]],
+      ['shaft', 'เหมืองขุดที่ปิดตาย', 3, [0, 1, 5], [['treasure', 3, 'รถขนแร่ค้างหลังกำแพง'], ['lore', 1, 'รอยสิ่วบอกทางของหัวหน้าคนงาน'], ['hazard', 2, 'คานค้ำเหมืองผุพัง']]],
+      ['crystal', 'สายแร่สะท้อนปราณ', 4, [0, 1, 2], [['gather', 3, 'ผลึกม่วงบนผนังเหมือง'], ['rest', 1, 'ซอกหินอุ่นไร้เสียงก้อง'], ['gather', 2, 'ตะไคร่เงินรอบเส้นแร่']]]
+    ]),
+    caveFloor(3, 'สวนเห็ดในหมอกคราม', [
+      ['spore', 'ดงอสูรสปอร์คราม', 3, [2, 4], [['fight', 3, 'แมงมุมใยสปอร์คราม'], ['fight', 2, 'คางคกหลังเห็ดพิษ'], ['hazard', 2, 'เมฆสปอร์กลบทางกลับ']]],
+      ['hut', 'กระท่อมผู้เพาะเห็ด', 3, [0, 3, 5], [['treasure', 3, 'ไหโอสถฝังใต้เรือนเห็ด'], ['lore', 2, 'ตำราเพาะเห็ดสลักบนกระดูก'], ['trial', 1, 'เสียงขอให้เลือกเห็ดแห่งความจริง']]],
+      ['garden', 'แปลงเห็ดเรืองแสง', 4, [0, 2, 3], [['gather', 4, 'เห็ดโคมครามผลิบาน'], ['rest', 1, 'วงรากเห็ดกรองอากาศ'], ['hazard', 2, 'เถาเห็ดพันข้อเท้า']]]
+    ]),
+    caveFloor(4, 'ธารดำไร้ฝั่ง', [
+      ['current', 'วังวนอสูรธารดำ', 4, [0, 1, 5], [['fight', 3, 'งูเกล็ดดำเฝ้าแก่ง'], ['fight', 2, 'วิญญาณคนแจวเรือจมน้ำ'], ['hazard', 3, 'วังวนเย็นจัดฉุดลงใต้หิน']]],
+      ['wreck', 'ซากเรือในโพรงน้ำ', 3, [0, 3, 5, 6], [['treasure', 3, 'ห้องเก็บของในเรือจม'], ['lore', 1, 'ป้ายท่าเรือใต้ระดับธาร'], ['hazard', 2, 'ประตูเรือปิดขังเมื่อน้ำขึ้น']]],
+      ['bank', 'ตลิ่งเร้นใต้เงาผา', 3, [0, 1, 2, 7], [['gather', 3, 'บัวธารดำในซอกตลิ่ง'], ['rest', 1.5, 'หาดทรายขาวกลางธาร'], ['gather', 2, 'ก้อนแร่ที่กระแสน้ำขัดจนใส']]]
+    ]),
+    caveFloor(5, 'ด่านสะพานผู้พิทักษ์', [
+      ['sentries', 'เชิงสะพานยามศิลา', 4, [0, 4, 5], [['fight', 3, 'หุ่นยามศิลาหัวสะพาน'], ['fight', 2, 'อสูรหินซ่อนใต้เสาสะพาน'], ['hazard', 2, 'คลื่นปราณจากรูปยักษ์แตก']]],
+      ['gatehouse', 'ห้องยามข้างตราผนึก', 3, [0, 3, 4, 6], [['treasure', 3, 'คลังค่าผ่านทางในห้องยาม'], ['trial', 2, 'ตราชั่งคำสัตย์หน้าด่าน'], ['lore', 1, 'จารึกคำสาบานผู้พิทักษ์สะพาน']]],
+      ['pillars', 'ธารปราณรอบฐานเสา', 3, [0, 1, 2, 7], [['gather', 3, 'ผลึกน้ำหยดใต้ฐานสะพาน'], ['rest', 1.5, 'ตาน้ำอุ่นหลังเสายักษ์'], ['hazard', 2, 'พื้นสะพานแตกร้าวเหนือเหว']]]
+    ]),
+    caveFloor(6, 'ทะเลสาบบัวสะท้อนจิต', [
+      ['echoes', 'เกาะเงาเสียงเรียก', 3, [0, 3, 7], [['fight', 3, 'เงาผู้บำเพ็ญในผิวน้ำ'], ['trial', 2, 'เสียงเรียกชื่อจากกอบัว'], ['hazard', 2, 'หมอกทะเลสาบลบความทรงจำ']]],
+      ['shrine', 'ศาลาเซียนจมน้ำ', 3, [0, 4, 5, 6], [['treasure', 3, 'ช่องลับใต้แท่นเซียนบัว'], ['lore', 2, 'บทสวดสะท้อนบนหลังคาศาลา'], ['npc', 1, 'วิญญาณคนปลูกบัวผู้รอคำตอบ']]],
+      ['lotus', 'ดงบัวใต้แสงปราณ', 4, [0, 2, 3, 7], [['gather', 4, 'ฝักบัวแก้วกลางทะเลสาบ'], ['rest', 1.5, 'ใบบัวยักษ์รับไอปราณ'], ['hazard', 2, 'รากบัวลวงตาดึงข้อเท้า']]]
+    ]),
+    caveFloor(7, 'คลังศาสตราหุ่นศิลา', [
+      ['armory', 'ลานซ้อมหุ่นทหาร', 4, [0, 1, 4], [['fight', 3, 'หุ่นศิลาถือทวนหัก'], ['fight', 2, 'ทหารผีเฝ้าคลังศาสตรา'], ['hazard', 3, 'กระบี่กลพุ่งจากช่องผนัง']]],
+      ['vault', 'ห้องอาวุธหลังประตูหิน', 3, [0, 3, 4, 5], [['treasure', 3, 'ชั้นศาสตราประทับตราเก่า'], ['trial', 2, 'ประตูคลังทดสอบท่วงท่า'], ['lore', 1, 'บัญชีศาสตราของกองทัพที่หายไป']]],
+      ['workshop', 'โรงช่างร้างใต้คลัง', 3, [0, 1, 2], [['gather', 3, 'เศษแกนหุ่นบนโต๊ะช่าง'], ['rest', 1, 'เตียงหินในห้องช่างเก่า'], ['hazard', 2, 'ลูกสูบหินทำงานผิดจังหวะ']]]
+    ]),
+    caveFloor(8, 'เตาหลอมไฟใต้พิภพ', [
+      ['embers', 'ปล่องอสูรถ่านแดง', 4, [0, 2, 4], [['fight', 3, 'กิ้งก่าเกราะถ่านเฝ้าปล่อง'], ['fight', 2, 'วิญญาณช่างหลอมคลั่ง'], ['hazard', 3, 'ลมไฟพุ่งจากรอยแยกเตา']]],
+      ['crucible', 'ห้องหลอมเก้าตรา', 3, [0, 1, 3, 4], [['treasure', 3, 'เบ้าหลอมผนึกศาสตราชิ้นสุดท้าย'], ['trial', 2, 'คันโยกเก้าตราที่ต้องหมุนตามปราณ'], ['lore', 1, 'สูตรหลอมสลักข้างเตาเย็น']]],
+      ['vein', 'สายแร่ในอุโมงค์ระบายไฟ', 3, [0, 1, 2, 6], [['gather', 3, 'ผลึกอัคคีในตะกรันโบราณ'], ['gather', 2, 'โลหะปราณหยดจากเพดานแดง'], ['rest', 1, 'ปล่องลมเย็นหลังม่านหิน']]]
+    ]),
+    caveFloor(9, 'หอจารึกกระดูกหยก', [
+      ['tombs', 'สุสานผู้เฝ้าจารึก', 4, [0, 1, 3], [['fight', 3, 'ทหารผีสวมหน้ากากหยก'], ['hazard', 3, 'อักษรสังหารบนพื้นสุสาน'], ['trial', 2, 'เงาบรรพชนถามเจตนาผู้มาเยือน']]],
+      ['archive', 'หอคัมภีร์หลังผนังกระดูก', 4, [0, 4, 5, 7], [['treasure', 3, 'กล่องคัมภีร์ผนึกด้วยเสียงสวด'], ['lore', 2, 'ประวัติราชันบนแผ่นกระดูกหยก'], ['npc', 1, 'ผู้เฝ้าหอจารึกไร้ร่าง']]],
+      ['jade', 'สวนผลึกหยกกลางสุสาน', 2, [0, 2, 6, 7], [['gather', 3, 'ผลึกหยกเกาะรากศิลาพันปี'], ['rest', 1, 'ซุ้มแสงสงบใต้ต้นหยก'], ['hazard', 2, 'ฝุ่นกระดูกหยกกัดกร่อนปราณ']]]
+    ]),
+    caveFloor(10, 'บัลลังก์ผนึกบรรพกาล', [
+      ['throne', 'ลานราชองครักษ์ใต้พิภพ', 4, [0, 1, 4], [['fight', 3, 'องครักษ์ศิลาไร้พระพักตร์'], ['fight', 2, 'เงามงกุฎเฝ้าบันไดบัลลังก์'], ['hazard', 3, 'คลื่นผนึกบดขยี้รอบท้องพระโรง']]],
+      ['seal', 'ห้องพระราชทรัพย์หลังผนึก', 4, [0, 3, 4, 5, 6], [['treasure', 3, 'หีบราชสมบัติใต้ตราบัลลังก์'], ['trial', 2, 'คำสัตย์สุดท้ายของราชันใต้พิภพ'], ['lore', 2, 'จารึกกำเนิดถ้ำบนผนึกใหญ่']]],
+      ['origin', 'ตาน้ำปราณปฐมกาล', 2, [0, 1, 2, 7], [['gather', 3, 'ผลึกปฐมปราณรอบตาน้ำ'], ['rest', 1, 'แท่นสงบจิตเหนือธารบรรพกาล'], ['hazard', 2, 'กระแสปราณย้อนจากแกนภูเขา']]]
+    ])
+  ];
+  EX.CAVE_FLOORS = CAVE_FLOORS;
+  // เลือก 1–2 ทางจาก 3 ทาง โดยไม่คืนทางที่เลือก แล้วพบเพียงหนึ่งเหตุการณ์ในแต่ละทาง
+  // คืนข้อมูลที่เลือกเท่านั้น; resolver จะบันทึกเมื่อพบจริง ไม่เผยทางที่ยังไม่ได้เดิน
+  EX.sampleCaveFloor = (floor, rng) => {
+    if (!Number.isInteger(floor) || floor < 1 || floor > CAVE_FLOORS.length) throw new RangeError('cave floor must be 1–10');
+    const config = CAVE_FLOORS[floor - 1], remaining = config.pools.slice(), encounters = [];
+    const count = 1 + (rng.chance(0.55) ? 1 : 0);
+    for (let i = 0; i < count; i++) {
+      const pool = rng.weighted(remaining, p => p.weight);
+      remaining.splice(remaining.indexOf(pool), 1);
+      const enc = rng.weighted(pool.entries, e => e[1]);
+      encounters.push({ id: enc.id, poolId: pool.id, poolNameTh: pool.nameTh, enc, loot: pool.loot });
+    }
+    return { floor, id: config.id, nameTh: config.nameTh, encounters };
+  };
+
+  /* โลกในแดนหมื่นพิภพ: enc=[kind,น้ำหนัก,ข้อความ], loot=[kind,น้ำหนัก,ป้าย,p1,p2,ความหายาก 1-4] */
+  EX.WORLDS = [
+    { id: 'swordyard', nameTh: 'ทะเลสุสานกระบี่', icon: '⚔️', d: 2.5, desc: 'ทะเลทรายเหล็กที่กระบี่นับล้านปักอยู่ ราวกับสนามรบของนักกระบี่ผู้สิ้นชีพ',
+      enc: [['fight', 3, 'วิญญาณกระบี่ที่ยังไม่ยอมสงบ'], ['treasure', 2, 'กระบี่เก่าปักอยู่กลางเนิน'], ['trial', 2, 'ท่ากระบี่ที่ไม่มีผู้รับสืบทอด'], ['hazard', 2, 'พายุเศษเหล็กคม'], ['lore', 2, 'แท่นจารึกเคล็ดกระบี่'], ['npc', 1, 'นักกระบี่ผู้เฒ่าที่ยังหายใจ']],
+      loot: [['ore', 3, 'เหล็กกล้าจากกระบี่ร้าว', 4, 0, 1], ['stones', 2, 'ศิลาที่ทับกระบี่', 80, 200, 1], ['gear', 3, 'กระบี่จากทะเลสุสาน', 4, 0, 2], ['tech', 1.5, 'คัมภีร์กระบี่ไร้นาม', 3, 0, 3], ['boon', 1, 'กระบี่ยินยอมให้สัมผัส', 'body', 0, 3], ['relic', 0.35, 'กระบี่ฝังศพราชา', 'drum', 0, 4]] },
+    { id: 'snow', nameTh: 'โลกหิมะนิรันดร์', icon: '❄️', d: 2, desc: 'โลกที่ฤดูหนาวไม่เคยสิ้นสุด มีสมุนไพรหยาดน้ำแข็งและอสูรขาวหิมะ',
+      enc: [['fight', 2.5, 'หมาป่าหิมะเก้าหาง'], ['hazard', 3, 'พายุหิมะกลืนทิศ'], ['gather', 3, 'ดอกบัวน้ำแข็งบนธารเยือก'], ['rest', 1, 'ถ้ำน้ำพุร้อนใต้หิมะ'], ['npc', 1, 'พ่อค้าเร่ที่ตัวเป็นน้ำแข็ง'], ['lore', 1, 'ซากอารามบนยอดเขาขาว']],
+      loot: [['herb', 4, 'บัวน้ำแข็ง', 4, 0, 1], ['beast', 2, 'ขนอสูรหิมะ', 3, 0, 1], ['pill', 2, 'โอสถแช่แข็ง', 3, 0, 2], ['stones', 2, 'ศิลาเยือกเย็น', 60, 160, 1], ['boon', 1, 'พรจากวิญญาณหิมะ', 'body', 0, 3], ['relic', 0.3, 'ตะเกียงที่ไม่ดับในพายุ', 'lamp', 0, 4]] },
+    { id: 'fungi', nameTh: 'ป่าเห็ดเรืองแสง', icon: '🍄', d: 1.6, desc: 'ป่าเห็ดยักษ์ที่เรืองแสงในความมืด เหมาะกับผู้เริ่มสำรวจ แต่เห็ดบางชนิดทำให้เห็นภาพลวง',
+      enc: [['gather', 4, 'ทุ่งเห็ดวิญญาณ'], ['hazard', 2, 'สปอร์ภาพลวง'], ['fight', 2, 'ด้วงเห็ดยักษ์'], ['npc', 1.5, 'เห็ดพูดได้ขอแลกของ'], ['rest', 1, 'วงเห็ดนอนหลับสบาย'], ['trial', 1, 'เห็ดทำนายความกลัว']],
+      loot: [['herb', 5, 'เห็ดวิญญาณหายาก', 3, 0, 1], ['pill', 2, 'โอสถจากสปอร์', 2, 0, 1], ['stones', 2, 'ศิลาใต้รากเห็ด', 30, 90, 1], ['beast', 1, 'เกราะด้วงเห็ด', 2, 0, 1], ['boon', 1, 'พรจากเห็ดโบราณ', 'luck', 0, 3], ['relic', 0.3, 'พุทราที่งอกกลางป่าเห็ด', 'jujube', 0, 4]] },
+    { id: 'upside', nameTh: 'นครกลับหัว', icon: '🏙️', d: 3, desc: 'นครที่ตึกห้อยลงจากท้องฟ้า ผู้คนเดินบนเพดาน และกฎของโลกกลับด้านบางประการ',
+      enc: [['npc', 3, 'พ่อค้าบนเพดานเสนอซื้อขาย'], ['hazard', 2, 'ถนนที่แรงโน้มถ่วงกลับด้าน'], ['fight', 2, 'ทหารยามนครกลับหัว'], ['treasure', 2, 'คลังของตระกูลพ่อค้า'], ['trial', 1.5, 'ปริศนาของผู้พิพากษา'], ['lore', 1, 'หอจดหมายเหตุนคร']],
+      loot: [['stones', 4, 'เงินตรานครกลับหัว', 100, 300, 1], ['pill', 2, 'โอสถของหมอนคร', 3, 0, 2], ['gear', 2, 'เครื่องราชของยามนคร', 3, 0, 2], ['tech', 1, 'ตำราจากหอจดหมายเหตุ', 3, 0, 3], ['formation', 1.5, 'แกนค่ายกลกลับทิศ', 4, 0, 2], ['relic', 0.35, 'ลูกคิดของเจ้าหนี้นคร', 'abacus', 0, 4]] },
+    { id: 'hourglass', nameTh: 'ทะเลทรายนาฬิกาทราย', icon: '⏳', d: 3, desc: 'ทรายที่ไหลย้อนเวลา อยู่นานรู้สึกเหมือนผ่านไปไม่กี่ชั่วโมง แต่ข้างนอกผ่านไปหลายวัน',
+      enc: [['hazard', 3, 'หลุมทรายเวลาไหลวน'], ['fight', 2.5, 'แมงป่องทรายอายุพันปี'], ['treasure', 2, 'หีบที่ทรายพัดเปิด'], ['lore', 2, 'ซากนครที่หยุดเวลา'], ['trial', 1.5, 'เงาตัวเองในอดีต'], ['npc', 1, 'นักเดินทางที่หลงเวลา']],
+      loot: [['stones', 3, 'ทรายทองคำ', 90, 230, 1], ['ore', 2, 'ผลึกเวลา', 4, 0, 2], ['pill', 2, 'โอสถยืดชีวิตน้อย', 3, 0, 2], ['boon', 1.5, 'ทรายพรอายุ', 'mind', 0, 3], ['relicmat', 0.5, 'เศษผลึกกาลเวลา', 0, 0, 4], ['relic', 0.35, 'นาฬิกาทรายที่หยุดเวลา', 'abacus', 0, 4]] },
+    { id: 'eden', nameTh: 'สวนสวรรค์ล่มสลาย', icon: '🌸', d: 2.5, desc: 'สวนของเทพที่ล่มสลาย ดอกไม้บานตลอดกาลแต่ผู้เฝ้าสวนเสียสติไปนานแล้ว',
+      enc: [['gather', 3, 'สวนโอสถเก้าชั้น'], ['fight', 2.5, 'เทพบุตรเฝ้าสวนผู้เสียสติ'], ['rest', 1.5, 'ธารน้ำอมฤตเจือจาง'], ['trial', 1.5, 'ประตูแห่งความปรารถนา'], ['hazard', 1.5, 'กลิ่นหอมมึนเมา'], ['npc', 1, 'นางไม้ขอร้องให้ช่วย']],
+      loot: [['herb', 5, 'โอสถพฤกษาทิพย์', 5, 0, 2], ['pill', 2, 'โอสถทิพย์ตกค้าง', 4, 0, 3], ['boon', 2, 'พรจากสวนสวรรค์', 'qi', 0, 3], ['stones', 2, 'ศิลาฝุ่นดาว', 70, 190, 1], ['person', 0.4, 'ผู้พเนจรจากสวนสวรรค์', 0, 0, 4], ['relic', 0.3, 'พุทราผลสุดท้ายของสวน', 'jujube', 0, 4]] },
+    { id: 'prison', nameTh: 'คุกอสูรพันปี', icon: '👹', d: 4, desc: 'คุกผนึกอสูรใหญ่ ผนึกบางส่วนคลายแล้ว ใครไปถึงต้องเสี่ยงชีวิต แต่ของที่ได้มีค่ายิ่ง',
+      enc: [['fight', 4, 'อสูรหลุดผนึก'], ['hazard', 2.5, 'ผนึกที่ยังรั่วพลังมาร'], ['treasure', 2, 'คลังยึดของจากผู้ถูกจองจำ'], ['trial', 2, 'เสียงกระซิบของอสูรใหญ่'], ['lore', 1, 'บันทึกของผู้คุมรุ่นสุดท้าย']],
+      loot: [['beast', 4, 'กระดูกอสูรใหญ่', 5, 0, 2], ['stones', 2, 'ศิลาที่ยึดจากผู้ถูกจอง', 150, 380, 1], ['gear', 2, 'ศาสตราเก่าของผู้ต้องโทษ', 5, 0, 3], ['tech', 1.5, 'คัมภีร์ต้องห้าม', 4, 0, 3], ['relicmat', 0.6, 'แก่นมรดกอสูรบรรพกาล', 0, 0, 4], ['curse', 1, 'พลังมารตกค้าง', 0, 0, 1], ['relic', 0.3, 'ระฆังผู้คุมคุก', 'bell', 0, 4]] },
+    { id: 'mirror', nameTh: 'แดนกระจกเงา', icon: '🪞', d: 3, desc: 'โลกที่ทุกอย่างมีเงาของตัวเอง เงาของผู้มาเยือนจะลองต่อสู้กับตัวจริง',
+      enc: [['trial', 4, 'เงาของตัวเองท้าประลอง'], ['fight', 2, 'ทหารกระจกเงา'], ['hazard', 2, 'ทางเดินที่ไม่รู้ว่าจริงหรือสะท้อน'], ['lore', 2, 'ห้องกระจกสะท้อนอดีต'], ['treasure', 1.5, 'กรอบกระจกที่ซ่อนช่องลับ']],
+      loot: [['boon', 3, 'ความเข้าใจในตัวตน', 'mind', 0, 2], ['stones', 2, 'ผลึกกระจกเงิน', 70, 180, 1], ['formation', 2, 'บานกระจกค่ายกล', 4, 0, 2], ['tech', 1.5, 'วิชาจากเงา', 3, 0, 3], ['pill', 1.5, 'โอสถสะท้อนกลับ', 3, 0, 2], ['relic', 0.35, 'กระจกจากแดนกระจกเงา', 'mirror', 0, 4]] },
+    { id: 'skysea', nameTh: 'มหาสมุทรลอยฟ้า', icon: '🌊', d: 3.5, desc: 'ทะเลที่ลอยอยู่กลางอากาศ มีเกาะลอยฟ้า ปลายักษ์ที่ว่ายในเมฆ และเรือเก่าของเซียน',
+      enc: [['fight', 3, 'ปลาเมฆยักษ์'], ['hazard', 2.5, 'พายุฟ้าคะนองใต้ฝ่าเท้า'], ['treasure', 2.5, 'ซากเรือเซียนติดเกาะลอย'], ['gather', 2, 'ไข่มุกวิญญาณใต้คลื่นเมฆ'], ['npc', 1, 'ชาวประมงเมฆเสนอแลกของ'], ['rest', 1, 'เกาะลอยฟ้าสงบ']],
+      loot: [['stones', 3, 'ไข่มุกเมฆ', 130, 320, 1], ['herb', 2, 'สาหร่ายเมฆ', 4, 0, 2], ['beast', 2, 'เกล็ดปลาเมฆ', 4, 0, 2], ['gear', 2, 'อาวุธจากเรือเซียน', 4, 0, 3], ['pill', 1.5, 'โอสถทะเลเมฆ', 4, 0, 3], ['relic', 0.35, 'ธงเรือเซียน', 'banner', 0, 4]] },
+    { id: 'godwar', nameTh: 'ซากสนามรบเทพ', icon: '⚡', d: 4.5, desc: 'สนามรบของเทพเจ้าที่ล่มสลาย พลังตกค้างอันตรายสุด ๆ แต่ของวิเศษระดับตำนานตกอยู่ทั่วไป',
+      enc: [['fight', 4, 'ทหารเทพที่ยังไม่รู้ว่าสงครามจบ'], ['hazard', 3, 'สายฟ้าเทพที่ยังตกไม่หยุด'], ['treasure', 2, 'ศาสตราเทพที่ปักอยู่กลางสนาม'], ['lore', 1.5, 'แท่นจารึกชัยชนะ'], ['trial', 1.5, 'วิญญาณแม่ทัพเทพขอทดสอบ']],
+      loot: [['relicmat', 1.5, 'เศษอาวุธเทพ', 0, 0, 3], ['gear', 2.5, 'ศาสตราเทพเสื่อมสภาพ', 6, 0, 3], ['stones', 2, 'ศิลาเทพ', 220, 520, 2], ['tech', 1.5, 'วิชารบของเทพ', 5, 0, 4], ['boon', 1.5, 'พรจากแม่ทัพเทพ', 'body', 0, 4], ['relic', 0.4, 'ธงสรวงสวรรค์', 'seal', 0, 4]] },
+    { id: 'clock', nameTh: 'โลกจักรกลโบราณ', icon: '⚙️', d: 3, desc: 'โลกของเครื่องกลที่ยังหมุนอยู่ หุ่นยนต์หยกรับใช้ผู้สร้างที่ตายไปแล้ว',
+      enc: [['fight', 3, 'หุ่นยามเฝ้าโรงงาน'], ['hazard', 3, 'เฟืองยักษ์บดขยี้'], ['treasure', 2.5, 'คลังอะไหล่ปิดผนึก'], ['trial', 1.5, 'ปริศนากลไกประตู'], ['npc', 1, 'หุ่นช่างซ่อมเสนอข้อตกลง'], ['lore', 1.5, 'พิมพ์เขียวผู้สร้าง']],
+      loot: [['formation', 3, 'ชิ้นส่วนจักรกลวิญญาณ', 4, 0, 2], ['ore', 3, 'โลหะกลไก', 4, 0, 2], ['gear', 2, 'อาวุธจักรกล', 4, 0, 3], ['stones', 2, 'เหรียญเฟือง', 100, 260, 1], ['tech', 1, 'พิมพ์เขียวกลศาสตร์', 4, 0, 3], ['relic', 0.35, 'หม้อต้มของหุ่นช่างหลวง', 'cauldron', 0, 4]] },
+    { id: 'nightmare', nameTh: 'ดินแดนฝันร้าย', icon: '🌑', d: 4, desc: 'โลกที่สร้างจากความกลัวของผู้คนนับล้าน เข้าไปแล้วต้องเผชิญหน้ากับสิ่งที่กลัวที่สุด',
+      enc: [['trial', 4.5, 'เผชิญสิ่งที่กลัวที่สุด'], ['fight', 2.5, 'ปีศาจแห่งความกลัว'], ['hazard', 2, 'ทางเดินที่เปลี่ยนรูปทุกก้าว'], ['rest', 0.8, 'เกาะแสงสว่างกลางความมืด'], ['lore', 1, 'บันทึกของผู้ที่ไม่ได้ออกไป']],
+      loot: [['boon', 3, 'ความกล้าหาญที่แท้จริง', 'mind', 0, 3], ['stones', 2, 'ผลึกความฝัน', 120, 300, 1], ['pill', 1.5, 'โอสถสงบจิต', 4, 0, 3], ['curse', 1.5, 'เงาความกลัวติดตัว', 0, 0, 1], ['relicmat', 0.5, 'เศษความฝันบรรพกาล', 0, 0, 4], ['relic', 0.35, 'ตะเกียงฝ่าฝันร้าย', 'lamp', 0, 4]] }
+  ];
+  EX.WORLD_BY_ID = {}; EX.WORLDS.forEach(w => { EX.WORLD_BY_ID[w.id] = w; w.loot.forEach((l, i) => { l.id = w.id + ':' + i; }); });
+  CAVE_BANDS.forEach(b => b.loot.forEach((l, i) => { l.id = b.id + ':' + i; }));
+  EX.CAVE_BANDS = CAVE_BANDS; EX.CAVE_GUARD = CAVE_GUARD;
+  const TIDES = [
+    { nameTh: 'ปราณล้นหลาม', loot: 1.35, danger: 1.0 }, { nameTh: 'พายุมิติ', loot: 1.0, danger: 1.25 }, { nameTh: 'ฟ้าใส', loot: 1.0, danger: 0.85 },
+    { nameTh: 'ดวงดาวเรียงตัว', loot: 1.2, danger: 1.1 }, { nameTh: 'ราบเรียบ', loot: 1.0, danger: 1.0 }, { nameTh: 'หมอกมิติหนา', loot: 1.1, danger: 1.15 }
+  ];
+
+  /* ======================= สถานะโลก ======================= */
+  EX.init = W => {
+    if (W.explore) return;
+    W.explore = { gate: { open: false, until: 0, next: W.day + 9, world: null, tide: 0, openings: 0 },
+      cave: { maxDepth: 0, cap: 5, guard: {}, delves: 0, deaths: 0, fresh: 1, last: -99 },
+      spots: { stele: { visits: 0, frag: 0, lvl: 0 }, spring: { visits: 0, charge: 70, max: 100, lvl: 0 }, ruin: { visits: 0, lvl: 0, secrets: 0 }, grove: { visits: 0, lvl: 0 } },
+      codex: { found: {}, worlds: {}, relics: [], notes: [] }, relics: [] };
+  };
+  const dex = W => W.explore;
+  const note = (W, text) => { const c = dex(W).codex; c.notes.push({ d: W.day, text }); if (c.notes.length > 80) c.notes.shift(); };
+  const foePower = d => 28 * Math.pow(d, 1.75);
+  const PW = m => CULT.power(m);
+
+  /* ======================= จุดสำรวจในสำนัก (กิจกรรม explore) ======================= */
+  AI.ACTS.explore = {
+    nameTh: 'สำรวจจุดลับ', icon: '🔍', color: '#7fd1b9',
+    can: (n, W) => n.h.state.energy > 35 && n.h.state.satiety > 30 && !(n.inj && n.inj.length) && n.rank >= 1 && !!W.explore,
+    score(n, W, S) {
+      S.add('ใฝ่รู้ใฝ่เห็น', (E(n, 'personality.curiosity') - 50) / 90); S.add('ชอบสำรวจ', (E(n, 'interests.exploring') - 48) / 90);
+      S.add('ชอบความตื่นเต้น', (E(n, 'temperament.sensationSeeking') - 50) / 160); S.add('อยากเป็นอิสระ', (E(n, 'values.freedom') - 50) / 220);
+      S.add('เบื่อ', (55 - n.h.state.novelty) / 140);
+      S.add('ความกลัว', -(E(n, 'personality.caution') - 55) / 260); if ((W.t % 1440) / 60 > 20 || (W.t % 1440) / 60 < 6) S.add('ดึก', -0.5);
+    },
+    where(W, n) {
+      const keys = Object.keys(EX.SPOT_BID); const w = keys.map(k => { const sp = EX.SPOTS[k]; let s = 1; sp.like.forEach(i => s += Math.max(0, (E(n, 'interests.' + i) - 45) / 40)); if (k === 'spring' && dex(W).spots.spring.charge < 12) s *= 0.15; return { k, s }; });
+      for (let i = 0; i < 3; i++) { const pick = W.rng.weighted(w, x => x.s).k; const s = AI.freeStation(W, n, 'explore', EX.SPOT_BID[pick]); if (s) return { st: s, spot: pick }; }
+      return null;
+    },
+    dur: n => 70 + Math.round(40 * (1 - E(n, 'temperament.energyLevel') / 100)),
+    tick(n, W, ctx) { n.h.state.energy = Math.max(0, n.h.state.energy - 0.05); n.h.state.novelty = Math.min(100, n.h.state.novelty + 0.12); AI.vf(n, { freedom: 0.03, knowledgeCraft: 0.02 }); },
+    done(n, W, ctx) { EX.visit(W, n, ctx.spot); }
+  };
+
+  function matOf(cat, maxTier, rng, minTier) { const l = JD.ITEMS.materials.filter(m => !m.sourcePack && m.category === cat && m.tier <= maxTier && m.tier >= (minTier || 1)); return l.length ? rng.weighted(l, m => 1 / (m.tier * m.tier)) : null; }
+  EX.visit = (W, n, spot) => {
+    const rng = W.rng, e = dex(W), s = e.spots[spot]; if (!s) return; s.visits++; const luck = E(n, 'destiny.luck'), per = E(n, 'intellect.perceptiveness');
+    const nm = n.h.name.given, pl = EX.SPOTS[spot].nameTh; let logText = null; const big = [];
+    HC.feel(n, { novelty: 12, mood: 1.5 });
+    if (spot === 'stele') {
+      const sc = (E(n, 'intellect.comprehension') + E(n, 'intellect.reasoning') + per) / 3 + (luck - 45) / 10 + rng.gauss(0, 12) + s.lvl * 3;
+      if (sc > 72) { s.frag += 2; if (n.cult) CULT.gain(n, CULT.threshold(n) * 0.09); HC.practice(n, 'SCRIPTURE', 3, 1.5); HC.experience(n, 'insight', 0.5); logText = nm + ' ถอดความศิลาจารึกได้อย่างลึกซึ้ง'; }
+      else if (sc > 50) { s.frag += 1; HC.practice(n, 'SCRIPTURE', 1.2, 1); if (n.cult) CULT.gain(n, CULT.threshold(n) * 0.02); }
+      else HC.feel(n, { stress: 3 });
+      if (rng.chance(0.012 + luck / 9000)) { dex(W).gate.next = Math.min(dex(W).gate.next, W.day + 2); logText = nm + ' ถอดจารึกพบข้อความ “ประตูจะเปิดในไม่ช้า” — ลานประตูมิติเริ่มมีแสงสั่นไหว'; note(W, 'จารึกเผยว่าประตูมิติจะเปิดเร็ว ๆ นี้'); }
+      while (s.frag >= 6) { s.frag -= 6; s.lvl++; const pool = JD.TECH.techniques.filter(t => !t.sourcePack && !W.sect.library.includes(t.id) && t.tier <= Math.min(5, 2 + s.lvl)); if (pool.length) { const t = rng.pick(pool); W.sect.library.push(t.id); logText = nm + ' ถอดเศษจารึกครบ ได้คัมภีร์「' + t.nameTh + '」เข้าหอคัมภีร์'; note(W, 'ถอดจารึกได้คัมภีร์ ' + t.nameTh); W.fame(0.3); big.push(1); } }
+    } else if (spot === 'spring') {
+      if (s.charge >= 12) { s.charge -= 12; if (n.cult) CULT.gain(n, CULT.threshold(n) * (0.035 + 0.01 * s.lvl)); n.h.state.stress = Math.max(0, n.h.state.stress - 8); n.h.state.hp = Math.min(CULT.hpMax(n), n.h.state.hp + CULT.hpMax(n) * 0.2); if (n.cult) n.h.state.qi = CULT.qiMax(n);
+        if (rng.chance(0.03 + luck / 6000)) { n.h.destiny.luck = Math.min(100, n.h.destiny.luck + 1); HC.touch(n); logText = nm + ' ได้พรจากวิญญาณน้ำพุ โชคชะตาดีขึ้น'; } if (s.visits % 30 === 0) { s.lvl++; s.max += 25; logText = 'ตาน้ำปราณลับขยายตัว (ระดับ ' + (s.lvl + 1) + ') เก็บปราณได้มากขึ้น'; note(W, logText); } }
+      else { HC.feel(n, { mood: -1 }); }
+    } else if (spot === 'ruin') {
+      const sc = per * 0.6 + E(n, 'intellect.intuition') * 0.3 + (luck - 45) / 8 + rng.gauss(0, 12) + (n.h.skills.survival || 0) * 0.2;
+      const r = rng.next();
+      if (r < 0.14) { const dm = (50 - E(n, 'personality.courage')) / 100; if (rng.chance(clamp(0.5 + dm, 0.2, 0.8))) { HC.feel(n, { stress: 6 }); n.h.state.heartDemon = clamp(n.h.state.heartDemon + 4, 0, 100); logText = nm + ' เจอวิญญาณเก่าแก่ในซากเจดีย์ ตกใจแทบสิ้นสติ'; } else { HC.experience(n, 'victory', 0.3); logText = nm + ' สยบวิญญาณเฝ้าซากเจดีย์ได้'; } if (rng.chance(0.15)) AI.injure(W, n, 1, 'ถูกวิญญาณทำร้าย'); }
+      else if (sc > 62 && r < 0.45) { const amt = rng.int(40, 130) + s.lvl * 25; ECO.earn(W, amt, 'ของเก่าในซากเจดีย์'); logText = nm + ' ขุดพบของเก่าในซากเจดีย์ มูลค่า ' + amt + ' ศิลา'; }
+      else if (sc > 75 && r < 0.6) { const rs = ECO.recipesFor(W, ['FORGING']).filter(x => x.outType === 'EQUIPMENT' && x.tier <= 2 + s.lvl); if (rs.length) { const gear = ECO.mintGear(rng.pick(rs), 1.1 + rng.next() * 0.2); gear.nameTh = (gear.nameTh || 'ศาสตรา') + ' (ของโบราณ)'; W.sect.gear.push(gear); logText = nm + ' พบ' + gear.nameTh + 'ในซากเจดีย์'; note(W, logText); big.push(1); } }
+      else if (sc > 80 && r < 0.72) { s.secrets++; s.lvl++; const cv = dex(W).cave; if (cv.cap < 10 && cv.guard[5]) cv.cap = 10; logText = nm + ' พบเงื่อนงำลึกลับ (ความลับที่ ' + s.secrets + ') ทำให้เข้าใจซากเจดีย์มากขึ้น'; note(W, logText); big.push(1); if (s.secrets === 3) { dex(W).gate.next = Math.min(dex(W).gate.next, W.day + 4); logText += ' — ประตูมิติกำลังจะเปิด'; } }
+      else if (sc > 55) { const m = matOf('FORMATION_PART', 3, rng); if (m) { ECO.add(W, m.id, 1); } }
+      HC.practice(n, 'survival', 0.5, 1);
+    } else if (spot === 'grove') {
+      const sc = per * 0.5 + (n.h.skills.herbalism || 0) * 0.5 + (luck - 45) / 8 + rng.gauss(0, 12) + s.lvl * 2;
+      const tier = Math.min(5, 2 + s.lvl + (sc > 85 ? 1 : 0)); const m = matOf('HERB', sc > 60 ? tier : 3, rng, sc > 60 ? 2 : 1);
+      if (m && sc > 38) { const q = 1 + (sc > 70 ? 1 : 0) + (rng.chance(0.25) ? 1 : 0); ECO.add(W, m.id, q); HC.practice(n, 'herbalism', 1.2, 1); if (sc > 85 && m.tier >= 4) { logText = nm + ' พบ' + m.nameTh + 'ในป่าลับ'; note(W, logText); big.push(1); } }
+      if (rng.chance(0.08)) { const dm = PW(n); if (dm < 25 && rng.chance(0.5)) AI.injure(W, n, 1, 'ถูกสัตว์วิญญาณขวิด'); else HC.experience(n, 'victory', 0.15); }
+      if (rng.chance(0.012)) { s.lvl++; logText = nm + ' พบมุมลับของป่า สมุนไพรหายากขึ้น'; note(W, logText); }
+    }
+    if (logText) W.log('explore', logText, [n.id]);
+  };
+
+  /* ======================= เครื่องยนต์เหตุการณ์ (ใช้ร่วมกันทั้งถ้ำและต่างโลก) ======================= */
+  function lootRoll(W, ex, alive, out, site, d, label) {
+    const rng = W.rng, cdx = dex(W).codex; const pool = site.loot; const luck = alive.reduce((s, m) => s + E(m, 'destiny.luck'), 0) / alive.length;
+    const mult = site.tide ? site.tide.loot : 1;
+    const e = rng.weighted(pool, l => Math.max(0.05, l[1] * (1 + (luck - 45) / 60 * (l[5] - 1)) * (l[0] === 'relic' ? mult : 1)));
+    const finder = rng.weighted(alive, a => 1 + E(a, 'intellect.perceptiveness') / 60); const nm = finder.h.name.given;
+    const k = e[0], p1 = e[3], p2 = e[4]; let txt = null;
+    const per = alive.reduce((s, m) => Math.max(s, E(m, 'intellect.perceptiveness')), 0);
+    if (k === 'stones') { const v = Math.round((p1 + rng.next() * (p2 - p1)) * mult); out.stones += v; txt = e[2] + ' (' + v + ' ศิลา)'; }
+    else if (k === 'herb' || k === 'ore' || k === 'beast' || k === 'formation') { const cat = { herb: 'HERB', ore: 'ORE', beast: 'BEAST_PART', formation: 'FORMATION_PART' }[k]; const m = matOf(cat, p1, rng, Math.max(1, p1 - 2)) || matOf(cat, 7, rng); if (m) { const q = Math.max(1, Math.round((1 + (per - 40) / 45 + rng.next() * 1.4) * mult)); out.mats[m.id] = (out.mats[m.id] || 0) + q; txt = e[2] + '「' + m.nameTh + '」×' + q; } }
+    else if (k === 'relicmat') { const m = matOf('HERITAGE_RELIC', 7, rng); if (m) { out.mats[m.id] = (out.mats[m.id] || 0) + 1; txt = e[2] + '「' + m.nameTh + '」'; } }
+    else if (k === 'pill') { const ps = ECO.recipesFor(W, ['ALCHEMY']).filter(r => r.outType === 'PILL' && r.tier <= p1 && r.tier >= Math.max(1, p1 - 2)); if (ps.length) { const r = rng.pick(ps); const key = r.outItemId || 'P:' + r.id; out.pills[key] = (out.pills[key] || 0) + 1 + (rng.chance(0.3) ? 1 : 0); txt = e[2] + '「' + r.outNameTh + '」'; } }
+    else if (k === 'gear') { const rs = ECO.recipesFor(W, ['FORGING']).filter(r => r.outType === 'EQUIPMENT' && r.tier <= p1 && r.tier >= Math.max(1, p1 - 2)); if (rs.length) { const r = rng.pick(rs); const gear = ECO.mintGear(r, 1.05 + rng.next() * 0.35); gear.nameTh = (gear.nameTh || 'ศาสตรา') + ' (' + site.short || site.nameTh + ')'; gear.q = 1.2; out.gear.push(gear); txt = e[2] + '「' + gear.nameTh + '」'; } }
+    else if (k === 'tech') { const pl = JD.TECH.techniques.filter(t => !t.sourcePack && !W.sect.library.includes(t.id) && !out.techs.includes(t.id) && t.tier <= p1 && t.tier >= Math.max(1, p1 - 2)); const pl2 = pl.length ? pl : JD.TECH.techniques.filter(t => !t.sourcePack && !W.sect.library.includes(t.id) && !out.techs.includes(t.id) && t.tier <= p1); if (pl2.length) { const t = rng.pick(pl2); out.techs.push(t.id); txt = e[2] + '「' + t.nameTh + '」'; } }
+    else if (k === 'boon') { const b = p1; if (b === 'qi' && finder.cult) CULT.gain(finder, CULT.threshold(finder) * 0.14); else if (b === 'body') { HC.trainBody(finder, 'strength', 4); HC.trainBody(finder, 'endurance', 4); } else if (b === 'mind') { HC.trainMind(finder, 'comprehension', 3); HC.trainMind(finder, 'willpower', 3); } else if (b === 'luck') { finder.h.destiny.luck = Math.min(100, finder.h.destiny.luck + 3); HC.touch(finder); } else if (finder.cult) CULT.gain(finder, CULT.threshold(finder) * 0.08); HC.experience(finder, 'insight', 0.8); txt = e[2] + ' (ผู้รับ: ' + nm + ')'; }
+    else if (k === 'curse') { finder.h.state.heartDemon = clamp(finder.h.state.heartDemon + 8, 0, 100); HC.feel(finder, { stress: 8, mood: -4 }); if (rng.chance(0.25)) AI.injure(W, finder, 1, 'ถูกพลังมารกัดกร่อน'); txt = e[2] + ' — ' + nm + ' ได้รับผลกระทบ'; }
+    else if (k === 'person') { const q = clamp(rng.gauss(1.1, 0.5), 0, 2.5); const nn = W.makeNpc({ quality: q, ageYears: rng.int(16, 30), rank: 0, rootBias: 1, fromExped: true }); if (nn) { nn.x = (ex.px || MAP.EXIT.x) + .5; nn.y = (ex.py || MAP.EXIT.y) + .5; nn.travel = null; nn.h.origin.region = site.nameTh; nn.joinDay = W.day; txt = e[2] + ' ' + nn.h.name.given + ' ขอติดตามเข้าสำนัก'; W.log('recruit', nn.h.name.given + ' ผู้พเนจรจาก' + site.nameTh + ' ตามคณะสำรวจมาเข้าสำนัก', [nn.id]); } }
+    else if (k === 'relic') { const r = EX.RELICS[p1]; if (r) { if (dex(W).relics.includes(p1)) { out.stones += 220; txt = 'พบ' + r.nameTh + 'อีกชิ้น (ซ้ำกับที่มี) แปลงเป็นศิลา 220'; } else { dex(W).relics.push(p1); dex(W).codex.relics.push({ id: p1, d: W.day, from: site.nameTh }); out.rep += 4; txt = '★ ได้ของวิเศษ「' + r.nameTh + '」— ' + r.desc; W.log('explore', '★ ' + ex.partyNames + ' ได้ของวิเศษ「' + r.nameTh + '」จาก' + site.nameTh + ' — ' + r.desc, ex.party); note(W, 'ได้ของวิเศษ ' + r.nameTh); } } }
+    if (txt) { const c = cdx.found[e.id] = cdx.found[e.id] || { n: 0, d: W.day, by: nm }; c.n++; ex.journal.push(txt); if (e[5] >= 3) out.notes.push(txt); out.rep += 0.15 * e[5]; }
+    return txt;
+  }
+  function dmgOne(W, alive, frac, why) { const v = W.rng.pick(alive); v.h.state.hp = Math.max(1, v.h.state.hp - CULT.hpMax(v) * frac); if (frac > 0.3) AI.injure(W, v, frac > 0.5 ? 2 : 1, why); return v; }
+  function runEnc(W, ex, alive, out, site, d, enc) {
+    const rng = W.rng, k = enc[0], text = enc[2]; const pw = alive.reduce((s, m) => s + PW(m), 0) * (0.85 + rng.next() * 0.3);
+    const best = f => alive.reduce((s, m) => Math.max(s, f(m)), 0), avg = f => alive.reduce((s, m) => s + f(m), 0) / alive.length;
+    const surv = best(m => m.h.skills.survival || 0), luck = avg(m => E(m, 'destiny.luck'));
+    d *= site.tide ? site.tide.danger : 1;
+    if (k === 'fight') {
+      const bp = foePower(d) * (0.75 + rng.next() * 0.6); const p = pw / (pw + bp);
+      if (p < 0.4 && rng.chance(0.45 + surv / 220 + avg(m => E(m, 'personality.caution')) / 400)) { ex.journal.push('พบ' + text + ' แต่ถอยหลบได้'); return; }
+      if (rng.next() < clamp((p - 0.22) * 1.7, 0.03, 0.97)) { ex.journal.push('สยบ' + text + ' ได้'); const v = dmgOne(W, alive, clamp((1 - p) * 0.5 + rng.next() * 0.08, 0.02, 0.55), 'ถูก' + text + 'ทำร้าย'); alive.forEach(m => HC.experience(m, 'victory', 0.2)); v.stats = v.stats || {}; v.stats.kills = (v.stats.kills || 0) + 1; lootRoll(W, ex, alive, out, site, d); if (rng.chance(0.35)) lootRoll(W, ex, alive, out, site, d); }
+      else { const v = rng.pick(alive); ex.journal.push('พ่ายต่อ' + text); if (rng.chance(clamp((bp / (pw + bp) - 0.5) * 0.5, 0.01, 0.3) * (1 - E(v, 'destiny.luck') / 300) * (1 - surv / 250))) { out.notes.push(v.h.name.given + ' เสียชีวิตที่' + site.nameTh); ex.deaths = (ex.deaths || 0) + 1; AI.kill(W, v, 'เสียชีวิตขณะสำรวจ' + site.nameTh); alive.splice(alive.indexOf(v), 1); } else { AI.injure(W, v, 2, 'ถูก' + text + 'ทำร้ายสาหัส'); v.h.state.hp = Math.max(1, CULT.hpMax(v) * 0.15); ex.fail = true; } }
+    } else if (k === 'treasure' || k === 'gather') {
+      const per = best(m => E(m, 'intellect.perceptiveness')), chk = per * 0.7 + (luck - 45) / 6 + rng.gauss(0, 10) + (k === 'gather' ? best(m => (m.h.skills.herbalism || 0) + (m.h.skills.mining || 0)) * 0.25 : 0);
+      if (chk > 28 + d * 8) { ex.journal.push('พบ' + text); lootRoll(W, ex, alive, out, site, d); if (k === 'gather' || rng.chance(0.3)) lootRoll(W, ex, alive, out, site, d); } else if (rng.chance(0.4)) { ex.journal.push(text + ' เป็นกับดัก'); dmgOne(W, alive, 0.08 + rng.next() * 0.12, 'ติดกับดัก'); } else ex.journal.push('สำรวจ' + text + ' แต่ไม่พบอะไร');
+    } else if (k === 'hazard') {
+      const chk = avg(m => E(m, 'physiology.endurance') * 0.4 + E(m, 'intellect.intuition') * 0.4) + surv * 0.3 + (luck - 45) / 8 + rng.gauss(0, 11);
+      if (chk > 26 + d * 9) { ex.journal.push('ผ่าน' + text + ' ไปได้'); alive.forEach(m => HC.practice(m, 'survival', 0.4, 1)); }
+      else { ex.journal.push('ถูก' + text + 'เล่นงาน'); const v = dmgOne(W, alive, 0.1 + rng.next() * 0.25 * (d / 3 + 0.5), 'ถูก' + text); alive.forEach(m => HC.feel(m, { stress: 3 })); }
+    } else if (k === 'lore') {
+      const chk = best(m => E(m, 'intellect.comprehension') * 0.5 + E(m, 'intellect.reasoning') * 0.3 + (m.h.skills.SCRIPTURE || 0) * 0.3) + rng.gauss(0, 9);
+      if (chk > 32 + d * 6) { const v = rng.weighted(alive, a => 1 + E(a, 'intellect.comprehension') / 50); if (v.cult) CULT.gain(v, CULT.threshold(v) * 0.07); HC.practice(v, 'SCRIPTURE', 2.5, 1.3); HC.experience(v, 'insight', 0.5); const wd = dex(W).codex.worlds[site.id] = dex(W).codex.worlds[site.id] || { visits: 0, lore: 0 }; wd.lore = (wd.lore || 0) + 1; ex.journal.push('ถอดความ' + text + ' ได้'); if (wd.lore % 3 === 0) { site.loot.length && lootRoll(W, ex, alive, out, site, d + 0.5); } } else ex.journal.push('ไม่เข้าใจ' + text);
+    } else if (k === 'trial') {
+      const chk = avg(m => E(m, 'intellect.willpower') * 0.5 + E(m, 'personality.composure') * 0.3 + E(m, 'personality.courage') * 0.2) + rng.gauss(0, 10) + (luck - 45) / 10;
+      const v = rng.weighted(alive, a => 1 + E(a, 'intellect.willpower') / 50);
+      if (chk > 34 + d * 7) { ex.journal.push(v.h.name.given + ' ผ่านบททดสอบ「' + text + '」'); HC.experience(v, 'insight', 0.7); if (v.cult) CULT.gain(v, CULT.threshold(v) * 0.06); if (rng.chance(0.55)) lootRoll(W, ex, alive, out, site, d); }
+      else { ex.journal.push(v.h.name.given + ' พ่ายต่อบททดสอบ「' + text + '」'); v.h.state.heartDemon = clamp(v.h.state.heartDemon + 6, 0, 100); HC.feel(v, { stress: 8, mood: -4 }); HC.experience(v, 'heart_demon', 0.4); }
+    } else if (k === 'rest') { alive.forEach(m => { m.h.state.hp = Math.min(CULT.hpMax(m), m.h.state.hp + CULT.hpMax(m) * 0.35); HC.feel(m, { stress: -6, mood: 2 }); }); ex.journal.push('พักที่' + text);
+    } else if (k === 'npc') {
+      const sub = rng.weighted([{ s: 'sage', w: 1 + avg(m => E(m, 'social.charisma')) / 60 }, { s: 'trade', w: 2 }, { s: 'trick', w: 1 + (100 - best(m => E(m, 'intellect.judgement'))) / 60 }], x => x.w).s;
+      if (sub === 'sage') { const v = rng.pick(alive); HC.practice(v, AI.pickTeachSkill ? AI.pickTeachSkill(v, v) : 'SCRIPTURE', 5, 2); if (v.cult) CULT.gain(v, CULT.threshold(v) * 0.05); ex.journal.push(v.h.name.given + ' ได้รับคำชี้แนะจาก' + text); }
+      else if (sub === 'trade') { const cost = Math.min(Math.round(40 + d * 30), Math.max(0, W.sect.stones + out.stones)); if (cost > 20) { out.stones -= cost; ex.journal.push('แลกของกับ' + text + ' จ่าย ' + cost + ' ศิลา'); lootRoll(W, ex, alive, out, site, d + 0.5); lootRoll(W, ex, alive, out, site, d + 0.5); } else ex.journal.push('พบ' + text + ' แต่ไม่มีเงินแลก'); }
+      else { const lose = Math.min(Math.round(20 + d * 20), Math.max(0, W.sect.stones + out.stones)); out.stones -= lose; ex.journal.push(text + ' หลอกเอาศิลาไป ' + lose); }
+    }
+  }
+  function summaryOf(out) { return X.summarize(out); }
+
+  /* ======================= ภารกิจ: ถ้ำ / ประตูมิติ ======================= */
+  X.MISSIONS.delve = { nameTh: 'สำรวจถ้ำหมื่นสายหมอก', icon: '🕳️' };
+  X.MISSIONS.realm = { nameTh: 'เข้าแดนหมื่นพิภพ', icon: '🌀' };
+
+  EX.bandOf = f => CAVE_BANDS.find(b => f >= b.from && f <= b.to) || CAVE_BANDS[2];
+  EX.canGo = W => { const g = dex(W).gate; return g.open && g.until - W.day >= 2.2; };
+  EX.depart = (W, party, kind) => {
+    const rng = W.rng, w = W.world, e = dex(W); const lead = party[0];
+    const totalP = party.reduce((s, m) => s + PW(m), 0), bold = party.reduce((s, m) => s + E(m, 'personality.courage'), 0) / party.length;
+    let target = 0, days, placeTh, world = null, site;
+    if (kind === 'delve') { target = clamp(Math.floor(1 + Math.sqrt(totalP / 28) + (bold > 62 ? 1 : 0) - (bold < 35 ? 1 : 0)), 1, e.cave.cap); days = clamp(0.4 + 0.17 * target, 0.5, 2.3); placeTh = EX.SPOTS.cave.nameTh + ' (ตั้งใจลงถึงชั้น ' + target + ')'; site = 'cave'; }
+    else { world = EX.WORLD_BY_ID[e.gate.world]; days = clamp(1.4 + rng.next() * 2.2, 1.2, Math.max(1.2, e.gate.until - W.day - 0.8)); placeTh = 'แดน「' + world.nameTh + '」'; site = 'gate'; }
+    const b = W.map.byId[site === 'gate' ? 'gate_zone' : 'cave']; const food = party.length * Math.min(Math.ceil(days) + 1, 5); const taken = Math.min(food, ECO.count(W, 'meal')); ECO.take(W, 'meal', taken);
+    const ex = { id: ++w.seq, kind, region: kind, placeTh, party: party.map(p => p.id), t0: W.t, ret: W.t + Math.round(days * 1440) + 40, days: Math.round(days * 10) / 10, journal: [], carry: [], supplies: taken, done: false, state: 'leaving', lost: false, target, world: world && world.id, px: b.door.x, py: b.door.y, tide: e.gate.tide };
+    w.expeds.push(ex);
+    party.forEach(p => { AI.interruptFor(W, p); p.expId = ex.id; p.lastTrip = W.day; p.act = { id: 'idle', stage: 'do', left: 0, total: 0, ctx: {}, why: [] }; p.travel = { to: 'spot', ex: ex.id, x: b.door.x, y: b.door.y + 1 }; p.path = null; p.run = false; });
+    W.log('explore', party.map(p => p.h.name.given).join('、') + (kind === 'delve' ? ' ลงสำรวจ' : ' ก้าวเข้าประตูมิติสู่') + placeTh, party.map(p => p.id));
+    if (kind === 'realm') { const c = e.codex.worlds[world.id] = e.codex.worlds[world.id] || { visits: 0, lore: 0 }; c.visits++; }
+    return ex;
+  };
+  // เดินไปยังจุดแล้วหายตัว
+  const origTravel = X.travelStep;
+  X.travelStep = (W, n) => {
+    const tv = n.travel; if (!tv || tv.to !== 'spot') return origTravel(W, n);
+    if (!n.path) { if (!AI.goTo(W, n, tv.x, tv.y)) { n.x = tv.x + .5; n.y = tv.y + .5; } }
+    if (AI.stepMove(W, n) || Math.hypot(n.x - tv.x, n.y - tv.y) < 1.5) { n.away = true; n.travel = null; n.path = null; n.hidden = true; n.run = false; }
+    return true;
+  };
+  const origResolve = X.resolve;
+  X.resolve = (W, ex, members) => { if (ex.kind === 'delve' || ex.kind === 'realm') return EX.resolve(W, ex, members); return origResolve(W, ex, members); };
+
+  EX.resolve = (W, ex, members) => {
+    if (ex.done || ex.settlement || !members.length) return;
+    const rng = W.rng, e = dex(W); const alive = members.slice(); const out = { items: [], stones: 0, mats: {}, pills: {}, gear: [], techs: [], notes: [], rep: 0, newDisciples: 0 };
+    ex.partyNames = members.map(m => m.h.name.given).join('、'); const cdx = e.codex;
+    let headline;
+    if (ex.kind === 'delve') {
+      const cv = e.cave; cv.delves++; cv.last = W.day; let reached = 0;
+      ex.caveFloors = [];
+      for (let f = 1; f <= ex.target && alive.length; f++) {
+        const band = EX.bandOf(f), floor = CAVE_FLOORS[f - 1]; const d = 0.55 + f * 0.33;
+        const site = { id: band.id, nameTh: 'ถ้ำหมื่นสายหมอก ชั้น ' + f, short: 'ถ้ำหมอก', loot: band.loot, tide: { loot: 0.35 + 0.65 * (cv.fresh == null ? 1 : cv.fresh), danger: 1 } };
+        const visit = { floor: f, id: floor.id, nameTh: floor.nameTh, pools: [], encounters: [] };
+        ex.caveFloors.push(visit); ex.journal.push('ชั้น ' + f + ' — ' + floor.nameTh);
+        const gd = CAVE_GUARD[f];
+        if (gd) {
+          const bp = foePower(gd.d) * (cv.guard[f] ? 0.7 : 1) * (0.9 + rng.next() * 0.3), pw = alive.reduce((s, m) => s + PW(m), 0) * (0.85 + rng.next() * 0.3), p = pw / (pw + bp);
+          if (p < 0.4 && !cv.guard[f]) { ex.journal.push('ชั้น ' + f + ': พบ' + gd.nameTh + ' แต่แข็งแกร่งเกิน จึงถอย'); reached = f; break; }
+          if (rng.next() < clamp((p - 0.25) * 1.8, 0.03, 0.96)) { ex.journal.push('ชั้น ' + f + ': ล้ม' + gd.nameTh + ' ได้!'); dmgOne(W, alive, clamp((1 - p) * 0.5, 0.05, 0.5), 'ถูก' + gd.nameTh + 'ทำร้าย'); alive.forEach(m => HC.experience(m, 'victory', 0.7));
+            if (!cv.guard[f]) { cv.guard[f] = W.day; out.stones += gd.stones; const r = EX.RELICS[gd.relic]; if (r && !e.relics.includes(gd.relic)) { e.relics.push(gd.relic); cdx.relics.push({ id: gd.relic, d: W.day, from: 'ถ้ำหมื่นสายหมอก' }); out.notes.push('★ ได้ของวิเศษ「' + r.nameTh + '」'); W.log('explore', '★ ' + ex.partyNames + ' ล้ม' + gd.nameTh + 'ที่ชั้น ' + f + ' ได้ของวิเศษ「' + r.nameTh + '」— ' + r.desc, ex.party); note(W, 'ล้ม' + gd.nameTh + ' ได้ ' + r.nameTh); } out.rep += 3; if (f === 5) cv.cap = 10; }
+            else { out.stones += Math.round(gd.stones * 0.15); } }
+          else { const v = rng.pick(alive); ex.journal.push('ชั้น ' + f + ': พ่ายต่อ' + gd.nameTh); if (rng.chance(0.12 * (1 - E(v, 'destiny.luck') / 250))) { out.notes.push(v.h.name.given + ' เสียชีวิตที่ถ้ำ'); cv.deaths++; AI.kill(W, v, 'เสียชีวิตจากผู้พิทักษ์ถ้ำ'); alive.splice(alive.indexOf(v), 1); } else { AI.injure(W, v, 2, 'ถูก' + gd.nameTh + 'ทำร้ายสาหัส'); v.h.state.hp = Math.max(1, CULT.hpMax(v) * 0.12); } reached = f; break; }
+        }
+        reached = f; const sample = EX.sampleCaveFloor(f, rng);
+        for (const chosen of sample.encounters) {
+          if (!alive.length) break;
+          visit.pools.push({ id: chosen.poolId, nameTh: chosen.poolNameTh });
+          visit.encounters.push({ id: chosen.id, poolId: chosen.poolId, poolNameTh: chosen.poolNameTh, kind: chosen.enc[0], text: chosen.enc[2] });
+          ex.journal.push('สำรวจ「' + chosen.poolNameTh + '」: ' + chosen.enc[2]);
+          site.loot = chosen.loot; runEnc(W, ex, alive, out, site, d, chosen.enc);
+        }
+        if (!alive.length) break;
+        const hpf = alive.reduce((s, m) => s + m.h.state.hp / CULT.hpMax(m), 0) / alive.length; if (hpf < 0.4 && f < ex.target) { ex.journal.push('พลังเหลือน้อย ถอยขึ้นจากชั้น ' + f); break; }
+      }
+      if (reached > cv.maxDepth) { cv.maxDepth = reached; note(W, 'ลงถ้ำลึกสุดถึงชั้น ' + reached); if (reached >= 3) out.rep += 0.5; }
+      cv.fresh = Math.max(0, (cv.fresh == null ? 1 : cv.fresh) - 0.3); headline = 'ลงถึงชั้น ' + reached + ' ของถ้ำ';
+    } else {
+      const world = EX.WORLD_BY_ID[ex.world]; const site = { id: world.id, nameTh: world.nameTh, short: world.nameTh, enc: world.enc, loot: world.loot, tide: TIDES[ex.tide || 0] }; const wd = cdx.worlds[world.id] = cdx.worlds[world.id] || { visits: 1, lore: 0 };
+      ex.journal.push('ก้าวเข้าสู่' + world.nameTh + ' (' + site.tide.nameTh + ')');
+      if (rng.chance(0.05)) { ex.journal.push('ประตูสั่นไหวระหว่างเดินทางกลับ ใช้เวลานานกว่าที่คิด'); ex.stranded = true; }
+      const nEnc = 3 + Math.round(ex.days * 1.4);
+      for (let i = 0; i < nEnc && alive.length; i++) {
+        const hpf = alive.reduce((s, m) => s + m.h.state.hp / CULT.hpMax(m), 0) / alive.length; if (hpf < 0.3) { ex.journal.push('พลังหมด ตัดสินใจกลับ'); break; }
+        runEnc(W, ex, alive, out, site, world.d + (rng.next() - 0.5) * 0.5, rng.weighted(world.enc, x => x[1]));
+      }
+      if (wd.lore >= 5 && !wd.boss && alive.length) { wd.boss = 1; ex.journal.push('รู้ตำแหน่งสมบัติใหญ่ของโลกนี้ ได้ของเพิ่ม'); lootRoll(W, ex, alive, out, site, world.d + 1); lootRoll(W, ex, alive, out, site, world.d + 1); }
+      out.rep += 1 + world.d * 0.3; headline = 'กลับจาก' + world.nameTh;
+    }
+    ex.done = true; ex.out = out;
+    const ppl = members.map(m => m.h.name.given).join('、');
+    if (alive.length) X.handover(W, ex, alive, out);
+    const ret = (ex.stranded ? 2 + rng.int(0, 4) : 0);
+    alive.forEach(m => { m.away = false; m.hidden = false; m.x = ex.px + .5 + rng.gauss(0, 0.6); m.y = ex.py + 1.5; m.travel = null; m.expId = null; m.path = null; m.run = false; m.h.state.satiety = Math.max(30, m.h.state.satiety); HC.experience(m, 'adventure', 0.6); m.merit += 6 + (ex.kind === 'realm' ? 8 : ex.target || 1); AI.mem(W, m, 'กลับจาก' + X.MISSIONS[ex.kind].nameTh, 0.5); });
+    const brief = Object.keys(out.mats).length || out.stones || out.gear.length || out.techs.length || Object.keys(out.pills).length ? ('ได้ ' + summaryOf(out)) : 'ไม่ได้อะไรมากนัก';
+    W.log('explore', ppl + ' ' + headline + ' — ' + brief + (out.notes.length ? ' · ' + out.notes.slice(0, 2).join(' / ') : ''), members.map(m => m.id));
+    W.fame(out.rep);
+  };
+
+  /* ======================= อาสา (ต่อจากหอภารกิจ) ======================= */
+  const origVol = X.volunteer;
+  X.volunteer = (W, n) => {
+    if (n.away || n.dead) return;
+    if (!dex(W) || !EX.tryVolunteer(W, n)) origVol(W, n);
+  };
+  EX.tryVolunteer = (W, n) => {
+    const e = dex(W), rng = W.rng, pw = PW(n); const opts = [{ k: 'orig', w: 0.9 }];
+    if (pw >= 18 && e.cave && W.day - (e.cave.last || -99) >= 4 && !W.world.expeds.some(x => !x.done && x.kind === 'delve')) opts.push({ k: 'delve', w: 0.3 + Math.max(0, (E(n, 'interests.exploring') - 40) / 45) + Math.max(0, (E(n, 'interests.combat') - 50) / 90) + (E(n, 'temperament.sensationSeeking') - 45) / 160 + (e.cave.maxDepth < e.cave.cap ? 0.15 : 0) });
+    if (EX.canGo(W) && pw >= 30) { const wd = EX.WORLD_BY_ID[e.gate.world]; const df = clamp(pw * 3 / foePower(wd.d), 0.15, 1.5); opts.push({ k: 'realm', w: 1.7 * (0.5 + Math.max(0, (E(n, 'destiny.luck') - 40) / 60) + Math.max(0, (E(n, 'temperament.sensationSeeking') - 40) / 70) + (E(n, 'personality.courage') - 40) / 150 + (E(n, 'interests.exploring') - 40) / 90) * df }); }
+    opts.forEach(o => o.w = Math.max(0.05, o.w));
+    const pick = rng.weighted(opts, o => o.w).k; if (pick === 'orig') return false;
+    const approver = SECT.holder(W, 'mission') || W.byId[W.sect.masterId];
+    let p = 0.62 + (W.sect.policy.expansion - 50) / 220 + (W.sect.policy.risk - 50) / 200 - (W.sect.policy.strictness - 50) / 300 + (E(approver, 'personality.curiosity') - 50) / 300;
+    if (n.post && SECT.holder(W, n.post) === n && !n.assist) p -= 0.15; if (n.rank <= 1 && W.sect.policy.strictness > 65) p -= 0.15; if (pw < 25) p -= 0.25;
+    const away = W.npcs.filter(x => x.expId && !x.dead).length; if (away > W.npcs.length * 0.22) p -= 1.5; if (ECO.count(W, 'meal') < 4) p -= 0.5; if (W.threat.alert > 0) p -= 0.9;
+    if (rng.next() > clamp(p, 0.05, 0.95)) { n.lastTrip = W.day - 6; HC.feel(n, { mood: -2 }); return true; }
+    const party = [n]; const want = 1 + (E(n, 'personality.caution') > 50 ? 1 : 0) + (pick === 'delve' ? 1 : 0) + (rng.chance(0.4) ? 1 : 0);
+    const cands = W.npcs.filter(x => x !== n && !x.dead && !x.away && !x.exiled && x.rank >= 1 && x.rank <= 4 && !(x.act && ['sleep', 'breakthrough', 'fight', 'sentence'].includes(x.act.id)) && !x.sealed && !(x.jail > W.t) && !(x.inj && x.inj.length) && !(x.post && x.rank >= 4) && !x.expId && x.h.state.energy > 40);
+    cands.forEach(c => { const r = n.h.mind.relations[c.id]; c._s = AI.compat(n, c) + (r ? r.a / 100 : 0) + PW(c) / 300 + rng.next() * 0.3; }); cands.sort((a, b) => b._s - a._s);
+    for (const c of cands) { if (party.length > Math.min(want, 3)) break; const acc = clamp(0.4 + c._s * 0.4 + (E(c, 'personality.courage') - 50) / 200 + (E(c, 'interests.exploring') - 45) / 200, 0.05, 0.9); if (c._s > 0.05 && rng.next() < acc) party.push(c); }
+    if (party.length < 2 && pw < 90) { n.lastTrip = W.day - 8; return true; }
+    EX.depart(W, party, pick); return true;
+  };
+
+  /* ======================= รายวัน ======================= */
+  const origRaid = X.raidChance;
+  X.raidChance = W => { const r = origRaid(W); const wards = W.explore ? W.explore.relics.filter(id => EX.RELICS[id].fx === 'ward').length : 0; return r * Math.pow(0.8, wards); };
+  EX.daily = W => {
+    const e = dex(W), rng = W.rng, g = e.gate, day = W.day;
+    e.cave.fresh = Math.min(1, (e.cave.fresh == null ? 1 : e.cave.fresh) + 0.07);
+    e.spots.spring.charge = Math.min(e.spots.spring.max, e.spots.spring.charge + 7 + e.spots.spring.lvl * 2);
+    if (g.open && day >= g.until) { g.open = false; g.next = day + rng.int(22, 48); W.log('explore', '🌀 ประตูมิติปิดลงอีกครั้ง — แดน「' + EX.WORLD_BY_ID[g.world].nameTh + '」หายไปจากสายตา', []); }
+    else if (!g.open && day >= g.next && !W.threat.raid) {
+      const last = g.world; const w = rng.weighted(EX.WORLDS.filter(x => x.id !== last), x => 1 + (x.d <= 2.6 ? 0.5 : 0));
+      g.open = true; g.world = w.id; g.tide = rng.int(0, TIDES.length - 1); g.until = day + rng.int(6, 11); g.openings++;
+      W.log('explore', '🌀 ประตูมิติเปิดที่ลานประตูมิติ! มองเห็นแดน「' + w.nameTh + '」' + w.icon + ' (' + TIDES[g.tide].nameTh + ') — ' + w.desc, []); W.fame(0.3);
+      const cd = e.codex.worlds[w.id] = e.codex.worlds[w.id] || { visits: 0, lore: 0 }; cd.seen = (cd.seen || 0) + 1;
+    }
+    const cv = e.cave; Object.keys(cv.guard).forEach(f => { if (cv.guard[f] && day - cv.guard[f] > 70 && f !== '10') { cv.guard[f] = 0; } });
+    e.relics.forEach(id => { const r = EX.RELICS[id]; if (r.fx === 'fame') W.fame(r.val); else if (r.fx === 'stones') ECO.earn(W, r.val, 'ของวิเศษ: ' + r.nameTh); else if (r.fx === 'grain') ECO.add(W, 'grain', r.val); else if (r.fx === 'qi') W.npcs.forEach(n => { if (!n.dead && !n.away && n.cult) CULT.gain(n, CULT.threshold(n) * 0.0015); }); });
+  };
+
+  g.EXPLORE = EX;
+  if (typeof module === 'object' && module.exports) module.exports = EX;
+})(typeof globalThis !== 'undefined' ? globalThis : this);

@@ -1,0 +1,4152 @@
+{
+  "schema": "JIANGHUSECT_SOURCE_REFERENCE_MANIFEST_V1",
+  "created_utc_date": "2026-10-27",
+  "purpose": "Private user-supplied development reference; exact original selected bytes, no runtime loading.",
+  "origin": {
+    "original_uploaded_filename": "Jianghu_v2_08_3_ACADEMY_FORMULA_FIX_COMPLETE.zip",
+    "archive_sha256": "df56d5c280f78f1698709f13aa579b222e958e2816249544aa780cb067e79bc6",
+    "archive_bytes": 15492923,
+    "source_version_file_text": "2.08.3 — Academy formula schema migration + EP.5 needs repair + ×8/×16 speed",
+    "origin_release": "Jianghu v2.08.3",
+    "original_runtime_script_count": 32,
+    "original_file_count": 167
+  },
+  "rights": {
+    "general_code_or_content_license_found": false,
+    "license_filename_inventory": [
+      "02_SOURCE_FULL/assets/NOTO_SANS_THAI_LICENSE.txt"
+    ],
+    "package_private": true,
+    "scope": "PRIVATE user-supplied development reference only. No new redistribution license is assumed. Public distribution requires a rights review. The Noto SIL OFL applies only to the font software; it grants no rights to game code/content."
+  },
+  "preservation": {
+    "selected_file_count": 52,
+    "selected_script_count": 21,
+    "selected_bytes": 22591380,
+    "excluded_file_count": 115,
+    "original_archive_payload_preserved": false,
+    "recovered_player_save_payload_preserved": false,
+    "save_fixture_payloads_preserved": false,
+    "images_or_font_payloads_preserved": false,
+    "build_outputs_preserved": false
+  },
+  "inspection": {
+    "scope": "Every selected file text inspected with credential patterns; source/module/doc interfaces also manually inspected. No recovered save or fixture was loaded for analysis. Excluded payloads were streamed only to calculate archive inventory hashes.",
+    "patterns": {
+      "private_key_header": "-----BEGIN (?:RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----",
+      "aws_access_key_shape": "\\b(?:AKIA|ASIA)[0-9A-Z]{16}\\b",
+      "github_token_shape": "\\b(?:gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{30,})\\b",
+      "openai_like_key_shape": "\\bsk-(?:proj-)?[A-Za-z0-9_-]{20,}\\b",
+      "literal_credential_assignment": "(?i)\\b(?:api[_-]?key|client[_-]?secret|access[_-]?token|refresh[_-]?token|password|passwd)\\s*[:=]\\s*[\\'\\\"][^\\'\\\"\\r\\n]{8,}[\\'\\\"]",
+      "email_address_shape": "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b",
+      "url_with_embedded_credentials": "https?://[^\\s/\\'\\\"<>]+:[^\\s/\\'\\\"<>]+@"
+    },
+    "pattern_hit_count": 0,
+    "findings": [],
+    "limit": "Pattern scan is an obvious-secret check, not an exhaustive security or ownership audit."
+  },
+  "selected_files": [
+    {
+      "original_relative_path": "02_SOURCE_FULL/AI_READ_FIRST_TH.md",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/AI_READ_FIRST_TH.md",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 1302,
+      "sha256": "224021c9b62c18f32d1d792a82cd824986b949f530ed3852ab796bb2562b3268",
+      "role": "source_documentation",
+      "reason_and_use": "Original architecture, Human identity, rules, economy, roadmap, known limitations or release/handoff evidence; historical claims are not current target verification.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Read with VERSION.txt and source/index.html; original documents may reference omitted or absent historical files."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/ARCHITECTURE.md",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/ARCHITECTURE.md",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 2118,
+      "sha256": "677ff2e2ab624ad0a4d549fa12d1de31d9af5f5f634f504eb385ea5c53c4b47a",
+      "role": "source_documentation",
+      "reason_and_use": "Original architecture, Human identity, rules, economy, roadmap, known limitations or release/handoff evidence; historical claims are not current target verification.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Read with VERSION.txt and source/index.html; original documents may reference omitted or absent historical files."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/BUILD_MANIFEST.json",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/BUILD_MANIFEST.json",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 9194,
+      "sha256": "e2c9d238240fdbf8438dd7dc6447a73f34b7bec397b3edb93e6ecf9f1be502fc",
+      "role": "original_build_metadata",
+      "reason_and_use": "Original release/script order and source-versus-embedded SHA256 evidence; build artifact excluded.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Read with VERSION.txt and source/index.html; original documents may reference omitted or absent historical files."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/COMBAT_CONTENT_MANIFEST.json",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/COMBAT_CONTENT_MANIFEST.json",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 977280,
+      "sha256": "5b914da14b4e2ee9e9e9bff80260da76d5ad3a8d810a43a87dc4c9d8878e702b",
+      "role": "original_content_manifest",
+      "reason_and_use": "Exact original route/arts/combat counts, provenance and content contract.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Read with VERSION.txt and source/index.html; original documents may reference omitted or absent historical files."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/COMBAT_STAT_GUIDE_TH.md",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/COMBAT_STAT_GUIDE_TH.md",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 11655,
+      "sha256": "5ecf34aba7f7b3ba0eb5e06dc04e438a0d61803bb3f6b2c2eea196e0f2a1c2c1",
+      "role": "source_documentation",
+      "reason_and_use": "Original architecture, Human identity, rules, economy, roadmap, known limitations or release/handoff evidence; historical claims are not current target verification.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Read with VERSION.txt and source/index.html; original documents may reference omitted or absent historical files."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/DEVELOPMENT_RULES.md",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/DEVELOPMENT_RULES.md",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 1321,
+      "sha256": "9f50359e5fdd8652edfaa6f15be181b1a423113fad27fe7a1c47802354fdd979",
+      "role": "source_documentation",
+      "reason_and_use": "Original architecture, Human identity, rules, economy, roadmap, known limitations or release/handoff evidence; historical claims are not current target verification.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Read with VERSION.txt and source/index.html; original documents may reference omitted or absent historical files."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/ECONOMY_BUILDINGS_GUIDE_TH.md",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/ECONOMY_BUILDINGS_GUIDE_TH.md",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 11463,
+      "sha256": "d065f906915e905af6cefddf80ab44064edd5dae855ddac1e7f13216266725ea",
+      "role": "source_documentation",
+      "reason_and_use": "Original architecture, Human identity, rules, economy, roadmap, known limitations or release/handoff evidence; historical claims are not current target verification.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Read with VERSION.txt and source/index.html; original documents may reference omitted or absent historical files."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/FIX_REPORT_TH.md",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/FIX_REPORT_TH.md",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 8814,
+      "sha256": "11fdda09b7298f1faaec7073089c18211c9f692174c093799606c414fa7c90aa",
+      "role": "source_documentation",
+      "reason_and_use": "Original architecture, Human identity, rules, economy, roadmap, known limitations or release/handoff evidence; historical claims are not current target verification.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Read with VERSION.txt and source/index.html; original documents may reference omitted or absent historical files."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/FIX_REPORT_v2083_TH.md",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/FIX_REPORT_v2083_TH.md",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 2899,
+      "sha256": "9bb4d040b3dd0d8b071275ea2543f8947c4a1832a7c29b64881b13a45a4037af",
+      "role": "source_documentation",
+      "reason_and_use": "Original architecture, Human identity, rules, economy, roadmap, known limitations or release/handoff evidence; historical claims are not current target verification.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Read with VERSION.txt and source/index.html; original documents may reference omitted or absent historical files."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/GEMINI.md",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/GEMINI.md",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 693,
+      "sha256": "d5a7188c620b6d00ee349e997743f0df6fff554773b7fab1f8a434b29b1e032c",
+      "role": "source_documentation",
+      "reason_and_use": "Original architecture, Human identity, rules, economy, roadmap, known limitations or release/handoff evidence; historical claims are not current target verification.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Read with VERSION.txt and source/index.html; original documents may reference omitted or absent historical files."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/HUMAN_FIELD_REFERENCE.md",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/HUMAN_FIELD_REFERENCE.md",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 9769,
+      "sha256": "cd7f646eca1404f2bc6246e84e1fe8542bc0785fe5f3f0cd7752fd0581579677",
+      "role": "source_documentation",
+      "reason_and_use": "Original architecture, Human identity, rules, economy, roadmap, known limitations or release/handoff evidence; historical claims are not current target verification.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Read with VERSION.txt and source/index.html; original documents may reference omitted or absent historical files."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/KNOWN_LIMITATIONS.md",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/KNOWN_LIMITATIONS.md",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 1984,
+      "sha256": "db0c699f57945f7f11ae56af899466c6542410f2a7905a30f5a31196d1ff9cd3",
+      "role": "source_documentation",
+      "reason_and_use": "Original architecture, Human identity, rules, economy, roadmap, known limitations or release/handoff evidence; historical claims are not current target verification.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Read with VERSION.txt and source/index.html; original documents may reference omitted or absent historical files."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/NPC_CORE_LOCK.md",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/NPC_CORE_LOCK.md",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 1599,
+      "sha256": "15f97d739ce22f22528908ebfadf49260ff6bbeebd4367bc7428f6a7223a00a5",
+      "role": "source_documentation",
+      "reason_and_use": "Original architecture, Human identity, rules, economy, roadmap, known limitations or release/handoff evidence; historical claims are not current target verification.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Read with VERSION.txt and source/index.html; original documents may reference omitted or absent historical files."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/NPC_IDENTITY_SPEC.md",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/NPC_IDENTITY_SPEC.md",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 20001,
+      "sha256": "752d4500723162c0262b0153e85b1313d7d10946c5366be751cb0047415834b2",
+      "role": "source_documentation",
+      "reason_and_use": "Original architecture, Human identity, rules, economy, roadmap, known limitations or release/handoff evidence; historical claims are not current target verification.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Read with VERSION.txt and source/index.html; original documents may reference omitted or absent historical files."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/PATCH_NOTES_v2082_TH.md",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/PATCH_NOTES_v2082_TH.md",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 2360,
+      "sha256": "84832c8c1da686a9f1aee6f9941720533af31a65f1ea0764828a214b582c6701",
+      "role": "source_documentation",
+      "reason_and_use": "Original architecture, Human identity, rules, economy, roadmap, known limitations or release/handoff evidence; historical claims are not current target verification.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Read with VERSION.txt and source/index.html; original documents may reference omitted or absent historical files."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/PATCH_NOTES_v2083_TH.md",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/PATCH_NOTES_v2083_TH.md",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 3035,
+      "sha256": "bd33fd41091746160063d4a0ee267c1b9be05c2d7a824f5818ca64f0360b2b98",
+      "role": "source_documentation",
+      "reason_and_use": "Original architecture, Human identity, rules, economy, roadmap, known limitations or release/handoff evidence; historical claims are not current target verification.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Read with VERSION.txt and source/index.html; original documents may reference omitted or absent historical files."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/PATCH_NOTES_v208_TH.md",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/PATCH_NOTES_v208_TH.md",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 5960,
+      "sha256": "2290ba33e207a84b233bcb3aee00acfff9967f8af91f36be3664b75bbb104f95",
+      "role": "source_documentation",
+      "reason_and_use": "Original architecture, Human identity, rules, economy, roadmap, known limitations or release/handoff evidence; historical claims are not current target verification.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Read with VERSION.txt and source/index.html; original documents may reference omitted or absent historical files."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/QA_REPORT_TH.md",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/QA_REPORT_TH.md",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 10952,
+      "sha256": "7d3f2870847eed20b914c9f2ad906359d82c3c1ebfa352bb96b2a4a22c5828e5",
+      "role": "source_documentation",
+      "reason_and_use": "Original architecture, Human identity, rules, economy, roadmap, known limitations or release/handoff evidence; historical claims are not current target verification.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Read with VERSION.txt and source/index.html; original documents may reference omitted or absent historical files."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/README_TH.md",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/README_TH.md",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 3780,
+      "sha256": "328c66de4e4a1b828c8bed54bf5548a5b1bbef26662e465252e30e56a6b990e1",
+      "role": "source_documentation",
+      "reason_and_use": "Original architecture, Human identity, rules, economy, roadmap, known limitations or release/handoff evidence; historical claims are not current target verification.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Read with VERSION.txt and source/index.html; original documents may reference omitted or absent historical files."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/ROADMAP_TH.md",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/ROADMAP_TH.md",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 57148,
+      "sha256": "2c579f8f1197f6bf7b692bccc61d02728ee9dd3af6de7aa9ebe7692d79e79484",
+      "role": "source_documentation",
+      "reason_and_use": "Original architecture, Human identity, rules, economy, roadmap, known limitations or release/handoff evidence; historical claims are not current target verification.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Read with VERSION.txt and source/index.html; original documents may reference omitted or absent historical files."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/SOURCE_AUDIT.json",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/SOURCE_AUDIT.json",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 11704,
+      "sha256": "949227b905cecb3cf4a71853c82636f636239ee563d6cba033c6c8622277d86a",
+      "role": "original_provenance_metadata",
+      "reason_and_use": "Original baseline/source hash audit; distinguish inherited and modified modules.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Read with VERSION.txt and source/index.html; original documents may reference omitted or absent historical files."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/V2082_HANDOFF_TH.md",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/V2082_HANDOFF_TH.md",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 1535,
+      "sha256": "07d69bb0fea0397860292ccff6f2315fa46837407dc3314c21933181a407c9a3",
+      "role": "source_documentation",
+      "reason_and_use": "Original architecture, Human identity, rules, economy, roadmap, known limitations or release/handoff evidence; historical claims are not current target verification.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Read with VERSION.txt and source/index.html; original documents may reference omitted or absent historical files."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/V2083_HANDOFF_TH.md",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/V2083_HANDOFF_TH.md",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 804,
+      "sha256": "08dee6591676c58e2b7657f44be6091296926495a84b211f99ee76624b4cff6f",
+      "role": "source_documentation",
+      "reason_and_use": "Original architecture, Human identity, rules, economy, roadmap, known limitations or release/handoff evidence; historical claims are not current target verification.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Read with VERSION.txt and source/index.html; original documents may reference omitted or absent historical files."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/V208_HANDOFF_TH.md",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/V208_HANDOFF_TH.md",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 3906,
+      "sha256": "93267578ac818c2a422760379346ae3a2236ce130812cd2438338137513265bd",
+      "role": "source_documentation",
+      "reason_and_use": "Original architecture, Human identity, rules, economy, roadmap, known limitations or release/handoff evidence; historical claims are not current target verification.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Read with VERSION.txt and source/index.html; original documents may reference omitted or absent historical files."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/VERSION.txt",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/VERSION.txt",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 81,
+      "sha256": "ab53fa56694f844e48d4d80fb411e0e545bd22eb6c0ed0b4f6e1e2992209c982",
+      "role": "original_version_metadata",
+      "reason_and_use": "Exact original source release identity.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Read with VERSION.txt and source/index.html; original documents may reference omitted or absent historical files."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/assets/NOTO_SANS_THAI_LICENSE.txt",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/assets/NOTO_SANS_THAI_LICENSE.txt",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 4378,
+      "sha256": "bd85ada3eef71267263e0fd24a40ae20380015c7cf1afa0c27a4340b03431320",
+      "role": "third_party_license",
+      "reason_and_use": "Preserve the sole license text shipped in archive; applies to Noto font software only, whose binary bytes are excluded.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Read with VERSION.txt and source/index.html; original documents may reference omitted or absent historical files."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/package.json",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/package.json",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 360,
+      "sha256": "b36217124b8b6e541d2350451b9338580d01d4766508d8253c26b4fd508cbcc4",
+      "role": "original_build_metadata",
+      "reason_and_use": "Original private package/version/build commands and declared dev dependency; no dependency installation implied.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Read with VERSION.txt and source/index.html; original documents may reference omitted or absent historical files."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/references/BASELINE_V116_SHA256.json",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/references/BASELINE_V116_SHA256.json",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 1823,
+      "sha256": "03bd5de849b99910827c93444460890580e4eea122dff1ecd2577164f57e1f2e",
+      "role": "original_provenance_metadata",
+      "reason_and_use": "Historical original baseline checksums; evidence only, not target compatibility fixtures.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Read with VERSION.txt and source/index.html; original documents may reference omitted or absent historical files."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/references/BASELINE_V200_SHA256.json",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/references/BASELINE_V200_SHA256.json",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 2936,
+      "sha256": "07a36a73bf1a097381999b1db52f0b7c4b344b371136991ff634fac96ff1fb3e",
+      "role": "original_provenance_metadata",
+      "reason_and_use": "Historical original baseline checksums; evidence only, not target compatibility fixtures.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Read with VERSION.txt and source/index.html; original documents may reference omitted or absent historical files."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/README.md",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/README.md",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 860,
+      "sha256": "9892e6380671ef20bd34e586c32d385832d26a3ef844ae5d83c2888703ca011f",
+      "role": "source_documentation",
+      "reason_and_use": "Original source readme and build/integration guidance.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Read with VERSION.txt and source/index.html; original documents may reference omitted or absent historical files."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/index.html",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/index.html",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 6165,
+      "sha256": "a1af304965ba61467e33b4723f7761e1ed4b2fb59b822d9941f1cc66d9657205",
+      "role": "original_entrypoint_reference",
+      "reason_and_use": "Exact original 32-script load order and HTML interfaces; incomplete retained reference, not a delivered playable build.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Read with VERSION.txt and source/index.html; original documents may reference omitted or absent historical files."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/academy.js",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/academy.js",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 37894,
+      "sha256": "21a6201c64a5f11c818cfd35a3d53a4379c86860158f1b1bf896ef31e94332e4",
+      "role": "original_source_script",
+      "reason_and_use": "Consent, mentorship, book lending, formula sharing and research.",
+      "source_file_dependencies": [
+        "02_SOURCE_FULL/source/scripts/human.js",
+        "02_SOURCE_FULL/source/scripts/progression.js",
+        "02_SOURCE_FULL/source/scripts/legacy.bundle.js"
+      ],
+      "runtime_or_document_dependencies": [
+        "HumanCore; LivingProgression; World2026Engine"
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/combat-data.js",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/combat-data.js",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 38430,
+      "sha256": "ef77c236263b3fe1da166ea95de34ceba18dda588c76a1c519cdd82e15e63ec4",
+      "role": "original_source_script",
+      "reason_and_use": "Source route contracts, hidden subpaths, innate arts and combat catalogues.",
+      "source_file_dependencies": [
+        "02_SOURCE_FULL/source/scripts/legacy.bundle.js",
+        "02_SOURCE_FULL/source/scripts/living-content-v111.js"
+      ],
+      "runtime_or_document_dependencies": [
+        "World2026Engine; registers CombatData117"
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/combat-overhaul.js",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/combat-overhaul.js",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 15546,
+      "sha256": "32e03c45f60b407889f4f93b15a87d163a8a26448e19d5f920ea5d12e4b5dd3b",
+      "role": "original_source_script",
+      "reason_and_use": "Unified direct-hit, secondary damage and Qi/cadence reference.",
+      "source_file_dependencies": [
+        "02_SOURCE_FULL/source/scripts/combat.js",
+        "02_SOURCE_FULL/source/scripts/combat-tactics.js",
+        "02_SOURCE_FULL/source/scripts/combat-stats.js",
+        "02_SOURCE_FULL/source/scripts/human.js"
+      ],
+      "runtime_or_document_dependencies": [
+        "LivingCombat.prototype; HumanCore"
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/combat-stats.js",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/combat-stats.js",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 37706,
+      "sha256": "ec29283a73f574e89bd816a0aa11b5f50c5d5cb7c73fa99994b0752e811fc2c5",
+      "role": "original_source_script",
+      "reason_and_use": "Pure derived combat sheet and Thai contribution provenance.",
+      "source_file_dependencies": [
+        "02_SOURCE_FULL/source/scripts/human.js",
+        "02_SOURCE_FULL/source/scripts/legacy.bundle.js",
+        "02_SOURCE_FULL/source/scripts/combat-data.js",
+        "02_SOURCE_FULL/source/scripts/combat.js"
+      ],
+      "runtime_or_document_dependencies": [
+        "Canonical actor/loadout/condition fields; read-only projections"
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/combat-tactics.js",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/combat-tactics.js",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 21891,
+      "sha256": "c2558268ed713f64c2f01e9d04c5262cc4bc7abf70abd86a272c440918cc7318",
+      "role": "original_source_script",
+      "reason_and_use": "Extensions to common tactical move resolver.",
+      "source_file_dependencies": [
+        "02_SOURCE_FULL/source/scripts/combat.js",
+        "02_SOURCE_FULL/source/scripts/combat-data.js",
+        "02_SOURCE_FULL/source/scripts/human.js",
+        "02_SOURCE_FULL/source/scripts/legacy.bundle.js"
+      ],
+      "runtime_or_document_dependencies": [
+        "LivingCombat.prototype; CombatData117"
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/combat.js",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/combat.js",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 23827,
+      "sha256": "517fe45210d048d78a3378f93cb6fb251675ba08dafc18bd4514e8fb13cd2335",
+      "role": "original_source_script",
+      "reason_and_use": "Source tactical move and cost logic.",
+      "source_file_dependencies": [
+        "02_SOURCE_FULL/source/scripts/human.js",
+        "02_SOURCE_FULL/source/scripts/legacy.bundle.js",
+        "02_SOURCE_FULL/source/scripts/combat-data.js"
+      ],
+      "runtime_or_document_dependencies": [
+        "HumanCore; World2026Engine; exports LivingCombat"
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/discovery.js",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/discovery.js",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 23711,
+      "sha256": "fd1ce663a8543b0d8a6448835ab59c3b8d1db5161fb04156b0113b8e5740282b",
+      "role": "original_source_script",
+      "reason_and_use": "Learned provenance, rumors, inheritance and permissions.",
+      "source_file_dependencies": [
+        "02_SOURCE_FULL/source/scripts/human.js",
+        "02_SOURCE_FULL/source/scripts/legacy.bundle.js"
+      ],
+      "runtime_or_document_dependencies": [
+        "Canonical NPCs; Frontier integration owned by excluded stage.js"
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/human.js",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/human.js",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 33246,
+      "sha256": "b230108298cae486c3dc6bf6698f0384ca67128b064ff3947f19fa6e5522328a",
+      "role": "original_source_script",
+      "reason_and_use": "Original locked 68-axis Human Foundation for meaning and adapter reference.",
+      "source_file_dependencies": [
+        "02_SOURCE_FULL/source/scripts/legacy.bundle.js"
+      ],
+      "runtime_or_document_dependencies": [
+        "World2026Engine; JianghuNpcCoreData"
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/jade-inventory.js",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/jade-inventory.js",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 31965,
+      "sha256": "d56ba3fde0a75d6fbf3e06b24015fa2e22e838288ec96b924175b4cd5ada654e",
+      "role": "original_source_script",
+      "reason_and_use": "Read-only paginated inventory and content categorization reference.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Canonical inventory/Frontier data passed by caller; exported JianghuInventory1222"
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/jianghu-data.js",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/jianghu-data.js",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 47581,
+      "sha256": "5d31b7014a871b2c3f8be45732335151925fc6998a006ece9ba1a58fed437ed9",
+      "role": "original_source_script",
+      "reason_and_use": "Adapted external sect, beast, site, formation and equipment registries.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Exports JianghuRealmData"
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/jianghu.js",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/jianghu.js",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 62711,
+      "sha256": "bda15c3f08883b7faba7335090bbbe9faa988350d929333830f8ef3c5e4bd20e",
+      "role": "original_source_script",
+      "reason_and_use": "World, companion, route and site adapters over canonical NPCs.",
+      "source_file_dependencies": [
+        "02_SOURCE_FULL/source/scripts/human.js",
+        "02_SOURCE_FULL/source/scripts/legacy.bundle.js",
+        "02_SOURCE_FULL/source/scripts/jianghu-data.js",
+        "02_SOURCE_FULL/source/scripts/sect-life.js"
+      ],
+      "runtime_or_document_dependencies": [
+        "HumanCore; World2026Engine; SectLifeSystem; JianghuRealmData"
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/legacy.bundle.js",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/legacy.bundle.js",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 18867242,
+      "sha256": "605e8e3d9a2cf282f3be29dee6e124aeb5448af9b2f5ae005b147761404905b2",
+      "role": "original_source_script",
+      "reason_and_use": "Original embedded engine and catalogues; required to recover content absent from slim target data.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Browser globalThis/window; embedded installers and catalogues; not a target runtime dependency."
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/living-content-v111.js",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/living-content-v111.js",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 573913,
+      "sha256": "c5470e66c15b12a41816966b94eb50ea045fdd67704841b0975a5de255a9a2d3",
+      "role": "original_source_script",
+      "reason_and_use": "Expanded cultivation, arts, ecology and crafting catalogues.",
+      "source_file_dependencies": [
+        "02_SOURCE_FULL/source/scripts/legacy.bundle.js"
+      ],
+      "runtime_or_document_dependencies": [
+        "World2026Engine and embedded PATCH140_DATA"
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/myriad-worlds-data.js",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 1202339,
+      "sha256": "3561b4a7fb9563a16b15d268ff34d8c34eed61c2f40f3e1fb7917e754d621b2b",
+      "role": "original_source_script",
+      "reason_and_use": "Declarative environments, beasts, material, organ and recipe registries.",
+      "source_file_dependencies": [],
+      "runtime_or_document_dependencies": [
+        "Exports JianghuMyriadWorldsData; consumed by myriad-worlds.js"
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/myriad-worlds.js",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/myriad-worlds.js",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 103771,
+      "sha256": "b76f2a508b1ae75a711a37715278230f50f8bf6c7bb22ce6c8b42e9cd428085f",
+      "role": "original_source_script",
+      "reason_and_use": "Encounter individuals, harvesting, experimentation and real-ledger settlement.",
+      "source_file_dependencies": [
+        "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js",
+        "02_SOURCE_FULL/source/scripts/human.js",
+        "02_SOURCE_FULL/source/scripts/legacy.bundle.js",
+        "02_SOURCE_FULL/source/scripts/progression.js",
+        "02_SOURCE_FULL/source/scripts/combat.js",
+        "02_SOURCE_FULL/source/scripts/combat-stats.js",
+        "02_SOURCE_FULL/source/scripts/combat-overhaul.js"
+      ],
+      "runtime_or_document_dependencies": [
+        "Frontier runtime hooks from excluded stage.js; original script order in source/index.html"
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/progression.js",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/progression.js",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 78556,
+      "sha256": "8e13d7f8ed4edc7cf10f8c28489336efa18c62a6a9718a181d023a415be24b08",
+      "role": "original_source_script",
+      "reason_and_use": "Learned cultivation, recipes, scripture and item progression semantics.",
+      "source_file_dependencies": [
+        "02_SOURCE_FULL/source/scripts/human.js",
+        "02_SOURCE_FULL/source/scripts/legacy.bundle.js",
+        "02_SOURCE_FULL/source/scripts/living-content-v111.js"
+      ],
+      "runtime_or_document_dependencies": [
+        "HumanCore; World2026Engine; LivingJianghuSystem at integration"
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/sect-contributions.js",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/sect-contributions.js",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 115719,
+      "sha256": "e42b6e4fdb78f1df582870890d1db0ada4f52e0c09ef86466ec9fa65cc0504c7",
+      "role": "original_source_script",
+      "reason_and_use": "Contribution accounts, sponsored crafting and material custody.",
+      "source_file_dependencies": [
+        "02_SOURCE_FULL/source/scripts/human.js",
+        "02_SOURCE_FULL/source/scripts/legacy.bundle.js",
+        "02_SOURCE_FULL/source/scripts/story-sidequests.js"
+      ],
+      "runtime_or_document_dependencies": [
+        "JianghuStoryEvents.treasuryTools; Frontier ledgers"
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/sect-infrastructure.js",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/sect-infrastructure.js",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 17153,
+      "sha256": "2405a60cbf939274463a7b0a78d4d538ae021ffda90a064742d27ffcbd836f8b",
+      "role": "original_source_script",
+      "reason_and_use": "Paid persistent buildings and officer needs.",
+      "source_file_dependencies": [
+        "02_SOURCE_FULL/source/scripts/stage.js"
+      ],
+      "runtime_or_document_dependencies": [
+        "FrontierData; stage.js is intentionally excluded and must precede this in original runtime"
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/sect-library.js",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/sect-library.js",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 7554,
+      "sha256": "f32a26eb3d8ef67fb2aed352a0ee84def14747f28ce3faa41b218b5f0ab445fe",
+      "role": "original_source_script",
+      "reason_and_use": "Shared book custody and paid learned-access reference.",
+      "source_file_dependencies": [
+        "02_SOURCE_FULL/source/scripts/sect-contributions.js",
+        "02_SOURCE_FULL/source/scripts/human.js"
+      ],
+      "runtime_or_document_dependencies": [
+        "JianghuInfrastructure optional; Frontier/progression instance"
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/sect-life.js",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/sect-life.js",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 34215,
+      "sha256": "c992e2982e1f2ab17dc809c40f971077c1c8542aaf2eec7ed5f9e8a7a844636d",
+      "role": "original_source_script",
+      "reason_and_use": "Sect activities and institution rules without creating substitute NPCs.",
+      "source_file_dependencies": [
+        "02_SOURCE_FULL/source/scripts/human.js",
+        "02_SOURCE_FULL/source/scripts/legacy.bundle.js"
+      ],
+      "runtime_or_document_dependencies": [
+        "HumanCore; World2026Engine; JianghuSectDoctrines190Data"
+      ]
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/story-sidequests.js",
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/story-sidequests.js",
+      "origin_release": "Jianghu v2.08.3",
+      "bytes": 38531,
+      "sha256": "16881ce2d837c3c7265fb3e62de171a572944c337b65ce3b32fd2dde818f4836",
+      "role": "original_source_script",
+      "reason_and_use": "Optional contracts observing real work receipts and physical transfers.",
+      "source_file_dependencies": [
+        "02_SOURCE_FULL/source/scripts/human.js",
+        "02_SOURCE_FULL/source/scripts/legacy.bundle.js",
+        "02_SOURCE_FULL/source/scripts/living-content-v111.js"
+      ],
+      "runtime_or_document_dependencies": [
+        "JianghuStoryEvents; Frontier ledgers supplied by excluded stage.js"
+      ]
+    }
+  ],
+  "archive_inventory": [
+    {
+      "original_relative_path": "00_README_TH.md",
+      "uncompressed_bytes": 2840,
+      "compressed_bytes": 1223,
+      "sha256": "899885ff7e6e48bd1b41012bb96bfb8824623217e75a8ec5e4b91201b1e00dc9",
+      "crc32": "1dcd7943",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        4,
+        54
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original player packaging instructions reference recovered save; omitted from retained reference."
+    },
+    {
+      "original_relative_path": "01_GAME/Jianghu_Ascension_Myriad_Worlds_v2_08_3.html",
+      "uncompressed_bytes": 26895092,
+      "compressed_bytes": 6927686,
+      "sha256": "cf55cacc4aaa6209a83ca592810a7cfbf9f9afb5707aec0c2be77b9429c6849c",
+      "crc32": "f0f09dbd",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        0,
+        26
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Generated original standalone/build output: excluded; reference retains source only."
+    },
+    {
+      "original_relative_path": "03_RECOVERED_SAVE/Jianghu_Cloud_Sect_Save_v2_08_3_RECOVERED.json",
+      "uncompressed_bytes": 9451849,
+      "compressed_bytes": 1027435,
+      "sha256": "35670d1d032c3a21eda11dde4eded9bcbdd43d164e6f33ce2e1a6d2680801239",
+      "crc32": "aa180b53",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        4,
+        18
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Private recovered player save: metadata and digest only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/AI_READ_FIRST_TH.md",
+      "uncompressed_bytes": 1302,
+      "compressed_bytes": 686,
+      "sha256": "224021c9b62c18f32d1d792a82cd824986b949f530ed3852ab796bb2562b3268",
+      "crc32": "7f3e88b4",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        7,
+        33,
+        40
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/AI_READ_FIRST_TH.md"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/ARCHITECTURE.md",
+      "uncompressed_bytes": 2118,
+      "compressed_bytes": 1148,
+      "sha256": "677ff2e2ab624ad0a4d549fa12d1de31d9af5f5f634f504eb385ea5c53c4b47a",
+      "crc32": "c57f050e",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/ARCHITECTURE.md"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/BUILD_MANIFEST.json",
+      "uncompressed_bytes": 9194,
+      "compressed_bytes": 2539,
+      "sha256": "e2c9d238240fdbf8438dd7dc6447a73f34b7bec397b3edb93e6ecf9f1be502fc",
+      "crc32": "29ada579",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        0,
+        26
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/BUILD_MANIFEST.json"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/COMBAT_CONTENT_MANIFEST.json",
+      "uncompressed_bytes": 977280,
+      "compressed_bytes": 56455,
+      "sha256": "5b914da14b4e2ee9e9e9bff80260da76d5ad3a8d810a43a87dc4c9d8878e702b",
+      "crc32": "5852201c",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        0,
+        26
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/COMBAT_CONTENT_MANIFEST.json"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/COMBAT_STAT_GUIDE_TH.md",
+      "uncompressed_bytes": 11655,
+      "compressed_bytes": 2904,
+      "sha256": "5ecf34aba7f7b3ba0eb5e06dc04e438a0d61803bb3f6b2c2eea196e0f2a1c2c1",
+      "crc32": "83cfa986",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/COMBAT_STAT_GUIDE_TH.md"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/DEVELOPMENT_RULES.md",
+      "uncompressed_bytes": 1321,
+      "compressed_bytes": 760,
+      "sha256": "9f50359e5fdd8652edfaa6f15be181b1a423113fad27fe7a1c47802354fdd979",
+      "crc32": "0eb96665",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/DEVELOPMENT_RULES.md"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/ECONOMY_BUILDINGS_GUIDE_TH.md",
+      "uncompressed_bytes": 11463,
+      "compressed_bytes": 2912,
+      "sha256": "d065f906915e905af6cefddf80ab44064edd5dae855ddac1e7f13216266725ea",
+      "crc32": "5c70ed05",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/ECONOMY_BUILDINGS_GUIDE_TH.md"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/FIX_REPORT_TH.md",
+      "uncompressed_bytes": 8814,
+      "compressed_bytes": 2884,
+      "sha256": "11fdda09b7298f1faaec7073089c18211c9f692174c093799606c414fa7c90aa",
+      "crc32": "b09a344a",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        7,
+        33,
+        40
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/FIX_REPORT_TH.md"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/FIX_REPORT_v2083_TH.md",
+      "uncompressed_bytes": 2899,
+      "compressed_bytes": 1265,
+      "sha256": "9bb4d040b3dd0d8b071275ea2543f8947c4a1832a7c29b64881b13a45a4037af",
+      "crc32": "c6927f9e",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        2,
+        26
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/FIX_REPORT_v2083_TH.md"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/GEMINI.md",
+      "uncompressed_bytes": 693,
+      "compressed_bytes": 440,
+      "sha256": "d5a7188c620b6d00ee349e997743f0df6fff554773b7fab1f8a434b29b1e032c",
+      "crc32": "bf761e76",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/GEMINI.md"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/HUMAN_FIELD_REFERENCE.md",
+      "uncompressed_bytes": 9769,
+      "compressed_bytes": 2654,
+      "sha256": "cd7f646eca1404f2bc6246e84e1fe8542bc0785fe5f3f0cd7752fd0581579677",
+      "crc32": "7357a58c",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/HUMAN_FIELD_REFERENCE.md"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/KNOWN_LIMITATIONS.md",
+      "uncompressed_bytes": 1984,
+      "compressed_bytes": 1039,
+      "sha256": "db0c699f57945f7f11ae56af899466c6542410f2a7905a30f5a31196d1ff9cd3",
+      "crc32": "38f9a435",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/KNOWN_LIMITATIONS.md"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/NPC_CORE_LOCK.md",
+      "uncompressed_bytes": 1599,
+      "compressed_bytes": 934,
+      "sha256": "15f97d739ce22f22528908ebfadf49260ff6bbeebd4367bc7428f6a7223a00a5",
+      "crc32": "510ed4b8",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/NPC_CORE_LOCK.md"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/NPC_IDENTITY_SPEC.md",
+      "uncompressed_bytes": 20001,
+      "compressed_bytes": 4928,
+      "sha256": "752d4500723162c0262b0153e85b1313d7d10946c5366be751cb0047415834b2",
+      "crc32": "b514b074",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/NPC_IDENTITY_SPEC.md"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/PATCH_NOTES_v2082_TH.md",
+      "uncompressed_bytes": 2360,
+      "compressed_bytes": 1094,
+      "sha256": "84832c8c1da686a9f1aee6f9941720533af31a65f1ea0764828a214b582c6701",
+      "crc32": "51f4d908",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        7,
+        33,
+        40
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/PATCH_NOTES_v2082_TH.md"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/PATCH_NOTES_v2083_TH.md",
+      "uncompressed_bytes": 3035,
+      "compressed_bytes": 1190,
+      "sha256": "bd33fd41091746160063d4a0ee267c1b9be05c2d7a824f5818ca64f0360b2b98",
+      "crc32": "563fa7b1",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        0,
+        20
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/PATCH_NOTES_v2083_TH.md"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/PATCH_NOTES_v208_TH.md",
+      "uncompressed_bytes": 5960,
+      "compressed_bytes": 1849,
+      "sha256": "2290ba33e207a84b233bcb3aee00acfff9967f8af91f36be3664b75bbb104f95",
+      "crc32": "facb6166",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/PATCH_NOTES_v208_TH.md"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/QA_REPORT_TH.md",
+      "uncompressed_bytes": 10952,
+      "compressed_bytes": 3503,
+      "sha256": "7d3f2870847eed20b914c9f2ad906359d82c3c1ebfa352bb96b2a4a22c5828e5",
+      "crc32": "ccb0bdc7",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        2,
+        26
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/QA_REPORT_TH.md"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/README_TH.md",
+      "uncompressed_bytes": 3780,
+      "compressed_bytes": 1478,
+      "sha256": "328c66de4e4a1b828c8bed54bf5548a5b1bbef26662e465252e30e56a6b990e1",
+      "crc32": "0f743038",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        2,
+        26
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/README_TH.md"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/ROADMAP_TH.md",
+      "uncompressed_bytes": 57148,
+      "compressed_bytes": 13578,
+      "sha256": "2c579f8f1197f6bf7b692bccc61d02728ee9dd3af6de7aa9ebe7692d79e79484",
+      "crc32": "28be5fef",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/ROADMAP_TH.md"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/SOURCE_AUDIT.json",
+      "uncompressed_bytes": 11704,
+      "compressed_bytes": 3071,
+      "sha256": "949227b905cecb3cf4a71853c82636f636239ee563d6cba033c6c8622277d86a",
+      "crc32": "ad4a99f6",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        0,
+        26
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/SOURCE_AUDIT.json"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/V2082_HANDOFF_TH.md",
+      "uncompressed_bytes": 1535,
+      "compressed_bytes": 775,
+      "sha256": "07d69bb0fea0397860292ccff6f2315fa46837407dc3314c21933181a407c9a3",
+      "crc32": "214f93d6",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        7,
+        33,
+        40
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/V2082_HANDOFF_TH.md"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/V2083_HANDOFF_TH.md",
+      "uncompressed_bytes": 804,
+      "compressed_bytes": 482,
+      "sha256": "08dee6591676c58e2b7657f44be6091296926495a84b211f99ee76624b4cff6f",
+      "crc32": "2c766638",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        0,
+        20
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/V2083_HANDOFF_TH.md"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/V208_HANDOFF_TH.md",
+      "uncompressed_bytes": 3906,
+      "compressed_bytes": 1557,
+      "sha256": "93267578ac818c2a422760379346ae3a2236ce130812cd2438338137513265bd",
+      "crc32": "cf24434e",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/V208_HANDOFF_TH.md"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/VERSION.txt",
+      "uncompressed_bytes": 81,
+      "compressed_bytes": 81,
+      "sha256": "ab53fa56694f844e48d4d80fb411e0e545bd22eb6c0ed0b4f6e1e2992209c982",
+      "crc32": "3fad7492",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        7,
+        57,
+        58
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/VERSION.txt"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/assets/NOTO_SANS_THAI_LICENSE.txt",
+      "uncompressed_bytes": 4378,
+      "compressed_bytes": 1937,
+      "sha256": "bd85ada3eef71267263e0fd24a40ae20380015c7cf1afa0c27a4340b03431320",
+      "crc32": "8ac92c8f",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/assets/NOTO_SANS_THAI_LICENSE.txt"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/assets/art-manifest.json",
+      "uncompressed_bytes": 2437,
+      "compressed_bytes": 456,
+      "sha256": "f6d6b922ede7f0b9916b040e32b93ff893b513985e6502287ef1e76b8988c665",
+      "crc32": "a40735b8",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Binary image/font or art asset metadata: excluded; only Noto license text retained."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/assets/gemini-atlas-1-0.webp",
+      "uncompressed_bytes": 1143138,
+      "compressed_bytes": 1143469,
+      "sha256": "dcdaa4967f2e1d02b9fe2ba696ad2dfd8febaa23a7aea497106a9acc8c0143f5",
+      "crc32": "6e0ce0e3",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Binary image/font or art asset metadata: excluded; only Noto license text retained."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/assets/gemini-atlas-1-1.webp",
+      "uncompressed_bytes": 1084968,
+      "compressed_bytes": 1085298,
+      "sha256": "968b78033dd4cbeb69f3ce8157c8dea93fccf306e4bbf28cbdb1455758446b06",
+      "crc32": "bc8e4813",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Binary image/font or art asset metadata: excluded; only Noto license text retained."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/assets/living-ink-buildings.webp",
+      "uncompressed_bytes": 627052,
+      "compressed_bytes": 625652,
+      "sha256": "98bb0052a8c49f1b355b3be6528e0fb71e2f8a94406a02285faf61f006e16fc3",
+      "crc32": "fe3154ba",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Binary image/font or art asset metadata: excluded; only Noto license text retained."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/assets/living-ink-environment.webp",
+      "uncompressed_bytes": 836236,
+      "compressed_bytes": 834864,
+      "sha256": "9186f700c5953dc2392169bcfeddd2b77dca4f042f1ca641880b089c2a0b197b",
+      "crc32": "709680f3",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Binary image/font or art asset metadata: excluded; only Noto license text retained."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/assets/noto-sans-thai-400.woff2",
+      "uncompressed_bytes": 9112,
+      "compressed_bytes": 9117,
+      "sha256": "57776453076ebf0fa935080e63c0ae656f1f1ecd5172112d59d3b259e0dd8796",
+      "crc32": "62c974fa",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Binary image/font or art asset metadata: excluded; only Noto license text retained."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/assets/noto-sans-thai-600.woff2",
+      "uncompressed_bytes": 9220,
+      "compressed_bytes": 9225,
+      "sha256": "8690b63cc8c7090492cce68f57a421be92fee4f682dff7ee06912132ebd2a8fc",
+      "crc32": "fe0fa3b9",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Binary image/font or art asset metadata: excluded; only Noto license text retained."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/README.txt",
+      "uncompressed_bytes": 174,
+      "compressed_bytes": 133,
+      "sha256": "8988a831cb251621cd657962585a526aaf091bb18b2c14c645e55efc1a281133",
+      "crc32": "4823fdd1",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/academy-formula-schema-v2083.json",
+      "uncompressed_bytes": 352,
+      "compressed_bytes": 208,
+      "sha256": "65eeb37a4d442e6f5dd7dab79725f5d72d40be36dd85d391f9274da511ec2581",
+      "crc32": "5e8b149b",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        3,
+        0
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/art-qa/building-gallery.png",
+      "uncompressed_bytes": 70,
+      "compressed_bytes": 63,
+      "sha256": "3966af27a6a7a5ffd3b4ff566ae9d81cae9c9b418a72e03dd75ed37b3f7d4292",
+      "crc32": "9381dc82",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        7,
+        37,
+        44
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/art-qa/busy-sect-mobile.png",
+      "uncompressed_bytes": 70,
+      "compressed_bytes": 63,
+      "sha256": "3966af27a6a7a5ffd3b4ff566ae9d81cae9c9b418a72e03dd75ed37b3f7d4292",
+      "crc32": "9381dc82",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        7,
+        37,
+        44
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/art-qa/combat-close.png",
+      "uncompressed_bytes": 70,
+      "compressed_bytes": 63,
+      "sha256": "3966af27a6a7a5ffd3b4ff566ae9d81cae9c9b418a72e03dd75ed37b3f7d4292",
+      "crc32": "9381dc82",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        7,
+        37,
+        44
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/art-qa/initial-mobile.png",
+      "uncompressed_bytes": 70,
+      "compressed_bytes": 63,
+      "sha256": "3966af27a6a7a5ffd3b4ff566ae9d81cae9c9b418a72e03dd75ed37b3f7d4292",
+      "crc32": "9381dc82",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        7,
+        37,
+        44
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/art-qa/light-mobile.png",
+      "uncompressed_bytes": 70,
+      "compressed_bytes": 63,
+      "sha256": "3966af27a6a7a5ffd3b4ff566ae9d81cae9c9b418a72e03dd75ed37b3f7d4292",
+      "crc32": "9381dc82",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        7,
+        37,
+        44
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/art-qa/valley-desktop.png",
+      "uncompressed_bytes": 70,
+      "compressed_bytes": 63,
+      "sha256": "3966af27a6a7a5ffd3b4ff566ae9d81cae9c9b418a72e03dd75ed37b3f7d4292",
+      "crc32": "9381dc82",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        7,
+        37,
+        44
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/coherence-hotfix-v208.json",
+      "uncompressed_bytes": 1076,
+      "compressed_bytes": 425,
+      "sha256": "02c94d50c42ace1412b5524a4107fb6d32e76e55a635b99b71b9d56fdf1da2a8",
+      "crc32": "631697fc",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        7,
+        35,
+        28
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/coherence-v208.json",
+      "uncompressed_bytes": 1663,
+      "compressed_bytes": 632,
+      "sha256": "3fa96542c1ad46450d1f469a941029075024efc25fac146b532b430580858808",
+      "crc32": "9c7c4e8a",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        7,
+        35,
+        40
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/ep4-native-canvas-v205.png",
+      "uncompressed_bytes": 70,
+      "compressed_bytes": 63,
+      "sha256": "3966af27a6a7a5ffd3b4ff566ae9d81cae9c9b418a72e03dd75ed37b3f7d4292",
+      "crc32": "9381dc82",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        7,
+        35,
+        46
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/ep5-real-save-migration-v2082.json",
+      "uncompressed_bytes": 500,
+      "compressed_bytes": 253,
+      "sha256": "b05846ab892794f4c02b1d59a6b7d99ca128e155859afe5a80b9c0f11e2ea242",
+      "crc32": "2e227515",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        7,
+        37,
+        20
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/ep5-speed-v2082.json",
+      "uncompressed_bytes": 816,
+      "compressed_bytes": 363,
+      "sha256": "92144765aa1afba147a199a5c478e8faef63c407d16d09e91d29b6fdd721bb70",
+      "crc32": "664fa1d9",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        2,
+        52
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/episode-runtime-v205.json",
+      "uncompressed_bytes": 1978,
+      "compressed_bytes": 372,
+      "sha256": "5eae0c7cb5b5c7bbdaf5b4a83f0cd85327dd5ada952caa60b290ebb05170af3f",
+      "crc32": "2fc8c2d5",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        7,
+        35,
+        54
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/qa-art-v1.17.json",
+      "uncompressed_bytes": 577,
+      "compressed_bytes": 335,
+      "sha256": "289ca1928c0b15c9e38efbbcf25d7db9346c73d3f7b94af9a912b2c94d230346",
+      "crc32": "37369c5c",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        7,
+        37,
+        44
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/qa-build-v2.08.2.json",
+      "uncompressed_bytes": 228,
+      "compressed_bytes": 157,
+      "sha256": "b4e5f67d65483a9791d8619b0a93affa03c96cfecd5e5754cbe611a278befe21",
+      "crc32": "978beebc",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        7,
+        38,
+        18
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/qa-build-v2.08.3.json",
+      "uncompressed_bytes": 238,
+      "compressed_bytes": 163,
+      "sha256": "45eb7d245370dd7e84636b086d81aa29cde7514ab30cfeb88dba15ea353187ad",
+      "crc32": "5199937c",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        3,
+        14
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/qa-build-v2.08.json",
+      "uncompressed_bytes": 228,
+      "compressed_bytes": 157,
+      "sha256": "b4e5f67d65483a9791d8619b0a93affa03c96cfecd5e5754cbe611a278befe21",
+      "crc32": "978beebc",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        7,
+        35,
+        2
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/qa-fixture-v201.json",
+      "uncompressed_bytes": 3316733,
+      "compressed_bytes": 315787,
+      "sha256": "0929416ee279cfd2a216bd60ed4030c571bf36de1896b31dac7d382da125251c",
+      "crc32": "272cb0f5",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        0,
+        56
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/qa-integration-v1.17.json",
+      "uncompressed_bytes": 19315,
+      "compressed_bytes": 4282,
+      "sha256": "878c91786cafd4f1c5e966a95cb5138b5922c04304b01cadaed4df0e33f1c47c",
+      "crc32": "25e96310",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        0,
+        56
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/qa-simulation-v1.17.json",
+      "uncompressed_bytes": 1029,
+      "compressed_bytes": 399,
+      "sha256": "cce7817e6b1a874ec6872a76361e56387e8f14489f629f00601347059d95e48a",
+      "crc32": "f54a8063",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        1,
+        6
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/qa-ui-boot-v1.17.json",
+      "uncompressed_bytes": 454,
+      "compressed_bytes": 283,
+      "sha256": "ccddaf95f1ef8b49ba083d2cad14a2d52348e7c3b6da90a1817c5d3d34d56d41",
+      "crc32": "4458f8fb",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        7,
+        35,
+        16
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/runtime-report-recovery-smoke-v2083.json",
+      "uncompressed_bytes": 373,
+      "compressed_bytes": 233,
+      "sha256": "3d1901f8882f9a493c5b0871a4d58c9912955dd1075f8c9456b0a393a976b01c",
+      "crc32": "1e90f410",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        3,
+        14
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/runtime-ui-v205.json",
+      "uncompressed_bytes": 276,
+      "compressed_bytes": 186,
+      "sha256": "6f2a55d322548b7a9a112ea97f5155cecfe862419a296ccbd726288118a221ed",
+      "crc32": "c624ea0b",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        7,
+        35,
+        46
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/sha256.txt",
+      "uncompressed_bytes": 3194,
+      "compressed_bytes": 1621,
+      "sha256": "9f543206deae71020807f6930c50a12e58a863cbe4df34cd1311a28d6812ad4b",
+      "crc32": "bad54892",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        0,
+        26
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/story-events-v205.json",
+      "uncompressed_bytes": 1949,
+      "compressed_bytes": 689,
+      "sha256": "b692c3eecd9b6828f035d37c74cff41fe3b056939dffbb50c9c8aa8dd45cc8df",
+      "crc32": "0c788dcf",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        7,
+        35,
+        50
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/suite-v208.json",
+      "uncompressed_bytes": 463,
+      "compressed_bytes": 276,
+      "sha256": "81707eef7d39040096f1c8f9051e31007427f643b818d1c4f8831608b1974ca8",
+      "crc32": "f20e78e9",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        0,
+        56
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/suite-v2083-attempt.json",
+      "uncompressed_bytes": 744,
+      "compressed_bytes": 359,
+      "sha256": "36c4dee92d9d00f61c3f5285ccc0db7040bc892dde6da86ede659924e0b91274",
+      "crc32": "b6a3d230",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        2,
+        40
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/targeted-tests-v2082.json",
+      "uncompressed_bytes": 2118,
+      "compressed_bytes": 846,
+      "sha256": "89e03f7cf11714c8a785e3af4f964b9a32509825ce554bb78fcdf4e2af55be17",
+      "crc32": "9a6b0163",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        7,
+        38,
+        18
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/v208-audit.log",
+      "uncompressed_bytes": 150,
+      "compressed_bytes": 131,
+      "sha256": "6fb2579d6739972fd5eec1f6c9651bcf085525813d7a80b882c2ae2011559833",
+      "crc32": "4a98d35a",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        0,
+        56
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/world-deaths-current.json",
+      "uncompressed_bytes": 10264,
+      "compressed_bytes": 1223,
+      "sha256": "97661f50a0683316d61e1b5d098a4a49b8e48f1c0384422b89c1eceacf61f839",
+      "crc32": "9bd64a06",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        1,
+        14
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/world-load-diff.json",
+      "uncompressed_bytes": 2,
+      "compressed_bytes": 4,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "crc32": "0d4cbb29",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        1,
+        14
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/evidence/world-v117.json",
+      "uncompressed_bytes": 11732,
+      "compressed_bytes": 1508,
+      "sha256": "64eac072a915fbdbe93a77f1e9f227fe56a7267ad84c5558a9a1b47491c6d146",
+      "crc32": "5bff5430",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        1,
+        14
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original evidence/runtime or save-associated fixture: metadata only; no payload bytes preserved."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/package.json",
+      "uncompressed_bytes": 360,
+      "compressed_bytes": 239,
+      "sha256": "b36217124b8b6e541d2350451b9338580d01d4766508d8253c26b4fd508cbcc4",
+      "crc32": "8ad4c133",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        7,
+        57,
+        58
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/package.json"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/references/BASELINE_V116_SHA256.json",
+      "uncompressed_bytes": 1823,
+      "compressed_bytes": 1007,
+      "sha256": "03bd5de849b99910827c93444460890580e4eea122dff1ecd2577164f57e1f2e",
+      "crc32": "3ac722cd",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/references/BASELINE_V116_SHA256.json"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/references/BASELINE_V200_SHA256.json",
+      "uncompressed_bytes": 2936,
+      "compressed_bytes": 1424,
+      "sha256": "07a36a73bf1a097381999b1db52f0b7c4b344b371136991ff634fac96ff1fb3e",
+      "crc32": "8a2abf0b",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/references/BASELINE_V200_SHA256.json"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/README.md",
+      "uncompressed_bytes": 860,
+      "compressed_bytes": 547,
+      "sha256": "9892e6380671ef20bd34e586c32d385832d26a3ef844ae5d83c2888703ca011f",
+      "crc32": "86fe8a26",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        7,
+        57,
+        58
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/README.md"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/index.html",
+      "uncompressed_bytes": 6165,
+      "compressed_bytes": 2057,
+      "sha256": "a1af304965ba61467e33b4723f7761e1ed4b2fb59b822d9941f1cc66d9657205",
+      "crc32": "79e899b7",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        7,
+        59,
+        2
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/index.html"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/academy.js",
+      "uncompressed_bytes": 37894,
+      "compressed_bytes": 10237,
+      "sha256": "21a6201c64a5f11c818cfd35a3d53a4379c86860158f1b1bf896ef31e94332e4",
+      "crc32": "dc6cee66",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        7,
+        59,
+        2
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/academy.js"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/art-assets.js",
+      "uncompressed_bytes": 1377,
+      "compressed_bytes": 484,
+      "sha256": "b1c09f519283ce31353c1d93c6b56dddb5417782c3426d4d11c865adcc610496",
+      "crc32": "2582f935",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Excluded original rendering/UI/stage bootstrap module; no adaptation of original presentation or game loop."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/combat-data.js",
+      "uncompressed_bytes": 38430,
+      "compressed_bytes": 11645,
+      "sha256": "ef77c236263b3fe1da166ea95de34ceba18dda588c76a1c519cdd82e15e63ec4",
+      "crc32": "653d1d43",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/combat-data.js"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/combat-overhaul.js",
+      "uncompressed_bytes": 15546,
+      "compressed_bytes": 5922,
+      "sha256": "32e03c45f60b407889f4f93b15a87d163a8a26448e19d5f920ea5d12e4b5dd3b",
+      "crc32": "898e3f3e",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/combat-overhaul.js"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/combat-stats.js",
+      "uncompressed_bytes": 37706,
+      "compressed_bytes": 11719,
+      "sha256": "ec29283a73f574e89bd816a0aa11b5f50c5d5cb7c73fa99994b0752e811fc2c5",
+      "crc32": "6abc4772",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/combat-stats.js"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/combat-tactics.js",
+      "uncompressed_bytes": 21891,
+      "compressed_bytes": 7429,
+      "sha256": "c2558268ed713f64c2f01e9d04c5262cc4bc7abf70abd86a272c440918cc7318",
+      "crc32": "bab233e9",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/combat-tactics.js"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/combat-view.js",
+      "uncompressed_bytes": 20544,
+      "compressed_bytes": 6192,
+      "sha256": "6ed53aec29fac823a6ed6bc5b9d1efb5ef04ba2790a32a3c24a9d47761aa4637",
+      "crc32": "a9cfb7fc",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Excluded original rendering/UI/stage bootstrap module; no adaptation of original presentation or game loop."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/combat.js",
+      "uncompressed_bytes": 23827,
+      "compressed_bytes": 8084,
+      "sha256": "517fe45210d048d78a3378f93cb6fb251675ba08dafc18bd4514e8fb13cd2335",
+      "crc32": "0df1c92f",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/combat.js"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/discovery.js",
+      "uncompressed_bytes": 23711,
+      "compressed_bytes": 8244,
+      "sha256": "fd1ce663a8543b0d8a6448835ab59c3b8d1db5161fb04156b0113b8e5740282b",
+      "crc32": "dabdda54",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/discovery.js"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/edit-hub.js",
+      "uncompressed_bytes": 26473,
+      "compressed_bytes": 7672,
+      "sha256": "4f3e6ddcb623b7cf33c67b542e8bca9fd2bb413d1d38b34ba08ed504942e338e",
+      "crc32": "8c4cc47a",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Excluded original rendering/UI/stage bootstrap module; no adaptation of original presentation or game loop."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/human-ui.js",
+      "uncompressed_bytes": 15205,
+      "compressed_bytes": 5170,
+      "sha256": "29e65259452981eb26321c4bd3b46d586edc5fc1321fa299b98a1f1503d99227",
+      "crc32": "376accb1",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Excluded original rendering/UI/stage bootstrap module; no adaptation of original presentation or game loop."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/human.js",
+      "uncompressed_bytes": 33246,
+      "compressed_bytes": 10635,
+      "sha256": "b230108298cae486c3dc6bf6698f0384ca67128b064ff3947f19fa6e5522328a",
+      "crc32": "8300e275",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/human.js"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/jade-inventory.js",
+      "uncompressed_bytes": 31965,
+      "compressed_bytes": 10657,
+      "sha256": "d56ba3fde0a75d6fbf3e06b24015fa2e22e838288ec96b924175b4cd5ada654e",
+      "crc32": "76030e3f",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/jade-inventory.js"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/jianghu-data.js",
+      "uncompressed_bytes": 47581,
+      "compressed_bytes": 10579,
+      "sha256": "5d31b7014a871b2c3f8be45732335151925fc6998a006ece9ba1a58fed437ed9",
+      "crc32": "1b4c3921",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/jianghu-data.js"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/jianghu-ui.js",
+      "uncompressed_bytes": 36711,
+      "compressed_bytes": 11017,
+      "sha256": "c40c8e7aece26dd32c51d9a5be519871e62195f1236045a97e8851031e5d772f",
+      "crc32": "a0d7b230",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Excluded original rendering/UI/stage bootstrap module; no adaptation of original presentation or game loop."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/jianghu.js",
+      "uncompressed_bytes": 62711,
+      "compressed_bytes": 20283,
+      "sha256": "bda15c3f08883b7faba7335090bbbe9faa988350d929333830f8ef3c5e4bd20e",
+      "crc32": "49095ded",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/jianghu.js"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/legacy.bundle.js",
+      "uncompressed_bytes": 18867242,
+      "compressed_bytes": 2564368,
+      "sha256": "605e8e3d9a2cf282f3be29dee6e124aeb5448af9b2f5ae005b147761404905b2",
+      "crc32": "4e34fa23",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/legacy.bundle.js"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/living-art.js",
+      "uncompressed_bytes": 34042,
+      "compressed_bytes": 13273,
+      "sha256": "9365f71957e9970f1c6b6ff5551af675ef65c603a3a63fdc7c9948e802c6c942",
+      "crc32": "e336d240",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Excluded original rendering/UI/stage bootstrap module; no adaptation of original presentation or game loop."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/living-content-v111.js",
+      "uncompressed_bytes": 573913,
+      "compressed_bytes": 116674,
+      "sha256": "c5470e66c15b12a41816966b94eb50ea045fdd67704841b0975a5de255a9a2d3",
+      "crc32": "d2a4a02d",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/living-content-v111.js"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js",
+      "uncompressed_bytes": 1202339,
+      "compressed_bytes": 128401,
+      "sha256": "3561b4a7fb9563a16b15d268ff34d8c34eed61c2f40f3e1fb7917e754d621b2b",
+      "crc32": "6b8040f1",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/myriad-worlds.js",
+      "uncompressed_bytes": 103771,
+      "compressed_bytes": 28785,
+      "sha256": "b76f2a508b1ae75a711a37715278230f50f8bf6c7bb22ce6c8b42e9cd428085f",
+      "crc32": "a6d73eba",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/myriad-worlds.js"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/progression-ui.js",
+      "uncompressed_bytes": 25808,
+      "compressed_bytes": 8226,
+      "sha256": "7e133f5d3f2a435d56a135f29380b155bdd45226a89000ab881c0e987df2490e",
+      "crc32": "058b62bf",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Excluded original rendering/UI/stage bootstrap module; no adaptation of original presentation or game loop."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/progression.js",
+      "uncompressed_bytes": 78556,
+      "compressed_bytes": 23588,
+      "sha256": "8e13d7f8ed4edc7cf10f8c28489336efa18c62a6a9718a181d023a415be24b08",
+      "crc32": "cd8c140e",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/progression.js"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/realm-sprites.js",
+      "uncompressed_bytes": 15445,
+      "compressed_bytes": 3662,
+      "sha256": "c5d4f88f36fd9f224cd1225b0066724374e3b44a7ae1cd13ca7e18b9df47ff6a",
+      "crc32": "aa946c6b",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Excluded original rendering/UI/stage bootstrap module; no adaptation of original presentation or game loop."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/sect-contributions.js",
+      "uncompressed_bytes": 115719,
+      "compressed_bytes": 32938,
+      "sha256": "e42b6e4fdb78f1df582870890d1db0ada4f52e0c09ef86466ec9fa65cc0504c7",
+      "crc32": "0f3df907",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/sect-contributions.js"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/sect-infrastructure.js",
+      "uncompressed_bytes": 17153,
+      "compressed_bytes": 6059,
+      "sha256": "2405a60cbf939274463a7b0a78d4d538ae021ffda90a064742d27ffcbd836f8b",
+      "crc32": "9a572616",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/sect-infrastructure.js"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/sect-library.js",
+      "uncompressed_bytes": 7554,
+      "compressed_bytes": 2958,
+      "sha256": "f32a26eb3d8ef67fb2aed352a0ee84def14747f28ce3faa41b218b5f0ab445fe",
+      "crc32": "cf1908a7",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/sect-library.js"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/sect-life-ui.js",
+      "uncompressed_bytes": 13304,
+      "compressed_bytes": 4440,
+      "sha256": "237af346dc62ddcd5a0199560396562b7a48a66c1d1274d55484aa7267de75fc",
+      "crc32": "b59cc77d",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Excluded original rendering/UI/stage bootstrap module; no adaptation of original presentation or game loop."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/sect-life.js",
+      "uncompressed_bytes": 34215,
+      "compressed_bytes": 10868,
+      "sha256": "c992e2982e1f2ab17dc809c40f971077c1c8542aaf2eec7ed5f9e8a7a844636d",
+      "crc32": "a9b91cd4",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/sect-life.js"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/stage.js",
+      "uncompressed_bytes": 135964,
+      "compressed_bytes": 41624,
+      "sha256": "fc627dde74ad9ee9b9900892c6d425c89016ec8326c15651f0c78b84d5d2a8aa",
+      "crc32": "df7dc5ee",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        0,
+        20
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Excluded original rendering/UI/stage bootstrap module; no adaptation of original presentation or game loop."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/story-sidequests.js",
+      "uncompressed_bytes": 38531,
+      "compressed_bytes": 11463,
+      "sha256": "16881ce2d837c3c7265fb3e62de171a572944c337b65ce3b32fd2dde818f4836",
+      "crc32": "2520ff1a",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": true,
+      "preserved_relative_path": "SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/story-sidequests.js"
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/scripts/ui.js",
+      "uncompressed_bytes": 160560,
+      "compressed_bytes": 43476,
+      "sha256": "88d1a35b85aa69211e7c9da38fcd4d4700a165766c94f8300d08f930874ba6b2",
+      "crc32": "9b471be5",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        0,
+        20
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Excluded original rendering/UI/stage bootstrap module; no adaptation of original presentation or game loop."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/source/style.css",
+      "uncompressed_bytes": 44843,
+      "compressed_bytes": 10604,
+      "sha256": "c843f7d4ade63bddbf467cbd74324428f8423bb2855b27d746f4f467f288ef4a",
+      "crc32": "548c85b2",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original presentation CSS: excluded."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/academy_formula_schema_v2083.cjs",
+      "uncompressed_bytes": 2973,
+      "compressed_bytes": 1393,
+      "sha256": "328c20c11ec08c9c4b194ce39bc36d4df9092bbff4db0bfeef5781073437a096",
+      "crc32": "5c4cb082",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        7,
+        59,
+        46
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/audit_v117.cjs",
+      "uncompressed_bytes": 28683,
+      "compressed_bytes": 10487,
+      "sha256": "0550ace17e991c9dfe8ec5aee91ad1307c84d8e17d4e1fa6d453f1267012b34b",
+      "crc32": "7744cd5c",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/balance_v117.cjs",
+      "uncompressed_bytes": 3340,
+      "compressed_bytes": 1661,
+      "sha256": "603c3db492d27356ad732732e963549faa4c2af082c0730785a752b06780332b",
+      "crc32": "d6f7ad31",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/canvas-shim.cjs",
+      "uncompressed_bytes": 2391,
+      "compressed_bytes": 1118,
+      "sha256": "1305d51001e98a6c97cf095983b66753b599d01152025718a4fdd6218832f5f5",
+      "crc32": "af375e60",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/coherence_hotfix_v208.cjs",
+      "uncompressed_bytes": 5494,
+      "compressed_bytes": 2086,
+      "sha256": "db6b3e06956647bcb092dc384e14624c876deef529d82c5fa710c492d4def962",
+      "crc32": "7db022b7",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/coherence_v208.cjs",
+      "uncompressed_bytes": 9112,
+      "compressed_bytes": 3463,
+      "sha256": "1a358c832df91802fec51f672a72a3e467295abd8b8da500de87e3ecc89b968a",
+      "crc32": "13b2ba97",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/combat_integration_v117.cjs",
+      "uncompressed_bytes": 9669,
+      "compressed_bytes": 3312,
+      "sha256": "585c8fb80847b7aa712a50b717504656e2a9a7949c69b5d5dcaeed5cd31c9b21",
+      "crc32": "d87de0c9",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/combat_overhaul_v201.cjs",
+      "uncompressed_bytes": 9292,
+      "compressed_bytes": 3337,
+      "sha256": "136414c8c617d1a06ed1bd151072fa7cdae21a8c6cdd0609d992a5737291e54b",
+      "crc32": "f4721e4d",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/combat_stats_v201.cjs",
+      "uncompressed_bytes": 16141,
+      "compressed_bytes": 5591,
+      "sha256": "8427074565038dc12e52fee1ac488a745c7dc8cfb40fc809d2ef2ed10f2f2764",
+      "crc32": "1e3587c1",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/combat_status_v201.cjs",
+      "uncompressed_bytes": 3608,
+      "compressed_bytes": 1605,
+      "sha256": "8f7ffc71e9d2d19c7a096b942bec46175aedab324916f728146e5177a9a6d8b4",
+      "crc32": "1180d2af",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/combat_v117.cjs",
+      "uncompressed_bytes": 6306,
+      "compressed_bytes": 2166,
+      "sha256": "4d4ce94359503d25fb7ed5fb7f284bda333446e36f7e86b82aaf45533c562173",
+      "crc32": "849d9e92",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/combat_visuals_v201.cjs",
+      "uncompressed_bytes": 15105,
+      "compressed_bytes": 5930,
+      "sha256": "4184c5ab1741cda159064a8385f871379d89a52f822871a4a80e2c8e4341232c",
+      "crc32": "80b11d35",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/contributions_v205.cjs",
+      "uncompressed_bytes": 8320,
+      "compressed_bytes": 2677,
+      "sha256": "0d8a0a024621fef0ceee6fa4092aa4507dd900af328264c43bd90b1e5f85cd92",
+      "crc32": "5b084481",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/cultivation_quests_v202.cjs",
+      "uncompressed_bytes": 7955,
+      "compressed_bytes": 2596,
+      "sha256": "feb544b5d6c690b74b673fdd8c701c427af486174f66490bddca4e656286ee57",
+      "crc32": "07db3483",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/economy_integration_v207.cjs",
+      "uncompressed_bytes": 6527,
+      "compressed_bytes": 2587,
+      "sha256": "0a902048cdded74348f5977d2876ba0fdb598d430eb2a304db81495c687c06ae",
+      "crc32": "69e45f17",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/economy_simulation_v207.cjs",
+      "uncompressed_bytes": 3296,
+      "compressed_bytes": 1559,
+      "sha256": "a080278aa2dd78b2ba20399778a818603c7097a3ff39b0ae85d3ec324336b895",
+      "crc32": "71fd4f48",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/economy_ui_v207.cjs",
+      "uncompressed_bytes": 7001,
+      "compressed_bytes": 3102,
+      "sha256": "513f8e098ba102048fbab38861b04da141f2e0422f7e9ebcefa191cf0c5241b3",
+      "crc32": "ad18ffef",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/economy_v207.cjs",
+      "uncompressed_bytes": 11563,
+      "compressed_bytes": 3926,
+      "sha256": "88d46aef8a11c82f8560f60e2ba8ba5ffb2a88109d56620137a28ad684000828",
+      "crc32": "c469abe4",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/ep4_runtime_v205.cjs",
+      "uncompressed_bytes": 1751,
+      "compressed_bytes": 877,
+      "sha256": "aec79d3436f5a824706443319ec5d3c8e0ec9ba1bf677bb7e921c5cf07fcc7f9",
+      "crc32": "7c8485a0",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/ep5_speed_v2082.cjs",
+      "uncompressed_bytes": 4152,
+      "compressed_bytes": 1639,
+      "sha256": "a12d8d064e8fefd66feb618c4df3d57b42d96f106e5297792add6ac260cd6e8c",
+      "crc32": "b48519a8",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        7,
+        57,
+        58
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/expedition_v117.cjs",
+      "uncompressed_bytes": 2122,
+      "compressed_bytes": 949,
+      "sha256": "6069cb7af19a94383c5679cef211b606aa3f39d659ba57e483d49a752e20d43c",
+      "crc32": "072d7599",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/final_regressions_v201.cjs",
+      "uncompressed_bytes": 4420,
+      "compressed_bytes": 1820,
+      "sha256": "e39878b7e41b9d6b7f45514d3f685f05271af6f4e8f48f6e6fa2daa4ac41e568",
+      "crc32": "b71e8517",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/flows_v117.cjs",
+      "uncompressed_bytes": 5986,
+      "compressed_bytes": 2703,
+      "sha256": "aab5557f2bee7a747b757bd0d46de6a8037e733b90e8e149e9717e1486a60032",
+      "crc32": "aa65bb25",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/gear_integrity_v205.cjs",
+      "uncompressed_bytes": 1375,
+      "compressed_bytes": 718,
+      "sha256": "349aadebdaaa7a91d9a39daf7bd86da290a13fc43c2a76c22a5c6430bd158f57",
+      "crc32": "62ab41ca",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/infrastructure_v207.cjs",
+      "uncompressed_bytes": 9699,
+      "compressed_bytes": 3006,
+      "sha256": "fe22d6cdc9bd63fea2fa30505afc623fd232b7f65eb232538394d9b831c0f51a",
+      "crc32": "8ef0d8f7",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/inspect-engine.cjs",
+      "uncompressed_bytes": 2492,
+      "compressed_bytes": 1160,
+      "sha256": "dc2fce33ebec51610985151fc49299bd8ea592ed3871b8223c561f29a97b0697",
+      "crc32": "15b67644",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/library_economy_v207.cjs",
+      "uncompressed_bytes": 5337,
+      "compressed_bytes": 2223,
+      "sha256": "2d6f5a2b73caa3de4ad33b0b0137c916824c237e2df8c915a58e3815b41d2a17",
+      "crc32": "20dfce0b",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/living_quests_v205.cjs",
+      "uncompressed_bytes": 3398,
+      "compressed_bytes": 1702,
+      "sha256": "5cdf63daa48bde8d4e43da2abdab4e70aa5b2ff32ba848499868589f05c580b9",
+      "crc32": "960e801a",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/merge_ecology_v201.cjs",
+      "uncompressed_bytes": 14360,
+      "compressed_bytes": 4838,
+      "sha256": "d8195a3a3da44966ae368b10f3046d6d7b069624e4d8fb036e72c75945aef0c9",
+      "crc32": "abbb0477",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/merge_npc_v201.cjs",
+      "uncompressed_bytes": 8672,
+      "compressed_bytes": 3232,
+      "sha256": "0a926eaa818a2cbd670c965ace144be0638441df141c86e73c9e925aed788853",
+      "crc32": "d0547f10",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/myriad_worlds_v200.cjs",
+      "uncompressed_bytes": 26748,
+      "compressed_bytes": 9098,
+      "sha256": "7238d849d30cc3ffb2906bfce467c3ead2030088d18a345cf86196fbd1494240",
+      "crc32": "d55a2efa",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/quest_combat_v202.cjs",
+      "uncompressed_bytes": 13936,
+      "compressed_bytes": 4921,
+      "sha256": "01f19ada07df1f91eae2d7c6a58a7e4b8b40be64e73df45fa946029128583383",
+      "crc32": "003300d7",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/render_v117.cjs",
+      "uncompressed_bytes": 6711,
+      "compressed_bytes": 2987,
+      "sha256": "0950e359384edbd2414de81e44dbe97e27f8c14587c6b840901a53685e761272",
+      "crc32": "5f7df487",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/retreat_v201.cjs",
+      "uncompressed_bytes": 4636,
+      "compressed_bytes": 1801,
+      "sha256": "002fccdd58f48dd5997c8864d2cef3f7815d9365a5d74da817c3d7b197aa6f18",
+      "crc32": "c0e13843",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/review_probes_v201.cjs",
+      "uncompressed_bytes": 6952,
+      "compressed_bytes": 2795,
+      "sha256": "0900baccc7cd3f1abc46d24757f037b2eaebe314e872435cf3b03597c19c7b34",
+      "crc32": "47e3b051",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/review_regressions_v205.cjs",
+      "uncompressed_bytes": 9213,
+      "compressed_bytes": 3072,
+      "sha256": "3a78099266d3e219ce99d3ce708bfbb859f867877ca2cce9f71a6f90c6b64db6",
+      "crc32": "945498d8",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/run_v117.cjs",
+      "uncompressed_bytes": 1520,
+      "compressed_bytes": 762,
+      "sha256": "96fcb59f5ca1e0f68c16e87a2d06efab6964cc7edbe73b083a37024ab1e94481",
+      "crc32": "15115163",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/run_v201.cjs",
+      "uncompressed_bytes": 1805,
+      "compressed_bytes": 883,
+      "sha256": "ba6140afc7d47248c2fc8b4ed04efe4e90f94e49cd40c843571a7feef9891c26",
+      "crc32": "0ae9ac64",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/run_v205.cjs",
+      "uncompressed_bytes": 2550,
+      "compressed_bytes": 1065,
+      "sha256": "d932373ad75fa455f714cf9aea37a4f2b409dea731241436948307ea3b3328c6",
+      "crc32": "9f112bd1",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/run_v207.cjs",
+      "uncompressed_bytes": 2793,
+      "compressed_bytes": 1108,
+      "sha256": "a8ea681518a79e228278195bff4d0d3cb3c46ba525df4f59a1017fc6b34ef9d2",
+      "crc32": "97ef2110",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/run_v208.cjs",
+      "uncompressed_bytes": 5158,
+      "compressed_bytes": 2008,
+      "sha256": "7090afa72a79fe7bf94649e06f8588da2cd8b672f0e60406e1e1f1da0b6c11cc",
+      "crc32": "0cf4cd8f",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        2,
+        40
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/runtime_report_recovery_smoke_v2083.cjs",
+      "uncompressed_bytes": 1723,
+      "compressed_bytes": 807,
+      "sha256": "ed11a022386671c1a9d3cc63287c8378d0076e1f063f7076334cb68301575a57",
+      "crc32": "1ccab335",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        2,
+        40
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/runtime_ui_v205.cjs",
+      "uncompressed_bytes": 5411,
+      "compressed_bytes": 2426,
+      "sha256": "05b14f71fca7ad23f65d506940cab9081fef3ad029d0b892db145676860ce3e4",
+      "crc32": "d548bd8c",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/sidequests_v202.cjs",
+      "uncompressed_bytes": 19651,
+      "compressed_bytes": 6407,
+      "sha256": "5cc2e31b7a30c2e961c98c3baad63cfcdd455e863319bc138d398a4c7c066816",
+      "crc32": "8160bc5f",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/simulation_v117.cjs",
+      "uncompressed_bytes": 4305,
+      "compressed_bytes": 1926,
+      "sha256": "c3417c0d5785ab452d367ab76e23aab10869f7fa59d09d47d07a2f66e73c31d9",
+      "crc32": "a70379fc",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/story_content_v205.cjs",
+      "uncompressed_bytes": 5981,
+      "compressed_bytes": 2628,
+      "sha256": "63d54723c0b635091ffd21659e2bffdd39a4871832e68a7bd503bfdefdb2979d",
+      "crc32": "2ae030bb",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/story_events_v205.cjs",
+      "uncompressed_bytes": 8334,
+      "compressed_bytes": 2881,
+      "sha256": "225583368e39301035f810c33c92a7f69805e7b6a324351cf4accf2cbd93a90a",
+      "crc32": "28d7af57",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/treasury_probes_v202.cjs",
+      "uncompressed_bytes": 13526,
+      "compressed_bytes": 4639,
+      "sha256": "505d78c3e3323f07aa73064ad7090025e9eed256d242dff1b79575eb1f158e67",
+      "crc32": "9f0d8c9c",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/treasury_routes_v205.cjs",
+      "uncompressed_bytes": 2038,
+      "compressed_bytes": 981,
+      "sha256": "4727dab690f52368ceb9ffeb4652742c239b9727f5fbedad67296603ea4995b8",
+      "crc32": "bc80c80f",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/treasury_ui_v205.cjs",
+      "uncompressed_bytes": 5058,
+      "compressed_bytes": 2348,
+      "sha256": "b2b54ff1552f231e66197a9108cd68a644cedadb81f5289fb0f47a99b3ead67a",
+      "crc32": "79769d73",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/treasury_v202.cjs",
+      "uncompressed_bytes": 15553,
+      "compressed_bytes": 4589,
+      "sha256": "2bd9510d3b15afba674c38dffe4855eb9f979a09fa4e824407e71514f3fe5385",
+      "crc32": "6e00e062",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/ui_v117.cjs",
+      "uncompressed_bytes": 6297,
+      "compressed_bytes": 2733,
+      "sha256": "85f941a4932a0177e28cc133e44a2f526a4889b2cd82754aaab451094e1492fb",
+      "crc32": "57ede554",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        7,
+        32,
+        22
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/verify_build_v117.cjs",
+      "uncompressed_bytes": 1926,
+      "compressed_bytes": 902,
+      "sha256": "ea491bef082756cdbc25d7a817675d27043ad9b97d9bbc549a0499b47a1285c3",
+      "crc32": "be7c22ab",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/verify_build_v205.cjs",
+      "uncompressed_bytes": 1984,
+      "compressed_bytes": 943,
+      "sha256": "54db555adb90046818c119bacb9413e4d303ae60583f4daec5721f23e6278c5a",
+      "crc32": "51e40b17",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        7,
+        59,
+        2
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/world_links_v201.cjs",
+      "uncompressed_bytes": 2154,
+      "compressed_bytes": 1099,
+      "sha256": "da513060a44937e2258fd77ecfcce2e5ecd6a37c9e12c1103faafce31a469cae",
+      "crc32": "6481cb82",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tests/world_v117.cjs",
+      "uncompressed_bytes": 2477,
+      "compressed_bytes": 1115,
+      "sha256": "96466bce8880af37d89bf1a3e3d8a863cab6cb87c8d27fdc1f8954c1a9c78405",
+      "crc32": "0ba392cb",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original test harness or save fixture: excluded from development reference; target owns its tests."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tools/build.py",
+      "uncompressed_bytes": 4873,
+      "compressed_bytes": 2095,
+      "sha256": "af7d4187ee06f14f0489af53a32aafe17cdddfdc915fa0597b0ed53879199aa8",
+      "crc32": "7fde9cbb",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        0,
+        20
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original build/package tool: excluded; target owns packaging."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tools/content_manifest.cjs",
+      "uncompressed_bytes": 1373,
+      "compressed_bytes": 777,
+      "sha256": "5b29f6a7b4509725a40fc70b66210ec9a0e18f66b0447bdb027175546ddb2751",
+      "crc32": "cd308678",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        6,
+        26,
+        8
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original build/package tool: excluded; target owns packaging."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tools/package_review.py",
+      "uncompressed_bytes": 2360,
+      "compressed_bytes": 1241,
+      "sha256": "9b8e590ba2ef881a414ad147e8674f608bec54702cb2d831a91c12766f2f8fc8",
+      "crc32": "212a1546",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        0,
+        20
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original build/package tool: excluded; target owns packaging."
+    },
+    {
+      "original_relative_path": "02_SOURCE_FULL/tools/package_slim.py",
+      "uncompressed_bytes": 2188,
+      "compressed_bytes": 1091,
+      "sha256": "ebf3c9010fab12d27dce1a1aa3bd3435200371c422ee7bc9205e78020e4e1b5f",
+      "crc32": "3f97a758",
+      "zip_datetime": [
+        2026,
+        10,
+        27,
+        8,
+        0,
+        20
+      ],
+      "zip_compression_method": 8,
+      "zip_external_attributes": 2175008768,
+      "is_directory": false,
+      "payload_preserved": false,
+      "exclusion_reason": "Original build/package tool: excluded; target owns packaging."
+    }
+  ],
+  "derived_reference_files": [
+    {
+      "relative_path": "SOURCE_REFERENCE/catalogs/inspected_catalog.json",
+      "bytes": 3850313,
+      "sha256": "a9cfd00bf4b5eec93ad37230a01d31de6a810ad4bc746dd3345fb2d6575253ba",
+      "origin": "Generated from supplied archive during this development task; no save or fixture input",
+      "reason_and_use": "Derived non-save source catalogue snapshot produced by read-only VM registration of the ten modules listed inside it; includes baseline target shapes and exact source-only ID lists.",
+      "credential_pattern_hits": []
+    },
+    {
+      "relative_path": "SOURCE_REFERENCE/SOURCE_AUDIT_REPORT.md",
+      "bytes": 10122,
+      "sha256": "77847bd81a5b400ceaa2773394d0d325eeac052aa3faa4de594f72f31f7ca15e",
+      "origin": "Generated from supplied archive during this development task; no save or fixture input",
+      "reason_and_use": "Current non-private audit report describing actual source, selected migration, data defects and rights boundary; not an original archive entry.",
+      "credential_pattern_hits": []
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "academy.js": "a9acc2aaa65f2506ce07d468ab84621a0acaaeb6c3cbb43d1ae568d417682e89",
+  "art-assets.js": "b1c09f519283ce31353c1d93c6b56dddb5417782c3426d4d11c865adcc610496",
+  "combat.js": "667f3097a04f6cd7b8a7beb08f2eab5fc4e2a5e4cf761ee9b1bca0acd47a667c",
+  "discovery.js": "9f4bd4a507a02427458d8b28e6393fea69cd29dde2d6cb8c1a22679cc1b248ff",
+  "edit-hub.js": "5d1d49c82ccfcc92f6d7b797bd7a2e3f2223065b899ce6daf29262ee8353d281",
+  "human-ui.js": "bfbab3bd4692a742e5b3e3976fe5eb7ceeaa50274fc3d29cad0e39b493c83839",
+  "human.js": "b230108298cae486c3dc6bf6698f0384ca67128b064ff3947f19fa6e5522328a",
+  "jade-inventory.js": "d56ba3fde0a75d6fbf3e06b24015fa2e22e838288ec96b924175b4cd5ada654e",
+  "jianghu-data.js": "5d31b7014a871b2c3f8be45732335151925fc6998a006ece9ba1a58fed437ed9",
+  "jianghu-ui.js": "9381778b95f8dd86df47780add4e2a8bd46372c35cdbe65d0c5b04d6903f182c",
+  "jianghu.js": "e847d58cf9a8e073c2cbb5ae0a0b9ff586a1f8355c0e61d1eb0f3e6df54b0200",
+  "legacy.bundle.js": "605e8e3d9a2cf282f3be29dee6e124aeb5448af9b2f5ae005b147761404905b2",
+  "living-art.js": "3b6296cccd042ef0fa91e62e9fa84e4462b217a9c208c6fe3b4304e78ed392e4",
+  "living-content-v111.js": "205e0bb7e30686072106d4d8be02d6d6f1c5011db5c8978831382fe2f7aa1bba",
+  "progression-ui.js": "96a647a576630c53c6ff798550044a69dab29412425f7e38fb77c6ed9161afe8",
+  "progression.js": "ef9a82afbb568c301ec0e02debcf2120e0cb7fd35451d23d38d3e150dae4e6c4",
+  "realm-sprites.js": "c5d4f88f36fd9f224cd1225b0066724374e3b44a7ae1cd13ca7e18b9df47ff6a",
+  "sect-life-ui.js": "237af346dc62ddcd5a0199560396562b7a48a66c1d1274d55484aa7267de75fc",
+  "sect-life.js": "a86dad8ee09d2f54ddeccd430c608666236080df7e1b596c7598d4dfafb3a852",
+  "stage.js": "084687ae146d5c1b618d7a6202c67cd749ee263c0013e595b64db2c929b76c93",
+  "ui.js": "b8210b413646a71087b6fcb5c8eaf05cd909bfd0f79d20011055e82b2d288420"
+}

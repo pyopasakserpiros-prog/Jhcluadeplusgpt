@@ -1,0 +1,150 @@
+{
+  "seed": "ext-market-balance-360",
+  "days": 360,
+  "ticks": 518400,
+  "status": "COMPLETED_NO_RUNTIME_EXCEPTION",
+  "validationLevel": "OBSERVATIONAL_ONLY_NO_DAILY_ASSERTIONS",
+  "elapsedMs": 314981,
+  "final": {
+    "population": 57,
+    "deaths": 1,
+    "sectStones": 1700,
+    "visitorArrivals": 55,
+    "boundedTradeHistoryEntries": 60
+  },
+  "snapshots": [
+    {
+      "day": 30,
+      "worldDay": 390,
+      "pop": 16,
+      "dead": 0,
+      "stones": 317,
+      "trades": 35,
+      "visits": 6,
+      "chunkMs": 307,
+      "elapsedMs": 6096
+    },
+    {
+      "day": 60,
+      "worldDay": 420,
+      "pop": 23,
+      "dead": 0,
+      "stones": 403,
+      "trades": 58,
+      "visits": 9,
+      "chunkMs": 320,
+      "elapsedMs": 15272
+    },
+    {
+      "day": 90,
+      "worldDay": 450,
+      "pop": 33,
+      "dead": 0,
+      "stones": 1903,
+      "trades": 60,
+      "visits": 14,
+      "chunkMs": 449,
+      "elapsedMs": 31050
+    },
+    {
+      "day": 120,
+      "worldDay": 480,
+      "pop": 37,
+      "dead": 0,
+      "stones": 1582,
+      "trades": 60,
+      "visits": 20,
+      "chunkMs": 556,
+      "elapsedMs": 49406
+    },
+    {
+      "day": 150,
+      "worldDay": 510,
+      "pop": 43,
+      "dead": 0,
+      "stones": 3825,
+      "trades": 60,
+      "visits": 25,
+      "chunkMs": 502,
+      "elapsedMs": 90350
+    },
+    {
+      "day": 180,
+      "worldDay": 540,
+      "pop": 50,
+      "dead": 0,
+      "stones": 2189,
+      "trades": 60,
+      "visits": 27,
+      "chunkMs": 746,
+      "elapsedMs": 129179
+    },
+    {
+      "day": 210,
+      "worldDay": 570,
+      "pop": 52,
+      "dead": 0,
+      "stones": 705,
+      "trades": 60,
+      "visits": 30,
+      "chunkMs": 791,
+      "elapsedMs": 152659
+    },
+    {
+      "day": 240,
+      "worldDay": 600,
+      "pop": 52,
+      "dead": 0,
+      "stones": 2162,
+      "trades": 60,
+      "visits": 36,
+      "chunkMs": 834,
+      "elapsedMs": 178749
+    },
+    {
+      "day": 270,
+      "worldDay": 630,
+      "pop": 51,
+      "dead": 1,
+      "stones": 495,
+      "trades": 60,
+      "visits": 40,
+      "chunkMs": 1038,
+      "elapsedMs": 209707
+    },
+    {
+      "day": 300,
+      "worldDay": 660,
+      "pop": 53,
+      "dead": 1,
+      "stones": 849,
+      "trades": 60,
+      "visits": 46,
+      "chunkMs": 1290,
+      "elapsedMs": 241927
+    },
+    {
+      "day": 330,
+      "worldDay": 690,
+      "pop": 54,
+      "dead": 1,
+      "stones": 720,
+      "trades": 60,
+      "visits": 49,
+      "chunkMs": 1126,
+      "elapsedMs": 287241
+    },
+    {
+      "day": 360,
+      "worldDay": 720,
+      "pop": 57,
+      "dead": 1,
+      "stones": 1700,
+      "trades": 60,
+      "visits": 55,
+      "chunkMs": 697,
+      "elapsedMs": 314981
+    }
+  ],
+  "note": "Direct native SIM.tick observation completed without a thrown runtime exception. This was not run through the instrumentation-heavy long_simulation assertion harness; do not treat it as a full daily-invariant PASS."
+}

@@ -1,0 +1,240 @@
+{
+  "schema": 1,
+  "date": "2026-10-27",
+  "baselineRoot": "/workspace/scratch/4620f7523869/baseline/JianghuSect_v1",
+  "targetRoot": "/workspace/scratch/4620f7523869/JianghuSect_v1.10",
+  "environment": {
+    "node": "v24.22.1",
+    "playwrightModule": "present",
+    "chromiumBinary": "absent",
+    "browserInstall": "failed: invalid/truncated ZIP",
+    "realBrowserBenchmark": "NOT_RUN"
+  },
+  "baselineTests": [
+    {
+      "command": "node test/core_lock.js",
+      "type": "assertions",
+      "status": "PASS",
+      "exitCode": 0,
+      "details": "5 checks; fingerprint155:2f9c9dd7; validates3 initial NPCs"
+    },
+    {
+      "command": "node test/cp_economy.js",
+      "type": "assertions",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "command": "node test/speed_controls.js",
+      "type": "mock DOM handler + source assertions",
+      "status": "PASS",
+      "exitCode": 0,
+      "limits": "No actual browser or simulation throughput"
+    },
+    {
+      "command": "node test/time_controls.js",
+      "type": "source regex assertions",
+      "status": "PASS",
+      "exitCode": 0,
+      "limits": "Does not execute main loop"
+    },
+    {
+      "command": "node test/cp_soak.js 30 baseline-speed 0",
+      "type": "monthly invariant assertions + economic diagnostics",
+      "status": "PASS",
+      "exitCode": 0,
+      "elapsedMs": 1442,
+      "checks": 1,
+      "population": 8
+    },
+    {
+      "command": "node test/cp_soak.js 180 baseline-speed 0",
+      "type": "monthly invariant assertions + economic diagnostics",
+      "status": "PASS",
+      "exitCode": 0,
+      "elapsedMs": 33847,
+      "checks": 6,
+      "population": 36,
+      "minted": 22824,
+      "burned": 12628,
+      "mintBurnRatio": 1.81,
+      "priceIndex": 1.58
+    },
+    {
+      "command": "node test/soak.js 0.08333333333333333 baseline-speed 0",
+      "type": "diagnostic with crash exit; NaN issues only logged",
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "elapsedMs": 1476,
+      "population": 8,
+      "reportedIssues": []
+    },
+    {
+      "command": "node test/soak.js 1 seed1 0",
+      "type": "diagnostic with crash exit",
+      "status": "FAIL",
+      "exitCode": 1,
+      "failureTick": 848181,
+      "failureDate": "year2 month8 day20 00:21",
+      "error": "TypeError: Cannot read properties of null (reading 'rid')",
+      "location": "js/ai.js:313 -> AI.arrive:796 -> AI.step:885 -> SIM.tick:115"
+    },
+    {
+      "command": "node test/combat_balance.js",
+      "type": "diagnostic metrics, no assertions",
+      "status": "COMPLETED",
+      "exitCode": 0,
+      "details": "Equal combatants50% wins;2 techniques vs none98%; basic DPS8.54 target-max-HP/240minutes"
+    },
+    {
+      "command": "node --check <each of48 js/data/test/tools JavaScript files>",
+      "type": "syntax check",
+      "status": "PASS",
+      "exitCode": 0,
+      "files": 48
+    },
+    {
+      "command": "node test/perf.js",
+      "type": "browser throughput diagnostic",
+      "status": "BLOCKED_ENVIRONMENT",
+      "exitCode": 1,
+      "details": "Browser launch fails before page load because Chromium executable is absent"
+    },
+    {
+      "command": "node /workspace/scratch/4620f7523869/baseline_qa_harness.cjs",
+      "type": "controlled clock characterization assertions",
+      "status": "PASS",
+      "exitCode": 0,
+      "limits": "Mocked tick cost and renderer; not hardware throughput"
+    },
+    {
+      "command": "node /workspace/scratch/4620f7523869/baseline_regressions.cjs season",
+      "type": "new behavior regression assertion",
+      "status": "FAIL",
+      "exitCode": 1,
+      "details": "Loaded season0 differs from saved summer season1"
+    },
+    {
+      "command": "node /workspace/scratch/4620f7523869/baseline_regressions.cjs craft",
+      "type": "new behavior regression assertion",
+      "status": "FAIL",
+      "exitCode": 1,
+      "details": "Queued recipe valid; current hall order cleared; AI.arrive dereferences null current order"
+    }
+  ],
+  "architecture": {
+    "style": "Classic browser scripts sharing global namespaces; no package.json or bundled framework",
+    "entrypoints": [
+      "index.html",
+      "JianghuSect_single.html"
+    ],
+    "simulation": "Single mutable world W;1tick=1game minute;4ticks/real second at1x",
+    "baselineSpeeds": [
+      0,
+      1,
+      2,
+      4,
+      8,
+      16,
+      32,
+      48
+    ],
+    "frameBudgetMs": 12,
+    "renderThrottle": "16x requests40FPS;32x+ requests30FPS; thresholds are minimum intervals, not guaranteed rates",
+    "saveVersion": "1.0.0",
+    "humanCoreFingerprint": "155:2f9c9dd7"
+  },
+  "verifiedBaselineBehavior": [
+    {
+      "id": "elapsed-clamp",
+      "severity": "timing correctness",
+      "observed": "A1second callback at32x advances32ticks rather than128 due0.25second dt cap",
+      "source": "js/main.js:29"
+    },
+    {
+      "id": "zero-elapsed-credit",
+      "severity": "timing correctness",
+      "observed": "0ms callback receives artificial16ms fallback; fresh timing test found4.064 accountedticks after1s at1x",
+      "source": "js/main.js:29"
+    },
+    {
+      "id": "backlog",
+      "severity": "documented design",
+      "observed": "At32x with20ms mocked tick and60callbacks/s:60ticks+68queued after1s. Switching1x processes60more ticks in next1s and leaves12queued; pause retains debt",
+      "source": "js/main.js:36-42"
+    },
+    {
+      "id": "save-runtime",
+      "severity": "save correctness",
+      "observed": "SIM saves W.speed (usually1), never G.speed or G.acc; bindWorld resets speed1 and acc0, losing pending time",
+      "source": "js/main.js:14;js/sim.js:227"
+    },
+    {
+      "id": "craft-arrival-crash",
+      "severity": "crash",
+      "observed": "Hall order may clear/change while NPC walks. start reads queued ctx.rid, but dur rereads current nullable hall order; null causes crash",
+      "source": "js/ai.js:313;js/sect.js:440"
+    },
+    {
+      "id": "season-restore",
+      "severity": "save correctness",
+      "observed": "Deserialize creates spring world then restores t without updating season. Summer save loads spring until next daily update; affects rendering and seasonal output",
+      "source": "js/sim.js:232-234"
+    },
+    {
+      "id": "version-validation",
+      "severity": "compatibility caveat",
+      "observed": "Mismatched nonempty human-core fingerprint rejected; missing fingerprint and future v999.0.0 accepted",
+      "source": "js/sim.js:232"
+    }
+  ],
+  "saveChecks": {
+    "sameVersion": "PASS key state, RNG state, inventory, NPC count, byId bindings",
+    "saveBytesAt3days": 36043,
+    "continuationDiagnostic": {
+      "warmupDays": 20,
+      "continueDays": 5,
+      "seed": "save-continuation",
+      "sameIgnoringPxPy": false,
+      "firstDifference": "npcs[9].bed:96 vs88",
+      "timeEqual": 554760,
+      "populationEqual": 11,
+      "stonesEqual": 625,
+      "rngEqual": true,
+      "note": "Known documented reservation/bed allocation drift; byte-identical continuation not established"
+    }
+  },
+  "targetTimingChange": {
+    "files": [
+      "js/main.js",
+      "test/runtime_timing.js"
+    ],
+    "runtimeSchema": {
+      "pendingTicks": "finite nonnegative number, including fractional ticks",
+      "speed": "finite nonnegative number;0 paused"
+    },
+    "legacyDefaults": {
+      "pendingTicks": 0,
+      "speed": 1
+    },
+    "behavior": "Retain full finite nonnegative callback duration;12ms processing budget; keep deferred ticks; restore runtime timing; synchronize W.speed; reset clock on new/load; sync before autosave",
+    "testFirst": "New runtime test failed against baseline:4.064!=4; passed after implementation",
+    "verifiedCommands": [
+      "node test/runtime_timing.js",
+      "node test/time_controls.js",
+      "node test/speed_controls.js",
+      "node test/core_lock.js",
+      "node test/cp_economy.js",
+      "node --check js/main.js",
+      "node --check test/runtime_timing.js"
+    ],
+    "allListedCommandsExitCode": 0,
+    "limits": "SIM runtimeTiming persistence is parent-owned; this task mocks save/deserialization. A single synchronous tick can exceed the12ms budget."
+  },
+  "notRun": [
+    "Real mobile testing",
+    "Actual browser tests browser.js/browser2.js/browser3.js/gesture.js (same missing Chromium prerequisite)",
+    "Longer diagnostics bottleneck/ledger/combat_stats/cpeco/explore/masters/logs"
+  ],
+  "productionChanges": "Baseline unchanged. Target only main.js timing logic and new runtime_timing.js test changed by this agent."
+}

@@ -1,0 +1,179 @@
+{
+  "date": "2026-10-27",
+  "target": "/workspace/scratch/4620f7523869/JianghuSect_v1.10",
+  "status": "PASS",
+  "execution": "Sequential after final raid species filter fix",
+  "totalTicks": 2073600,
+  "totalSimulatedDays": 1440,
+  "totalMonthlyObservations": 48,
+  "runs": [
+    {
+      "seed": "v110-seed1",
+      "status": "PASS",
+      "days": 360,
+      "ticks": 518400,
+      "elapsedMs": 98235,
+      "population": 52,
+      "deaths": 3,
+      "cp": {
+        "minted": 76016,
+        "burned": 63491,
+        "price": 2.1763938678961634,
+        "purchases": 823,
+        "studyFees": 15295
+      },
+      "content": {
+        "gathered": 149,
+        "hunted": 64,
+        "formulas": 8,
+        "manuals": 3,
+        "expeditions": 85
+      },
+      "sourceProduction": {
+        "SRC110_MW_REC_001": 2,
+        "SRC110_MW_REC_044": 2
+      },
+      "sourceConsumption": {
+        "P:SRC110_MW_REC_001": 2,
+        "P:SRC110_MW_REC_005": 1
+      },
+      "sourceSales": {
+        "P:SRC110_MW_REC_001": 2,
+        "P:SRC110_MW_REC_005": 1,
+        "SRC110_MW_REC_044": 2
+      },
+      "saveBytes": 1715435,
+      "resultFile": "/workspace/scratch/4620f7523869/JianghuSect_v1.10/test/results/long_v110_seed1.json",
+      "monthlyObservations": 12,
+      "librarySourceManualsAtLastMonthlyCheckpoint": 8
+    },
+    {
+      "seed": "v110-seed2",
+      "status": "PASS",
+      "days": 360,
+      "ticks": 518400,
+      "elapsedMs": 119183,
+      "population": 55,
+      "deaths": 1,
+      "cp": {
+        "minted": 76189,
+        "burned": 58812,
+        "price": 2.1763938678961634,
+        "purchases": 732,
+        "studyFees": 15776
+      },
+      "content": {
+        "gathered": 148,
+        "hunted": 96,
+        "formulas": 8,
+        "manuals": 7,
+        "expeditions": 92
+      },
+      "sourceProduction": {
+        "SRC110_MW_REC_021": 2
+      },
+      "sourceConsumption": {
+        "P:SRC110_MW_REC_006": 2,
+        "P:SRC110_MW_REC_005": 2,
+        "P:SRC110_MW_REC_001": 2
+      },
+      "sourceSales": {
+        "P:SRC110_MW_REC_001": 3,
+        "P:SRC110_MW_REC_006": 2,
+        "P:SRC110_MW_REC_005": 2,
+        "SRC110_MW_REC_021": 2
+      },
+      "saveBytes": 1770002,
+      "resultFile": "/workspace/scratch/4620f7523869/JianghuSect_v1.10/test/results/long_v110_seed2.json",
+      "monthlyObservations": 12,
+      "librarySourceManualsAtLastMonthlyCheckpoint": 9
+    },
+    {
+      "seed": "v110-seed3",
+      "status": "PASS",
+      "days": 720,
+      "ticks": 1036800,
+      "elapsedMs": 286453,
+      "population": 74,
+      "deaths": 8,
+      "cp": {
+        "minted": 198206,
+        "burned": 172832,
+        "price": 4,
+        "purchases": 2307,
+        "studyFees": 25880
+      },
+      "content": {
+        "gathered": 328,
+        "hunted": 174,
+        "formulas": 8,
+        "manuals": 8,
+        "expeditions": 205
+      },
+      "sourceProduction": {
+        "SRC110_MW_REC_044": 5,
+        "SRC110_MW_REC_021": 7,
+        "SRC110_MW_REC_005": 3,
+        "SRC110_MW_REC_022": 1,
+        "SRC110_MW_REC_001": 1
+      },
+      "sourceConsumption": {
+        "P:SRC110_MW_REC_006": 12,
+        "P:SRC110_MW_REC_001": 10
+      },
+      "sourceSales": {
+        "SRC110_MW_REC_022": 3,
+        "P:SRC110_MW_REC_006": 12,
+        "P:SRC110_MW_REC_001": 12,
+        "SRC110_MW_REC_044": 5,
+        "SRC110_MW_REC_021": 9
+      },
+      "saveBytes": 2614671,
+      "resultFile": "/workspace/scratch/4620f7523869/JianghuSect_v1.10/test/results/long_v110_seed3.json",
+      "monthlyObservations": 24,
+      "librarySourceManualsAtLastMonthlyCheckpoint": 9
+    }
+  ],
+  "commands": [
+    "node test/long_simulation.js v110-seed1 360 test/results/long_v110_seed1.json",
+    "node test/long_simulation.js v110-seed2 360 test/results/long_v110_seed2.json",
+    "node test/long_simulation.js v110-seed3 720 test/results/long_v110_seed3.json"
+  ],
+  "postRunTests": {
+    "test/beast_ecology.js": "PASS",
+    "test/content_expansion.js": "PASS",
+    "test/craft_transactions.js (17 cases)": "PASS",
+    "test/core_lock.js": "PASS",
+    "test/cp_economy.js": "PASS",
+    "test/runtime_timing.js": "PASS"
+  },
+  "finalReview": {
+    "raidLeak": {
+      "status": "FIXED_AND_TESTED",
+      "cause": "New regional beast records also entered native sect raid selection; victory loot bypassed regional supply.",
+      "change": "Only native raid selection predicate changed to exclude sourcePack; added focused beast_ecology test.",
+      "redGreen": "New test failed on original candidate selection, then passed after the filter."
+    },
+    "speciesPoolAudit": "All production species selections reviewed: regional encounters use region whitelist or native-only fallback; native raids exclude sourcePack; other species scans are validation.",
+    "craftTransactions": "Actor/recipe-bound receipts; reservation consumed before effects; duplicate/invalid completion rejects; legacy paid actions adopted once; stale reservations pruned. No further issue found."
+  },
+  "interpretation": {
+    "sourceProduction": "Output units, not craft-action count.",
+    "contentMetricsManuals": "Direct expedition handovers; later personal donations can increase library counts separately.",
+    "naturalRecipeCoverage": [
+      "SRC110_MW_REC_001",
+      "SRC110_MW_REC_005",
+      "SRC110_MW_REC_021",
+      "SRC110_MW_REC_022",
+      "SRC110_MW_REC_044"
+    ],
+    "notObservedCrafted": [
+      "SRC110_MW_REC_006",
+      "SRC110_MW_REC_045",
+      "SRC110_MW_REC_048"
+    ],
+    "productsFromLoot": "Native exploration may supply known-formula products, so sales and consumption can exceed craft production.",
+    "wallClock": "Semantic completion timings only; no device throughput or multiplier claim."
+  },
+  "assertions": "Every day: finite nonnegative stock, CP and personal inventory; finite numeric NPC state; bounded regional stock, content history and active craft reservations. No assertion or runtime error occurred in final runs."
+}
