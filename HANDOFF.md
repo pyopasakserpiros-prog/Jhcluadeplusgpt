@@ -1,6 +1,29 @@
 # JIANGHU SECT — AUTONOMOUS ECONOMY & FACILITY EXPANSION HANDOFF
 
-## Current handoff — v1.10.11 martial paths / main-1 (2026-10-29)
+## Current handoff — v1.10.12 Living Beast & Craft Ecology Expansion / main-1 (2026-10-29)
+
+Read [`JianghuSect_v1.10/docs/ECOLOGY_EXPANSION.md`](JianghuSect_v1.10/docs/ECOLOGY_EXPANSION.md) for complete catalog architecture, beast tiers, drop mechanics, crafting recipes, habitats, combat integration, and verification evidence. Preserve `main` and the byte-locked HC source (`155:2f9c9dd7`).
+
+### Summary of Additions & Verifications:
+- **80 Beast Species**: 12 families (Canine, Feline, Ursine, Boar, Serpent, Avian, Arthropod, Shell, Ungulate, Aquatic, Plant, Chimera) across 6 tiers (72 species) + 8 Mythic Tier 7 beasts. All beasts configured with distinct archetypes, visual styling, terrains, and drops.
+- **160 Materials**: 2 distinct drops per species (`ECO2_MAT_...`), 100% connected to recipe inputs or market exchange (0 dead materials).
+- **80 Recipes**:
+  - 48 Pills (`ECO2_REC_P_...`): 16 Heal/Purge/Life, 16 Combat Buff (`cbBuff`), 16 Cultivation/Mind.
+  - 32 Equipment (`ECO2_REC_E_...`): Weapons & armor spanning 14 martial identity types.
+- **Multi-Pool Habitats**: Meadow, West Grove, East Crag, North Peak, Mountain Ridge, and Mythic Legend pools with global legendary cap <= 1 and isolated ordinary refill.
+- **Full System Integration**:
+  - Drops directly to member personal bag (`n.h.bag`) upon combat victory with idempotency guards.
+  - Member CP donation via `SECT.donateMat` with anti-arbitrage minting.
+  - Autonomous crafting at alchemy lab and forge via `ECO.finishCraft`.
+  - Member shop purchase of combat buff pills and automatic consumption in `ST.preFight`.
+  - Save/load serialization and deterministic seed execution verified.
+- **Verification**:
+  - `test/ecology_expansion.js`: ALL 7 TEST GROUPS PASSED (Exit Code: 0).
+  - `test/run_all.js`: 41/45 test groups passed (100% of Node.js suites passing; only 4 browser/Playwright suites fail due to Termux mobile environment constraints).
+  - `test/standalone.js`: 37 entrypoint scripts verified, standalone HTML offline execution verified.
+  - Byte-lock check: `js/human_core.js` strictly untouched (`155:2f9c9dd7`).
+
+## Previous handoff — v1.10.11 martial paths / main-1 (2026-10-29)
 
 Read [`JianghuSect_v1.10/docs/MARTIAL_PATHS.md`](JianghuSect_v1.10/docs/MARTIAL_PATHS.md) for mechanics, rates, catalog counts, save state and checks. Root [`docs/MARTIAL_IMPLEMENTATION_REPORT.md`](docs/MARTIAL_IMPLEMENTATION_REPORT.md) lists public interfaces and evidence; [`docs/MARTIAL_PATCH_LEDGER.md`](docs/MARTIAL_PATCH_LEDGER.md) records implementation decisions and final validation ownership. Preserve `main` and the byte-locked HC source.
 

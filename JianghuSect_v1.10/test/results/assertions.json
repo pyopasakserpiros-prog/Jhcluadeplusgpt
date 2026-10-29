@@ -1,6 +1,6 @@
 {
   "date": "2026-10-29",
-  "node": "v24.19.0",
+  "node": "v26.3.1",
   "results": [
     {
       "test": "martial_retraining",
@@ -166,9 +166,9 @@
     },
     {
       "test": "skill_visual_browser",
-      "status": "PASS",
-      "exitCode": 0,
-      "output": "PASS browser skill visuals: two shared styles, pause, expiry, no replay, load baseline and 24-effect cap"
+      "status": "FAIL",
+      "exitCode": 1,
+      "output": "node:internal/modules/cjs/loader:1522\n  throw err;\n  ^\n\nError: Cannot find module 'playwright'\nRequire stack:\n- /data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/skill_visual_browser.js\n    at Module._resolveFilename (node:internal/modules/cjs/loader:1519:15)\n    at wrapResolveFilename (node:internal/modules/cjs/loader:1073:27)\n    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1097:10)\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1124:12)\n    at Module._load (node:internal/modules/cjs/loader:1296:5)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.require (node:internal/modules/cjs/loader:1619:12)\n    at require (node:internal/modules/helpers:191:16)\n    at Object.<anonymous> (/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/skill_visual_browser.js:3:18)\n    at Module._compile (node:internal/modules/cjs/loader:1873:14) {\n  code: 'MODULE_NOT_FOUND',\n  requireStack: [\n    '/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/skill_visual_browser.js'\n  ]\n}\n\nNode.js v26.3.1"
     },
     {
       "test": "cave_pools",
@@ -214,21 +214,21 @@
     },
     {
       "test": "browser_mobile_perf",
-      "status": "PASS",
-      "exitCode": 0,
-      "output": "PASS browser_mobile_perf: 360px/412px/1280px viewports, gestures, 24 panel tabs, save/load, 0x-48x speeds, 80-NPC stress (2.646 ms/tick, 94.5x cap)"
+      "status": "FAIL",
+      "exitCode": 1,
+      "output": "node:internal/modules/cjs/loader:1522\n  throw err;\n  ^\n\nError: Cannot find module 'playwright'\nRequire stack:\n- /data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/browser_mobile_perf.js\n    at Module._resolveFilename (node:internal/modules/cjs/loader:1519:15)\n    at wrapResolveFilename (node:internal/modules/cjs/loader:1073:27)\n    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1097:10)\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1124:12)\n    at Module._load (node:internal/modules/cjs/loader:1296:5)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.require (node:internal/modules/cjs/loader:1619:12)\n    at require (node:internal/modules/helpers:191:16)\n    at Object.<anonymous> (/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/browser_mobile_perf.js:22:22)\n    at Module._compile (node:internal/modules/cjs/loader:1873:14) {\n  code: 'MODULE_NOT_FOUND',\n  requireStack: [\n    '/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/browser_mobile_perf.js'\n  ]\n}\n\nNode.js v26.3.1"
     },
     {
       "test": "input_cancellation",
-      "status": "PASS",
-      "exitCode": 0,
-      "output": "PASS input cancellation: selection/follow preserved, ordinary tap works, minimap drag stops"
+      "status": "FAIL",
+      "exitCode": 1,
+      "output": "node:internal/modules/cjs/loader:1522\n  throw err;\n  ^\n\nError: Cannot find module 'playwright'\nRequire stack:\n- /data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/input_cancellation.js\n    at Module._resolveFilename (node:internal/modules/cjs/loader:1519:15)\n    at wrapResolveFilename (node:internal/modules/cjs/loader:1073:27)\n    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1097:10)\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1124:12)\n    at Module._load (node:internal/modules/cjs/loader:1296:5)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.require (node:internal/modules/cjs/loader:1619:12)\n    at require (node:internal/modules/helpers:191:16)\n    at Object.<anonymous> (/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/input_cancellation.js:5:22)\n    at Module._compile (node:internal/modules/cjs/loader:1873:14) {\n  code: 'MODULE_NOT_FOUND',\n  requireStack: [\n    '/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/input_cancellation.js'\n  ]\n}\n\nNode.js v26.3.1"
     },
     {
       "test": "startup_ui",
-      "status": "PASS",
-      "exitCode": 0,
-      "output": "PASS startup load menu exposes only actions available without a world\nPASS cancelling startup load restores the same selectable candidates\nPASS gameplay navigation before loading returns safely to startup\nPASS loading a saved slot enters the world and retains the normal game menu\nPASS a corrupt saved slot remains recoverable\nPASS a failed file import can be retried with a valid save\nPASS a successful import dismisses an open startup overlay"
+      "status": "FAIL",
+      "exitCode": 1,
+      "output": "node:internal/modules/cjs/loader:1522\n  throw err;\n  ^\n\nError: Cannot find module 'playwright'\nRequire stack:\n- /data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/startup_ui.js\n    at Module._resolveFilename (node:internal/modules/cjs/loader:1519:15)\n    at wrapResolveFilename (node:internal/modules/cjs/loader:1073:27)\n    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1097:10)\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1124:12)\n    at Module._load (node:internal/modules/cjs/loader:1296:5)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.require (node:internal/modules/cjs/loader:1619:12)\n    at require (node:internal/modules/helpers:191:16)\n    at Object.<anonymous> (/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/startup_ui.js:5:22)\n    at Module._compile (node:internal/modules/cjs/loader:1873:14) {\n  code: 'MODULE_NOT_FOUND',\n  requireStack: [\n    '/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/startup_ui.js'\n  ]\n}\n\nNode.js v26.3.1"
     },
     {
       "test": "demon_heartsoul_paths",
@@ -246,7 +246,7 @@
       "test": "standalone",
       "status": "PASS",
       "exitCode": 0,
-      "output": "PASS standalone:36 actual inline scripts, no external runtime files, initialized globals,external market,24-hour native simulation and save/load"
+      "output": "PASS standalone:37 actual inline scripts, no external runtime files, initialized globals,external market,24-hour native simulation and save/load"
     },
     {
       "test": "recipe_coverage",
@@ -261,9 +261,15 @@
       "output": "Testing Autonomous Economy & Facility Expansion...\n  PASS: Scenario 1 - Inventory overflow and surplus sales\n  PASS: Scenario 2 - Shortages and external purchasing\n  PASS: Scenario 3 - No merchant availability\n  PASS: Scenario 4 - Insufficient spirit stones / cash reserve protection\n  PASS: Scenario 5 - Emergency and welfare reserve protection\n  PASS: Scenario 6 - Duplicate transaction prevention\n  PASS: Scenario 7 - Donation-crafting-purchase arbitrage protection\n  PASS: Scenario 8 - CP issuance, spending, and circulation tracking\n  PASS: Scenario 9 - Sustained facility congestion tracking\n  PASS: Scenario 10 - Construction completion and usable capacity expansion\n  PASS: Scenario 11 - Multiple simultaneous NPC demands\n  PASS: Scenario 12 - Save/load continuity\n  PASS: Scenario 13 - Multiple deterministic simulation seeds\n  PASS: Scenario 14 - Facility demand decay resets stale congestion\n  PASS: Scenario 15 - Active sustained congestion triggers upgrade lifecycle and prevents duplicate expansion\n  PASS: Scenario 16 - Multi-zone outer beasts, multi-pools, perimeter gates, and loot flow\n  PASS: Scenario 17 - Rich wuxia event logging and multi-category filtering\nALL 17 AUTONOMOUS ECONOMY, WILDLIFE & LOGGING TESTS PASSED."
     },
     {
+      "test": "ecology_expansion",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "Testing Living Beast & Craft Ecology Expansion (v1.10.12)...\n  Testing Catalog Integrity & Manifest Counts...\n    PASS: 80 species, 160 materials, 80 recipes (48 pills + 32 equipment) verified unique with zero dangling IDs\n  Testing Wildlife Spawning, Legendary Cap & Ordinary Isolation...\n    PASS: Wildlife spawning, ordinary isolation, and global legendary cap 1 verified\n  Testing Combat Victory, Drops, Merit & Idempotency...\n    PASS: Real combat victory awards drops & merit idempotently with no double-loot\n  Testing Material Donation, CP Minting & Anti-Arbitrage...\n    PASS: Personal beast material donation converts to sect stock and CP correctly\n  Testing Crafting Lifecycle for ECO2_ Pills and Equipment...\n    PASS: Real crafting lifecycle for pills and equipment functions accurately\n  Testing NPC Purchase of ECO2_ Combat Pills & preFight Consumption...\n    PASS: Member purchases and consumes ECO2_ combat buff pills before battle\n  Testing Save/Load Round-Trip Continuity & Determinism...\n    PASS: Save/load serialization and deterministic seed execution verified\nALL ECOLOGY EXPANSION TESTS PASSED."
+    },
+    {
       "test": "syntax",
       "status": "PASS",
-      "files": 101,
+      "files": 104,
       "failures": []
     }
   ]

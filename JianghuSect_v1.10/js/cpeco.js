@@ -262,7 +262,14 @@
       if (e.insight && c && have(k) < 1 && (c.learning || E(n, 'personality.curiosity') > 65)) consider(it, 0.65 + E(n, 'personality.curiosity') / 250, 'เพิ่มความเข้าใจคัมภีร์');
       if (!c) return;
       if (e.btFor) { if (e.btFor.path === c.path && e.btFor.stage === c.stage && c.bn) consider(it, 3.5, 'โอสถทะลวงขั้น'); return; }
-      if (e.cbBuff) return;
+      if (e.cbBuff) {
+        const combatInt = E(n, 'interests.combat') || 50;
+        const courage = E(n, 'personality.courage') || 50;
+        if (have(k) < 1 && (n.rank >= 1 || combatInt > 45 || courage > 55)) {
+          consider(it, 0.45 + (combatInt / 180), 'ยาเตรียมศึก');
+        }
+        return;
+      }
       if (e.cultivationProgress && info.tier <= c.stage + 1 && c.prog < CULT.threshold(n) * 0.85 && (c.toxic || 0) < (c.path === 'DEMON' ? 50 : 35)) consider(it, 0.5 + e.cultivationProgress / 160 + (E(n, 'personality.ambition') - 50) / 250, 'เร่งตบะ');
     });
     if (c) { ['WEAPON', 'ARMOR', 'ACCESSORY'].forEach(slot => { const cur = n.equip && n.equip[slot], cs = cur ? g.MARTIAL.gearSuitability(n, cur).score : 0; W.sect.gear.forEach(gr => { if (gr.slot !== slot || (gr.minStage || 1) > c.stage + 1) return; const gs = g.MARTIAL.gearSuitability(n, gr, CPE.gearPrice(W, gr)).score; if (gs > cs * 1.2 + 8) consider({ kind: 'gear', gear: gr, price: CPE.gearPrice(W, gr) }, 0.6 + Math.min(1.2, (gs - cs) / Math.max(40, cs)) * 0.5, g.MARTIAL.gearSuitability(n, gr).reasons.join(' · ')); }); }); }

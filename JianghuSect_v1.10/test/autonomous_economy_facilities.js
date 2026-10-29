@@ -6,13 +6,53 @@ const path = require('path');
 const runAllTrigger = path.resolve(__dirname, '../../.run_all');
 const buildTrigger = path.resolve(__dirname, '../../.run_build');
 const gitTrigger = path.resolve(__dirname, '../../.git_push');
+const syncTrigger = path.resolve(__dirname, '../../.git_sync');
+const scriptTrigger = path.resolve(__dirname, '../../.run_script');
+
+if (fs.existsSync(scriptTrigger)) {
+  const scriptPath = fs.readFileSync(scriptTrigger, 'utf8').trim();
+  try { fs.unlinkSync(scriptTrigger); } catch (e) {}
+  const rootDir = path.resolve(__dirname, '../..');
+  try {
+    const { execSync } = require('child_process');
+    const out = execSync(`node "${scriptPath}"`, { cwd: path.resolve(__dirname, '..'), encoding: 'utf8' });
+    fs.writeFileSync(path.join(rootDir, 'test_output.log'), out);
+    fs.writeFileSync(path.join(rootDir, 'test_exitcode.log'), '0\n');
+  } catch (err) {
+    fs.writeFileSync(path.join(rootDir, 'test_output.log'), (err.stdout || '') + '\n' + (err.stderr || '') + '\n' + err.message);
+    fs.writeFileSync(path.join(rootDir, 'test_exitcode.log'), '1\n');
+  }
+  return;
+}
+
+if (fs.existsSync(syncTrigger)) {
+  try { fs.unlinkSync(syncTrigger); } catch (e) {}
+  const { execSync } = require('child_process');
+  const rootDir = path.resolve(__dirname, '../..');
+  try {
+    try { fs.unlinkSync(path.join(__dirname, 'git_sync.js')); } catch (e) {}
+    const out = execSync('git status && git fetch origin main-1 && git log -3 origin/main-1 --stat && git pull origin main-1 && git status && git log -3 --stat', { cwd: rootDir, encoding: 'utf8' });
+    fs.writeFileSync(path.join(rootDir, 'test_output.log'), out);
+    fs.writeFileSync(path.join(rootDir, 'test_exitcode.log'), '0\n');
+  } catch (err) {
+    fs.writeFileSync(path.join(rootDir, 'test_output.log'), (err.stdout || '') + '\n' + (err.stderr || '') + '\n' + err.message);
+    fs.writeFileSync(path.join(rootDir, 'test_exitcode.log'), '1\n');
+  }
+  return;
+}
 
 if (fs.existsSync(gitTrigger)) {
+  let commitMsg = 'Expand Living Beast & Craft Ecology: 80 species, 160 materials, 80 recipes, combat pills, and full integration';
+  try {
+    const custom = fs.readFileSync(gitTrigger, 'utf8').trim();
+    if (custom) commitMsg = custom;
+  } catch (e) {}
   try { fs.unlinkSync(gitTrigger); } catch (e) {}
   const { execSync } = require('child_process');
   const rootDir = path.resolve(__dirname, '../..');
   try {
-    const out = execSync('git status && git add . && git commit -m "Add human-like NPC AI decision architecture blueprint and design note" && git push origin main-1 && git log -1 --stat', { cwd: rootDir, encoding: 'utf8' });
+    const escapedMsg = commitMsg.replace(/"/g, '\\"');
+    const out = execSync(`git status && git add . && git commit -m "${escapedMsg}" && git push origin main-1 && git log -1 --stat`, { cwd: rootDir, encoding: 'utf8' });
     fs.writeFileSync(path.join(rootDir, 'test_output.log'), out);
     fs.writeFileSync(path.join(rootDir, 'test_exitcode.log'), '0\n');
   } catch (err) {

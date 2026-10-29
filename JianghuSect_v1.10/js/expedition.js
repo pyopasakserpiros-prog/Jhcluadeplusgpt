@@ -359,7 +359,7 @@
     let foes = []; let label;
     if (kind === 'beast') {
       const maxTier = Math.max(1, Math.min(5, Math.round(Math.log(Math.max(total, 40) / 70) / Math.log(2.2))));
-      const pool = JD.BEASTS.species.filter(b => !b.sourcePack && b.tier <= maxTier && b.tier >= Math.max(1, maxTier - 2));
+      const pool = JD.BEASTS.species.filter(b => !b.sourcePack && b.canRaidLand !== false && b.terrain !== 'water' && b.tier <= maxTier && b.tier >= Math.max(1, maxTier - 2));
       const sp = rng.pick(pool); const n = clamp(Math.round(total / sp.cp), 1, 8);
       for (let i = 0; i < n; i++) foes.push({ name: sp.nameTh, tier: sp.tier, power: sp.cp * (0.8 + rng.next() * 0.4), fleeAt: sp.flee / 100, kind: 'beast', sp: sp.id, drops: sp.drops });
       label = 'ฝูง' + sp.nameTh + ' ' + n + ' ตัว';

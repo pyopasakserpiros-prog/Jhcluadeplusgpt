@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "version": "1.10.11",
+  "version": "1.10.12",
   "checks": [
     "required-files",
     "all-entrypoint-dependencies",
@@ -11,7 +11,7 @@
     "zip-crc-and-content-verified-after-build"
   ],
   "selectedOriginalFiles": 52,
-  "entrypointScripts": 36,
+  "entrypointScripts": 37,
   "originalArchiveEmbedded": false,
   "sourceContinuationAvailable": true
 }

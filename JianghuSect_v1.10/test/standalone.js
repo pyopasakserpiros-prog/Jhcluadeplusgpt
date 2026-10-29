@@ -2,11 +2,11 @@
 const assert=require('assert'),fs=require('fs'),vm=require('vm');
 const html=fs.readFileSync(__dirname+'/../JianghuSect_single.html','utf8');
 assert(!/<script\s+src=/.test(html));assert(!/<link[^>]+href="css\//.test(html));
-const scripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]);assert.strictEqual(scripts.length,36);
+const scripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]);assert.strictEqual(scripts.length,37);
 let ready;
 const context={console,performance,localStorage:{getItem(){return null;}},document:{readyState:'loading',addEventListener(type,fn){if(type==='DOMContentLoaded')ready=fn;}},addEventListener(){},setTimeout(){},requestAnimationFrame(){}};
 context.window=context;vm.createContext(context);for(let i=0;i<scripts.length;i++)vm.runInContext(scripts[i],context,{filename:'standalone-script-'+i});
 assert(typeof ready==='function','real boot handler registered');assert(context.G&&context.UI&&context.Render);assert(context.EXT&&context.EXT.VERSION===1,'external market module is bundled in standalone');
 assert.strictEqual(context.SIM.VERSION,'1.10.11');assert.strictEqual(context.CONTENT.validate().length,0);
 const W=context.SIM.create('standalone-smoke');for(let i=0;i<1440;i++)context.SIM.tick(W);const L=context.SIM.deserialize(context.SIM.serialize(W));assert.strictEqual(L.t,W.t);
-console.log('PASS standalone:36 actual inline scripts, no external runtime files, initialized globals,external market,24-hour native simulation and save/load');
+console.log('PASS standalone:37 actual inline scripts, no external runtime files, initialized globals,external market,24-hour native simulation and save/load');

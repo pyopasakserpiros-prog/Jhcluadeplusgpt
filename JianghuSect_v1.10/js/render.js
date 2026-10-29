@@ -554,13 +554,121 @@
     },
     hpBar(ctx, x, y, f, w) { f = clamp(f, 0, 1); ctx.fillStyle = 'rgba(0,0,0,.65)'; ctx.fillRect(x - w / 2 - 1, y - 1, w + 2, 4); ctx.fillStyle = f > 0.5 ? '#5fd35f' : f > 0.25 ? '#e8c43a' : '#e0463a'; ctx.fillRect(x - w / 2, y, w * f, 2); },
     drawWild(ctx, b) {
-      const x=b.x*TS,y=b.y*TS, id=b.speciesId||'', large=b.tier>=6, body=large?'#78518b':b.tier>=3?'#b27b55':'#9d8b70';
-      ctx.save();ctx.translate(x,y);ctx.fillStyle='rgba(0,0,0,.2)';ctx.beginPath();ctx.ellipse(0,1,10,4,0,0,7);ctx.fill();
-      if (/PYTHON|SNAKE|SERPENT/.test(id)) {ctx.strokeStyle=body;ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(-10,-2);ctx.bezierCurveTo(-4,-12,1,4,8,-6);ctx.stroke();ctx.fillStyle='#e9c586';ctx.beginPath();ctx.arc(8,-7,4,0,7);ctx.fill();}
-      else if (/ROC|BIRD|PHOENIX/.test(id)) {ctx.fillStyle=body;ctx.beginPath();ctx.moveTo(-12,-10);ctx.quadraticCurveTo(0,-2,12,-10);ctx.lineTo(5,0);ctx.lineTo(-5,0);ctx.closePath();ctx.fill();ctx.fillStyle='#e2c78e';ctx.beginPath();ctx.arc(0,-7,4,0,7);ctx.fill();}
-      else {ctx.fillStyle=body;ctx.beginPath();ctx.ellipse(0,-7,large?12:9,large?8:6,0,0,7);ctx.fill();ctx.fillRect(-7,-4,3,5);ctx.fillRect(5,-4,3,5);ctx.fillStyle=large?'#9870ad':'#ccb294';ctx.beginPath();ctx.arc(7,-10,large?6:5,0,7);ctx.fill();ctx.fillStyle='#3b302d';ctx.beginPath();ctx.moveTo(4,-13);ctx.lineTo(5,-18);ctx.lineTo(9,-13);ctx.fill();ctx.fillRect(9,-11,2,2);}
-      if(b.legendary){ctx.strokeStyle='rgba(219,160,255,.8)';ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(0,0,15,6,0,0,7);ctx.stroke();}
-      if(this.cam.z>.8){ctx.fillStyle='rgba(20,35,29,.75)';ctx.font='9px '+FONT;ctx.textAlign='center';ctx.fillText(b.name+' · '+b.tier,0,-24);}
+      const x = b.x * TS, y = b.y * TS, id = b.speciesId || '', large = b.tier >= 6;
+      const sp = (JD.BEASTS && JD.BEASTS.species && JD.BEASTS.species.find(s => s.id === id));
+      const arch = sp?.archetype || (/PYTHON|SNAKE|SERPENT/.test(id) ? 'SERPENT' : /ROC|BIRD|PHOENIX|AVIAN/.test(id) ? 'AVIAN' : /TURTLE|TORTOISE|SHELL/.test(id) ? 'SHELL' : /FISH|AQUATIC|CARP|SHARK|WHALE/.test(id) ? 'AQUATIC' : 'CANINE');
+      const body = sp?.visual?.body || (large ? '#78518b' : b.tier >= 3 ? '#b27b55' : '#9d8b70');
+      const accent = sp?.visual?.accent || (large ? '#c99aeb' : '#e9c586');
+
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.fillStyle = 'rgba(0,0,0,.22)';
+      ctx.beginPath();
+      ctx.ellipse(0, 1, large ? 13 : 9, large ? 5 : 3.5, 0, 0, 7);
+      ctx.fill();
+
+      if (arch === 'SERPENT') {
+        ctx.strokeStyle = body;
+        ctx.lineWidth = large ? 7 : 4.5;
+        ctx.beginPath();
+        ctx.moveTo(-11, -2);
+        ctx.bezierCurveTo(-5, -12, 1, 5, 9, -6);
+        ctx.stroke();
+        ctx.fillStyle = accent;
+        ctx.beginPath();
+        ctx.arc(9, -7, large ? 5 : 3.8, 0, 7);
+        ctx.fill();
+      } else if (arch === 'AVIAN') {
+        ctx.fillStyle = body;
+        ctx.beginPath();
+        ctx.moveTo(large ? -16 : -11, -11);
+        ctx.quadraticCurveTo(0, -3, large ? 16 : 11, -11);
+        ctx.lineTo(large ? 7 : 5, 0);
+        ctx.lineTo(large ? -7 : -5, 0);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = accent;
+        ctx.beginPath();
+        ctx.arc(0, -8, large ? 5.5 : 4, 0, 7);
+        ctx.fill();
+      } else if (arch === 'AQUATIC') {
+        ctx.fillStyle = body;
+        ctx.beginPath();
+        ctx.ellipse(0, -7, large ? 12 : 8.5, large ? 6 : 4.5, 0, 0, 7);
+        ctx.fill();
+        ctx.fillStyle = accent;
+        ctx.beginPath();
+        ctx.moveTo(large ? -10 : -7, -7);
+        ctx.lineTo(large ? -16 : -12, -12);
+        ctx.lineTo(large ? -16 : -12, -2);
+        ctx.closePath();
+        ctx.fill();
+      } else if (arch === 'SHELL') {
+        ctx.fillStyle = body;
+        ctx.beginPath();
+        ctx.arc(0, -6, large ? 10 : 7.5, Math.PI, 0);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = accent;
+        ctx.beginPath();
+        ctx.arc(large ? 9 : 6.5, -6, large ? 4 : 3, 0, 7);
+        ctx.fill();
+      } else if (arch === 'ARTHROPOD') {
+        ctx.fillStyle = body;
+        ctx.beginPath();
+        ctx.ellipse(0, -7, large ? 10 : 7, large ? 6 : 4.5, 0, 0, 7);
+        ctx.fill();
+        ctx.fillStyle = accent;
+        ctx.fillRect(-7, -3, 2, 4);
+        ctx.fillRect(-2, -3, 2, 4);
+        ctx.fillRect(3, -3, 2, 4);
+        ctx.fillRect(large ? 8 : 6, -10, 3, 3);
+      } else if (arch === 'PLANT') {
+        ctx.fillStyle = body;
+        ctx.beginPath();
+        ctx.ellipse(0, -6, large ? 7 : 5, large ? 10 : 7.5, 0, 0, 7);
+        ctx.fill();
+        ctx.fillStyle = accent;
+        ctx.beginPath();
+        ctx.arc(0, large ? -15 : -11, large ? 5 : 3.8, 0, 7);
+        ctx.fill();
+      } else {
+        // Quadruped (CANINE, FELINE, URSINE, BOAR, UNGULATE, CHIMERA)
+        const radX = large ? 13 : (arch === 'BOAR' || arch === 'URSINE' ? 10.5 : 8.5);
+        const radY = large ? 8.5 : (arch === 'BOAR' || arch === 'URSINE' ? 7 : 5.5);
+        ctx.fillStyle = body;
+        ctx.beginPath();
+        ctx.ellipse(0, -7, radX, radY, 0, 0, 7);
+        ctx.fill();
+        ctx.fillRect(-radX * 0.7, -4, 2.6, 5);
+        ctx.fillRect(radX * 0.5, -4, 2.6, 5);
+        ctx.fillStyle = accent;
+        ctx.beginPath();
+        ctx.arc(radX * 0.75, -10, large ? 5.5 : 4.2, 0, 7);
+        ctx.fill();
+        if (arch === 'UNGULATE' || arch === 'CHIMERA') {
+          ctx.strokeStyle = accent;
+          ctx.lineWidth = 1.4;
+          ctx.beginPath();
+          ctx.moveTo(radX * 0.6, -13);
+          ctx.lineTo(radX * 0.5, -18);
+          ctx.stroke();
+        }
+      }
+
+      if (b.legendary) {
+        ctx.strokeStyle = 'rgba(219,160,255,.85)';
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, large ? 18 : 13, large ? 7.5 : 5.5, 0, 0, 7);
+        ctx.stroke();
+      }
+      if (this.cam.z > .8) {
+        ctx.fillStyle = 'rgba(20,35,29,.75)';
+        ctx.font = '9px ' + FONT;
+        ctx.textAlign = 'center';
+        ctx.fillText(b.name + ' · ' + b.tier, 0, -24);
+      }
       ctx.restore();
     },
     drawFoe(ctx, f) {

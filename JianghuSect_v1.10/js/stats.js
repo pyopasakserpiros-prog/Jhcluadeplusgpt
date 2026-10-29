@@ -388,13 +388,20 @@
   };
   ST.preFight = (W, n, hard) => {
     if (n.foe || !n.cult || (n.buffs && n.buffs.some(b => b.until > ST.now))) return;
-    const keys = []; if (n.inv && n.inv.pills) Object.keys(n.inv.pills).forEach(k => { if (k.startsWith('P:CB_') && n.inv.pills[k] > 0) keys.push([k, 'own']); });
-    if (!keys.length && n.rank >= 1) Object.keys(W.sect.stock).forEach(k => { if (k.startsWith('P:CB_') && W.sect.stock[k] > 0) keys.push([k, 'sect']); });
+    const isCb = k => k.startsWith('P:CB_') || !!(ECO.pillInfo(k)?.effect?.cbBuff);
+    const keys = []; if (n.inv && n.inv.pills) Object.keys(n.inv.pills).forEach(k => { if (isCb(k) && n.inv.pills[k] > 0) keys.push([k, 'own']); });
+    if (!keys.length && n.rank >= 1) Object.keys(W.sect.stock).forEach(k => { if (isCb(k) && W.sect.stock[k] > 0) keys.push([k, 'sect']); });
     if (!keys.length) return;
     const c = n.cult, pref = c.path === 'BODY' ? ['STONE', 'FURY'] : c.path === 'XIAN' ? ['SPIRIT', 'EYE', 'WIND'] : c.path === 'DEMON' ? ['FURY', 'WIND', 'STONE'] : c.path === 'HEART_SOUL' ? ['SPIRIT', 'EYE', 'WIND'] : ['STONE', 'SPIRIT', 'FURY'];
     let best = null, bs = -1;
-    keys.forEach(([k, src]) => { const id = k.slice(5); const info = ECO.pillInfo(k); if (!info) return; if (id === 'BERSERK' && !(hard && (E(n, 'personality.aggression') > 55 || n.h.state.hp < CULT.hpMax(n) * 0.5))) return; if (info.tier > c.stage + 1) return;
-      const s = (pref.includes(id) ? 2 : 1) + (src === 'own' ? 0.5 : 0) + W.rng.next(); if (s > bs) { bs = s; best = [k, src]; } });
+    keys.forEach(([k, src]) => {
+      const id = k.startsWith('P:CB_') ? k.slice(5) : k.slice(2);
+      const info = ECO.pillInfo(k); if (!info) return;
+      if (id === 'BERSERK' && !(hard && (E(n, 'personality.aggression') > 55 || n.h.state.hp < CULT.hpMax(n) * 0.5))) return;
+      if (info.tier > c.stage + 1) return;
+      const s = (pref.some(p => id.includes(p)) ? 2 : 1) + (src === 'own' ? 0.5 : 0) + (info.effect?.cbBuff ? 0.5 : 0) + W.rng.next();
+      if (s > bs) { bs = s; best = [k, src]; }
+    });
     if (!best) return;
     let r;
     if (best[1] === 'own') { n.inv.pills[best[0]]--; if (n.inv.pills[best[0]] <= 0) delete n.inv.pills[best[0]]; r = ECO.applyPill(W, n, best[0]); }
