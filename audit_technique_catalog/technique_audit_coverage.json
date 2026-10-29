@@ -1,0 +1,48 @@
+{
+  "repository": "https://github.com/pyopasakserpiros-prog/Jhcluadeplusgpt.git",
+  "auditedCommitSha": "0218ae4ddb227422952ca933ea8b42a191836476",
+  "auditDate": "2026-10-29",
+  "totalTechniquesRegistry": 309,
+  "totalMantrasRegistry": 61,
+  "uniqueCatalogIds": 370,
+  "auditedRowCount": 370,
+  "missingCatalogIds": 0,
+  "unexpectedCatalogIds": 0,
+  "duplicateCsvRowIds": 0,
+  "unclassifiedCatalogIds": 0,
+  "distribution": {
+    "byProposedTier": {
+      "1": 45,
+      "2": 70,
+      "3": 81,
+      "4": 55,
+      "5": 54,
+      "6": 48,
+      "7": 17
+    },
+    "byProposedGrade": {
+      "Common": 187,
+      "Refined": 66,
+      "Rare": 38,
+      "Legendary": 26,
+      "Exceptional": 53
+    },
+    "byConfidence": {
+      "HIGH": 269,
+      "MEDIUM": 67,
+      "LOW": 34
+    },
+    "byAcquisitionStatus": {
+      "reachable": 336,
+      "unreachable": 34
+    }
+  },
+  "validationCheckResults": {
+    "rowCountMatchesUniqueIds": true,
+    "allHeadersPresent": true,
+    "allProposedTiersValid": true,
+    "allProposedGradesValid": true,
+    "allComparableIdsValid": true,
+    "noSourceFilesModified": true
+  }
+}

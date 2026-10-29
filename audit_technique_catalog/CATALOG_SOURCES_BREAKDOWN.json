@@ -1,0 +1,18 @@
+{
+  "baseFromDataTech": {
+    "techniques": 285,
+    "mantras": 61
+  },
+  "fromDataExpansion": {
+    "techniques": 9,
+    "mantras": 0
+  },
+  "fromDataMartial": {
+    "techniques": 15,
+    "mantras": 0
+  },
+  "total": {
+    "techniques": 309,
+    "mantras": 61
+  }
+}

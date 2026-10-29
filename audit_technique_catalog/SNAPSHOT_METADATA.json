@@ -1,0 +1,9 @@
+{
+  "repository": "https://github.com/pyopasakserpiros-prog/Jhcluadeplusgpt.git",
+  "branch": "main-1",
+  "commitSha": "0218ae4ddb227422952ca933ea8b42a191836476",
+  "auditDate": "2026-10-29",
+  "acquisitionMethod": "git archive 0218ae4ddb227422952ca933ea8b42a191836476 | tar -x into isolated snapshot directory",
+  "uncommittedModifications": false,
+  "extractedSnapshotDir": "/data/data/com.termux/files/home/agy-dev/audit_technique_catalog/snapshot"
+}
