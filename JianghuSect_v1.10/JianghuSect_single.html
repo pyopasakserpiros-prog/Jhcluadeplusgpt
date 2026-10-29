@@ -18007,11 +18007,11 @@ D.subPreferences={STAR_ARCHER:{aff:{SWORD:.2,WIND:.5},p:{'physiology.dexterity':
   SECT.processApplicants = (W, m) => {
     const S = W.sect; const q = S.queue || (S.queue = []); if (!q.length) return;
     const reg = SECT.holder(W, 'registry'); const who = reg && !reg.away && !reg.dead ? reg : m;
-    const pop = W.npcs.filter(n => !n.dead && !n.exiled).length;
+    let pop = W.npcs.filter(n => !n.dead && !n.exiled).length;
     const cap = ['dorm_outer', 'dorm_inner', 'dorm_core'].reduce((s, id) => s + W.map.byId[id].stations.length, 0);
     const food = (ECO.count(W, 'meal') + ECO.count(W, 'grain') * 3) / Math.max(1, pop + 1);
     const pol = S.policy; let handled = 0;
-    for (let i = 0; i < q.length && handled < 1;) {
+    for (let i = 0; i < q.length && handled < 6 && pop < cap;) {
       const a = q[i]; handled++;
       const thr = 56 + (pol.meritocracy - 50) * 0.25 - (pol.openness - 50) * 0.3 - (pop < 8 ? 5 : pop < 16 ? 2 : 0) + (pop >= cap ? 30 : 0) + (food < 4 ? 14 : 0) + (pol.strictness - 50) * 0.1;
       const score = SECT.appraise(W, who, a);
@@ -18020,7 +18020,7 @@ D.subPreferences={STAR_ARCHER:{aff:{SWORD:.2,WIND:.5},p:{'physiology.dexterity':
       if (!ok && waited < 6 && pop < cap && W.rng.chance(0.4)) { i++; continue; } // ขอดูตัวอีกสักพัก
       q.splice(i, 1);
       if (ok) {
-        g.SIM.register(W, a); a.joinDay = W.day; a.sat = 72; a.rank = 0; a.merit = 0; a.x = MAP.EXIT.x + .5 + W.rng.next(); a.y = MAP.EXIT.y + .5; a.px = a.x; a.py = a.y; a.travel = { to: 'home' }; a.path = null;
+        g.SIM.register(W, a); pop++; a.joinDay = W.day; a.sat = 72; a.rank = 0; a.merit = 0; a.x = MAP.EXIT.x + .5 + W.rng.next(); a.y = MAP.EXIT.y + .5; a.px = a.x; a.py = a.y; a.travel = { to: 'home' }; a.path = null;
         W.log('recruit', a.h.name.given + ' ผ่านการพิจารณาของ' + (who === m ? 'เจ้าสำนัก ' : SECT.POSTS.registry.nameTh + ' ') + who.h.name.given + ' เข้าเป็นผู้ฝึกหัด (' + a.h.origin.cls + ' จาก' + a.h.origin.region + ')', [a.id, who.id]);
         who.merit += 1.5;
       } else { W.log('recruit', who.h.name.given + ' ไม่รับ ' + a.h.name.given + ' เข้าสำนัก' + (pop >= cap ? ' (ที่พักเต็ม)' : ''), [who.id]); W.fame(-0.05); }
