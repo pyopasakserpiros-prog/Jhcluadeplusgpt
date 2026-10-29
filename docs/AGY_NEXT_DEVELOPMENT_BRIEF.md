@@ -1,3 +1,9 @@
+# HISTORICAL BRIEF — SUPERSEDED
+
+This describes an earlier assignment. For current work read [NEXT_NPC_DEVELOPMENT_PROMPT.md](NEXT_NPC_DEVELOPMENT_PROMPT.md). Do not execute this old brief as a new task.
+
+---
+
 # Agy / Gemini — Jianghu Sect development assignment
 
 Status: **ACTIVE IMPLEMENTATION ASSIGNMENT**, not an example prompt or a request to propose a plan. The author has instructed you to start work, choose a sensible patch sequence, implement, validate, commit and push to `main-1`. Codex will subsequently review and fix defects. Do not wait for the author to paste another prompt. This document is the task.

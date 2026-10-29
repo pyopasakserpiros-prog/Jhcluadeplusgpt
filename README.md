@@ -1,3 +1,13 @@
+# Current main-1 snapshot
+
+Active source: `JianghuSect_v1.10/`. Play: `JianghuSect_v1.10/JianghuSect_single.html`.
+
+For the next development task read [HANDOFF.md](HANDOFF.md) and [the English NPC implementation prompt](docs/NEXT_NPC_DEVELOPMENT_PROMPT.md). Both Gemini Phase 1–3 and technique v1.12 are integrated at runtime baseline `c0f277d`. The NPC update described in the prompt is **not implemented yet**.
+
+Older root release ZIPs were removed to avoid packaging duplicate versions; they remain available in Git history. Required source-reference data and packaging dependencies are retained. The historical description below may mention older releases and is not the current task.
+
+---
+
 # สำนักเมฆาหยก — Jianghu Sect
 
 เกมจำลองสำนักยุทธภพแบบออฟไลน์: ซอร์สล่าสุดอยู่ใน [`JianghuSect_v1.10/`](JianghuSect_v1.10/) และไฟล์เล่นแบบเดียวอยู่ที่ [`JianghuSect_single.html`](JianghuSect_v1.10/JianghuSect_single.html) เปิดด้วยเบราว์เซอร์และเริ่มเกมใหม่ เวอร์ชันใหม่นี้ไม่ได้รับประกันความเข้ากันได้กับเซฟเก่า
