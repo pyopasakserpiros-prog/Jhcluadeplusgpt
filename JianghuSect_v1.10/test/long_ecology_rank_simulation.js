@@ -1,159 +1,77 @@
 'use strict';
-const assert = require('assert');
-const path = require('path');
+// Observe successful production transactions, not UI text or hypothetical APIs.
+const assert = require('assert'), fs = require('fs');
 const G = require('./load');
-const { SIM, WILD_RES, WILD, MAP, ECO, SECT, CPE, CULT, HC, AI } = G;
-
-console.log('=== Running Long Ecology & World Rank Simulation (90 Game Days) ===');
-
-const W = SIM.create('long-sim-rank-resources');
-assert(W.wildResources, 'wildResources must be initialized');
-
-// Metrics collectors
+const { SIM, WILD_RES: R, WILD, EXPED, EXPLORE, ECO, SECT, CPE, JD, MAP } = G;
+const days = Number(process.argv[2] || 90), seed = process.argv[3] || 'long-sim-rank-resources';
+assert(Number.isSafeInteger(days) && days > 0);
+const basic = new Set(JD.CP.BASIC.map(r => r.outItemId || 'P:' + r.id));
 const metrics = {
-  nodeSpawns: { total: 0, BASIC_HERB: 0, OTHER_HERB: 0, ORE: 0, OTHER: 0 },
-  nodeHarvests: { totalUnits: 0, actionsCompleted: 0 },
-  donations: { totalUnits: 0, cpEarned: 0 },
-  privateRetains: 0,
-  basicPillsCrafted: 0,
-  pillsPurchased: 0,
-  pillsConsumed: 0,
-  wildlifeBatches: { 1: 0, 2: 0, 3: 0 },
-  wildlifeRefills: 0,
-  legendarySpawns: 0,
-  maxActiveWildlife: 0,
-  fortuneByRank: { 1: 0, 2: 0, 3: 0, 4: 0 },
-  realmByRank: { 1: 0, 2: 0, 3: 0, 4: 0 }
+  seed, days, nodeSpawns: {}, harvestActions: 0, harvestedUnits: 0, privateRetains: 0,
+  donations: { units: 0, cp: 0 }, basicPillsCrafted: 0, pillsPurchased: 0, pillsConsumed: 0,
+  wildlifeBatches: { 1: 0, 2: 0, 3: 0 }, legendarySpawns: 0, maxActiveWildlife: 0,
+  fortuneByRank: { 1: 0, 2: 0, 3: 0, 4: 0 }, realmByRank: { 1: 0, 2: 0, 3: 0, 4: 0 }, snapshots: []
 };
-
-// Hook logging / events
-const origLog = W.log;
-W.log = function (type, text, ids) {
-  if (text.includes('ปรากฏตัวใน') && text.includes('★')) {
-    metrics.legendarySpawns++;
-  }
-  if (type === 'explore' && text.includes('กลับจากภารกิจ「วาสนาเร้นลับ」')) {
-    // Check party world ranks
-  }
-  return origLog.call(this, type, text, ids);
+const count = (obj, key, qty = 1) => { obj[key] = (obj[key] || 0) + qty; };
+function observe(obj, key, after) {
+  const original = obj[key];
+  obj[key] = function (...args) { const result = original.apply(this, args); after(result, args); return result; };
+}
+observe(R, 'spawnNode', node => { if (node) count(metrics.nodeSpawns, node.category); });
+observe(R, 'harvestNode', res => { if (res.ok) { metrics.harvestActions++; metrics.harvestedUnits += res.qty; } });
+observe(SECT, 'donateMat', res => { if (res.ok) { metrics.donations.units += res.qty; metrics.donations.cp += res.reward; } });
+const act = G.AI.ACTS.gatherWildResource, originalDone = act.done;
+act.done = function (n, W, ctx) {
+  const key = W.wildResources.nodes.find(node => node.id === ctx.nodeId)?.materialId;
+  const before = n.inv.mats?.[key] || 0;
+  const result = originalDone(n, W, ctx);
+  if (key) metrics.privateRetains += Math.max(0, (n.inv.mats?.[key] || 0) - before);
+  return result;
 };
-
-// Hook WILD_RES.spawnBatch to record spawn batch stats
-const origSpawnBatch = WILD_RES.spawnBatch;
-WILD_RES.spawnBatch = function (world, count) {
-  const before = (world.wildResources && world.wildResources.nodes.length) || 0;
-  origSpawnBatch.call(this, world, count);
-  const after = (world.wildResources && world.wildResources.nodes.length) || 0;
-  const spawned = after - before;
-  if (spawned > 0) {
-    metrics.nodeSpawns.total += spawned;
-    // Categorize latest nodes
-    world.wildResources.nodes.slice(-spawned).forEach(n => {
-      if (n.category === 'BASIC_HERB') metrics.nodeSpawns.BASIC_HERB++;
-      else if (n.category === 'OTHER_HERB') metrics.nodeSpawns.OTHER_HERB++;
-      else if (n.category === 'ORE') metrics.nodeSpawns.ORE++;
-      else metrics.nodeSpawns.OTHER++;
-    });
+observe(ECO, 'finishCraft', res => { if (res.ok && basic.has(res.key)) metrics.basicPillsCrafted += res.n; });
+observe(CPE, 'buy', (ok, [, , quote]) => { if (ok && quote.kind === 'pill') metrics.pillsPurchased++; });
+observe(ECO, 'applyPill', (ok, [, , key]) => { if (ok && ECO.isPill(key)) metrics.pillsConsumed++; });
+observe(WILD, 'spawn', beast => { if (beast?.legendary) metrics.legendarySpawns++; });
+observe(EXPED, 'depart', ex => { if (ex?.kind === 'fortune') count(metrics.fortuneByRank, ex.partyRank); });
+observe(EXPLORE, 'depart', ex => { if (ex?.kind === 'realm') count(metrics.realmByRank, ex.partyRank); });
+let W = SIM.create(seed);
+const started = Date.now();
+console.log('Simulating ' + days + ' native game days: ' + seed);
+for (let i = 0; i < days * 1440; i++) {
+  const oldIds = new Set(W.wildlife?.beasts.map(b => b.id));
+  SIM.tick(W);
+  const active = W.wildlife.beasts.filter(b => !b.gone && !b.dead);
+  const ordinaryNew = active.filter(b => !b.legendary && !oldIds.has(b.id)).length;
+  if (ordinaryNew) count(metrics.wildlifeBatches, ordinaryNew);
+  metrics.maxActiveWildlife = Math.max(metrics.maxActiveWildlife, active.length);
+  assert(active.length <= 12 && active.filter(b => b.legendary).length <= 1);
+  assert(W.wildResources.nodes.length <= 48);
+  for (const b of active) if ((b.aggressive || b.tier >= 3) && !b.fighting) assert(!MAP.isInSafeBelt(b.x, b.y), 'unsafe beast in safe belt');
+  if (i + 1 === Math.floor(days / 2) * 1440) {
+    const nodes = JSON.stringify(W.wildResources), state = JSON.stringify(W.rng.getState());
+    W = SIM.deserialize(SIM.serialize(W));
+    assert.strictEqual(JSON.stringify(W.wildResources), nodes);
+    assert.strictEqual(JSON.stringify(W.rng.getState()), state);
   }
-};
-
-// Observe donateMat
-const origDonateMat = SECT.donateMat;
-SECT.donateMat = function (world, npc, matId, qty) {
-  const res = origDonateMat.call(this, world, npc, matId, qty);
-  if (res && res.qty > 0) {
-    metrics.donations.totalUnits += res.qty;
-    metrics.donations.cpEarned += (res.reward || 0);
-  }
-  return res;
-};
-
-// Observe expedition departures
-const origXDepart = G.EXPED.depart;
-G.EXPED.depart = function (world, party, kind, region) {
-  const ex = origXDepart.call(this, world, party, kind, region);
-  if (ex && ex.partyRank) {
-    const r = Math.min(4, Math.max(1, Math.round(ex.partyRank)));
-    if (kind === 'fortune') metrics.fortuneByRank[r]++;
-  }
-  return ex;
-};
-
-const origEXDepart = G.EXPLORE.depart;
-G.EXPLORE.depart = function (world, party, kind) {
-  const ex = origEXDepart.call(this, world, party, kind);
-  if (ex && ex.partyRank) {
-    const r = Math.min(4, Math.max(1, Math.round(ex.partyRank)));
-    if (kind === 'realm') metrics.realmByRank[r]++;
-  }
-  return ex;
-};
-
-const SIM_DAYS = 90;
-const TOTAL_TICKS = SIM_DAYS * 1440;
-let currentW = W;
-
-console.log(`Simulating ${SIM_DAYS} game days (${TOTAL_TICKS} ticks)...`);
-const startTime = Date.now();
-
-for (let tick = 0; tick < TOTAL_TICKS; tick++) {
-  SIM.tick(currentW);
-
-  // Track max active wildlife
-  if (currentW.wildlife && currentW.wildlife.beasts) {
-    const activeBeasts = currentW.wildlife.beasts.filter(b => !b.gone && !b.dead).length;
-    if (activeBeasts > metrics.maxActiveWildlife) metrics.maxActiveWildlife = activeBeasts;
-  }
-
-  // Mid-simulation save/load test at Day 45
-  if (tick === 45 * 1440) {
-    console.log('Day 45: Verifying mid-simulation save/load round-trip...');
-    const serialized = SIM.serialize(currentW);
-    assert(serialized && serialized.length > 100, 'Serialized snapshot must not be empty');
-    currentW = SIM.deserialize(serialized);
-    assert(currentW.wildResources, 'wildResources must restore on load');
-    assert(currentW.wildResources.nodes.length <= 48, 'Nodes cap must hold on load');
-  }
-
-  // Periodic health check every 30 days
-  if ((tick + 1) % (30 * 1440) === 0) {
-    const day = (tick + 1) / 1440;
-    const activeNodes = currentW.wildResources ? currentW.wildResources.nodes.length : 0;
-    const activeBeasts = currentW.wildlife ? currentW.wildlife.beasts.filter(b => !b.gone && !b.dead).length : 0;
-    console.log(`Day ${day}: Active Nodes=${activeNodes}/48, Active Beasts=${activeBeasts}/12, Sect Stones=${currentW.sect.stones}`);
+  if ((i + 1) % (30 * 1440) === 0 || i + 1 === days * 1440) {
+    const living = W.npcs.filter(n => !n.dead);
+    for (const n of living) {
+      assert(Number.isFinite(n.cp) && n.cp >= 0 && Number.isFinite(n.h.state.hp));
+      for (const qty of Object.values(n.inv.mats || {})) assert(Number.isSafeInteger(qty) && qty >= 0);
+    }
+    for (const qty of Object.values(W.sect.stock)) assert(Number.isFinite(qty) && qty >= 0);
+    const snapshot = { day: (i + 1) / 1440, population: living.length, stones: W.sect.stones,
+      meals: ECO.count(W, 'meal'), cp: living.reduce((s, n) => s + n.cp, 0),
+      minted: CPE.S(W).minted, burned: CPE.S(W).burned,
+      nodes: W.wildResources.nodes.length, harvestActions: metrics.harvestActions,
+      privateRetains: metrics.privateRetains, basicPillsCrafted: metrics.basicPillsCrafted };
+    metrics.snapshots.push(snapshot); console.log(JSON.stringify(snapshot));
   }
 }
-
-const elapsedMs = Date.now() - startTime;
-console.log(`Simulation finished in ${elapsedMs}ms (${(TOTAL_TICKS / (elapsedMs / 1000)).toFixed(0)} ticks/sec)`);
-
-// Final verification of invariants
-assert(currentW.wildResources.nodes.length <= 48, 'Final nodes must not exceed cap 48');
-const finalActiveBeasts = currentW.wildlife.beasts.filter(b => !b.gone && !b.dead).length;
-assert(finalActiveBeasts <= 12, 'Final active wildlife must not exceed cap 12');
-assert(metrics.maxActiveWildlife <= 12, 'Peak active wildlife must not exceed cap 12');
-
-// Verify that NPCs have valid states and no NaN
-currentW.npcs.forEach(n => {
-  assert(!isNaN(n.h.state.hp), `NPC ${n.id} HP must not be NaN`);
-  assert(!isNaN(n.cp), `NPC ${n.id} CP must not be NaN`);
-  assert(n.cp >= 0, `NPC ${n.id} CP must not be negative`);
-  if (n.inv && n.inv.mats) {
-    Object.entries(n.inv.mats).forEach(([m, q]) => {
-      assert(!isNaN(q) && q >= 0, `Mat ${m} quantity must be non-negative integer`);
-    });
-  }
-});
-
-console.log('\n--- Simulation Metrics Report ---');
-console.log(`Total Resource Nodes Spawned: ${metrics.nodeSpawns.total}`);
-console.log(`  Basic Recovery Herbs: ${metrics.nodeSpawns.BASIC_HERB} (${(metrics.nodeSpawns.BASIC_HERB / (metrics.nodeSpawns.total || 1) * 100).toFixed(1)}%)`);
-console.log(`  Other Herbs: ${metrics.nodeSpawns.OTHER_HERB} (${(metrics.nodeSpawns.OTHER_HERB / (metrics.nodeSpawns.total || 1) * 100).toFixed(1)}%)`);
-console.log(`  Ores: ${metrics.nodeSpawns.ORE} (${(metrics.nodeSpawns.ORE / (metrics.nodeSpawns.total || 1) * 100).toFixed(1)}%)`);
-console.log(`  Other Materials: ${metrics.nodeSpawns.OTHER} (${(metrics.nodeSpawns.OTHER / (metrics.nodeSpawns.total || 1) * 100).toFixed(1)}%)`);
-console.log(`Total Material Donations: ${metrics.donations.totalUnits} units, CP Minted: ${metrics.donations.cpEarned}`);
-console.log(`Peak Wildlife On-Screen: ${metrics.maxActiveWildlife} / 12`);
-console.log(`Legendary Beast Spawns: ${metrics.legendarySpawns}`);
-console.log('Fortune Expeditions by Party Rank:', JSON.stringify(metrics.fortuneByRank));
-console.log('Myriad Worlds (Realm) Expeditions by Party Rank:', JSON.stringify(metrics.realmByRank));
-console.log('\n=== LONG SIMULATION VERIFICATION PASSED ===\n');
+metrics.elapsedMs = Date.now() - started;
+assert(metrics.harvestActions > 0, 'natural NPC harvesting must be observed');
+assert(metrics.donations.units > 0, 'natural donation must be observed');
+assert(metrics.basicPillsCrafted > 0, 'natural basic medicine production must be observed');
+if (process.argv[4]) fs.writeFileSync(process.argv[4], JSON.stringify(metrics, null, 2) + '\n');
+console.log(JSON.stringify(metrics, null, 2));
+console.log('PASS native simulation, finite resources, inventories, safety, population and save/load invariants');

@@ -929,7 +929,7 @@
     ctx.inside = !!(w.st && w.st.inside);
     const dist = Math.hypot(ctx.tx + 0.5 - n.x, ctx.ty + 0.5 - n.y);
     if (dist < 0.9) { n.path = null; AI.arrive(W, n); }
-    else if (!AI.goTo(W, n, ctx.tx, ctx.ty)) { AI.release(W, n); n.act = { id: 'idle', stage: 'do', left: 0, total: 0, ctx: {}, why: [] }; n.cool[id] = W.t + 60; return false; }
+    else if (!AI.goTo(W, n, ctx.tx, ctx.ty)) { AI.cancelAct(W, n); n.cool[id] = W.t + 60; return false; }
     n.recent.push(id); if (n.recent.length > 6) n.recent.shift();
     return true;
   };
@@ -937,7 +937,7 @@
     const ac = n.act, a = A[ac.id], ctx = ac.ctx;
     ac.stage = 'do';
     if (ctx.inside) { n.hidden = true; }
-    if (ac.id !== 'pair' && a.start && !ac.started2) { ac.started2 = true; if (a.start(n, W, ctx) === false) { AI.release(W, n); n.act = { id: 'idle', stage: 'do', left: 0, total: 0, ctx: {}, why: [] }; n.cool[ac.id] = W.t + 45; return; } }
+    if (ac.id !== 'pair' && a.start && !ac.started2) { ac.started2 = true; if (a.start(n, W, ctx) === false) { AI.cancelAct(W, n); n.cool[ac.id] = W.t + 45; return; } }
     ac.total = ac.id === 'pair' ? 9999 : (a.dur ? a.dur(n, W, ctx) : 60); ac.left = ac.total;
   };
 

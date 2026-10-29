@@ -16406,7 +16406,8 @@ D.subPreferences={STAR_ARCHER:{aff:{SWORD:.2,WIND:.5},p:{'physiology.dexterity':
     const w = M.wall;
     return x < w.x0 || x > w.x1 || y < w.y0 || y > w.y1;
   };
-  MAP.SAFE_BELT = Object.freeze({ x0: 80, x1: 156, y0: 134, y1: 156 });
+  // Include the gate threshold and approach so safe trips have no unprotected gap.
+  MAP.SAFE_BELT = Object.freeze({ x0: 80, x1: 156, y0: 132, y1: 156 });
   MAP.isInSafeBelt = (x, y) => {
     const sb = MAP.SAFE_BELT;
     return x >= sb.x0 && x <= sb.x1 && y >= sb.y0 && y <= sb.y1;
@@ -18653,8 +18654,8 @@ D.subPreferences={STAR_ARCHER:{aff:{SWORD:.2,WIND:.5},p:{'physiology.dexterity':
   /* ----- บริจาควัตถุดิบส่วนตัวเข้าคลังสำนัก (รับแต้มคุณูปการอย่างถูกต้องครั้งเดียว) ----- */
   SECT.donateMat = (W, npc, matId, qty) => {
     if (!W || !npc || npc.dead || !matId) return { ok: false, reward: 0, reason: 'invalid' };
-    qty = Math.floor(qty || 1);
-    if (qty <= 0) return { ok: false, reward: 0, reason: 'invalid_qty' };
+    if (qty === undefined) qty = 1;
+    if (!Number.isSafeInteger(qty) || qty <= 0 || !ECO.matById[matId]) return { ok: false, reward: 0, reason: 'invalid_qty' };
     npc.inv = npc.inv || {};
     npc.inv.mats = npc.inv.mats || {};
     const owned = npc.inv.mats[matId] || 0;
@@ -19615,7 +19616,7 @@ D.subPreferences={STAR_ARCHER:{aff:{SWORD:.2,WIND:.5},p:{'physiology.dexterity':
     ctx.inside = !!(w.st && w.st.inside);
     const dist = Math.hypot(ctx.tx + 0.5 - n.x, ctx.ty + 0.5 - n.y);
     if (dist < 0.9) { n.path = null; AI.arrive(W, n); }
-    else if (!AI.goTo(W, n, ctx.tx, ctx.ty)) { AI.release(W, n); n.act = { id: 'idle', stage: 'do', left: 0, total: 0, ctx: {}, why: [] }; n.cool[id] = W.t + 60; return false; }
+    else if (!AI.goTo(W, n, ctx.tx, ctx.ty)) { AI.cancelAct(W, n); n.cool[id] = W.t + 60; return false; }
     n.recent.push(id); if (n.recent.length > 6) n.recent.shift();
     return true;
   };
@@ -19623,7 +19624,7 @@ D.subPreferences={STAR_ARCHER:{aff:{SWORD:.2,WIND:.5},p:{'physiology.dexterity':
     const ac = n.act, a = A[ac.id], ctx = ac.ctx;
     ac.stage = 'do';
     if (ctx.inside) { n.hidden = true; }
-    if (ac.id !== 'pair' && a.start && !ac.started2) { ac.started2 = true; if (a.start(n, W, ctx) === false) { AI.release(W, n); n.act = { id: 'idle', stage: 'do', left: 0, total: 0, ctx: {}, why: [] }; n.cool[ac.id] = W.t + 45; return; } }
+    if (ac.id !== 'pair' && a.start && !ac.started2) { ac.started2 = true; if (a.start(n, W, ctx) === false) { AI.cancelAct(W, n); n.cool[ac.id] = W.t + 45; return; } }
     ac.total = ac.id === 'pair' ? 9999 : (a.dur ? a.dur(n, W, ctx) : 60); ac.left = ac.total;
   };
 
@@ -20502,7 +20503,7 @@ D.subPreferences={STAR_ARCHER:{aff:{SWORD:.2,WIND:.5},p:{'physiology.dexterity':
         id: 'f2_abandoned_mine', nameTh: 'เหมืองแร่ร้างใต้ผา', biome: 'mountain',
         pools: [
           { id: 'f2_mine_crystal_vein', nameTh: 'สายแร่ผลึกวิญญาณ', skill: 'mining', diff: 42, ore: ['MAT_ORE_COLD_STEEL_2', 'MAT_ORE_JADE_SLATE_2'], stones: 80 },
-          { id: 'f2_mine_poison_mist', nameTh: 'หมอกพิษในปล่องเหมือง', skill: 'alchemy', diff: 40, pill: 'P:BASIC_HP2', stones: 85 }
+          { id: 'f2_mine_poison_mist', nameTh: 'หมอกพิษในปล่องเหมือง', skill: 'ALCHEMY', diff: 40, pill: 'P:BASIC_HP2', stones: 85 }
         ]
       },
       {
@@ -20555,7 +20556,7 @@ D.subPreferences={STAR_ARCHER:{aff:{SWORD:.2,WIND:.5},p:{'physiology.dexterity':
         id: 'f4_primordial_fountain', nameTh: 'ตาน้ำพุปฐมธาตุ', biome: 'water',
         pools: [
           { id: 'f4_fountain_essence', nameTh: 'หยาดน้ำอมฤตปฐมกาล', skill: 'herbalism', diff: 85, herbs: ['MAT_HERB_DRAGON_GRASS_4'], stones: 420, spring: true },
-          { id: 'f4_fountain_cleansing', nameTh: 'ชำระล้างเส้นลมปราณเก้าทิศ', skill: 'alchemy', diff: 88, spring: true, stones: 450, insight: true }
+          { id: 'f4_fountain_cleansing', nameTh: 'ชำระล้างเส้นลมปราณเก้าทิศ', skill: 'ALCHEMY', diff: 88, spring: true, stones: 450, insight: true }
         ]
       }
     ]
@@ -25579,25 +25580,24 @@ const suitable=M.gearSuitability;M.gearSuitability=(n,it,price)=>{const result=s
       if (!cands.length) return null;
       species = W.rng.pick(cands);
     }
-    let x = W.rng.int(z.x0, z.x1), y = W.rng.int(z.y0, z.y1);
-    if (W.map && MAP.blocked(W.map, x, y)) {
-      const free = MAP.nearestFree(W.map, x, y);
-      if (free && isOutsideWall(W.map, free.x, free.y)) { x = free.x; y = free.y; }
-    }
-
-    const id = 'wild_' + (++W.wildlife.seq);
     const isLegend = !!(pool && pool.legendary) || !!z.legendary || species.tier >= 6 || String(species.id).startsWith('KING_');
     if (isLegend && active.some(b => b.legendary)) return null;
     const isAggressive = (z.peaceful || species.tier <= 2) ? false : ((species.aggro || 60) >= 70);
-
-    // ป้องกันสัตว์ดุร้าย/ระดับสูงเกิดในแนวเก็บสมุนไพรปลอดภัยหน้าประตูสำนัก
-    if ((isAggressive || species.tier >= 3) && MAP.isInSafeBelt && MAP.isInSafeBelt(x, y)) {
-      if (zoneId === 'meadow') {
-        x = W.rng.int(z.x0, Math.min(z.x1, MAP.SAFE_BELT.x0 - 2));
-      } else if (zoneId === 'ridge') {
-        x = W.rng.int(Math.max(z.x0, MAP.SAFE_BELT.x1 + 2), z.x1);
+    const legal = (x, y) => isOutsideWall(W.map, x, y) && !MAP.blocked(W.map, x, y) &&
+      !((isAggressive || species.tier >= 3) && MAP.isInSafeBelt && MAP.isInSafeBelt(x + .5, y + .5));
+    let x, y, placed = false;
+    for (let attempt = 0; attempt < 24; attempt++) {
+      x = W.rng.int(z.x0, z.x1); y = W.rng.int(z.y0, z.y1);
+      if (legal(x, y)) { placed = true; break; }
+    }
+    // Deterministic bounded fallback remains within the same habitat.
+    if (!placed) {
+      for (let py = z.y0; py <= z.y1 && !placed; py++) for (let px = z.x0; px <= z.x1; px++) {
+        if (legal(px, py)) { x = px; y = py; placed = true; break; }
       }
     }
+    if (!placed) return null;
+    const id = 'wild_' + (++W.wildlife.seq);
 
     const b = {
       id,
@@ -25839,7 +25839,8 @@ const suitable=M.gearSuitability;M.gearSuitability=(n,it,price)=>{const result=s
   const { U, MAP, AI, CULT, ECO, SECT, JD, HC, CPE } = g;
   const clamp = U.clamp;
   const WILD_RES = {
-    MAX_NODES: 48
+    MAX_NODES: 48,
+    SAFE_NODE_RESERVE: 8
   };
 
   const BASIC_HERB_WEIGHTS = [
@@ -25858,10 +25859,7 @@ const suitable=M.gearSuitability;M.gearSuitability=(n,it,price)=>{const result=s
   };
   WILD_RES.ZONES = ZONES;
 
-  WILD_RES.isSafeBelt = (x, y) => {
-    const sb = ZONES.safe_belt;
-    return x >= sb.x0 && x <= sb.x1 && y >= sb.y0 && y <= sb.y1;
-  };
+  WILD_RES.isSafeBelt = (x, y) => MAP.isInSafeBelt(x, y);
 
   WILD_RES.init = W => {
     if (!W.wildResources) {
@@ -25938,16 +25936,20 @@ const suitable=M.gearSuitability;M.gearSuitability=(n,it,price)=>{const result=s
     // Find legal placement: outside wall, passable, reachable, not inside building
     const M = W.map;
     let placedX = null, placedY = null;
+    const unsafeFull = state.nodes.filter(n => n.remaining > 0 && !MAP.isInSafeBelt(n.x + .5, n.y + .5)).length >= WILD_RES.MAX_NODES - WILD_RES.SAFE_NODE_RESERVE;
     const maxAttempts = 24;
     for (let i = 0; i < maxAttempts; i++) {
       const x = rng.int(zone.x0, zone.x1);
       const y = rng.int(zone.y0, zone.y1);
+      if (unsafeFull && !MAP.isInSafeBelt(x + .5, y + .5)) continue;
       if (x < 3 || x >= MAP.W - 3 || y < 3 || y >= MAP.H - 3) continue;
       if (MAP.isOutsideWall && !MAP.isOutsideWall(M, x, y)) continue;
       const k = y * MAP.W + x;
       if (M.block[k] !== 0) continue;
       const t = M.terrain[k];
       if (t === MAP.T.CLIFF || t === MAP.T.WALL || t === MAP.T.WATER) continue;
+      // A passable tile can still be isolated behind cliffs/water.
+      if (!MAP.findPath(M, MAP.GATE_IN.x, MAP.GATE_IN.y, x, y)) continue;
       // Do not overlap exactly with another active resource node
       if (state.nodes.some(n => n.x === x && n.y === y && n.remaining > 0)) continue;
       placedX = x;
@@ -26116,12 +26118,15 @@ const suitable=M.gearSuitability;M.gearSuitability=(n,it,price)=>{const result=s
     const candidates = W.wildResources.nodes.filter(node => {
       if (node.remaining <= 0) return false;
       if (node.claimedBy && node.claimedBy !== n.id && now < node.claimUntil) return false;
+      const basic = BASIC_HERB_WEIGHTS.some(b => b.id === node.materialId);
+      const beginner = CULT.worldRank(n) <= 1 || CULT.power(n) < 100;
+      if ((basic || beginner) && !MAP.isInSafeBelt(node.x + .5, node.y + .5)) return false;
       return true;
     });
     if (!candidates.length) return null;
 
-    const isWeak = n.rank <= 2 || CULT.power(n) < 100;
-    // Rank 0..2 disciples prioritize safe belt
+    const isWeak = CULT.worldRank(n) <= 1 || CULT.power(n) < 100;
+    // Cultivation beginners prioritize safe work, independently of sect title.
     const scored = candidates.map(node => {
       const dist = Math.hypot(n.x - node.x, n.y - node.y);
       const isBasic = BASIC_HERB_WEIGHTS.some(b => b.id === node.materialId);
@@ -26137,7 +26142,14 @@ const suitable=M.gearSuitability;M.gearSuitability=(n,it,price)=>{const result=s
       return { node, s };
     });
     scored.sort((a, b) => b.s - a.s);
-    return scored[0]?.node || null;
+    for (const { node } of scored) {
+      const path = MAP.findPath(W.map, n.x, n.y, node.x, node.y);
+      if (!path) continue;
+      const basic = BASIC_HERB_WEIGHTS.some(b => b.id === node.materialId);
+      if (basic && path.some(([x, y]) => MAP.isOutsideWall(W.map, x + .5, y + .5) && !MAP.isInSafeBelt(x + .5, y + .5))) continue;
+      return node;
+    }
+    return null;
   }
 
   AI.ACTS.gatherWildResource = {
@@ -26154,7 +26166,7 @@ const suitable=M.gearSuitability;M.gearSuitability=(n,it,price)=>{const result=s
       // Safe, easy economic role: highest priority for beginner/low-rank disciples
       const e = p => HC.eff(n, p);
       const herbInt = e('interests.herbs') + e('interests.labor');
-      const isLowRank = n.rank <= 2;
+      const isLowRank = CULT.worldRank(n) <= 1;
       S.add('ชอบงานเก็บของป่าและสมุนไพร', (herbInt - 80) / 60);
       S.add('ต้องการสะสมแต้มคุณูปการ', 0.6);
       if (isLowRank) S.add('งานปลอดภัยสำหรับศิษย์ใหม่', 1.4);
@@ -26199,7 +26211,7 @@ const suitable=M.gearSuitability;M.gearSuitability=(n,it,price)=>{const result=s
       // Post-harvest choice: Retain for personal crafting or Donate to sect
       // Members who have alchemy recipes and need medicine keep ingredients in personal bag
       let shouldKeep = false;
-      const knownPersonalRecipes = (n.inv && n.inv.recipes) || [];
+      const knownPersonalRecipes = Array.from(new Set([...(n.inv?.recipes || []), ...(n.recipes || [])]));
       if (knownPersonalRecipes.length > 0 && n.h.skills.ALCHEMY >= 20) {
         // Check if any personal recipe uses this material
         for (const rid of knownPersonalRecipes) {
@@ -27303,7 +27315,7 @@ const suitable=M.gearSuitability;M.gearSuitability=(n,it,price)=>{const result=s
       ctx.ellipse(0, 4, 7, 2.8, 0, 0, 7);
       ctx.fill();
 
-      if (rn.category === 'HERB') {
+      if (rn.category === 'HERB' || rn.category === 'BASIC_HERB' || rn.category === 'OTHER_HERB') {
         ctx.fillStyle = '#3e8e41';
         ctx.beginPath();
         ctx.ellipse(-3, 1, 4, 2.2, -0.4, 0, 7);

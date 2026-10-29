@@ -13,7 +13,7 @@ assert.strictEqual(WILD_RES.MAX_NODES, 48, 'MAX_NODES must be 48');
 assert(MAP.SAFE_BELT, 'MAP.SAFE_BELT must exist');
 assert.strictEqual(MAP.SAFE_BELT.x0, 80);
 assert.strictEqual(MAP.SAFE_BELT.x1, 156);
-assert.strictEqual(MAP.SAFE_BELT.y0, 134);
+assert(MAP.isInSafeBelt(118.5, 132.5), 'Safe belt must include the gate approach');
 assert.strictEqual(MAP.SAFE_BELT.y1, 156);
 assert(MAP.isInSafeBelt(100, 140), 'Point (100, 140) must be in safe belt');
 assert(!MAP.isInSafeBelt(50, 50), 'Point (50, 50) inside sect is not in safe belt');
@@ -135,21 +135,27 @@ assert.strictEqual(ECO.count(W, matId), preSectStock + 1, 'Sect material stock m
 assert(npc1.cp > preCp, 'Donating material must mint contribution points to member');
 console.log('PASS SECT.donateMat material deduction, sect stock addition, and CP reward');
 
-// B) Donated herbs fund medicine production and welfare distribution
-// Ensure sect has basic herbs
-ECO.add(W, 'MAT_HERB_DEW_GRASS_1', 10);
-ECO.add(W, 'MAT_HERB_CINDER_LEAF_1', 10);
-const prePills = ECO.count(W, 'P:ECO2_REC_PILL_HEAL_1') + ECO.count(W, 'P:ECO2_REC_PILL_HEAL_2');
-
-// Run economy production
-if (CPE && CPE.produceMedicine) {
-  CPE.produceMedicine(W);
-}
-// Welfare allocation can distribute medicines when available
-if (CPE && CPE.welfareDaily) {
-  CPE.welfareDaily(W);
-}
-console.log('PASS medicine production and welfare economy integration');
+// B) Real donated units are consumed by the actual brewing action, then bought and used.
+const cycle = SIM.create('resource-medicine-cycle'), donor = cycle.npcs[0], brewer = cycle.npcs[1];
+cycle.sect.stock = {};
+donor.inv.mats = { MAT_HERB_DEW_GRASS_1: 2, MAT_HERB_CINDER_LEAF_1: 1 };
+assert(SECT.donateMat(cycle, donor, 'MAT_HERB_DEW_GRASS_1', 2).ok);
+assert(SECT.donateMat(cycle, donor, 'MAT_HERB_CINDER_LEAF_1', 1).ok);
+brewer.h.skills.ALCHEMY = 100;
+const brew = AI.ACTS.brewBasic, brewCtx = { rid: 'BASIC_HP' };
+assert(brew.start(brewer, cycle, brewCtx), 'actual brewing must reserve donated ingredients');
+assert.strictEqual(ECO.count(cycle, 'MAT_HERB_DEW_GRASS_1'), 0);
+assert.strictEqual(ECO.count(cycle, 'MAT_HERB_CINDER_LEAF_1'), 0);
+const originalNext = cycle.rng.next;
+cycle.rng.next = () => .01;
+try { brew.done(brewer, cycle, brewCtx); } finally { cycle.rng.next = originalNext; }
+assert(ECO.count(cycle, 'P:BASIC_HP') > 0, 'real brewing must create basic healing pills');
+donor.cp = 1000; donor.h.state.hp = 1;
+assert(CPE.buy(cycle, donor, { kind: 'pill', key: 'P:BASIC_HP', price: CPE.priceOf(cycle, 'P:BASIC_HP') }));
+CPE.autoUse(cycle, donor);
+assert(donor.h.state.hp > 1, 'member must actually consume the purchased medicine');
+assert.strictEqual(donor.inv.pills['P:BASIC_HP'] || 0, 0);
+console.log('PASS donated herbs -> actual brewing -> shop purchase -> healing and unit consumption');
 
 // 10. Save / Load serialization test
 const serialized = SIM.serialize(W);

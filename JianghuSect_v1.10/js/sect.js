@@ -925,8 +925,8 @@
   /* ----- บริจาควัตถุดิบส่วนตัวเข้าคลังสำนัก (รับแต้มคุณูปการอย่างถูกต้องครั้งเดียว) ----- */
   SECT.donateMat = (W, npc, matId, qty) => {
     if (!W || !npc || npc.dead || !matId) return { ok: false, reward: 0, reason: 'invalid' };
-    qty = Math.floor(qty || 1);
-    if (qty <= 0) return { ok: false, reward: 0, reason: 'invalid_qty' };
+    if (qty === undefined) qty = 1;
+    if (!Number.isSafeInteger(qty) || qty <= 0 || !ECO.matById[matId]) return { ok: false, reward: 0, reason: 'invalid_qty' };
     npc.inv = npc.inv || {};
     npc.inv.mats = npc.inv.mats || {};
     const owned = npc.inv.mats[matId] || 0;

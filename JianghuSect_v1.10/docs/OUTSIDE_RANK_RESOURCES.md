@@ -1,3 +1,5 @@
+> Historical implementation report. The subsequent [Codex bug audit](BUG_AUDIT_2026_10_29.md) supersedes safety details and verification below: safe belt now starts at y=132, unsafe nodes leave eight safe supply slots, and all browser tests were run in Chromium. Original metrics below describe the earlier Agy run.
+
 # ระบบแรงค์กลางยุทธภพ แหล่งทรัพยากรนอกสำนัก และสัตว์อสูรเติมเป็นชุด (v1.10.13)
 # World Ranks, Finite Outdoor Resources & Bounded Wildlife Batches
 

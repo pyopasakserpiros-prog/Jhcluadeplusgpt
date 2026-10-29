@@ -7,7 +7,8 @@
   const { U, MAP, AI, CULT, ECO, SECT, JD, HC, CPE } = g;
   const clamp = U.clamp;
   const WILD_RES = {
-    MAX_NODES: 48
+    MAX_NODES: 48,
+    SAFE_NODE_RESERVE: 8
   };
 
   const BASIC_HERB_WEIGHTS = [
@@ -26,10 +27,7 @@
   };
   WILD_RES.ZONES = ZONES;
 
-  WILD_RES.isSafeBelt = (x, y) => {
-    const sb = ZONES.safe_belt;
-    return x >= sb.x0 && x <= sb.x1 && y >= sb.y0 && y <= sb.y1;
-  };
+  WILD_RES.isSafeBelt = (x, y) => MAP.isInSafeBelt(x, y);
 
   WILD_RES.init = W => {
     if (!W.wildResources) {
@@ -106,16 +104,20 @@
     // Find legal placement: outside wall, passable, reachable, not inside building
     const M = W.map;
     let placedX = null, placedY = null;
+    const unsafeFull = state.nodes.filter(n => n.remaining > 0 && !MAP.isInSafeBelt(n.x + .5, n.y + .5)).length >= WILD_RES.MAX_NODES - WILD_RES.SAFE_NODE_RESERVE;
     const maxAttempts = 24;
     for (let i = 0; i < maxAttempts; i++) {
       const x = rng.int(zone.x0, zone.x1);
       const y = rng.int(zone.y0, zone.y1);
+      if (unsafeFull && !MAP.isInSafeBelt(x + .5, y + .5)) continue;
       if (x < 3 || x >= MAP.W - 3 || y < 3 || y >= MAP.H - 3) continue;
       if (MAP.isOutsideWall && !MAP.isOutsideWall(M, x, y)) continue;
       const k = y * MAP.W + x;
       if (M.block[k] !== 0) continue;
       const t = M.terrain[k];
       if (t === MAP.T.CLIFF || t === MAP.T.WALL || t === MAP.T.WATER) continue;
+      // A passable tile can still be isolated behind cliffs/water.
+      if (!MAP.findPath(M, MAP.GATE_IN.x, MAP.GATE_IN.y, x, y)) continue;
       // Do not overlap exactly with another active resource node
       if (state.nodes.some(n => n.x === x && n.y === y && n.remaining > 0)) continue;
       placedX = x;
@@ -284,12 +286,15 @@
     const candidates = W.wildResources.nodes.filter(node => {
       if (node.remaining <= 0) return false;
       if (node.claimedBy && node.claimedBy !== n.id && now < node.claimUntil) return false;
+      const basic = BASIC_HERB_WEIGHTS.some(b => b.id === node.materialId);
+      const beginner = CULT.worldRank(n) <= 1 || CULT.power(n) < 100;
+      if ((basic || beginner) && !MAP.isInSafeBelt(node.x + .5, node.y + .5)) return false;
       return true;
     });
     if (!candidates.length) return null;
 
-    const isWeak = n.rank <= 2 || CULT.power(n) < 100;
-    // Rank 0..2 disciples prioritize safe belt
+    const isWeak = CULT.worldRank(n) <= 1 || CULT.power(n) < 100;
+    // Cultivation beginners prioritize safe work, independently of sect title.
     const scored = candidates.map(node => {
       const dist = Math.hypot(n.x - node.x, n.y - node.y);
       const isBasic = BASIC_HERB_WEIGHTS.some(b => b.id === node.materialId);
@@ -305,7 +310,14 @@
       return { node, s };
     });
     scored.sort((a, b) => b.s - a.s);
-    return scored[0]?.node || null;
+    for (const { node } of scored) {
+      const path = MAP.findPath(W.map, n.x, n.y, node.x, node.y);
+      if (!path) continue;
+      const basic = BASIC_HERB_WEIGHTS.some(b => b.id === node.materialId);
+      if (basic && path.some(([x, y]) => MAP.isOutsideWall(W.map, x + .5, y + .5) && !MAP.isInSafeBelt(x + .5, y + .5))) continue;
+      return node;
+    }
+    return null;
   }
 
   AI.ACTS.gatherWildResource = {
@@ -322,7 +334,7 @@
       // Safe, easy economic role: highest priority for beginner/low-rank disciples
       const e = p => HC.eff(n, p);
       const herbInt = e('interests.herbs') + e('interests.labor');
-      const isLowRank = n.rank <= 2;
+      const isLowRank = CULT.worldRank(n) <= 1;
       S.add('ชอบงานเก็บของป่าและสมุนไพร', (herbInt - 80) / 60);
       S.add('ต้องการสะสมแต้มคุณูปการ', 0.6);
       if (isLowRank) S.add('งานปลอดภัยสำหรับศิษย์ใหม่', 1.4);
@@ -367,7 +379,7 @@
       // Post-harvest choice: Retain for personal crafting or Donate to sect
       // Members who have alchemy recipes and need medicine keep ingredients in personal bag
       let shouldKeep = false;
-      const knownPersonalRecipes = (n.inv && n.inv.recipes) || [];
+      const knownPersonalRecipes = Array.from(new Set([...(n.inv?.recipes || []), ...(n.recipes || [])]));
       if (knownPersonalRecipes.length > 0 && n.h.skills.ALCHEMY >= 20) {
         // Check if any personal recipe uses this material
         for (const rid of knownPersonalRecipes) {

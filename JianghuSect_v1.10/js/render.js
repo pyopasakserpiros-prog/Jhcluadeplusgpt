@@ -687,7 +687,7 @@
       ctx.ellipse(0, 4, 7, 2.8, 0, 0, 7);
       ctx.fill();
 
-      if (rn.category === 'HERB') {
+      if (rn.category === 'HERB' || rn.category === 'BASIC_HERB' || rn.category === 'OTHER_HERB') {
         ctx.fillStyle = '#3e8e41';
         ctx.beginPath();
         ctx.ellipse(-3, 1, 4, 2.2, -0.4, 0, 7);

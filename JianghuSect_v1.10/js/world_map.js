@@ -409,7 +409,8 @@
     const w = M.wall;
     return x < w.x0 || x > w.x1 || y < w.y0 || y > w.y1;
   };
-  MAP.SAFE_BELT = Object.freeze({ x0: 80, x1: 156, y0: 134, y1: 156 });
+  // Include the gate threshold and approach so safe trips have no unprotected gap.
+  MAP.SAFE_BELT = Object.freeze({ x0: 80, x1: 156, y0: 132, y1: 156 });
   MAP.isInSafeBelt = (x, y) => {
     const sb = MAP.SAFE_BELT;
     return x >= sb.x0 && x <= sb.x1 && y >= sb.y0 && y <= sb.y1;

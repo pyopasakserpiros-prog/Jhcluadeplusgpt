@@ -116,7 +116,7 @@
         id: 'f2_abandoned_mine', nameTh: 'เหมืองแร่ร้างใต้ผา', biome: 'mountain',
         pools: [
           { id: 'f2_mine_crystal_vein', nameTh: 'สายแร่ผลึกวิญญาณ', skill: 'mining', diff: 42, ore: ['MAT_ORE_COLD_STEEL_2', 'MAT_ORE_JADE_SLATE_2'], stones: 80 },
-          { id: 'f2_mine_poison_mist', nameTh: 'หมอกพิษในปล่องเหมือง', skill: 'alchemy', diff: 40, pill: 'P:BASIC_HP2', stones: 85 }
+          { id: 'f2_mine_poison_mist', nameTh: 'หมอกพิษในปล่องเหมือง', skill: 'ALCHEMY', diff: 40, pill: 'P:BASIC_HP2', stones: 85 }
         ]
       },
       {
@@ -169,7 +169,7 @@
         id: 'f4_primordial_fountain', nameTh: 'ตาน้ำพุปฐมธาตุ', biome: 'water',
         pools: [
           { id: 'f4_fountain_essence', nameTh: 'หยาดน้ำอมฤตปฐมกาล', skill: 'herbalism', diff: 85, herbs: ['MAT_HERB_DRAGON_GRASS_4'], stones: 420, spring: true },
-          { id: 'f4_fountain_cleansing', nameTh: 'ชำระล้างเส้นลมปราณเก้าทิศ', skill: 'alchemy', diff: 88, spring: true, stones: 450, insight: true }
+          { id: 'f4_fountain_cleansing', nameTh: 'ชำระล้างเส้นลมปราณเก้าทิศ', skill: 'ALCHEMY', diff: 88, spring: true, stones: 450, insight: true }
         ]
       }
     ]

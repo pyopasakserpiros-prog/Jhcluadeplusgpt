@@ -151,25 +151,24 @@
       if (!cands.length) return null;
       species = W.rng.pick(cands);
     }
-    let x = W.rng.int(z.x0, z.x1), y = W.rng.int(z.y0, z.y1);
-    if (W.map && MAP.blocked(W.map, x, y)) {
-      const free = MAP.nearestFree(W.map, x, y);
-      if (free && isOutsideWall(W.map, free.x, free.y)) { x = free.x; y = free.y; }
-    }
-
-    const id = 'wild_' + (++W.wildlife.seq);
     const isLegend = !!(pool && pool.legendary) || !!z.legendary || species.tier >= 6 || String(species.id).startsWith('KING_');
     if (isLegend && active.some(b => b.legendary)) return null;
     const isAggressive = (z.peaceful || species.tier <= 2) ? false : ((species.aggro || 60) >= 70);
-
-    // ป้องกันสัตว์ดุร้าย/ระดับสูงเกิดในแนวเก็บสมุนไพรปลอดภัยหน้าประตูสำนัก
-    if ((isAggressive || species.tier >= 3) && MAP.isInSafeBelt && MAP.isInSafeBelt(x, y)) {
-      if (zoneId === 'meadow') {
-        x = W.rng.int(z.x0, Math.min(z.x1, MAP.SAFE_BELT.x0 - 2));
-      } else if (zoneId === 'ridge') {
-        x = W.rng.int(Math.max(z.x0, MAP.SAFE_BELT.x1 + 2), z.x1);
+    const legal = (x, y) => isOutsideWall(W.map, x, y) && !MAP.blocked(W.map, x, y) &&
+      !((isAggressive || species.tier >= 3) && MAP.isInSafeBelt && MAP.isInSafeBelt(x + .5, y + .5));
+    let x, y, placed = false;
+    for (let attempt = 0; attempt < 24; attempt++) {
+      x = W.rng.int(z.x0, z.x1); y = W.rng.int(z.y0, z.y1);
+      if (legal(x, y)) { placed = true; break; }
+    }
+    // Deterministic bounded fallback remains within the same habitat.
+    if (!placed) {
+      for (let py = z.y0; py <= z.y1 && !placed; py++) for (let px = z.x0; px <= z.x1; px++) {
+        if (legal(px, py)) { x = px; y = py; placed = true; break; }
       }
     }
+    if (!placed) return null;
+    const id = 'wild_' + (++W.wildlife.seq);
 
     const b = {
       id,

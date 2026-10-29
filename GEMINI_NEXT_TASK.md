@@ -1,3 +1,15 @@
+# Current status — outside-rank/resources patch completed and audited
+
+The implementation assignment below is **historical and completed**. Do not repeat it or create a new content expansion from it.
+
+Read [HANDOFF.md](HANDOFF.md) and [the bug-audit report](JianghuSect_v1.10/docs/BUG_AUDIT_2026_10_29.md) for the current state. [NEXT_PATCH_GAMEPLAY_FINDINGS.md](docs/NEXT_PATCH_GAMEPLAY_FINDINGS.md) contains proposals to discuss for the next update; it is not an automatic implementation order. Wait for the user's next selected task.
+
+Use the existing main-1 workspace; preserve local edits, main and human_core.js. Avoid repeated clones, forced resets, unnecessary synchronization and timer scripts.
+
+---
+
+## Historical assignment
+
 # Gemini 2.8 — เริ่มงานแพตช์นอกสำนัก แรงค์กลาง และทรัพยากรนอกกำแพง
 
 **ผู้ใช้อนุมัติให้ลงมือพัฒนางานนี้แล้ว** อ่าน [พรอมต์ภาษาอังกฤษฉบับเต็ม](docs/GEMINI_OUTSIDE_RANK_RESOURCES_PROMPT.md) แล้วทำต่อจนทดสอบและส่งขึ้น `main-1` ได้ ไม่หยุดเพียงเสนอแผนหรือรอพรอมต์เพิ่ม

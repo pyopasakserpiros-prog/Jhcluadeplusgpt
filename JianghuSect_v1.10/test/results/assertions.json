@@ -1,6 +1,6 @@
 {
   "date": "2026-10-29",
-  "node": "v26.3.1",
+  "node": "v24.19.0",
   "results": [
     {
       "test": "martial_retraining",
@@ -166,9 +166,9 @@
     },
     {
       "test": "skill_visual_browser",
-      "status": "FAIL",
-      "exitCode": 1,
-      "output": "node:internal/modules/cjs/loader:1522\n  throw err;\n  ^\n\nError: Cannot find module 'playwright'\nRequire stack:\n- /data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/skill_visual_browser.js\n    at Module._resolveFilename (node:internal/modules/cjs/loader:1519:15)\n    at wrapResolveFilename (node:internal/modules/cjs/loader:1073:27)\n    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1097:10)\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1124:12)\n    at Module._load (node:internal/modules/cjs/loader:1296:5)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.require (node:internal/modules/cjs/loader:1619:12)\n    at require (node:internal/modules/helpers:191:16)\n    at Object.<anonymous> (/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/skill_visual_browser.js:3:18)\n    at Module._compile (node:internal/modules/cjs/loader:1873:14) {\n  code: 'MODULE_NOT_FOUND',\n  requireStack: [\n    '/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/skill_visual_browser.js'\n  ]\n}\n\nNode.js v26.3.1"
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS browser skill visuals: two shared styles, pause, expiry, no replay, load baseline and 24-effect cap"
     },
     {
       "test": "cave_pools",
@@ -214,21 +214,21 @@
     },
     {
       "test": "browser_mobile_perf",
-      "status": "FAIL",
-      "exitCode": 1,
-      "output": "node:internal/modules/cjs/loader:1522\n  throw err;\n  ^\n\nError: Cannot find module 'playwright'\nRequire stack:\n- /data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/browser_mobile_perf.js\n    at Module._resolveFilename (node:internal/modules/cjs/loader:1519:15)\n    at wrapResolveFilename (node:internal/modules/cjs/loader:1073:27)\n    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1097:10)\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1124:12)\n    at Module._load (node:internal/modules/cjs/loader:1296:5)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.require (node:internal/modules/cjs/loader:1619:12)\n    at require (node:internal/modules/helpers:191:16)\n    at Object.<anonymous> (/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/browser_mobile_perf.js:22:22)\n    at Module._compile (node:internal/modules/cjs/loader:1873:14) {\n  code: 'MODULE_NOT_FOUND',\n  requireStack: [\n    '/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/browser_mobile_perf.js'\n  ]\n}\n\nNode.js v26.3.1"
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS browser_mobile_perf: 360px/412px/1280px viewports, gestures, 24 panel tabs, save/load, 0x-48x speeds, 80-NPC stress (1.057 ms/tick, 236.6x cap)"
     },
     {
       "test": "input_cancellation",
-      "status": "FAIL",
-      "exitCode": 1,
-      "output": "node:internal/modules/cjs/loader:1522\n  throw err;\n  ^\n\nError: Cannot find module 'playwright'\nRequire stack:\n- /data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/input_cancellation.js\n    at Module._resolveFilename (node:internal/modules/cjs/loader:1519:15)\n    at wrapResolveFilename (node:internal/modules/cjs/loader:1073:27)\n    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1097:10)\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1124:12)\n    at Module._load (node:internal/modules/cjs/loader:1296:5)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.require (node:internal/modules/cjs/loader:1619:12)\n    at require (node:internal/modules/helpers:191:16)\n    at Object.<anonymous> (/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/input_cancellation.js:5:22)\n    at Module._compile (node:internal/modules/cjs/loader:1873:14) {\n  code: 'MODULE_NOT_FOUND',\n  requireStack: [\n    '/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/input_cancellation.js'\n  ]\n}\n\nNode.js v26.3.1"
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS input cancellation: selection/follow preserved, ordinary tap works, minimap drag stops"
     },
     {
       "test": "startup_ui",
-      "status": "FAIL",
-      "exitCode": 1,
-      "output": "node:internal/modules/cjs/loader:1522\n  throw err;\n  ^\n\nError: Cannot find module 'playwright'\nRequire stack:\n- /data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/startup_ui.js\n    at Module._resolveFilename (node:internal/modules/cjs/loader:1519:15)\n    at wrapResolveFilename (node:internal/modules/cjs/loader:1073:27)\n    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1097:10)\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1124:12)\n    at Module._load (node:internal/modules/cjs/loader:1296:5)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.require (node:internal/modules/cjs/loader:1619:12)\n    at require (node:internal/modules/helpers:191:16)\n    at Object.<anonymous> (/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/startup_ui.js:5:22)\n    at Module._compile (node:internal/modules/cjs/loader:1873:14) {\n  code: 'MODULE_NOT_FOUND',\n  requireStack: [\n    '/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/startup_ui.js'\n  ]\n}\n\nNode.js v26.3.1"
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS startup load menu exposes only actions available without a world\nPASS cancelling startup load restores the same selectable candidates\nPASS gameplay navigation before loading returns safely to startup\nPASS loading a saved slot enters the world and retains the normal game menu\nPASS a corrupt saved slot remains recoverable\nPASS a failed file import can be retried with a valid save\nPASS a successful import dismisses an open startup overlay"
     },
     {
       "test": "demon_heartsoul_paths",
@@ -276,7 +276,7 @@
       "test": "wild_resources",
       "status": "PASS",
       "exitCode": 0,
-      "output": "--- Testing Finite Outdoor Resource Gathering & Medicine Economy ---\nPASS active node cap 48 respected\nPASS nodes placed strictly outside wall and herbs in safe belt vicinity\nDistribution over 1500 nodes: BasicHerb=70.4%, Ore=11.7%\nPASS resource categories and basic herb weights verified\nPASS claim leasing, mutual exclusion, and robust release on interruption\nPASS finite harvesting directly into n.inv.mats with 0 CP minted\nPASS node exhaustion removal\nPASS SECT.donateMat material deduction, sect stock addition, and CP reward\nPASS medicine production and welfare economy integration\nPASS save/load serialization preserves wildResources\nALL Finite Outdoor Resource Gathering & Medicine Economy tests PASSED."
+      "output": "--- Testing Finite Outdoor Resource Gathering & Medicine Economy ---\nPASS active node cap 48 respected\nPASS nodes placed strictly outside wall and herbs in safe belt vicinity\nDistribution over 1500 nodes: BasicHerb=70.4%, Ore=12.0%\nPASS resource categories and basic herb weights verified\nPASS claim leasing, mutual exclusion, and robust release on interruption\nPASS finite harvesting directly into n.inv.mats with 0 CP minted\nPASS node exhaustion removal\nPASS SECT.donateMat material deduction, sect stock addition, and CP reward\nPASS donated herbs -> actual brewing -> shop purchase -> healing and unit consumption\nPASS save/load serialization preserves wildResources\nALL Finite Outdoor Resource Gathering & Medicine Economy tests PASSED."
     },
     {
       "test": "wildlife_batches",
@@ -285,9 +285,21 @@
       "output": "--- Testing Bounded Wildlife Batches & Safe Belt Isolation ---\nPASS initial batch refill spawned 1 beasts (within 1..3 bounds)\nPASS hard cap 12 respected over multiple ticks (count: 10)\nPASS refills distributed across least-populated exterior zones\nPASS aggressive and tier >= 3 beasts excluded from spawning in safe belt\nPASS aggressive beasts blocked from initiating combat inside safe belt\nPASS aggressive beasts wander and aggro boundary excludes safe belt\nPASS legendary cap <= 1 strictly preserved\nALL Bounded Wildlife Batches & Safe Belt Isolation tests PASSED."
     },
     {
+      "test": "outside_audit",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS safe gathering remains reachable through the two tiles just outside the gate\nPASS basic herb job refuses an unsafe destination even when it is the only node\nPASS legendary spawn cannot bypass safe-belt exclusion\nPASS resource placement rejects isolated passable islands\nPASS learned recipes outside the scroll bag can motivate retaining gathered herbs\nPASS alchemy fortune trial uses learned ALCHEMY proficiency\nPASS invalid donation quantities cannot consume stock or mint contribution points\nPASS failed movement releases the resource lease immediately\nPASS beginner gathering preference uses cultivation rank rather than sect office rank\nPASS uncollected dangerous nodes cannot fill the slots needed for safe basic herb supply\nPASS a real gathering action settles exactly once across a mid-action save/load"
+    },
+    {
+      "test": "outside_visual_browser",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "PASS real Canvas resource rendering: both herb categories have leaves and material-specific petals"
+    },
+    {
       "test": "syntax",
       "status": "PASS",
-      "files": 109,
+      "files": 112,
       "failures": []
     }
   ]

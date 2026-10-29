@@ -1,6 +1,14 @@
 # JIANGHU SECT — AUTONOMOUS ECONOMY & FACILITY EXPANSION HANDOFF
 
-## Current handoff — v1.10.13 Outside Rank, Resources & Wildlife Refill / main-1 (2026-10-29)
+## Current handoff — Codex bug audit of v1.10.13 / main-1 (2026-10-29)
+
+The outside-rank/resources implementation task is complete. Read [the audit report](JianghuSect_v1.10/docs/BUG_AUDIT_2026_10_29.md) for fixed defects, verification and limitations. Targeted regressions are in `test/outside_audit.js` and `test/outside_visual_browser.js`; the native observer accepts `days seed output.json` in `test/long_ecology_rank_simulation.js`.
+
+The 360-day run observed ongoing safe harvesting, actual medicine production/purchases/consumption, fortune and realm departures, and bounded wildlife. It observed no private ingredient retentions and no rank-2/3/4 departures naturally; do not describe controlled tests as natural adoption. See the linked metrics JSON.
+
+[Next-patch gameplay findings](docs/NEXT_PATCH_GAMEPLAY_FINDINGS.md) record design and balance concerns separately. They are a planning backlog, not authorization to automatically start a new feature patch. Preserve main, the stage-only world-rank mapping, retraining costs, finite inventory, RNG determinism and the HC byte lock.
+
+## Previous handoff — v1.10.13 Outside Rank, Resources & Wildlife Refill / main-1 (2026-10-29)
 
 Read [`JianghuSect_v1.10/docs/OUTSIDE_RANK_RESOURCES.md`](JianghuSect_v1.10/docs/OUTSIDE_RANK_RESOURCES.md) for complete architecture, formulas, algorithms, test results, and 90-day simulation metrics. Preserve `main` and the byte-locked HC source (`155:2f9c9dd7`).
 
