@@ -5163,10 +5163,10 @@
             1
           ],
           [
-            "relicmat",
+            "ore",
             1.5,
-            "เศษอาวุธเทพชิ้นเล็ก",
-            0,
+            "เศษโลหะจากสนามรบ",
+            2,
             0,
             1
           ],
@@ -6909,7 +6909,7 @@
     const k = e[0], p1 = e[3], p2 = e[4]; let txt = null;
     const per = alive.reduce((s, m) => Math.max(s, E(m, 'intellect.perceptiveness')), 0);
     if (k === 'stones') { const v = Math.round((p1 + rng.next() * (p2 - p1)) * mult); out.stones += v; txt = e[2] + ' (' + v + ' ศิลา)'; }
-    else if (k === 'herb' || k === 'ore' || k === 'beast' || k === 'formation') { const cat = { herb: 'HERB', ore: 'ORE', beast: 'BEAST_PART', formation: 'FORMATION_PART' }[k]; const m = matOf(cat, p1, rng, Math.max(1, p1 - 2)) || matOf(cat, 7, rng); if (m) { const q = Math.max(1, Math.round((1 + (per - 40) / 45 + rng.next() * 1.4) * mult)); out.mats[m.id] = (out.mats[m.id] || 0) + q; txt = e[2] + '「' + m.nameTh + '」×' + q; } }
+    else if (k === 'herb' || k === 'ore' || k === 'beast' || k === 'formation') { const cat = { herb: 'HERB', ore: 'ORE', beast: 'BEAST_PART', formation: 'FORMATION_PART' }[k]; const themed = site.id === 'snow' && cat === 'HERB' ? JD.ITEMS.materials.filter(m => ['MAT_HERB_DEW_GRASS_1', 'MAT_HERB_JADE_LOTUS_2', 'MAT_HERB_MIST_ORCHID_2', 'MAT_HERB_SNOW_LOTUS_5'].includes(m.id) && m.tier <= p1 && m.tier >= Math.max(1, p1 - 2)) : null; const m = themed && themed.length ? rng.weighted(themed, m => 1 / (m.tier * m.tier)) : matOf(cat, p1, rng, Math.max(1, p1 - 2)); if (m) { const q = Math.max(1, Math.round((1 + (per - 40) / 45 + rng.next() * 1.4) * mult)); out.mats[m.id] = (out.mats[m.id] || 0) + q; txt = 'พบ「' + m.nameTh + '」×' + q; } }
     else if (k === 'relicmat') { const m = matOf('HERITAGE_RELIC', 7, rng); if (m) { out.mats[m.id] = (out.mats[m.id] || 0) + 1; txt = e[2] + '「' + m.nameTh + '」'; } }
     else if (k === 'pill') { const ps = ECO.recipesFor(W, ['ALCHEMY']).filter(r => r.outType === 'PILL' && r.tier <= p1 && r.tier >= Math.max(1, p1 - 2)); if (ps.length) { const r = rng.pick(ps); const key = r.outItemId || 'P:' + r.id; out.pills[key] = (out.pills[key] || 0) + 1 + (rng.chance(0.3) ? 1 : 0); txt = e[2] + '「' + r.outNameTh + '」'; } }
     else if (k === 'gear') { const rs = ECO.recipesFor(W, ['FORGING']).filter(r => r.outType === 'EQUIPMENT' && r.tier <= p1 && r.tier >= Math.max(1, p1 - 2)); if (rs.length) { const r = rng.pick(rs); const gear = ECO.mintGear(r, 1.05 + rng.next() * 0.35); gear.nameTh = (gear.nameTh || 'ศาสตรา') + ' (' + site.short || site.nameTh + ')'; gear.q = 1.2; out.gear.push(gear); txt = e[2] + '「' + gear.nameTh + '」'; } }

@@ -491,7 +491,7 @@
     if (n.dead || !n.inv || (n.act && n.act.id === 'fight')) return;
     if (!(n.inv.craftedPills && n.inv.craftedPills.length) && !(n.inv.pills && Object.keys(n.inv.pills).length)) return;
     const s = n.h.state, R = JD.CP.RECOVERY, hm = CULT.hpMax(n);
-    const owned = s.hp < hm * 0.5 && pickCrafted(n, 'healHealth') || n.cult && n.cult.toxic > 40 && pickCrafted(n, 'clearToxic') || s.heartDemon > 45 && pickCrafted(n, 'clearHeartDemon') || s.energy < 18 && pickCrafted(n, 'energyRestore');
+    const owned = n.inj && n.inj.length && pickCrafted(n, 'healInjury') || s.hp < hm * 0.5 && pickCrafted(n, 'healHealth') || n.cult && n.cult.toxic > 40 && pickCrafted(n, 'clearToxic') || s.heartDemon > 45 && pickCrafted(n, 'clearHeartDemon') || s.energy < 18 && pickCrafted(n, 'energyRestore');
     if (owned) return CPE.consumeCrafted(W, n, owned);
     if (!n.inv.pills || !Object.keys(n.inv.pills).length) return;
     let k;
@@ -704,7 +704,7 @@
     if ((n.inv.craftedPills || []).length >= 3) return null;
     const known = [...(n.inv.recipes || []), ...(n.recipes || [])];
     const canBasicBrew = (n.h.skills.ALCHEMY || 0) >= 10 || HC.eff(n, 'interests.herbs') >= 35 || n.post === 'alchemy' || (n.inj && n.inj.length > 0) || n.h.state.hp < CULT.hpMax(n) * 0.75;
-    const basicIds = canBasicBrew ? ['BASIC_HP', 'BASIC_QI', 'BASIC_VIGOR', 'BASIC_WOUND', ...((n.h.skills.ALCHEMY || 0) >= 30 ? ['BASIC_HP2', 'BASIC_QI2'] : [])] : [];
+    const basicIds = canBasicBrew ? ['BASIC_HP', 'BASIC_QI', 'BASIC_VIGOR', 'BASIC_WOUND', 'BASIC_DETOX', 'BASIC_CALM', ...((n.h.skills.ALCHEMY || 0) >= 30 ? ['BASIC_HP2', 'BASIC_QI2'] : [])] : [];
     const ids = Array.from(new Set([...known, ...basicIds]));
     if (!ids.length) return null;
     let best = null;
@@ -712,7 +712,7 @@
       const r = ECO.recipeById[id]; if (!r || r.craft !== 'ALCHEMY' || r.outType !== 'PILL') continue;
       const quote = ECO.personalCraftQuote(W, n, r); if (!quote || !quote.owned.length) continue;
       const key = r.outItemId || 'P:' + r.id, info = ECO.pillInfo(key); if (!info) continue;
-      const need = (n.h.state.hp < CULT.hpMax(n) * 0.75 && info.effect.healHealth) || ((n.inj && n.inj.length > 0) && (info.effect.healHealth || info.effect.healWound)) || (n.cult.toxic > 25 && info.effect.clearToxic) || (n.h.state.heartDemon > 30 && info.effect.clearHeartDemon);
+      const need = (n.h.state.hp < CULT.hpMax(n) * 0.75 && info.effect.healHealth) || ((n.inj && n.inj.length > 0) && info.effect.healInjury) || (n.cult.toxic > 25 && info.effect.clearToxic) || (n.h.state.heartDemon > 30 && info.effect.clearHeartDemon);
       const intent = need ? 'keep' : 'donate';
       const value = Math.min(CPE.reward(W, key, r.yield || 1), quote.cost + quote.ownValue * 1.2);
       if (!need && value <= quote.cost) continue;
