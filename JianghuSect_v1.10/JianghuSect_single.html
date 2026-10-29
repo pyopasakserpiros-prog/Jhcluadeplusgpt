@@ -17372,6 +17372,12 @@ D.subPreferences={STAR_ARCHER:{aff:{SWORD:.2,WIND:.5},p:{'physiology.dexterity':
     if (e.toxicity && c) c.toxic = Math.min(100, c.toxic + e.toxicity);
     if (e.clearHeartDemon) s.heartDemon = Math.max(0, s.heartDemon - e.clearHeartDemon);
     if (e.clearToxic && c) c.toxic = Math.max(0, c.toxic - e.clearToxic);
+    if (e.clearPoison && npc.sx && npc.sx.length) {
+      const ST = g.STATS || (typeof require === 'function' ? require('./stats.js') : null);
+      if (ST && ST.clearStatus) ST.clearStatus(npc, x => x.k === 'poison');
+      else npc.sx = npc.sx.filter(x => x.k !== 'poison');
+      msgs.push('ถอนพิษ');
+    }
     if (e.lifeBonus && c) { c.lifeBonus += e.lifeBonus; CULT.refreshLifespan(npc); }
     if (e.lifespanBonus && c) { c.lifeBonus += e.lifespanBonus; CULT.refreshLifespan(npc); msgs.push('อายุขัย +' + e.lifespanBonus); }
     if (e.insight) npc.insightT = 360;
@@ -20331,8 +20337,16 @@ D.subPreferences={STAR_ARCHER:{aff:{SWORD:.2,WIND:.5},p:{'physiology.dexterity':
     { id: 'plains', nameTh: 'ทุ่งราบเมฆา', danger: 1, terrain: 'plains', days: 3, beastMax: 2 },
     { id: 'mountain', nameTh: 'ทิวเขาศิลาคราม', danger: 2, terrain: 'mountain', days: 5, beastMax: 4 },
     { id: 'desert', nameTh: 'ทะเลทรายเพลิงอัสดง', danger: 3, terrain: 'desert', days: 8, beastMax: 5 },
+    { id: 'water', nameTh: 'ลุ่มน้ำสาบมังกรคราม', danger: 2, terrain: 'water', days: 4, beastMax: 6 },
     { id: 'ruins', nameTh: 'ซากนครโบราณ', danger: 4, terrain: 'mountain', days: 10, beastMax: 6 }
   ];
+  X.beastPool = reg => {
+    if (!reg) return [];
+    if (reg.terrain === 'water' || reg.id === 'water') {
+      return JD.BEASTS.species.filter(b => (b.terrain === 'water' || b.archetype === 'AQUATIC') && b.tier <= reg.beastMax && b.tier >= Math.max(1, reg.beastMax - 3));
+    }
+    return JD.BEASTS.species.filter(b => (reg.beasts && reg.beasts.length ? reg.beasts.includes(b.id) : !b.sourcePack) && b.terrain !== 'water' && b.archetype !== 'AQUATIC' && b.tier <= reg.beastMax && b.tier >= Math.max(1, reg.beastMax - 3));
+  };
   X.MISSIONS = {
     fortune: { nameTh: 'ผจญโชควาสนา', icon: '🍀' },
     hunt: { nameTh: 'ล่าสัตว์อสูร', icon: '🐺' },
@@ -20471,7 +20485,7 @@ D.subPreferences={STAR_ARCHER:{aff:{SWORD:.2,WIND:.5},p:{'physiology.dexterity':
         // เจอสัตว์อสูร: ใช้ตารางสัตว์ในข้อมูลเก่า เลือกระดับตามภูมิภาค
         const pwAll = alive.reduce((s, m) => s + CULT.power(m), 0) * (0.85 + rng.next() * 0.3);
         const bold = alive.reduce((s, m) => s + E(m, 'personality.courage'), 0) / alive.length;
-        let pool = JD.BEASTS.species.filter(b => (reg.beasts && reg.beasts.length ? reg.beasts.includes(b.id) : !b.sourcePack) && b.tier <= reg.beastMax && b.tier >= Math.max(1, reg.beastMax - 3));
+        let pool = X.beastPool(reg);
         if (ex.kind === 'hunt' || ex.kind === 'bounty') pool = pool.filter(b => b.cp <= pwAll * (0.6 + bold / 100 * 0.7));
         else pool = pool.filter(b => b.cp <= pwAll * 3);
         if (!pool.length) { ex.journal.push('เห็นร่องรอยสัตว์อสูรใหญ่เกินกำลัง จึงหลีกเลี่ยง'); continue; }
@@ -22488,16 +22502,38 @@ D.subPreferences={STAR_ARCHER:{aff:{SWORD:.2,WIND:.5},p:{'physiology.dexterity':
     if (e.energyRestore) { s.energy = Math.min(100, s.energy + e.energyRestore); r.msgs.push('คลายเหนื่อย'); } if (e.restRestore) s.rest = Math.min(100, s.rest + e.restRestore);
     return r;
   };
-  const consume = (W, n, key) => {
-    const q = (n.inv.pillQuality && n.inv.pillQuality[key]) || 1;
-    n.inv.pills[key]--;
-    if (n.inv.pills[key] <= 0) {
-      delete n.inv.pills[key];
-      if (n.inv.pillQuality) delete n.inv.pillQuality[key];
+  const isPillAllowed = (n, key) => {
+    const info = ECO.pillInfo(key);
+    if (!info) return false;
+    const p = info.effect && info.effect.compatiblePath;
+    return !p || (n.cult && n.cult.path === p);
+  };
+  const pickPill = (n, effectKey, fallbackList) => {
+    if (!n.inv || !n.inv.pills) return null;
+    if (fallbackList && Array.isArray(fallbackList)) {
+      const basic = fallbackList.find(k => (n.inv.pills[k] || 0) > 0 && isPillAllowed(n, k));
+      if (basic) return basic;
     }
+    for (const k of Object.keys(n.inv.pills)) {
+      if ((n.inv.pills[k] || 0) <= 0 || !isPillAllowed(n, k)) continue;
+      const info = ECO.pillInfo(k);
+      if (info && info.effect && info.effect[effectKey]) return k;
+    }
+    return null;
+  };
+  const consume = (W, n, key) => {
+    if (!n.inv || !n.inv.pills || (n.inv.pills[key] || 0) <= 0) return null;
+    const q = (n.inv.pillQuality && n.inv.pillQuality[key]) || 1;
     const res = ECO.applyQualityPill(W, n, key, q);
-    if (res && (W.t + (n.n || 0)) % 2 === 0) {
-      W.log('train', n.h.name.given + ' ใช้โอสถ「' + ECO.name(key) + '」เพื่อรักษาฟื้นฟูร่างกาย', [n.id]);
+    if (res) {
+      n.inv.pills[key]--;
+      if (n.inv.pills[key] <= 0) {
+        delete n.inv.pills[key];
+        if (n.inv.pillQuality) delete n.inv.pillQuality[key];
+      }
+      if ((W.t + (n.n || 0)) % 2 === 0) {
+        W.log('train', n.h.name.given + ' ใช้โอสถ「' + ECO.name(key) + '」เพื่อรักษาฟื้นฟูร่างกาย', [n.id]);
+      }
     }
     return res;
   };
@@ -22520,19 +22556,22 @@ D.subPreferences={STAR_ARCHER:{aff:{SWORD:.2,WIND:.5},p:{'physiology.dexterity':
     if (owned) return CPE.consumeCrafted(W, n, owned);
     if (!n.inv.pills || !Object.keys(n.inv.pills).length) return;
     let k;
-    if (n.inj && n.inj.length && (k = firstOf(n, R.wound))) return consume(W, n, k);
-    if (s.hp < hm * 0.5 && (k = firstOf(n, R.hp))) return consume(W, n, k);
-    if (s.heartDemon > (n.cult && n.cult.path === 'DEMON' ? 62 : 45) && (k = firstOf(n, R.calm))) return consume(W, n, k);
-    if (n.cult && n.cult.toxic > (n.cult.path === 'DEMON' ? 56 : 40) && (k = firstOf(n, R.detox))) return consume(W, n, k);
-    if (s.energy < 18 && (k = firstOf(n, R.vigor))) return consume(W, n, k);
+    if (n.inj && n.inj.length && (k = pickPill(n, 'healInjury', R.wound))) return consume(W, n, k);
+    if (s.hp < hm * 0.5 && (k = pickPill(n, 'healHealth', R.hp))) return consume(W, n, k);
+    if (s.heartDemon > (n.cult && n.cult.path === 'DEMON' ? 62 : 45) && (k = pickPill(n, 'clearHeartDemon', R.calm))) return consume(W, n, k);
+    if (n.cult && n.cult.toxic > (n.cult.path === 'DEMON' ? 56 : 40) && (k = pickPill(n, 'clearToxic', R.detox))) return consume(W, n, k);
+    if (s.energy < 18 && (k = pickPill(n, 'energyRestore', R.vigor))) return consume(W, n, k);
   };
   CPE.fightUse = (W, n, ctx) => {
     if (!n.inv || (ctx.pillAt || 0) > W.t) return false; const s = n.h.state, R = JD.CP.RECOVERY; let k;
     const owned = s.hp < CULT.hpMax(n) * 0.38 && pickCrafted(n, 'healHealth') || n.cult && s.qi != null && s.qi < CULT.qiMax(n) * 0.2 && pickCrafted(n, 'qiRestore');
     if (owned && CPE.consumeCrafted(W, n, owned)) { ctx.pillAt = W.t + 6; n.fx = {t:W.t,text:'💊'}; return true; }
     if (!n.inv.pills) return false;
-    if (s.hp < CULT.hpMax(n) * 0.38 && (k = firstOf(n, R.hp))) { ctx.pillAt = W.t + 6; consume(W, n, k); n.fx = { t: W.t, text: '💊' }; return true; }
-    if (n.cult && s.qi != null && s.qi < CULT.qiMax(n) * 0.2 && (k = firstOf(n, R.qi))) { ctx.pillAt = W.t + 6; consume(W, n, k); n.fx = { t: W.t, text: '💊' }; return true; }
+    if (n.sx && n.sx.some(x => x.k === 'poison') && (k = pickPill(n, 'clearPoison', null))) {
+      ctx.pillAt = W.t + 6; if (consume(W, n, k)) { n.fx = { t: W.t, text: '💊' }; return true; }
+    }
+    if (s.hp < CULT.hpMax(n) * 0.38 && (k = pickPill(n, 'healHealth', R.hp))) { ctx.pillAt = W.t + 6; if (consume(W, n, k)) { n.fx = { t: W.t, text: '💊' }; return true; } }
+    if (n.cult && s.qi != null && s.qi < CULT.qiMax(n) * 0.2 && (k = pickPill(n, 'qiRestore', R.qi))) { ctx.pillAt = W.t + 6; if (consume(W, n, k)) { n.fx = { t: W.t, text: '💊' }; return true; } }
     return false;
   };
   // Only the master, treasury elder, or an explicitly recorded acting officer
@@ -22760,10 +22799,20 @@ D.subPreferences={STAR_ARCHER:{aff:{SWORD:.2,WIND:.5},p:{'physiology.dexterity':
   };
   A.personalPillUse = {
     nameTh:'ใช้โอสถส่วนตัว',icon:'💊',color:'#7fd1b9',
-    can(n) { return !!(n.inv && (n.inv.craftedPills||[]).some(p=>p.intent==='keep' && ECO.pillInfo(p.key)?.effect.healHealth) && n.h.state.hp < CULT.hpMax(n)*0.8); },
+    can(n) {
+      if (!n.inv || n.h.state.hp >= CULT.hpMax(n) * 0.8) return false;
+      const hasCrafted = (n.inv.craftedPills || []).some(p => p.intent === 'keep' && p.qty > 0 && ECO.pillInfo(p.key)?.effect.healHealth);
+      if (hasCrafted) return true;
+      return !!pickPill(n, 'healHealth');
+    },
     score(n,W,S) { S.add('บาดเจ็บและมีโอสถส่วนตัว',2.4); },
     where(W,n) { return {pos:{x:n.x,y:n.y}}; },dur:()=>1,
-    done(n,W) { const list=n.inv.craftedPills||[], i=list.findIndex(p=>p.intent==='keep' && ECO.pillInfo(p.key)?.effect.healHealth); if(i<0)return; CPE.consumeCrafted(W,n,list[i]); }
+    done(n,W) {
+      const list = n.inv.craftedPills || [], i = list.findIndex(p => p.intent === 'keep' && p.qty > 0 && ECO.pillInfo(p.key)?.effect.healHealth);
+      if (i >= 0) return CPE.consumeCrafted(W, n, list[i]);
+      const k = pickPill(n, 'healHealth');
+      if (k) consume(W, n, k);
+    }
   };
   g.CPE = CPE;
   if (typeof module === 'object' && module.exports) module.exports = CPE;
@@ -22782,10 +22831,11 @@ D.subPreferences={STAR_ARCHER:{aff:{SWORD:.2,WIND:.5},p:{'physiology.dexterity':
   const BASIC_PILLS = new Set((JD.CP.BASIC || []).map(r => 'P:' + r.id));
   const TRADER_NAMES = {
     general: ['หลี่กวง', 'หานจื่อ', 'ซ่งเหอ', 'เฉินอวี้', 'หลัวชิง'],
-    medicine: ['หมอพเนจรอู๋', 'เซียนโอสถหลิน', 'เถ้าแก่ยาเจียง'],
-    caravan: ['หัวหน้าคาราวานกัว', 'พ่อค้าหยาง', 'ผู้คุมเกวียนจ้าว']
+    medicine: ['หมอพเนจรอู๋', 'เซียนโอสถหลิน', 'เถ้าแก่ยาเจียง', 'ผู้อาวุโสยาเร้นลับหวัง'],
+    caravan: ['หัวหน้าคาราวานกัว', 'พ่อค้าหยาง', 'ผู้คุมเกวียนจ้าว', 'นายวาณิชเจ็ดสมบัติเฉียน'],
+    rare: ['นายหน้าหอประมูลจิน', 'พ่อค้าสมบัติเร้นลับมู่', 'ยอดวาณิชแดนไกลไป๋']
   };
-  const TRADER_TYPES = ['general', 'medicine', 'caravan'];
+  const TRADER_TYPES = ['general', 'medicine', 'caravan', 'rare'];
 
   EXT.ensure = W => {
     if (!W.world) W.world = { sects: [], expeds: [], seq: 0, visitors: [] };
@@ -22799,9 +22849,9 @@ D.subPreferences={STAR_ARCHER:{aff:{SWORD:.2,WIND:.5},p:{'physiology.dexterity':
 
   EXT.isTradable = id => {
     if (id === 'grain' || id === 'meal') return true;
-    if (BASIC_PILLS.has(id)) return !!ECO.pillInfo(id);
+    if (ECO.isPill(id)) return !!ECO.pillInfo(id);
     const m = ECO.matById[id];
-    return !!m && !m.sourcePack && (m.tier || 1) <= 3;
+    return !!m;
   };
   EXT.activeVisitors = W => {
     const visitors = W && W.world && Array.isArray(W.world.visitors) ? W.world.visitors : [];
@@ -22820,8 +22870,8 @@ D.subPreferences={STAR_ARCHER:{aff:{SWORD:.2,WIND:.5},p:{'physiology.dexterity':
     return Math.max(1, Math.round(base * clamp(mult, 0.65, 1.2)));
   };
 
-  function pickMaterial(W, excluded) {
-    const pool = Object.values(ECO.matById).filter(m => EXT.isTradable(m.id) && !excluded.has(m.id));
+  function pickMaterial(W, excluded, maxTier) {
+    const pool = Object.values(ECO.matById).filter(m => EXT.isTradable(m.id) && !excluded.has(m.id) && (maxTier == null || (m.tier || 1) <= maxTier));
     return pool.length ? W.rng.pick(pool).id : null;
   }
   function addStock(W, stock, id, min, max) {
@@ -22838,31 +22888,60 @@ D.subPreferences={STAR_ARCHER:{aff:{SWORD:.2,WIND:.5},p:{'physiology.dexterity':
     });
     if (!used.has('grain')) { addStock(W, stock, 'grain', 12, 34); used.add('grain'); }
     if (W.rng.chance(0.42) && !used.has('meal')) { addStock(W, stock, 'meal', 6, 18); used.add('meal'); }
+    const maxT = subtype === 'rare' ? 6 : subtype === 'caravan' ? 4 : 3;
     while (used.size < 4) {
-      const id = pickMaterial(W, used); if (!id) break;
+      const id = pickMaterial(W, used, maxT); if (!id) break;
       addStock(W, stock, id, 2, 7); used.add(id);
     }
-    if (subtype === 'medicine' || W.rng.chance(0.35)) {
-      const pills = Array.from(BASIC_PILLS).filter(id => EXT.isTradable(id));
+    if (subtype === 'medicine' || subtype === 'rare' || W.rng.chance(0.35)) {
+      const pills = Object.keys(ECO.recipeById || {})
+        .map(rid => 'P:' + rid)
+        .filter(k => EXT.isTradable(k) && (subtype !== 'general' || BASIC_PILLS.has(k)));
       if (pills.length) { const id = W.rng.pick(pills); addStock(W, stock, id, 1, subtype === 'medicine' ? 4 : 2); }
     }
     return stock;
   }
-  function buildWants(W, stock) {
+  function buildWants(W, stock, subtype) {
     const wants = {}, used = new Set(Object.keys(stock));
-    // Traders seek common materials and remedies; avoid asking to buy the same key they carry.
-    const surplus = Object.keys(W.sect.stock || {}).filter(id => EXT.isTradable(id) && ECO.count(W, id) > EXT.reserveForSect(W, id) + 2 && !used.has(id));
-    surplus.sort((a, b) => ECO.count(W, b) - ECO.count(W, a));
-    surplus.slice(0, 3).forEach(id => { wants[id] = W.rng.int(2, 7); used.add(id); });
-    while (Object.keys(wants).length < 5) {
+    // Traders seek materials and remedies that the sect has in surplus above reserve floor
+    const surplus = Object.keys(W.sect.stock || {}).filter(id => {
+      if (!EXT.isTradable(id) || BASIC_PILLS.has(id) || used.has(id)) return false;
+      const count = ECO.count(W, id);
+      const res = EXT.reserveForSect(W, id);
+      if (count <= res + 1) return false;
+      if (subtype === 'general') {
+        const m = ECO.matById[id];
+        if (m && (m.tier || 1) > 3) return false;
+      }
+      return true;
+    });
+    surplus.sort((a, b) => (ECO.count(W, b) - EXT.reserveForSect(W, b)) - (ECO.count(W, a) - EXT.reserveForSect(W, a)));
+    surplus.slice(0, 3).forEach(id => {
+      const m = ECO.matById[id];
+      const tier = m ? m.tier || 1 : 2;
+      const maxWant = tier >= 5 ? 2 : tier >= 3 ? 4 : 7;
+      wants[id] = W.rng.int(1, maxWant);
+      used.add(id);
+    });
+    const targetWantsCount = subtype === 'rare' ? 4 : 5;
+    while (Object.keys(wants).length < targetWantsCount) {
       let id = null;
-      if (W.rng.chance(0.25)) {
-        const pills = Array.from(BASIC_PILLS).filter(k => EXT.isTradable(k) && !used.has(k));
+      if (subtype === 'medicine' || subtype === 'rare' || W.rng.chance(0.25)) {
+        const pills = Object.keys(ECO.recipeById || {})
+          .map(rid => 'P:' + rid)
+          .filter(k => EXT.isTradable(k) && !used.has(k) && (subtype !== 'general' || BASIC_PILLS.has(k)));
         if (pills.length) id = W.rng.pick(pills);
       }
-      if (!id) id = pickMaterial(W, used);
+      if (!id) {
+        const maxTier = subtype === 'rare' ? 7 : subtype === 'caravan' ? 5 : 3;
+        id = pickMaterial(W, used, maxTier);
+      }
       if (!id) break;
-      wants[id] = W.rng.int(2, 6); used.add(id);
+      const m = ECO.matById[id];
+      const tier = m ? m.tier || 1 : 2;
+      const maxWant = tier >= 5 ? 2 : tier >= 3 ? 4 : 6;
+      wants[id] = W.rng.int(1, maxWant);
+      used.add(id);
     }
     return wants;
   }
@@ -22873,15 +22952,16 @@ D.subPreferences={STAR_ARCHER:{aff:{SWORD:.2,WIND:.5},p:{'physiology.dexterity':
     const seq = ++stats.seq;
     const nameList = TRADER_NAMES[subtype] || TRADER_NAMES.general;
     const stock = options.stock && typeof options.stock === 'object' ? Object.assign({}, options.stock) : buildStock(W, subtype);
-    const wants = options.wants && typeof options.wants === 'object' ? Object.assign({}, options.wants) : buildWants(W, stock);
+    const wants = options.wants && typeof options.wants === 'object' ? Object.assign({}, options.wants) : buildWants(W, stock, subtype);
     Object.keys(stock).forEach(id => { if (!EXT.isTradable(id) || !Number.isSafeInteger(stock[id]) || stock[id] <= 0) delete stock[id]; });
     Object.keys(wants).forEach(id => { if (!EXT.isTradable(id) || !Number.isSafeInteger(wants[id]) || wants[id] <= 0 || stock[id] > 0) delete wants[id]; });
+    const defaultStones = subtype === 'rare' ? W.rng.int(1200, 3000) : subtype === 'caravan' ? W.rng.int(550, 1400) : W.rng.int(280, 850);
     const visitor = {
       id: options.id || ('trader_' + seq), kind: 'trader', subtype,
       nameTh: options.nameTh || W.rng.pick(nameList),
       arriveDay: W.day,
       untilDay: Number.isFinite(options.untilDay) ? options.untilDay : W.day + clamp(Math.round(options.stayDays || 2), 1, 4),
-      stones: Number.isFinite(options.stones) ? Math.max(0, Math.round(options.stones)) : W.rng.int(280, 900),
+      stones: Number.isFinite(options.stones) ? Math.max(0, Math.round(options.stones)) : defaultStones,
       stock, wants, sectTradeDay: null, sectBuyDone: false, tradeCount: 0
     };
     W.world.visitors.push(visitor);
@@ -22897,7 +22977,16 @@ D.subPreferences={STAR_ARCHER:{aff:{SWORD:.2,WIND:.5},p:{'physiology.dexterity':
     if (id === 'grain') base = Math.max(floor, pop * 14);
     else if (id === 'meal') base = Math.max(floor, pop * 2);
     else if (BASIC_PILLS.has(id)) base = Math.max(floor, Math.ceil(pop * 0.15));
-    else base = Math.max(floor, Math.floor((g.CPE ? g.CPE.target(W, id) : 8) * 0.6));
+    else if (ECO.isPill(id)) {
+      base = Math.max(floor, 2);
+    } else {
+      const isRecipeInput = (W.sect.knownRecipes || []).some(rid => {
+        const r = ECO.recipeById[rid];
+        return r && r.inputs && r.inputs.some(inp => inp.matId === id);
+      });
+      const extraReserve = isRecipeInput ? 4 : 0;
+      base = Math.max(floor + extraReserve, Math.floor((g.CPE ? g.CPE.target(W, id) : 8) * 0.6));
+    }
     return base;
   };
   function treasurySkill(W) {
@@ -23071,7 +23160,7 @@ D.subPreferences={STAR_ARCHER:{aff:{SWORD:.2,WIND:.5},p:{'physiology.dexterity':
     for (const v of EXT.activeVisitors(W)) {
       if (onlyVisitorId && v.id !== onlyVisitorId) continue;
       for (const id of Object.keys(v.stock || {})) {
-        if (!BASIC_PILLS.has(id) || !(v.stock[id] > 0) || ((n.inv.pills || {})[id] || 0) > 0) continue;
+        if (!EXT.isTradable(id) || !ECO.isPill(id) || !(v.stock[id] > 0) || ((n.inv.pills || {})[id] || 0) > 0) continue;
         const price = EXT.quotePrice(W, id, 'member-buy');
         let need = pillNeed(n, id), reason = 'ต้องการโอสถรักษา/ฟื้นฟู';
         if (!need && n.rank >= 1 && n.cult && (n.inv.stones || 0) >= price * 3) {
@@ -23092,7 +23181,7 @@ D.subPreferences={STAR_ARCHER:{aff:{SWORD:.2,WIND:.5},p:{'physiology.dexterity':
       }
       for (const id of Object.keys(n.inv.pills || {})) {
         const held = n.inv.pills[id];
-        if (!BASIC_PILLS.has(id) || !Number.isSafeInteger(held) || held < 2 || !(v.wants && v.wants[id] > 0) || pillNeed(n, id) > 0) continue;
+        if (!EXT.isTradable(id) || !ECO.isPill(id) || !Number.isSafeInteger(held) || held < 2 || !(v.wants && v.wants[id] > 0) || pillNeed(n, id) > 0) continue;
         const price = EXT.quotePrice(W, id, 'member-sell');
         if (!price || v.stones < price) continue;
         const priority = 0.35 + E(n, 'interests.trade') / 260 + E(n, 'values.wealthResource') / 420 + (n.h.skills.trading || 0) / 320;
@@ -23110,7 +23199,7 @@ D.subPreferences={STAR_ARCHER:{aff:{SWORD:.2,WIND:.5},p:{'physiology.dexterity':
     if (!fresh || fresh.side !== quote.side || fresh.itemId !== quote.itemId || fresh.price !== quote.price || fresh.qty !== quote.qty) return false;
     const id = fresh.itemId, total = fresh.total;
     if (fresh.side === 'buy') {
-      if (!(v.stock[id] > 0) || (n.inv.stones || 0) < total || !BASIC_PILLS.has(id)) return false;
+      if (!(v.stock[id] > 0) || (n.inv.stones || 0) < total || !EXT.isTradable(id)) return false;
       v.stock[id]--; if (!v.stock[id]) delete v.stock[id];
       n.inv.stones -= total; v.stones += total;
       n.inv.pills = n.inv.pills || {}; n.inv.pills[id] = (n.inv.pills[id] || 0) + 1;
@@ -23122,7 +23211,7 @@ D.subPreferences={STAR_ARCHER:{aff:{SWORD:.2,WIND:.5},p:{'physiology.dexterity':
       v.stones -= total; n.inv.stones = (n.inv.stones || 0) + total;
       record(W, v, 'member-sell', id, 1, fresh.price, total, n);
     } else if (fresh.side === 'sell-pill') {
-      if (!BASIC_PILLS.has(id) || !(n.inv.pills && n.inv.pills[id] >= 2) || pillNeed(n, id) > 0 || !(v.wants && v.wants[id] > 0) || v.stones < total) return false;
+      if (!EXT.isTradable(id) || !ECO.isPill(id) || !(n.inv.pills && n.inv.pills[id] >= 2) || pillNeed(n, id) > 0 || !(v.wants && v.wants[id] > 0) || v.stones < total) return false;
       n.inv.pills[id]--; if (!n.inv.pills[id]) delete n.inv.pills[id];
       v.wants[id]--; if (!v.wants[id]) delete v.wants[id];
       v.stones -= total; n.inv.stones = (n.inv.stones || 0) + total;
@@ -24993,8 +25082,8 @@ const suitable=M.gearSuitability;M.gearSuitability=(n,it,price)=>{const result=s
         { id: 'meadow_wolves', nameTh: 'ฝูงหมาป่าหมอกวายุ', min: 1, max: 1, speciesIds: ['BEAST_MIST_WOLF'], weight: 35 },
         { id: 'meadow_boars', nameTh: 'หมูป่าเกราะเหล็กไหล', min: 2, max: 2, speciesIds: ['BEAST_IRON_BOAR'], weight: 25 },
         { id: 'meadow_stags', nameTh: 'กวางวิญญาณหมอกมรกต', min: 2, max: 3, speciesIds: ['BEAST_MIST_JADE_STAG', 'BEAST_IRON_BOAR'], weight: 15 },
-        { id: 'meadow_ecology_t1', nameTh: 'ดงสัตว์วิญญาณทุ่งหญ้าขั้นหนึ่ง', min: 1, max: 1, speciesIds: ['ECO2_BEAST_CANINE_1', 'ECO2_BEAST_FELINE_1', 'ECO2_BEAST_URSINE_1', 'ECO2_BEAST_BOAR_1', 'ECO2_BEAST_SERPENT_1', 'ECO2_BEAST_AVIAN_1', 'ECO2_BEAST_ARTHROPOD_1', 'ECO2_BEAST_SHELL_1', 'ECO2_BEAST_UNGULATE_1', 'ECO2_BEAST_AQUATIC_1', 'ECO2_BEAST_PLANT_SPIRIT_1', 'ECO2_BEAST_CHIMERA_1'], weight: 30 },
-        { id: 'meadow_ecology_t2', nameTh: 'ดงสัตว์วิญญาณทุ่งหญ้าขั้นสอง', min: 2, max: 2, speciesIds: ['ECO2_BEAST_CANINE_2', 'ECO2_BEAST_FELINE_2', 'ECO2_BEAST_URSINE_2', 'ECO2_BEAST_BOAR_2', 'ECO2_BEAST_SERPENT_2', 'ECO2_BEAST_AVIAN_2', 'ECO2_BEAST_ARTHROPOD_2', 'ECO2_BEAST_SHELL_2', 'ECO2_BEAST_UNGULATE_2', 'ECO2_BEAST_AQUATIC_2', 'ECO2_BEAST_PLANT_SPIRIT_2', 'ECO2_BEAST_CHIMERA_2'], weight: 25 }
+        { id: 'meadow_ecology_t1', nameTh: 'ดงสัตว์วิญญาณทุ่งหญ้าขั้นหนึ่ง', min: 1, max: 1, speciesIds: ['ECO2_BEAST_CANINE_1', 'ECO2_BEAST_FELINE_1', 'ECO2_BEAST_URSINE_1', 'ECO2_BEAST_BOAR_1', 'ECO2_BEAST_SERPENT_1', 'ECO2_BEAST_AVIAN_1', 'ECO2_BEAST_ARTHROPOD_1', 'ECO2_BEAST_UNGULATE_1', 'ECO2_BEAST_PLANT_SPIRIT_1', 'ECO2_BEAST_CHIMERA_1'], weight: 30 },
+        { id: 'meadow_ecology_t2', nameTh: 'ดงสัตว์วิญญาณทุ่งหญ้าขั้นสอง', min: 2, max: 2, speciesIds: ['ECO2_BEAST_CANINE_2', 'ECO2_BEAST_FELINE_2', 'ECO2_BEAST_URSINE_2', 'ECO2_BEAST_BOAR_2', 'ECO2_BEAST_SERPENT_2', 'ECO2_BEAST_AVIAN_2', 'ECO2_BEAST_ARTHROPOD_2', 'ECO2_BEAST_SHELL_2', 'ECO2_BEAST_UNGULATE_2', 'ECO2_BEAST_PLANT_SPIRIT_2', 'ECO2_BEAST_CHIMERA_2'], weight: 25 }
       ]
     },
     ridge: {
@@ -25007,7 +25096,7 @@ const suitable=M.gearSuitability;M.gearSuitability=(n,it,price)=>{const result=s
         { id: 'ridge_serpents', nameTh: 'ดงเหลือมมรกตเจ็ดพิษ', min: 3, max: 3, speciesIds: ['BEAST_EMERALD_PYTHON', 'BEAST_YIN_SHADOW_BAT_3'], weight: 30 },
         { id: 'ridge_scorpions', nameTh: 'อาณาเขตแมงป่องเพลิง', min: 4, max: 4, speciesIds: ['BEAST_SAND_SCORPION', 'BEAST_LAVA_FLAME_TORTOISE_4'], weight: 25 },
         { id: 'ridge_thunder', nameTh: 'สันผาอสูรอัสนี', min: 4, max: 5, speciesIds: ['BEAST_THUNDER_DRAKE_LIZARD', 'BEAST_THUNDER_HORN_STAG_4', 'BEAST_THUNDER_ROC'], weight: 20 },
-        { id: 'ridge_ecology_t3_t5', nameTh: 'หุบผาอสูรพิภพและเพลิง', min: 3, max: 5, speciesIds: ['ECO2_BEAST_FELINE_4', 'ECO2_BEAST_SERPENT_4', 'ECO2_BEAST_SERPENT_5', 'ECO2_BEAST_UNGULATE_3', 'ECO2_BEAST_UNGULATE_5', 'ECO2_BEAST_ARTHROPOD_2', 'ECO2_BEAST_PLANT_SPIRIT_4', 'ECO2_BEAST_BOAR_5'], weight: 30 }
+        { id: 'ridge_ecology_t3_t5', nameTh: 'หุบผาอสูรพิภพและเพลิง', min: 3, max: 5, speciesIds: ['ECO2_BEAST_FELINE_4', 'ECO2_BEAST_SERPENT_4', 'ECO2_BEAST_SERPENT_5', 'ECO2_BEAST_UNGULATE_3', 'ECO2_BEAST_UNGULATE_5', 'ECO2_BEAST_PLANT_SPIRIT_4', 'ECO2_BEAST_PLANT_SPIRIT_5', 'ECO2_BEAST_BOAR_5', 'ECO2_BEAST_BOAR_4', 'ECO2_BEAST_SERPENT_3'], weight: 30 }
       ]
     },
     legend: {
@@ -25020,8 +25109,8 @@ const suitable=M.gearSuitability;M.gearSuitability=(n,it,price)=>{const result=s
       pools: [
         { id: 'legend_beasts', nameTh: 'อสูรบรรพกาลใต้พิภพ', min: 6, max: 6, speciesIds: ['BEAST_BLOOD_TIGER', 'BEAST_MYTHIC_TAOTIE_SHADOW', 'KING_BLOOD_TIGER_CENTRAL'], weight: 40 },
         { id: 'legend_celestial', nameTh: 'มังกรสมุทรและราชันย์เทพอสูร', min: 7, max: 7, speciesIds: ['BEAST_ABYSSAL_DRAGON', 'BEAST_MYTHIC_CELESTIAL_QILIN_SOVEREIGN', 'KING_KUNLUN_DRAGON'], weight: 30 },
-        { id: 'legend_ecology_t6', nameTh: 'ราชันย์อสูรบรรพกาลแปดทิศ', min: 6, max: 6, legendary: true, speciesIds: ['ECO2_BEAST_BOAR_6', 'ECO2_BEAST_SERPENT_6', 'ECO2_BEAST_ARTHROPOD_6', 'ECO2_BEAST_SHELL_6', 'ECO2_BEAST_UNGULATE_6', 'ECO2_BEAST_AQUATIC_6', 'ECO2_BEAST_PLANT_SPIRIT_6', 'ECO2_BEAST_CHIMERA_6'], weight: 40 },
-        { id: 'legend_ecology_t7', nameTh: 'แปดมหาเทพอสูรบรรพกาลชั้นฟ้า', min: 7, max: 7, legendary: true, speciesIds: ['ECO2_BEAST_MYTHIC_1', 'ECO2_BEAST_MYTHIC_2', 'ECO2_BEAST_MYTHIC_3', 'ECO2_BEAST_MYTHIC_4', 'ECO2_BEAST_MYTHIC_5', 'ECO2_BEAST_MYTHIC_6', 'ECO2_BEAST_MYTHIC_7', 'ECO2_BEAST_MYTHIC_8'], weight: 35 }
+        { id: 'legend_ecology_t6', nameTh: 'ราชันย์อสูรบรรพกาลแปดทิศ', min: 6, max: 6, legendary: true, speciesIds: ['ECO2_BEAST_BOAR_6', 'ECO2_BEAST_SERPENT_6', 'ECO2_BEAST_ARTHROPOD_6', 'ECO2_BEAST_SHELL_6', 'ECO2_BEAST_UNGULATE_6', 'ECO2_BEAST_PLANT_SPIRIT_6', 'ECO2_BEAST_CHIMERA_6'], weight: 40 },
+        { id: 'legend_ecology_t7', nameTh: 'แปดมหาเทพอสูรบรรพกาลชั้นฟ้า', min: 7, max: 7, legendary: true, speciesIds: ['ECO2_BEAST_MYTHIC_1', 'ECO2_BEAST_MYTHIC_2', 'ECO2_BEAST_MYTHIC_4', 'ECO2_BEAST_MYTHIC_5', 'ECO2_BEAST_MYTHIC_7', 'ECO2_BEAST_MYTHIC_8'], weight: 35 }
       ]
     },
     west_grove: {
@@ -25034,7 +25123,7 @@ const suitable=M.gearSuitability;M.gearSuitability=(n,it,price)=>{const result=s
         { id: 'west_hound_pool', nameTh: 'ฝูงอสูรหมาป่าโลหิตและหมูป่า', min: 2, max: 3, speciesIds: ['BEAST_IRON_BOAR', 'BEAST_BLOOD_FIEND_HOUND_4'], weight: 30 },
         { id: 'west_treant_pool', nameTh: 'ดงงูพฤกษาพันปีและกวางเมฆาคราม', min: 3, max: 4, speciesIds: ['BEAST_ANCIENT_TREANT_SERPENT_4', 'BEAST_THUNDER_HORN_STAG_4', 'BEAST_MIST_JADE_STAG'], weight: 25 },
         { id: 'west_shadow_pool', nameTh: 'ถ้ำค้างคาวเงาหยินรัตติกาล', min: 3, max: 3, speciesIds: ['BEAST_YIN_SHADOW_BAT_3', 'BEAST_EMERALD_PYTHON'], weight: 15 },
-        { id: 'west_ecology_t3', nameTh: 'ดงพฤกษาและอสรพิษประจิม', min: 3, max: 3, speciesIds: ['ECO2_BEAST_SERPENT_3', 'ECO2_BEAST_PLANT_SPIRIT_3', 'ECO2_BEAST_ARTHROPOD_3', 'ECO2_BEAST_CANINE_3', 'ECO2_BEAST_FELINE_3', 'ECO2_BEAST_AQUATIC_3'], weight: 30 },
+        { id: 'west_ecology_t3', nameTh: 'ดงพฤกษาและอสรพิษประจิม', min: 3, max: 3, speciesIds: ['ECO2_BEAST_SERPENT_3', 'ECO2_BEAST_PLANT_SPIRIT_3', 'ECO2_BEAST_ARTHROPOD_3', 'ECO2_BEAST_CANINE_3', 'ECO2_BEAST_FELINE_3', 'ECO2_BEAST_BOAR_3'], weight: 30 },
         { id: 'west_ecology_t4', nameTh: 'อาณาเขตเงาพฤกษาหมื่นพิษ', min: 4, max: 4, speciesIds: ['ECO2_BEAST_SERPENT_4', 'ECO2_BEAST_PLANT_SPIRIT_4', 'ECO2_BEAST_ARTHROPOD_4', 'ECO2_BEAST_CANINE_4'], weight: 25 }
       ]
     },
@@ -25048,8 +25137,8 @@ const suitable=M.gearSuitability;M.gearSuitability=(n,it,price)=>{const result=s
         { id: 'east_tortoise_pool', nameTh: 'ดงเต่าศิลาเพลิงพิภพ', min: 4, max: 4, speciesIds: ['BEAST_LAVA_FLAME_TORTOISE_4', 'BEAST_SAND_SCORPION'], weight: 25 },
         { id: 'east_drake_pool', nameTh: 'ผากิ้งก่ามังกรและเหยี่ยวดารา', min: 4, max: 5, speciesIds: ['BEAST_THUNDER_DRAKE_LIZARD', 'BEAST_ASTRAL_VOID_HAWK_5'], weight: 25 },
         { id: 'east_leviathan_pool', nameTh: 'แอ่งน้ำเต่ามังกรสมุทรดึกดำบรรพ์', min: 5, max: 5, speciesIds: ['BEAST_ABYSSAL_LEVIATHAN_TURTLE', 'KING_EMERALD_SERPENT_SOUTH'], weight: 15 },
-        { id: 'east_ecology_t3_t4', nameTh: 'ผาศิลาอสูรหมีและเต่าเกราะ', min: 3, max: 4, speciesIds: ['ECO2_BEAST_URSINE_3', 'ECO2_BEAST_BOAR_3', 'ECO2_BEAST_SHELL_3', 'ECO2_BEAST_CHIMERA_3', 'ECO2_BEAST_URSINE_4', 'ECO2_BEAST_BOAR_4', 'ECO2_BEAST_SHELL_4'], weight: 30 },
-        { id: 'east_ecology_t4_t5', nameTh: 'วังน้ำวนและผาอสูรดึกดำบรรพ์', min: 4, max: 5, speciesIds: ['ECO2_BEAST_CHIMERA_4', 'ECO2_BEAST_CHIMERA_5', 'ECO2_BEAST_SHELL_5', 'ECO2_BEAST_AQUATIC_4', 'ECO2_BEAST_AQUATIC_5', 'ECO2_BEAST_ARTHROPOD_5'], weight: 25 }
+        { id: 'east_ecology_t3_t4', nameTh: 'ผาศิลาอสูรหมีและเต่าเกราะ', min: 3, max: 4, speciesIds: ['ECO2_BEAST_URSINE_3', 'ECO2_BEAST_BOAR_3', 'ECO2_BEAST_SHELL_3', 'ECO2_BEAST_CHIMERA_3', 'ECO2_BEAST_URSINE_4', 'ECO2_BEAST_BOAR_4', 'ECO2_BEAST_SHELL_4', 'ECO2_BEAST_AVIAN_3'], weight: 30 },
+        { id: 'east_ecology_t4_t5', nameTh: 'วังน้ำวนและผาอสูรดึกดำบรรพ์', min: 4, max: 5, speciesIds: ['ECO2_BEAST_CHIMERA_4', 'ECO2_BEAST_CHIMERA_5', 'ECO2_BEAST_ARTHROPOD_5', 'ECO2_BEAST_FELINE_4', 'ECO2_BEAST_BOAR_5', 'ECO2_BEAST_ARTHROPOD_4'], weight: 25 }
       ]
     },
     north_peak: {
@@ -25098,6 +25187,7 @@ const suitable=M.gearSuitability;M.gearSuitability=(n,it,price)=>{const result=s
     const maxTier = pool ? pool.max : z.max;
     const allCands = (JD.BEASTS.species || []).concat(JD.BEASTS.kings || []);
     let cands = allCands.filter(s => {
+      if (s.terrain === 'water' || s.archetype === 'AQUATIC') return false;
       if (pool && pool.speciesIds && pool.speciesIds.length) {
         if (!pool.speciesIds.includes(s.id)) return false;
       }
@@ -25106,12 +25196,21 @@ const suitable=M.gearSuitability;M.gearSuitability=(n,it,price)=>{const result=s
       return s.tier >= minTier && s.tier <= maxTier && Array.isArray(s.drops) && s.drops.some(id => ECO.matById[id]);
     });
 
-    if (!cands.length) {
-      cands = (JD.BEASTS.species || []).filter(s => s.tier >= z.min && s.tier <= z.max && (!opts.ordinary || !legendSpecies(s)) && (!opts.legendary || legendSpecies(s)) && Array.isArray(s.drops) && s.drops.some(id => ECO.matById[id]));
+    let species = null;
+    if (opts.speciesId) {
+      const s = allCands.find(x => x.id === opts.speciesId);
+      if (!s || s.terrain === 'water' || s.archetype === 'AQUATIC') return null;
+      species = s;
+    } else {
+      if (!cands.length) {
+        cands = (JD.BEASTS.species || []).filter(s => {
+          if (s.terrain === 'water' || s.archetype === 'AQUATIC') return false;
+          return s.tier >= z.min && s.tier <= z.max && (!opts.ordinary || !legendSpecies(s)) && (!opts.legendary || legendSpecies(s)) && Array.isArray(s.drops) && s.drops.some(id => ECO.matById[id]);
+        });
+      }
+      if (!cands.length) return null;
+      species = W.rng.pick(cands);
     }
-    if (!cands.length) return null;
-
-    const species = W.rng.pick(cands);
     let x = W.rng.int(z.x0, z.x1), y = W.rng.int(z.y0, z.y1);
     if (W.map && MAP.blocked(W.map, x, y)) {
       const free = MAP.nearestFree(W.map, x, y);
@@ -26865,7 +26964,8 @@ const suitable=M.gearSuitability;M.gearSuitability=(n,it,price)=>{const result=s
     h += '<h3>ตัวอย่างสายพันธุ์และชิ้นส่วนสำคัญ</h3>';
     h += eco.species.slice(0, 36).map(s => {
       const drops = (s.drops || []).map(id => esc(ECO.name(id))).join(' · ');
-      return '<div class="card"><b>' + (s.tier >= 6 ? '★ ' : '') + esc(s.nameTh) + '</b> <span class="chip ' + (s.tier >= 6 ? 'v' : s.tier >= 4 ? 'ok' : 'b') + '">ขั้น ' + s.tier + '</span> <span class="chip">' + esc(s.family || 'อสูร') + '</span><div class="muted">พลังรบ ' + s.cp + ' CP · ถิ่น: ' + esc(s.terrain) + ' · ธาตุ: ' + esc(s.element) + '</div><div>ชิ้นส่วนดรอป: ' + drops + '</div></div>';
+      const habitat = s.terrain === 'water' ? 'ลุ่มน้ำสาบมังกรคราม (ภารกิจภายนอก)' : 'รอบสำนัก (' + s.terrain + ')';
+      return '<div class="card"><b>' + (s.tier >= 6 ? '★ ' : '') + esc(s.nameTh) + '</b> <span class="chip ' + (s.tier >= 6 ? 'v' : s.tier >= 4 ? 'ok' : 'b') + '">ขั้น ' + s.tier + '</span> <span class="chip">' + esc(s.family || 'อสูร') + '</span><div class="muted">พลังรบ ' + s.cp + ' CP · ถิ่น: ' + esc(habitat) + ' · ธาตุ: ' + esc(s.element) + '</div><div>ชิ้นส่วนดรอป: ' + drops + '</div></div>';
     }).join('');
     h += '<div class="muted" style="text-align:center;padding:8px">และอีก 44 ชนิดในสารานุกรมธรรมชาติ</div>';
 

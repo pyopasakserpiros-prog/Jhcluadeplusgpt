@@ -8,10 +8,11 @@
   const BASIC_PILLS = new Set((JD.CP.BASIC || []).map(r => 'P:' + r.id));
   const TRADER_NAMES = {
     general: ['หลี่กวง', 'หานจื่อ', 'ซ่งเหอ', 'เฉินอวี้', 'หลัวชิง'],
-    medicine: ['หมอพเนจรอู๋', 'เซียนโอสถหลิน', 'เถ้าแก่ยาเจียง'],
-    caravan: ['หัวหน้าคาราวานกัว', 'พ่อค้าหยาง', 'ผู้คุมเกวียนจ้าว']
+    medicine: ['หมอพเนจรอู๋', 'เซียนโอสถหลิน', 'เถ้าแก่ยาเจียง', 'ผู้อาวุโสยาเร้นลับหวัง'],
+    caravan: ['หัวหน้าคาราวานกัว', 'พ่อค้าหยาง', 'ผู้คุมเกวียนจ้าว', 'นายวาณิชเจ็ดสมบัติเฉียน'],
+    rare: ['นายหน้าหอประมูลจิน', 'พ่อค้าสมบัติเร้นลับมู่', 'ยอดวาณิชแดนไกลไป๋']
   };
-  const TRADER_TYPES = ['general', 'medicine', 'caravan'];
+  const TRADER_TYPES = ['general', 'medicine', 'caravan', 'rare'];
 
   EXT.ensure = W => {
     if (!W.world) W.world = { sects: [], expeds: [], seq: 0, visitors: [] };
@@ -25,9 +26,9 @@
 
   EXT.isTradable = id => {
     if (id === 'grain' || id === 'meal') return true;
-    if (BASIC_PILLS.has(id)) return !!ECO.pillInfo(id);
+    if (ECO.isPill(id)) return !!ECO.pillInfo(id);
     const m = ECO.matById[id];
-    return !!m && !m.sourcePack && (m.tier || 1) <= 3;
+    return !!m;
   };
   EXT.activeVisitors = W => {
     const visitors = W && W.world && Array.isArray(W.world.visitors) ? W.world.visitors : [];
@@ -46,8 +47,8 @@
     return Math.max(1, Math.round(base * clamp(mult, 0.65, 1.2)));
   };
 
-  function pickMaterial(W, excluded) {
-    const pool = Object.values(ECO.matById).filter(m => EXT.isTradable(m.id) && !excluded.has(m.id));
+  function pickMaterial(W, excluded, maxTier) {
+    const pool = Object.values(ECO.matById).filter(m => EXT.isTradable(m.id) && !excluded.has(m.id) && (maxTier == null || (m.tier || 1) <= maxTier));
     return pool.length ? W.rng.pick(pool).id : null;
   }
   function addStock(W, stock, id, min, max) {
@@ -64,31 +65,60 @@
     });
     if (!used.has('grain')) { addStock(W, stock, 'grain', 12, 34); used.add('grain'); }
     if (W.rng.chance(0.42) && !used.has('meal')) { addStock(W, stock, 'meal', 6, 18); used.add('meal'); }
+    const maxT = subtype === 'rare' ? 6 : subtype === 'caravan' ? 4 : 3;
     while (used.size < 4) {
-      const id = pickMaterial(W, used); if (!id) break;
+      const id = pickMaterial(W, used, maxT); if (!id) break;
       addStock(W, stock, id, 2, 7); used.add(id);
     }
-    if (subtype === 'medicine' || W.rng.chance(0.35)) {
-      const pills = Array.from(BASIC_PILLS).filter(id => EXT.isTradable(id));
+    if (subtype === 'medicine' || subtype === 'rare' || W.rng.chance(0.35)) {
+      const pills = Object.keys(ECO.recipeById || {})
+        .map(rid => 'P:' + rid)
+        .filter(k => EXT.isTradable(k) && (subtype !== 'general' || BASIC_PILLS.has(k)));
       if (pills.length) { const id = W.rng.pick(pills); addStock(W, stock, id, 1, subtype === 'medicine' ? 4 : 2); }
     }
     return stock;
   }
-  function buildWants(W, stock) {
+  function buildWants(W, stock, subtype) {
     const wants = {}, used = new Set(Object.keys(stock));
-    // Traders seek common materials and remedies; avoid asking to buy the same key they carry.
-    const surplus = Object.keys(W.sect.stock || {}).filter(id => EXT.isTradable(id) && ECO.count(W, id) > EXT.reserveForSect(W, id) + 2 && !used.has(id));
-    surplus.sort((a, b) => ECO.count(W, b) - ECO.count(W, a));
-    surplus.slice(0, 3).forEach(id => { wants[id] = W.rng.int(2, 7); used.add(id); });
-    while (Object.keys(wants).length < 5) {
+    // Traders seek materials and remedies that the sect has in surplus above reserve floor
+    const surplus = Object.keys(W.sect.stock || {}).filter(id => {
+      if (!EXT.isTradable(id) || BASIC_PILLS.has(id) || used.has(id)) return false;
+      const count = ECO.count(W, id);
+      const res = EXT.reserveForSect(W, id);
+      if (count <= res + 1) return false;
+      if (subtype === 'general') {
+        const m = ECO.matById[id];
+        if (m && (m.tier || 1) > 3) return false;
+      }
+      return true;
+    });
+    surplus.sort((a, b) => (ECO.count(W, b) - EXT.reserveForSect(W, b)) - (ECO.count(W, a) - EXT.reserveForSect(W, a)));
+    surplus.slice(0, 3).forEach(id => {
+      const m = ECO.matById[id];
+      const tier = m ? m.tier || 1 : 2;
+      const maxWant = tier >= 5 ? 2 : tier >= 3 ? 4 : 7;
+      wants[id] = W.rng.int(1, maxWant);
+      used.add(id);
+    });
+    const targetWantsCount = subtype === 'rare' ? 4 : 5;
+    while (Object.keys(wants).length < targetWantsCount) {
       let id = null;
-      if (W.rng.chance(0.25)) {
-        const pills = Array.from(BASIC_PILLS).filter(k => EXT.isTradable(k) && !used.has(k));
+      if (subtype === 'medicine' || subtype === 'rare' || W.rng.chance(0.25)) {
+        const pills = Object.keys(ECO.recipeById || {})
+          .map(rid => 'P:' + rid)
+          .filter(k => EXT.isTradable(k) && !used.has(k) && (subtype !== 'general' || BASIC_PILLS.has(k)));
         if (pills.length) id = W.rng.pick(pills);
       }
-      if (!id) id = pickMaterial(W, used);
+      if (!id) {
+        const maxTier = subtype === 'rare' ? 7 : subtype === 'caravan' ? 5 : 3;
+        id = pickMaterial(W, used, maxTier);
+      }
       if (!id) break;
-      wants[id] = W.rng.int(2, 6); used.add(id);
+      const m = ECO.matById[id];
+      const tier = m ? m.tier || 1 : 2;
+      const maxWant = tier >= 5 ? 2 : tier >= 3 ? 4 : 6;
+      wants[id] = W.rng.int(1, maxWant);
+      used.add(id);
     }
     return wants;
   }
@@ -99,15 +129,16 @@
     const seq = ++stats.seq;
     const nameList = TRADER_NAMES[subtype] || TRADER_NAMES.general;
     const stock = options.stock && typeof options.stock === 'object' ? Object.assign({}, options.stock) : buildStock(W, subtype);
-    const wants = options.wants && typeof options.wants === 'object' ? Object.assign({}, options.wants) : buildWants(W, stock);
+    const wants = options.wants && typeof options.wants === 'object' ? Object.assign({}, options.wants) : buildWants(W, stock, subtype);
     Object.keys(stock).forEach(id => { if (!EXT.isTradable(id) || !Number.isSafeInteger(stock[id]) || stock[id] <= 0) delete stock[id]; });
     Object.keys(wants).forEach(id => { if (!EXT.isTradable(id) || !Number.isSafeInteger(wants[id]) || wants[id] <= 0 || stock[id] > 0) delete wants[id]; });
+    const defaultStones = subtype === 'rare' ? W.rng.int(1200, 3000) : subtype === 'caravan' ? W.rng.int(550, 1400) : W.rng.int(280, 850);
     const visitor = {
       id: options.id || ('trader_' + seq), kind: 'trader', subtype,
       nameTh: options.nameTh || W.rng.pick(nameList),
       arriveDay: W.day,
       untilDay: Number.isFinite(options.untilDay) ? options.untilDay : W.day + clamp(Math.round(options.stayDays || 2), 1, 4),
-      stones: Number.isFinite(options.stones) ? Math.max(0, Math.round(options.stones)) : W.rng.int(280, 900),
+      stones: Number.isFinite(options.stones) ? Math.max(0, Math.round(options.stones)) : defaultStones,
       stock, wants, sectTradeDay: null, sectBuyDone: false, tradeCount: 0
     };
     W.world.visitors.push(visitor);
@@ -123,7 +154,16 @@
     if (id === 'grain') base = Math.max(floor, pop * 14);
     else if (id === 'meal') base = Math.max(floor, pop * 2);
     else if (BASIC_PILLS.has(id)) base = Math.max(floor, Math.ceil(pop * 0.15));
-    else base = Math.max(floor, Math.floor((g.CPE ? g.CPE.target(W, id) : 8) * 0.6));
+    else if (ECO.isPill(id)) {
+      base = Math.max(floor, 2);
+    } else {
+      const isRecipeInput = (W.sect.knownRecipes || []).some(rid => {
+        const r = ECO.recipeById[rid];
+        return r && r.inputs && r.inputs.some(inp => inp.matId === id);
+      });
+      const extraReserve = isRecipeInput ? 4 : 0;
+      base = Math.max(floor + extraReserve, Math.floor((g.CPE ? g.CPE.target(W, id) : 8) * 0.6));
+    }
     return base;
   };
   function treasurySkill(W) {
@@ -297,7 +337,7 @@
     for (const v of EXT.activeVisitors(W)) {
       if (onlyVisitorId && v.id !== onlyVisitorId) continue;
       for (const id of Object.keys(v.stock || {})) {
-        if (!BASIC_PILLS.has(id) || !(v.stock[id] > 0) || ((n.inv.pills || {})[id] || 0) > 0) continue;
+        if (!EXT.isTradable(id) || !ECO.isPill(id) || !(v.stock[id] > 0) || ((n.inv.pills || {})[id] || 0) > 0) continue;
         const price = EXT.quotePrice(W, id, 'member-buy');
         let need = pillNeed(n, id), reason = 'ต้องการโอสถรักษา/ฟื้นฟู';
         if (!need && n.rank >= 1 && n.cult && (n.inv.stones || 0) >= price * 3) {
@@ -318,7 +358,7 @@
       }
       for (const id of Object.keys(n.inv.pills || {})) {
         const held = n.inv.pills[id];
-        if (!BASIC_PILLS.has(id) || !Number.isSafeInteger(held) || held < 2 || !(v.wants && v.wants[id] > 0) || pillNeed(n, id) > 0) continue;
+        if (!EXT.isTradable(id) || !ECO.isPill(id) || !Number.isSafeInteger(held) || held < 2 || !(v.wants && v.wants[id] > 0) || pillNeed(n, id) > 0) continue;
         const price = EXT.quotePrice(W, id, 'member-sell');
         if (!price || v.stones < price) continue;
         const priority = 0.35 + E(n, 'interests.trade') / 260 + E(n, 'values.wealthResource') / 420 + (n.h.skills.trading || 0) / 320;
@@ -336,7 +376,7 @@
     if (!fresh || fresh.side !== quote.side || fresh.itemId !== quote.itemId || fresh.price !== quote.price || fresh.qty !== quote.qty) return false;
     const id = fresh.itemId, total = fresh.total;
     if (fresh.side === 'buy') {
-      if (!(v.stock[id] > 0) || (n.inv.stones || 0) < total || !BASIC_PILLS.has(id)) return false;
+      if (!(v.stock[id] > 0) || (n.inv.stones || 0) < total || !EXT.isTradable(id)) return false;
       v.stock[id]--; if (!v.stock[id]) delete v.stock[id];
       n.inv.stones -= total; v.stones += total;
       n.inv.pills = n.inv.pills || {}; n.inv.pills[id] = (n.inv.pills[id] || 0) + 1;
@@ -348,7 +388,7 @@
       v.stones -= total; n.inv.stones = (n.inv.stones || 0) + total;
       record(W, v, 'member-sell', id, 1, fresh.price, total, n);
     } else if (fresh.side === 'sell-pill') {
-      if (!BASIC_PILLS.has(id) || !(n.inv.pills && n.inv.pills[id] >= 2) || pillNeed(n, id) > 0 || !(v.wants && v.wants[id] > 0) || v.stones < total) return false;
+      if (!EXT.isTradable(id) || !ECO.isPill(id) || !(n.inv.pills && n.inv.pills[id] >= 2) || pillNeed(n, id) > 0 || !(v.wants && v.wants[id] > 0) || v.stones < total) return false;
       n.inv.pills[id]--; if (!n.inv.pills[id]) delete n.inv.pills[id];
       v.wants[id]--; if (!v.wants[id]) delete v.wants[id];
       v.stones -= total; n.inv.stones = (n.inv.stones || 0) + total;

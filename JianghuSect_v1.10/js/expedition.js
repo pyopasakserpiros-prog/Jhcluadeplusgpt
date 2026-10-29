@@ -12,8 +12,16 @@
     { id: 'plains', nameTh: 'ทุ่งราบเมฆา', danger: 1, terrain: 'plains', days: 3, beastMax: 2 },
     { id: 'mountain', nameTh: 'ทิวเขาศิลาคราม', danger: 2, terrain: 'mountain', days: 5, beastMax: 4 },
     { id: 'desert', nameTh: 'ทะเลทรายเพลิงอัสดง', danger: 3, terrain: 'desert', days: 8, beastMax: 5 },
+    { id: 'water', nameTh: 'ลุ่มน้ำสาบมังกรคราม', danger: 2, terrain: 'water', days: 4, beastMax: 6 },
     { id: 'ruins', nameTh: 'ซากนครโบราณ', danger: 4, terrain: 'mountain', days: 10, beastMax: 6 }
   ];
+  X.beastPool = reg => {
+    if (!reg) return [];
+    if (reg.terrain === 'water' || reg.id === 'water') {
+      return JD.BEASTS.species.filter(b => (b.terrain === 'water' || b.archetype === 'AQUATIC') && b.tier <= reg.beastMax && b.tier >= Math.max(1, reg.beastMax - 3));
+    }
+    return JD.BEASTS.species.filter(b => (reg.beasts && reg.beasts.length ? reg.beasts.includes(b.id) : !b.sourcePack) && b.terrain !== 'water' && b.archetype !== 'AQUATIC' && b.tier <= reg.beastMax && b.tier >= Math.max(1, reg.beastMax - 3));
+  };
   X.MISSIONS = {
     fortune: { nameTh: 'ผจญโชควาสนา', icon: '🍀' },
     hunt: { nameTh: 'ล่าสัตว์อสูร', icon: '🐺' },
@@ -152,7 +160,7 @@
         // เจอสัตว์อสูร: ใช้ตารางสัตว์ในข้อมูลเก่า เลือกระดับตามภูมิภาค
         const pwAll = alive.reduce((s, m) => s + CULT.power(m), 0) * (0.85 + rng.next() * 0.3);
         const bold = alive.reduce((s, m) => s + E(m, 'personality.courage'), 0) / alive.length;
-        let pool = JD.BEASTS.species.filter(b => (reg.beasts && reg.beasts.length ? reg.beasts.includes(b.id) : !b.sourcePack) && b.tier <= reg.beastMax && b.tier >= Math.max(1, reg.beastMax - 3));
+        let pool = X.beastPool(reg);
         if (ex.kind === 'hunt' || ex.kind === 'bounty') pool = pool.filter(b => b.cp <= pwAll * (0.6 + bold / 100 * 0.7));
         else pool = pool.filter(b => b.cp <= pwAll * 3);
         if (!pool.length) { ex.journal.push('เห็นร่องรอยสัตว์อสูรใหญ่เกินกำลัง จึงหลีกเลี่ยง'); continue; }

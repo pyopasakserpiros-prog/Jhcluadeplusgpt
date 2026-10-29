@@ -307,6 +307,12 @@
     if (e.toxicity && c) c.toxic = Math.min(100, c.toxic + e.toxicity);
     if (e.clearHeartDemon) s.heartDemon = Math.max(0, s.heartDemon - e.clearHeartDemon);
     if (e.clearToxic && c) c.toxic = Math.max(0, c.toxic - e.clearToxic);
+    if (e.clearPoison && npc.sx && npc.sx.length) {
+      const ST = g.STATS || (typeof require === 'function' ? require('./stats.js') : null);
+      if (ST && ST.clearStatus) ST.clearStatus(npc, x => x.k === 'poison');
+      else npc.sx = npc.sx.filter(x => x.k !== 'poison');
+      msgs.push('ถอนพิษ');
+    }
     if (e.lifeBonus && c) { c.lifeBonus += e.lifeBonus; CULT.refreshLifespan(npc); }
     if (e.lifespanBonus && c) { c.lifeBonus += e.lifespanBonus; CULT.refreshLifespan(npc); msgs.push('อายุขัย +' + e.lifespanBonus); }
     if (e.insight) npc.insightT = 360;

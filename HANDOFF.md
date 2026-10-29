@@ -17,11 +17,19 @@ Read [`JianghuSect_v1.10/docs/ECOLOGY_EXPANSION.md`](JianghuSect_v1.10/docs/ECOL
   - Autonomous crafting at alchemy lab and forge via `ECO.finishCraft`.
   - Member shop purchase of combat buff pills and automatic consumption in `ST.preFight`.
   - Save/load serialization and deterministic seed execution verified.
+- **Codex Bug Fixes (v1.10.12 Rev 2)**:
+  - **NPC Healing Pill Usage**: Fixed `CPE.autoUse`, `CPE.fightUse`, and `A.personalPillUse` in `js/cpeco.js` to pick pills based on effect (`healHealth`), decrementing count by 1 only upon successful consumption, with strict threshold gating.
+  - **Poison Status Cleansing**: Fixed `ECO.applyPill` in `js/economy.js` to clear combat status `poison` from `npc.sx` via `ST.clearStatus`, preserving other active conditions and strictly separating combat poison from cultivation body toxic (`cult.toxic`).
+  - **Terrestrial vs Aquatic Spawning**: Purged all aquatic species from land map pools, added an aquatic guard in `WILD.spawn`, and routed water encounters to the expedition region `water` (`ลุ่มน้ำสาบมังกรคราม`) with `EXPED.beastPool`.
+  - **External Market High-Tier Trade**: Updated `EXT.isTradable` and trader generation in `js/external_market.js` to support T4-T7 materials and non-basic pills with rare merchants (up to 3000 stones budget) and strict recipe input reserve protection floors (+4 reserve floor).
+  - **Full 80-Species Encounter Coverage**: Corrected tier mismatches in `ridge_ecology_t3_t5` with `ECO2_BEAST_PLANT_SPIRIT_5`, added `ECO2_BEAST_AVIAN_3` to `east_ecology_t3_t4`, ensuring 100% of 80 species have accessible encounter routes.
+  - **Observational Long-Term Simulation**: Executed 90-day (129,600 ticks) and 360-day (518,400 ticks) native simulations (`test/long_ecology_simulation.js`), logging real metrics (416 drops, 50 crafts, 33 pill consumptions, 11 CP shop purchases, 17 surplus sales, 5 member buys, 2 member sells, 156 final stock units) and confirming zero negative invariant violations.
 - **Verification**:
-  - `test/ecology_expansion.js`: ALL 7 TEST GROUPS PASSED (Exit Code: 0).
+  - `test/ecology_expansion.js`: ALL 11 TEST GROUPS PASSED (Exit Code: 0).
   - `test/run_all.js`: 41/45 test groups passed (100% of Node.js suites passing; only 4 browser/Playwright suites fail due to Termux mobile environment constraints).
-  - `test/standalone.js`: 37 entrypoint scripts verified, standalone HTML offline execution verified.
-  - Byte-lock check: `js/human_core.js` strictly untouched (`155:2f9c9dd7`).
+  - `test/standalone.js`: 37 entrypoint scripts verified, standalone HTML offline execution verified (1,557 KB).
+  - `tools/package_release.py`: ZIP package `JianghuSect_v1-10-12.zip` verified and built (4,905,670 bytes, sha256 `f752365b...`).
+  - Byte-lock check: `js/human_core.js` strictly untouched (`155:2f9c9dd7`, sha256 `a0d393284fb4b136848e5b80e12f3edd2c4f9437c419c793c2a7e75d881c0542`).
 
 ## Previous handoff — v1.10.11 martial paths / main-1 (2026-10-29)
 

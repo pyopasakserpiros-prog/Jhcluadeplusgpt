@@ -22,8 +22,8 @@
         { id: 'meadow_wolves', nameTh: 'ฝูงหมาป่าหมอกวายุ', min: 1, max: 1, speciesIds: ['BEAST_MIST_WOLF'], weight: 35 },
         { id: 'meadow_boars', nameTh: 'หมูป่าเกราะเหล็กไหล', min: 2, max: 2, speciesIds: ['BEAST_IRON_BOAR'], weight: 25 },
         { id: 'meadow_stags', nameTh: 'กวางวิญญาณหมอกมรกต', min: 2, max: 3, speciesIds: ['BEAST_MIST_JADE_STAG', 'BEAST_IRON_BOAR'], weight: 15 },
-        { id: 'meadow_ecology_t1', nameTh: 'ดงสัตว์วิญญาณทุ่งหญ้าขั้นหนึ่ง', min: 1, max: 1, speciesIds: ['ECO2_BEAST_CANINE_1', 'ECO2_BEAST_FELINE_1', 'ECO2_BEAST_URSINE_1', 'ECO2_BEAST_BOAR_1', 'ECO2_BEAST_SERPENT_1', 'ECO2_BEAST_AVIAN_1', 'ECO2_BEAST_ARTHROPOD_1', 'ECO2_BEAST_SHELL_1', 'ECO2_BEAST_UNGULATE_1', 'ECO2_BEAST_AQUATIC_1', 'ECO2_BEAST_PLANT_SPIRIT_1', 'ECO2_BEAST_CHIMERA_1'], weight: 30 },
-        { id: 'meadow_ecology_t2', nameTh: 'ดงสัตว์วิญญาณทุ่งหญ้าขั้นสอง', min: 2, max: 2, speciesIds: ['ECO2_BEAST_CANINE_2', 'ECO2_BEAST_FELINE_2', 'ECO2_BEAST_URSINE_2', 'ECO2_BEAST_BOAR_2', 'ECO2_BEAST_SERPENT_2', 'ECO2_BEAST_AVIAN_2', 'ECO2_BEAST_ARTHROPOD_2', 'ECO2_BEAST_SHELL_2', 'ECO2_BEAST_UNGULATE_2', 'ECO2_BEAST_AQUATIC_2', 'ECO2_BEAST_PLANT_SPIRIT_2', 'ECO2_BEAST_CHIMERA_2'], weight: 25 }
+        { id: 'meadow_ecology_t1', nameTh: 'ดงสัตว์วิญญาณทุ่งหญ้าขั้นหนึ่ง', min: 1, max: 1, speciesIds: ['ECO2_BEAST_CANINE_1', 'ECO2_BEAST_FELINE_1', 'ECO2_BEAST_URSINE_1', 'ECO2_BEAST_BOAR_1', 'ECO2_BEAST_SERPENT_1', 'ECO2_BEAST_AVIAN_1', 'ECO2_BEAST_ARTHROPOD_1', 'ECO2_BEAST_UNGULATE_1', 'ECO2_BEAST_PLANT_SPIRIT_1', 'ECO2_BEAST_CHIMERA_1'], weight: 30 },
+        { id: 'meadow_ecology_t2', nameTh: 'ดงสัตว์วิญญาณทุ่งหญ้าขั้นสอง', min: 2, max: 2, speciesIds: ['ECO2_BEAST_CANINE_2', 'ECO2_BEAST_FELINE_2', 'ECO2_BEAST_URSINE_2', 'ECO2_BEAST_BOAR_2', 'ECO2_BEAST_SERPENT_2', 'ECO2_BEAST_AVIAN_2', 'ECO2_BEAST_ARTHROPOD_2', 'ECO2_BEAST_SHELL_2', 'ECO2_BEAST_UNGULATE_2', 'ECO2_BEAST_PLANT_SPIRIT_2', 'ECO2_BEAST_CHIMERA_2'], weight: 25 }
       ]
     },
     ridge: {
@@ -36,7 +36,7 @@
         { id: 'ridge_serpents', nameTh: 'ดงเหลือมมรกตเจ็ดพิษ', min: 3, max: 3, speciesIds: ['BEAST_EMERALD_PYTHON', 'BEAST_YIN_SHADOW_BAT_3'], weight: 30 },
         { id: 'ridge_scorpions', nameTh: 'อาณาเขตแมงป่องเพลิง', min: 4, max: 4, speciesIds: ['BEAST_SAND_SCORPION', 'BEAST_LAVA_FLAME_TORTOISE_4'], weight: 25 },
         { id: 'ridge_thunder', nameTh: 'สันผาอสูรอัสนี', min: 4, max: 5, speciesIds: ['BEAST_THUNDER_DRAKE_LIZARD', 'BEAST_THUNDER_HORN_STAG_4', 'BEAST_THUNDER_ROC'], weight: 20 },
-        { id: 'ridge_ecology_t3_t5', nameTh: 'หุบผาอสูรพิภพและเพลิง', min: 3, max: 5, speciesIds: ['ECO2_BEAST_FELINE_4', 'ECO2_BEAST_SERPENT_4', 'ECO2_BEAST_SERPENT_5', 'ECO2_BEAST_UNGULATE_3', 'ECO2_BEAST_UNGULATE_5', 'ECO2_BEAST_ARTHROPOD_2', 'ECO2_BEAST_PLANT_SPIRIT_4', 'ECO2_BEAST_BOAR_5'], weight: 30 }
+        { id: 'ridge_ecology_t3_t5', nameTh: 'หุบผาอสูรพิภพและเพลิง', min: 3, max: 5, speciesIds: ['ECO2_BEAST_FELINE_4', 'ECO2_BEAST_SERPENT_4', 'ECO2_BEAST_SERPENT_5', 'ECO2_BEAST_UNGULATE_3', 'ECO2_BEAST_UNGULATE_5', 'ECO2_BEAST_PLANT_SPIRIT_4', 'ECO2_BEAST_PLANT_SPIRIT_5', 'ECO2_BEAST_BOAR_5', 'ECO2_BEAST_BOAR_4', 'ECO2_BEAST_SERPENT_3'], weight: 30 }
       ]
     },
     legend: {
@@ -49,8 +49,8 @@
       pools: [
         { id: 'legend_beasts', nameTh: 'อสูรบรรพกาลใต้พิภพ', min: 6, max: 6, speciesIds: ['BEAST_BLOOD_TIGER', 'BEAST_MYTHIC_TAOTIE_SHADOW', 'KING_BLOOD_TIGER_CENTRAL'], weight: 40 },
         { id: 'legend_celestial', nameTh: 'มังกรสมุทรและราชันย์เทพอสูร', min: 7, max: 7, speciesIds: ['BEAST_ABYSSAL_DRAGON', 'BEAST_MYTHIC_CELESTIAL_QILIN_SOVEREIGN', 'KING_KUNLUN_DRAGON'], weight: 30 },
-        { id: 'legend_ecology_t6', nameTh: 'ราชันย์อสูรบรรพกาลแปดทิศ', min: 6, max: 6, legendary: true, speciesIds: ['ECO2_BEAST_BOAR_6', 'ECO2_BEAST_SERPENT_6', 'ECO2_BEAST_ARTHROPOD_6', 'ECO2_BEAST_SHELL_6', 'ECO2_BEAST_UNGULATE_6', 'ECO2_BEAST_AQUATIC_6', 'ECO2_BEAST_PLANT_SPIRIT_6', 'ECO2_BEAST_CHIMERA_6'], weight: 40 },
-        { id: 'legend_ecology_t7', nameTh: 'แปดมหาเทพอสูรบรรพกาลชั้นฟ้า', min: 7, max: 7, legendary: true, speciesIds: ['ECO2_BEAST_MYTHIC_1', 'ECO2_BEAST_MYTHIC_2', 'ECO2_BEAST_MYTHIC_3', 'ECO2_BEAST_MYTHIC_4', 'ECO2_BEAST_MYTHIC_5', 'ECO2_BEAST_MYTHIC_6', 'ECO2_BEAST_MYTHIC_7', 'ECO2_BEAST_MYTHIC_8'], weight: 35 }
+        { id: 'legend_ecology_t6', nameTh: 'ราชันย์อสูรบรรพกาลแปดทิศ', min: 6, max: 6, legendary: true, speciesIds: ['ECO2_BEAST_BOAR_6', 'ECO2_BEAST_SERPENT_6', 'ECO2_BEAST_ARTHROPOD_6', 'ECO2_BEAST_SHELL_6', 'ECO2_BEAST_UNGULATE_6', 'ECO2_BEAST_PLANT_SPIRIT_6', 'ECO2_BEAST_CHIMERA_6'], weight: 40 },
+        { id: 'legend_ecology_t7', nameTh: 'แปดมหาเทพอสูรบรรพกาลชั้นฟ้า', min: 7, max: 7, legendary: true, speciesIds: ['ECO2_BEAST_MYTHIC_1', 'ECO2_BEAST_MYTHIC_2', 'ECO2_BEAST_MYTHIC_4', 'ECO2_BEAST_MYTHIC_5', 'ECO2_BEAST_MYTHIC_7', 'ECO2_BEAST_MYTHIC_8'], weight: 35 }
       ]
     },
     west_grove: {
@@ -63,7 +63,7 @@
         { id: 'west_hound_pool', nameTh: 'ฝูงอสูรหมาป่าโลหิตและหมูป่า', min: 2, max: 3, speciesIds: ['BEAST_IRON_BOAR', 'BEAST_BLOOD_FIEND_HOUND_4'], weight: 30 },
         { id: 'west_treant_pool', nameTh: 'ดงงูพฤกษาพันปีและกวางเมฆาคราม', min: 3, max: 4, speciesIds: ['BEAST_ANCIENT_TREANT_SERPENT_4', 'BEAST_THUNDER_HORN_STAG_4', 'BEAST_MIST_JADE_STAG'], weight: 25 },
         { id: 'west_shadow_pool', nameTh: 'ถ้ำค้างคาวเงาหยินรัตติกาล', min: 3, max: 3, speciesIds: ['BEAST_YIN_SHADOW_BAT_3', 'BEAST_EMERALD_PYTHON'], weight: 15 },
-        { id: 'west_ecology_t3', nameTh: 'ดงพฤกษาและอสรพิษประจิม', min: 3, max: 3, speciesIds: ['ECO2_BEAST_SERPENT_3', 'ECO2_BEAST_PLANT_SPIRIT_3', 'ECO2_BEAST_ARTHROPOD_3', 'ECO2_BEAST_CANINE_3', 'ECO2_BEAST_FELINE_3', 'ECO2_BEAST_AQUATIC_3'], weight: 30 },
+        { id: 'west_ecology_t3', nameTh: 'ดงพฤกษาและอสรพิษประจิม', min: 3, max: 3, speciesIds: ['ECO2_BEAST_SERPENT_3', 'ECO2_BEAST_PLANT_SPIRIT_3', 'ECO2_BEAST_ARTHROPOD_3', 'ECO2_BEAST_CANINE_3', 'ECO2_BEAST_FELINE_3', 'ECO2_BEAST_BOAR_3'], weight: 30 },
         { id: 'west_ecology_t4', nameTh: 'อาณาเขตเงาพฤกษาหมื่นพิษ', min: 4, max: 4, speciesIds: ['ECO2_BEAST_SERPENT_4', 'ECO2_BEAST_PLANT_SPIRIT_4', 'ECO2_BEAST_ARTHROPOD_4', 'ECO2_BEAST_CANINE_4'], weight: 25 }
       ]
     },
@@ -77,8 +77,8 @@
         { id: 'east_tortoise_pool', nameTh: 'ดงเต่าศิลาเพลิงพิภพ', min: 4, max: 4, speciesIds: ['BEAST_LAVA_FLAME_TORTOISE_4', 'BEAST_SAND_SCORPION'], weight: 25 },
         { id: 'east_drake_pool', nameTh: 'ผากิ้งก่ามังกรและเหยี่ยวดารา', min: 4, max: 5, speciesIds: ['BEAST_THUNDER_DRAKE_LIZARD', 'BEAST_ASTRAL_VOID_HAWK_5'], weight: 25 },
         { id: 'east_leviathan_pool', nameTh: 'แอ่งน้ำเต่ามังกรสมุทรดึกดำบรรพ์', min: 5, max: 5, speciesIds: ['BEAST_ABYSSAL_LEVIATHAN_TURTLE', 'KING_EMERALD_SERPENT_SOUTH'], weight: 15 },
-        { id: 'east_ecology_t3_t4', nameTh: 'ผาศิลาอสูรหมีและเต่าเกราะ', min: 3, max: 4, speciesIds: ['ECO2_BEAST_URSINE_3', 'ECO2_BEAST_BOAR_3', 'ECO2_BEAST_SHELL_3', 'ECO2_BEAST_CHIMERA_3', 'ECO2_BEAST_URSINE_4', 'ECO2_BEAST_BOAR_4', 'ECO2_BEAST_SHELL_4'], weight: 30 },
-        { id: 'east_ecology_t4_t5', nameTh: 'วังน้ำวนและผาอสูรดึกดำบรรพ์', min: 4, max: 5, speciesIds: ['ECO2_BEAST_CHIMERA_4', 'ECO2_BEAST_CHIMERA_5', 'ECO2_BEAST_SHELL_5', 'ECO2_BEAST_AQUATIC_4', 'ECO2_BEAST_AQUATIC_5', 'ECO2_BEAST_ARTHROPOD_5'], weight: 25 }
+        { id: 'east_ecology_t3_t4', nameTh: 'ผาศิลาอสูรหมีและเต่าเกราะ', min: 3, max: 4, speciesIds: ['ECO2_BEAST_URSINE_3', 'ECO2_BEAST_BOAR_3', 'ECO2_BEAST_SHELL_3', 'ECO2_BEAST_CHIMERA_3', 'ECO2_BEAST_URSINE_4', 'ECO2_BEAST_BOAR_4', 'ECO2_BEAST_SHELL_4', 'ECO2_BEAST_AVIAN_3'], weight: 30 },
+        { id: 'east_ecology_t4_t5', nameTh: 'วังน้ำวนและผาอสูรดึกดำบรรพ์', min: 4, max: 5, speciesIds: ['ECO2_BEAST_CHIMERA_4', 'ECO2_BEAST_CHIMERA_5', 'ECO2_BEAST_ARTHROPOD_5', 'ECO2_BEAST_FELINE_4', 'ECO2_BEAST_BOAR_5', 'ECO2_BEAST_ARTHROPOD_4'], weight: 25 }
       ]
     },
     north_peak: {
@@ -127,6 +127,7 @@
     const maxTier = pool ? pool.max : z.max;
     const allCands = (JD.BEASTS.species || []).concat(JD.BEASTS.kings || []);
     let cands = allCands.filter(s => {
+      if (s.terrain === 'water' || s.archetype === 'AQUATIC') return false;
       if (pool && pool.speciesIds && pool.speciesIds.length) {
         if (!pool.speciesIds.includes(s.id)) return false;
       }
@@ -135,12 +136,21 @@
       return s.tier >= minTier && s.tier <= maxTier && Array.isArray(s.drops) && s.drops.some(id => ECO.matById[id]);
     });
 
-    if (!cands.length) {
-      cands = (JD.BEASTS.species || []).filter(s => s.tier >= z.min && s.tier <= z.max && (!opts.ordinary || !legendSpecies(s)) && (!opts.legendary || legendSpecies(s)) && Array.isArray(s.drops) && s.drops.some(id => ECO.matById[id]));
+    let species = null;
+    if (opts.speciesId) {
+      const s = allCands.find(x => x.id === opts.speciesId);
+      if (!s || s.terrain === 'water' || s.archetype === 'AQUATIC') return null;
+      species = s;
+    } else {
+      if (!cands.length) {
+        cands = (JD.BEASTS.species || []).filter(s => {
+          if (s.terrain === 'water' || s.archetype === 'AQUATIC') return false;
+          return s.tier >= z.min && s.tier <= z.max && (!opts.ordinary || !legendSpecies(s)) && (!opts.legendary || legendSpecies(s)) && Array.isArray(s.drops) && s.drops.some(id => ECO.matById[id]);
+        });
+      }
+      if (!cands.length) return null;
+      species = W.rng.pick(cands);
     }
-    if (!cands.length) return null;
-
-    const species = W.rng.pick(cands);
     let x = W.rng.int(z.x0, z.x1), y = W.rng.int(z.y0, z.y1);
     if (W.map && MAP.blocked(W.map, x, y)) {
       const free = MAP.nearestFree(W.map, x, y);

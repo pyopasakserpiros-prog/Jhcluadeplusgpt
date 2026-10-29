@@ -441,16 +441,38 @@
     if (e.energyRestore) { s.energy = Math.min(100, s.energy + e.energyRestore); r.msgs.push('คลายเหนื่อย'); } if (e.restRestore) s.rest = Math.min(100, s.rest + e.restRestore);
     return r;
   };
-  const consume = (W, n, key) => {
-    const q = (n.inv.pillQuality && n.inv.pillQuality[key]) || 1;
-    n.inv.pills[key]--;
-    if (n.inv.pills[key] <= 0) {
-      delete n.inv.pills[key];
-      if (n.inv.pillQuality) delete n.inv.pillQuality[key];
+  const isPillAllowed = (n, key) => {
+    const info = ECO.pillInfo(key);
+    if (!info) return false;
+    const p = info.effect && info.effect.compatiblePath;
+    return !p || (n.cult && n.cult.path === p);
+  };
+  const pickPill = (n, effectKey, fallbackList) => {
+    if (!n.inv || !n.inv.pills) return null;
+    if (fallbackList && Array.isArray(fallbackList)) {
+      const basic = fallbackList.find(k => (n.inv.pills[k] || 0) > 0 && isPillAllowed(n, k));
+      if (basic) return basic;
     }
+    for (const k of Object.keys(n.inv.pills)) {
+      if ((n.inv.pills[k] || 0) <= 0 || !isPillAllowed(n, k)) continue;
+      const info = ECO.pillInfo(k);
+      if (info && info.effect && info.effect[effectKey]) return k;
+    }
+    return null;
+  };
+  const consume = (W, n, key) => {
+    if (!n.inv || !n.inv.pills || (n.inv.pills[key] || 0) <= 0) return null;
+    const q = (n.inv.pillQuality && n.inv.pillQuality[key]) || 1;
     const res = ECO.applyQualityPill(W, n, key, q);
-    if (res && (W.t + (n.n || 0)) % 2 === 0) {
-      W.log('train', n.h.name.given + ' ใช้โอสถ「' + ECO.name(key) + '」เพื่อรักษาฟื้นฟูร่างกาย', [n.id]);
+    if (res) {
+      n.inv.pills[key]--;
+      if (n.inv.pills[key] <= 0) {
+        delete n.inv.pills[key];
+        if (n.inv.pillQuality) delete n.inv.pillQuality[key];
+      }
+      if ((W.t + (n.n || 0)) % 2 === 0) {
+        W.log('train', n.h.name.given + ' ใช้โอสถ「' + ECO.name(key) + '」เพื่อรักษาฟื้นฟูร่างกาย', [n.id]);
+      }
     }
     return res;
   };
@@ -473,19 +495,22 @@
     if (owned) return CPE.consumeCrafted(W, n, owned);
     if (!n.inv.pills || !Object.keys(n.inv.pills).length) return;
     let k;
-    if (n.inj && n.inj.length && (k = firstOf(n, R.wound))) return consume(W, n, k);
-    if (s.hp < hm * 0.5 && (k = firstOf(n, R.hp))) return consume(W, n, k);
-    if (s.heartDemon > (n.cult && n.cult.path === 'DEMON' ? 62 : 45) && (k = firstOf(n, R.calm))) return consume(W, n, k);
-    if (n.cult && n.cult.toxic > (n.cult.path === 'DEMON' ? 56 : 40) && (k = firstOf(n, R.detox))) return consume(W, n, k);
-    if (s.energy < 18 && (k = firstOf(n, R.vigor))) return consume(W, n, k);
+    if (n.inj && n.inj.length && (k = pickPill(n, 'healInjury', R.wound))) return consume(W, n, k);
+    if (s.hp < hm * 0.5 && (k = pickPill(n, 'healHealth', R.hp))) return consume(W, n, k);
+    if (s.heartDemon > (n.cult && n.cult.path === 'DEMON' ? 62 : 45) && (k = pickPill(n, 'clearHeartDemon', R.calm))) return consume(W, n, k);
+    if (n.cult && n.cult.toxic > (n.cult.path === 'DEMON' ? 56 : 40) && (k = pickPill(n, 'clearToxic', R.detox))) return consume(W, n, k);
+    if (s.energy < 18 && (k = pickPill(n, 'energyRestore', R.vigor))) return consume(W, n, k);
   };
   CPE.fightUse = (W, n, ctx) => {
     if (!n.inv || (ctx.pillAt || 0) > W.t) return false; const s = n.h.state, R = JD.CP.RECOVERY; let k;
     const owned = s.hp < CULT.hpMax(n) * 0.38 && pickCrafted(n, 'healHealth') || n.cult && s.qi != null && s.qi < CULT.qiMax(n) * 0.2 && pickCrafted(n, 'qiRestore');
     if (owned && CPE.consumeCrafted(W, n, owned)) { ctx.pillAt = W.t + 6; n.fx = {t:W.t,text:'💊'}; return true; }
     if (!n.inv.pills) return false;
-    if (s.hp < CULT.hpMax(n) * 0.38 && (k = firstOf(n, R.hp))) { ctx.pillAt = W.t + 6; consume(W, n, k); n.fx = { t: W.t, text: '💊' }; return true; }
-    if (n.cult && s.qi != null && s.qi < CULT.qiMax(n) * 0.2 && (k = firstOf(n, R.qi))) { ctx.pillAt = W.t + 6; consume(W, n, k); n.fx = { t: W.t, text: '💊' }; return true; }
+    if (n.sx && n.sx.some(x => x.k === 'poison') && (k = pickPill(n, 'clearPoison', null))) {
+      ctx.pillAt = W.t + 6; if (consume(W, n, k)) { n.fx = { t: W.t, text: '💊' }; return true; }
+    }
+    if (s.hp < CULT.hpMax(n) * 0.38 && (k = pickPill(n, 'healHealth', R.hp))) { ctx.pillAt = W.t + 6; if (consume(W, n, k)) { n.fx = { t: W.t, text: '💊' }; return true; } }
+    if (n.cult && s.qi != null && s.qi < CULT.qiMax(n) * 0.2 && (k = pickPill(n, 'qiRestore', R.qi))) { ctx.pillAt = W.t + 6; if (consume(W, n, k)) { n.fx = { t: W.t, text: '💊' }; return true; } }
     return false;
   };
   // Only the master, treasury elder, or an explicitly recorded acting officer
@@ -713,10 +738,20 @@
   };
   A.personalPillUse = {
     nameTh:'ใช้โอสถส่วนตัว',icon:'💊',color:'#7fd1b9',
-    can(n) { return !!(n.inv && (n.inv.craftedPills||[]).some(p=>p.intent==='keep' && ECO.pillInfo(p.key)?.effect.healHealth) && n.h.state.hp < CULT.hpMax(n)*0.8); },
+    can(n) {
+      if (!n.inv || n.h.state.hp >= CULT.hpMax(n) * 0.8) return false;
+      const hasCrafted = (n.inv.craftedPills || []).some(p => p.intent === 'keep' && p.qty > 0 && ECO.pillInfo(p.key)?.effect.healHealth);
+      if (hasCrafted) return true;
+      return !!pickPill(n, 'healHealth');
+    },
     score(n,W,S) { S.add('บาดเจ็บและมีโอสถส่วนตัว',2.4); },
     where(W,n) { return {pos:{x:n.x,y:n.y}}; },dur:()=>1,
-    done(n,W) { const list=n.inv.craftedPills||[], i=list.findIndex(p=>p.intent==='keep' && ECO.pillInfo(p.key)?.effect.healHealth); if(i<0)return; CPE.consumeCrafted(W,n,list[i]); }
+    done(n,W) {
+      const list = n.inv.craftedPills || [], i = list.findIndex(p => p.intent === 'keep' && p.qty > 0 && ECO.pillInfo(p.key)?.effect.healHealth);
+      if (i >= 0) return CPE.consumeCrafted(W, n, list[i]);
+      const k = pickPill(n, 'healHealth');
+      if (k) consume(W, n, k);
+    }
   };
   g.CPE = CPE;
   if (typeof module === 'object' && module.exports) module.exports = CPE;

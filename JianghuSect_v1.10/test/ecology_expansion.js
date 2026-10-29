@@ -1,7 +1,7 @@
 'use strict';
 const assert = require('assert');
 const G = require('./load.js');
-const { SIM, ECO, EXT, AI, HC, CULT, SECT, CPE, MAP, WILD, STATS, JD } = G;
+const { SIM, ECO, EXT, AI, HC, CULT, SECT, CPE, MAP, WILD, STATS, JD, EXPED } = G;
 
 console.log('Testing Living Beast & Craft Ecology Expansion (v1.10.12)...');
 
@@ -299,6 +299,208 @@ function makeWorld(seed) {
   assert.strictEqual(bA.power, bB.power, 'Beast power must match deterministically');
 
   console.log('    PASS: Save/load serialization and deterministic seed execution verified');
+}
+
+// -------------------------------------------------------------
+// Test Group 8: NPC Healing Pill Autonomous Usage & Fight Usage (Codex Finding 1)
+// -------------------------------------------------------------
+{
+  console.log('  Testing Autonomous & In-Fight Usage of ECO2_ Healing Pills...');
+  const W = makeWorld('npc-pill-use-seed');
+  const npc = W.npcs[0];
+  const pillKey = 'P:ECO2_REC_PILL_HEAL_2';
+  const info = ECO.pillInfo(pillKey);
+  assert(info && info.effect && info.effect.healHealth, 'Pill must have healHealth effect');
+
+  // Case 1: Member has low HP (10%) and holds pill in personal bag
+  const hpMax = CULT.hpMax(npc);
+  npc.h.state.hp = hpMax * 0.10;
+  npc.inv.pills = { [pillKey]: 2 };
+
+  // Personal pill use check
+  const actionPillUse = AI.ACTS && AI.ACTS.personalPillUse;
+  assert(actionPillUse, 'AI.ACTS.personalPillUse action must exist');
+  assert.strictEqual(actionPillUse.can(npc, W), true, 'personalPillUse.can should be true at 10% HP');
+
+  // Execute CPE.autoUse
+  const hpBeforeAuto = npc.h.state.hp;
+  CPE.autoUse(W, npc);
+  assert(npc.h.state.hp > hpBeforeAuto, 'autoUse should restore HP from ECO2_ heal pill');
+  assert.strictEqual(npc.inv.pills[pillKey], 1, 'autoUse must decrement pill count by exactly 1');
+
+  // Execute personalPillUse.done with remaining 1 pill
+  const hpBeforeAction = npc.h.state.hp;
+  npc.h.state.hp = hpMax * 0.20; // set below 0.8
+  actionPillUse.done(npc, W);
+  assert(npc.h.state.hp > hpBeforeAction, 'personalPillUse.done should restore HP');
+  assert.strictEqual(npc.inv.pills[pillKey] || 0, 0, 'Pill count must decrement to 0 and remove key');
+
+  // Case 2: High HP (90%) - should NOT use pill
+  npc.h.state.hp = hpMax * 0.90;
+  npc.inv.pills = { [pillKey]: 1 };
+  assert.strictEqual(actionPillUse.can(npc, W), false, 'personalPillUse.can must be false at 90% HP');
+  CPE.autoUse(W, npc);
+  assert.strictEqual(npc.inv.pills[pillKey], 1, 'autoUse must not consume pill at high HP');
+
+  // Case 3: In-combat usage via CPE.fightUse
+  npc.h.state.hp = hpMax * 0.25; // < 0.38
+  const fightCtx = { pillAt: 0 };
+  const used = CPE.fightUse(W, npc, fightCtx);
+  assert.strictEqual(used, true, 'fightUse should return true when consuming healing pill');
+  assert.strictEqual(npc.inv.pills[pillKey] || 0, 0, 'fightUse must decrement pill count');
+  assert(fightCtx.pillAt > W.t, 'fightUse must set pill cooldown');
+
+  console.log('    PASS: NPC healing pill selection, consumption decrement, threshold gating, and fightUse verified');
+}
+
+// -------------------------------------------------------------
+// Test Group 9: Combat Poison Removal vs Cultivation Toxic (Codex Finding 2)
+// -------------------------------------------------------------
+{
+  console.log('  Testing Combat Poison (clearPoison) vs Cultivation Toxic (clearToxic)...');
+  const W = makeWorld('poison-clear-seed');
+  const npc = W.npcs[0];
+
+  // Set up both combat status and cultivation body toxic
+  npc.sx = [
+    { k: 'poison', until: W.t + 60 },
+    { k: 'burn', until: W.t + 60 }
+  ];
+  npc.cult.toxic = 35;
+
+  const purgePillKey = 'P:ECO2_REC_PILL_HEAL_6'; // Has clearPoison: 120
+  const infoPurge = ECO.pillInfo(purgePillKey);
+  assert(infoPurge && infoPurge.effect && infoPurge.effect.clearPoison, 'HEAL_6 must have clearPoison effect');
+
+  // Apply clearPoison pill
+  const res = ECO.applyQualityPill(W, npc, purgePillKey, 1.0);
+  assert(res, 'applyQualityPill should succeed');
+
+  // Verify combat poison is cleared while burn remains
+  assert(!npc.sx.some(x => x.k === 'poison'), 'Combat poison status must be removed');
+  assert(npc.sx.some(x => x.k === 'burn'), 'Burn status must remain intact');
+
+  // Now test clearToxic pill (reduces body toxic)
+  const detoxPillKey = 'P:ECO2_REC_PILL_PURGE_2';
+  const infoDetox = ECO.pillInfo(detoxPillKey);
+  assert(infoDetox && infoDetox.effect && infoDetox.effect.clearToxic, 'PURGE_2 must have clearToxic effect');
+  const toxicBefore = npc.cult.toxic;
+  ECO.applyQualityPill(W, npc, detoxPillKey, 1.0);
+  assert(npc.cult.toxic < toxicBefore, 'clearToxic pill must reduce cult.toxic');
+
+  console.log('    PASS: clearPoison clears combat status from npc.sx without confusing with cult.toxic');
+}
+
+// -------------------------------------------------------------
+// Test Group 10: Habitat & Spawning Strict Isolation (Codex Finding 3 & 5)
+// -------------------------------------------------------------
+{
+  console.log('  Testing Terrestrial vs Aquatic Habitat Isolation & Full 80 Species Encounter Coverage...');
+  const W = makeWorld('habitat-isolation-seed');
+  WILD.init(W);
+
+  // 1. Verify no water creatures in any on-map pool
+  for (const [zId, z] of Object.entries(WILD.zones)) {
+    (z.pools || []).forEach(p => {
+      p.speciesIds.forEach(spId => {
+        const sp = JD.BEASTS.species.find(s => s.id === spId) || JD.BEASTS.kings.find(s => s.id === spId);
+        assert(sp, 'Unknown species in pool: ' + spId);
+        assert(sp.terrain !== 'water' && sp.archetype !== 'AQUATIC',
+          'Aquatic beast must never be placed in land map pool (' + zId + '): ' + spId);
+      });
+    });
+  }
+
+  // 2. WILD.spawn safety guard against aquatic creatures on sect map
+  const aquaticSp = JD.BEASTS.species.find(s => s.terrain === 'water' || s.archetype === 'AQUATIC');
+  assert(aquaticSp, 'Aquatic species must exist in catalog');
+  // Attempting to spawn aquatic beast via WILD.spawn on sect land must return null
+  const spawnAttempt = WILD.spawn(W, 'meadow', 'meadow_ecology_t1', { speciesId: aquaticSp.id });
+  assert.strictEqual(spawnAttempt, null, 'WILD.spawn must refuse aquatic beasts on sect map');
+
+  // 3. Verify Expedition water region exists and hunts aquatic beasts
+  assert(EXPED && EXPED.REGIONS, 'EXPED.REGIONS must exist');
+  const waterRegion = EXPED.REGIONS.find(r => r.id === 'water');
+  assert(waterRegion, 'Water expedition region (ลุ่มน้ำสาบมังกรคราม) must exist');
+  assert.strictEqual(waterRegion.terrain, 'water', 'Water region must have terrain: water');
+
+  // Test beast pool in water region
+  const waterBeasts = EXPED.beastPool(waterRegion);
+  assert(Array.isArray(waterBeasts) && waterBeasts.length > 0, 'Water expedition must encounter beasts');
+  waterBeasts.forEach(b => {
+    assert(b.terrain === 'water' || b.archetype === 'AQUATIC', 'Water expedition pool must contain aquatic beasts: ' + b.id);
+  });
+
+  // 4. Verify all 80 species have accessible encounters
+  const mapSpecies = new Set();
+  for (const z of Object.values(WILD.zones)) {
+    (z.pools || []).forEach(p => p.speciesIds.forEach(id => mapSpecies.add(id)));
+  }
+  const waterSpecies = JD.BEASTS.species.filter(s => s.terrain === 'water' || s.archetype === 'AQUATIC');
+  const allBeastIds = new Set(JD.ECOLOGY.species.map(s => s.id));
+
+  allBeastIds.forEach(id => {
+    const isMap = mapSpecies.has(id);
+    const isWater = waterSpecies.some(s => s.id === id);
+    assert(isMap || isWater, 'Species has no reachable encounter route: ' + id);
+  });
+
+  console.log('    PASS: 0 aquatic beasts on land map; water expedition encounters verified; 100% of 80 species reachable');
+}
+
+// -------------------------------------------------------------
+// Test Group 11: External Market High-Tier Item Trade & Safety (Codex Finding 4)
+// -------------------------------------------------------------
+{
+  console.log('  Testing External Market High-Tier Materials, ECO2_ Pills & Arbitrage Protection...');
+  const W = makeWorld('external-market-high-tier-seed');
+  EXT.ensure(W);
+  W.sect.stones = 500;
+
+  // 1. Verify EXT.isTradable accepts ECO2_ materials and pills
+  const t5Mat = 'ECO2_MAT_AVIAN_A_5';
+  const eco2Pill = 'P:ECO2_REC_PILL_HEAL_2';
+  assert.strictEqual(EXT.isTradable(t5Mat), true, 'T5 material must be tradable');
+  assert.strictEqual(EXT.isTradable(eco2Pill), true, 'ECO2 pill must be tradable');
+
+  // 2. Sect sells surplus high-tier material to visitor wanting it
+  const visitor = EXT.openVisit(W, {
+    nameTh: 'พ่อค้าวัตถุดิบล้ำค่า',
+    kind: 'trader',
+    traderType: 'rare',
+    stones: 1000,
+    stayDays: 3,
+    stock: {},
+    wants: { [t5Mat]: 3 }
+  });
+
+  // Put surplus in sect stock (reserveForSect will protect recipe inputs)
+  ECO.add(W, t5Mat, 10);
+  const stonesBefore = W.sect.stones;
+  const visitorStonesBefore = visitor.stones;
+
+  EXT.tradeSect(W, visitor);
+  assert(W.sect.stones > stonesBefore, 'Sect must gain stones from selling surplus high-tier material');
+  assert(visitor.stones < visitorStonesBefore, 'Visitor stones must decrease');
+  assert(ECO.count(W, t5Mat) < 10, 'Sect stock of sold material must decrease');
+
+  // 3. Visitor with 0 stones cannot buy
+  visitor.sectTradeDay = -1;
+  visitor.stones = 0;
+  const sectStonesCheck = W.sect.stones;
+  EXT.tradeSect(W, visitor);
+  assert.strictEqual(W.sect.stones, sectStonesCheck, 'Trade must not execute when visitor has 0 stones');
+
+  // 4. Sect reserve protection: cannot sell below reserve floor
+  visitor.sectTradeDay = -1;
+  ECO.take(W, t5Mat, ECO.count(W, t5Mat) - 2); // leave only 2 units (below reserve floor)
+  visitor.stones = 500;
+  visitor.wants[t5Mat] = 2;
+  const countAtReserve = ECO.count(W, t5Mat);
+  EXT.tradeSect(W, visitor);
+  assert.strictEqual(ECO.count(W, t5Mat), countAtReserve, 'Sect must not sell material at or below reserve floor');
+
+  console.log('    PASS: External market high-tier material & pill trading, stone exchange, and reserve floor verified');
 }
 
 console.log('ALL ECOLOGY EXPANSION TESTS PASSED.');
