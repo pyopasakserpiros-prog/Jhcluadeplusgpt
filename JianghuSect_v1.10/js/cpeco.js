@@ -127,7 +127,7 @@
     dur: n => 150 + Math.round(E(n, 'personality.discipline') * 0.5),
     start(n, W, ctx) { ctx.items = {}; ctx.cpValue = 0; return true; },
     tick(n, W, ctx) {
-      n.h.state.energy = Math.max(0, n.h.state.energy - 0.06); n.h.state.rest -= 0.03; HC.practice(n, 'herbalism', 1 / 55, 1);
+      n.h.state.energy = Math.max(0, n.h.state.energy - 0.06); n.h.state.rest -= 0.03; (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'herbalism', 1 / 55, 1);
       if (W.t % 60 === 0) {
         const sk = n.h.skills.herbalism || 0, cnt = Math.max(1, Math.round((1.4 + sk / 55) * (0.7 + W.rng.next() * 0.6) * (W.season === 3 ? 0.6 : W.season === 0 ? 1.2 : 1)));
         for (let i = 0; i < cnt; i++) { const r = W.rng.next(); const tier = r < 0.02 + sk / 1500 ? 3 : r < 0.18 + sk / 400 ? 2 : 1; const pool = ECO.herbPool ? ECO.herbPool(tier) : null; const id = pool ? W.rng.pick(pool) : null; if (id) { ctx.cpValue += CPE.reward(W, id, 1); ECO.add(W, id, 1); ctx.items[id] = (ctx.items[id] || 0) + 1; } }
@@ -265,7 +265,7 @@
       if (e.cbBuff) return;
       if (e.cultivationProgress && info.tier <= c.stage + 1 && c.prog < CULT.threshold(n) * 0.85 && (c.toxic || 0) < (c.path === 'DEMON' ? 50 : 35)) consider(it, 0.5 + e.cultivationProgress / 160 + (E(n, 'personality.ambition') - 50) / 250, 'เร่งตบะ');
     });
-    if (c) { ['WEAPON', 'ARMOR', 'ACCESSORY'].forEach(slot => { const cur = n.equip && n.equip[slot], cs = cur ? ST.gearScore(cur) : 0; W.sect.gear.forEach(gr => { if (gr.slot !== slot || (gr.minStage || 1) > c.stage + 1) return; const gs = ST.gearScore(gr); if (gs > cs * 1.2 + 8) consider({ kind: 'gear', gear: gr, price: CPE.gearPrice(W, gr) }, 0.6 + Math.min(1.2, (gs - cs) / Math.max(40, cs)) * 0.5, 'อุปกรณ์ที่ดีกว่า'); }); }); }
+    if (c) { ['WEAPON', 'ARMOR', 'ACCESSORY'].forEach(slot => { const cur = n.equip && n.equip[slot], cs = cur ? g.MARTIAL.gearSuitability(n, cur).score : 0; W.sect.gear.forEach(gr => { if (gr.slot !== slot || (gr.minStage || 1) > c.stage + 1) return; const gs = g.MARTIAL.gearSuitability(n, gr, CPE.gearPrice(W, gr)).score; if (gs > cs * 1.2 + 8) consider({ kind: 'gear', gear: gr, price: CPE.gearPrice(W, gr) }, 0.6 + Math.min(1.2, (gs - cs) / Math.max(40, cs)) * 0.5, g.MARTIAL.gearSuitability(n, gr).reasons.join(' · ')); }); }); }
     if (W.t > 0) n._pickCache = { t: W.t, cp, hp: n.h.state.hp, gearLen: W.sect.gear.length, val: best };
     return best;
   };
@@ -275,13 +275,13 @@
     if(p.price!==quote || (p.kind==='pill' && (!ECO.isPill(p.key) || !ECO.pillInfo(p.key)))) return false;
     const c = CPE.S(W);
     if (p.kind === 'pill') { const quality = ECO.pillQuality(W, p.key); if (!ECO.take(W, p.key, 1)) return false; if (!CPE.spend(W, n, p.price, 'ซื้อ' + ECO.name(p.key))) { ECO.add(W, p.key, 1, quality); return false; } ECO.addPersonalPill(n, p.key, quality); }
-    else { const i = W.sect.gear.indexOf(p.gear); if (i < 0) return false; if (!CPE.spend(W, n, p.price, 'ซื้อ' + p.gear.nameTh)) return false; W.sect.gear.splice(i, 1); const cur = n.equip[p.gear.slot]; if (cur) W.sect.gear.push(cur); n.equip[p.gear.slot] = p.gear; ST.dirty(n); W.log('gear', n.h.name.given + ' แลกคุณูปการซื้อ「' + p.gear.nameTh + '」จากร้านสำนัก', [n.id]); }
-    c.sales++; HC.feel(n, { mood: 1.5 }); AI.mem(W, n, 'ซื้อ' + (p.kind === 'pill' ? ECO.name(p.key) : p.gear.nameTh) + 'ด้วยแต้มคุณูปการ', 0.25); return true;
+    else { if (!n.cult || !['WEAPON', 'ARMOR', 'ACCESSORY'].includes(p.gear && p.gear.slot) || (p.gear.minStage || 1) > n.cult.stage + 1) return false; const i = W.sect.gear.indexOf(p.gear); if (i < 0) return false; if (!CPE.spend(W, n, p.price, 'ซื้อ' + p.gear.nameTh)) return false; W.sect.gear.splice(i, 1); const cur = n.equip[p.gear.slot]; if (cur) W.sect.gear.push(cur); n.equip[p.gear.slot] = p.gear; ST.dirty(n); W.log('gear', n.h.name.given + ' แลกคุณูปการซื้อ「' + p.gear.nameTh + '」จากร้านสำนัก', [n.id]); }
+    c.sales++; HC.feel(n, { mood: 1.5 }); AI.mem(W, n, 'ซื้อ' + (p.kind === 'gear' ? p.gear.nameTh : ECO.name(p.key)) + 'ด้วยแต้มคุณูปการ', 0.25); return true;
   };
   A.shop = {
     nameTh: 'ร้านค้าสำนัก', icon: '🛒', color: '#e0b84a',
     can: (n, W) => (n.cp || 0) >= 4 && !!CPE.pickPurchase(W, n),
-    score(n, W, S) { const p = CPE.pickPurchase(W, n); if (!p) return S.add('ไม่มีของที่อยากได้', -3); S.add('อยากได้ ' + (p.kind === 'pill' ? ECO.name(p.key) : p.gear.nameTh) + ' (' + p.price + ' คป. · ' + p.why + ')', 0.55 + p.s * 0.35 + (E(n, 'values.wealthResource') - 50) / 300); },
+    score(n, W, S) { const p = CPE.pickPurchase(W, n); if (!p) return S.add('ไม่มีของที่อยากได้', -3); S.add('อยากได้ ' + (p.kind === 'gear' ? p.gear.nameTh : ECO.name(p.key)) + ' (' + p.price + ' คป. · ' + p.why + ')', 0.55 + p.s * 0.35 + (E(n, 'values.wealthResource') - 50) / 300); },
     where: (W, n) => { const s = AI.freeStation(W, n, 'browse', 'market'); return s ? { st: s } : null; },
     dur: () => 25,
     done(n, W) { CPE.buy(W, n, CPE.pickPurchase(W, n)); }
@@ -332,8 +332,8 @@
       const learning = n.cult && n.cult.learning;
       if (!learning) return 'done';
       learning.got = Math.min(learning.need, learning.got + learning.need * (ctx.rate || 0.005));
-      HC.practice(n, 'SCRIPTURE', 1 / 30, 1.1);
-      const teacher = W.byId[ctx.teacherId]; if (teacher && !teacher.dead) { HC.practice(teacher, 'SCRIPTURE', 1 / 60, 0.8); teacher.merit = (teacher.merit || 0) + 0.005; }
+      (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'SCRIPTURE', 1 / 30, 1.1);
+      const teacher = W.byId[ctx.teacherId]; if (teacher && !teacher.dead) { (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(teacher, 'SCRIPTURE', 1 / 60, 0.8); teacher.merit = (teacher.merit || 0) + 0.005; }
       n.h.state.energy = Math.max(10, n.h.state.energy - 0.012); n.h.state.rest = Math.max(10, n.h.state.rest - 0.006);
     },
     done(n, W, ctx) {
@@ -385,14 +385,14 @@
       const before = n.cult.prog; CULT.gain(n, ctx.perTick || 0.1); ctx.gained += Math.max(0, n.cult.prog - before);
       n.h.state.energy = Math.max(10, n.h.state.energy - 0.018); n.h.state.rest = Math.max(10, n.h.state.rest - 0.012);
       if (W.t % 15 === 0) {
-        if (n.cult.path === 'BODY') HC.practice(n, 'BODY_REFINING', 0.05, 1.1);
+        if (n.cult.path === 'BODY') (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'BODY_REFINING', 0.05, 1.1);
         else if (n.cult.path === 'DEMON') {
-          HC.practice(n, n.cult.sub === 'VENOM_GU_SOVEREIGN' ? 'POISON' : 'SOUL_DIVINE', 0.05, 1.15);
+          (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, n.cult.sub === 'VENOM_GU_SOVEREIGN' ? 'POISON' : 'SOUL_DIVINE', 0.05, 1.15);
           if (n.h.state.heartDemon < 55) n.h.state.heartDemon = Math.min(55, (n.h.state.heartDemon || 0) + 0.15);
         } else if (n.cult.path === 'HEART_SOUL') {
-          HC.practice(n, 'SOUL_DIVINE', 0.05, 1.15);
+          (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'SOUL_DIVINE', 0.05, 1.15);
           n.h.state.heartDemon = Math.max(0, (n.h.state.heartDemon || 0) - 0.35);
-        } else HC.practice(n, 'SCRIPTURE', 0.05, 1.1);
+        } else (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'SCRIPTURE', 0.05, 1.1);
       }
     },
     done(n, W, ctx) {
@@ -415,6 +415,7 @@
     if (c && !c.learning) {
       const t = AI.nextTechToStudy(W, n);
       if (t) {
+        if (g.MARTIAL) return g.MARTIAL.startStudy(W, n, t.id).ok;
         const price = CPE.techPrice(W, t);
         if (price > 0 && !CPE.spend(W, n, price, 'เรียนวิชา「' + t.nameTh + '」')) return false;
         if (price > 0) CPE.S(W).techSales += price;

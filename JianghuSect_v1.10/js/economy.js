@@ -170,7 +170,7 @@
   }
   ECO.successChance = (npc, r) => {
     const skill = npc.h.skills[r.craft] != null ? npc.h.skills[r.craft] : 0;
-    return clamp(0.55 + (skill - r.minMastery) / 110 + HC.eff(npc, 'physiology.dexterity') / 500 + HC.eff(npc, 'intellect.focus') / 600 + HC.special(npc, 'craft.successBonus'), 0.15, 0.98);
+    return clamp(0.55 + (skill - r.minMastery) / 110 + HC.eff(npc, 'physiology.dexterity') / 500 + HC.eff(npc, 'intellect.focus') / 600 + HC.special(npc, 'craft.successBonus') + (g.MARTIAL ? (g.MARTIAL.lifeMult(npc, r.craft) - 1) * .35 : 0), 0.15, 0.98);
   };
   ECO.mintGear = (itemOrRecipe, q) => {
     q = q || 1;
@@ -190,7 +190,7 @@
     if (!paid) return { ok: false, rejected: true, text: 'ไม่มีวัตถุดิบที่จองไว้สำหรับงานนี้' };
     const ok = W.rng.next() < ECO.successChance(npc, r);
     const skill = npc.h.skills[r.craft] || 0;
-    HC.practice(npc, r.craft, ECO.craftHours(r, skill), 1.1);
+    (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(npc, r.craft, ECO.craftHours(r, skill), 1.1);
     if (!ok) {
       paid.inputs.forEach(i => { if (W.rng.chance(0.4)) ECO.add(W, i.matId, Math.min(i.count, Math.max(1, Math.floor(i.count / 2)))); });
       return { ok: false, text: 'ล้มเหลว สูญวัตถุดิบ' };
@@ -230,7 +230,7 @@
     quote.missing.forEach(i => ECO.take(W, i.id, i.n));
     quote.owned.forEach(i => { npc.inv.mats[i.id] -= i.n; if (npc.inv.mats[i.id] <= 0) delete npc.inv.mats[i.id]; });
     const skill = npc.h.skills[r.craft] || 0, ok = W.rng.next() < ECO.successChance(npc, r);
-    HC.practice(npc, r.craft, ECO.craftHours(r, skill), 1.1);
+    (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(npc, r.craft, ECO.craftHours(r, skill), 1.1);
     if (!ok) return { ok: false, reason: 'failed', cost: quote.cost };
     const q = clamp(0.85 + (skill - r.minMastery) / 160 + W.rng.gauss(0, 0.06), 0.7, 1.5);
     const qty = (r.yield || 1) + (W.rng.chance(clamp((skill - r.minMastery) / 120, 0, 0.5)) ? 1 : 0) + (r.starter ? 1 : 0);
@@ -337,6 +337,7 @@
   const HERBS = { 1: ['MAT_HERB_DEW_GRASS_1', 'MAT_HERB_CINDER_LEAF_1'], 2: ['MAT_HERB_JADE_LOTUS_2', 'MAT_HERB_MIST_ORCHID_2'], 3: ['MAT_HERB_BLOOD_GINSENG_3', 'MAT_HERB_VENOM_VINE_3', 'MAT_HERB_ANCIENT_MIST_FERN_3', 'MAT_HERB_MERIDIAN_FLOWER_3'] };
   const ORES = { 1: ['MAT_ORE_BLACK_IRON_1', 'MAT_ORE_CINNABAR_1'], 2: ['MAT_ORE_COLD_STEEL_2', 'MAT_ORE_JADE_SLATE_2'], 3: ['MAT_ORE_STAR_COPPER_3', 'MAT_ORE_MAGNET_LODESTONE_3', 'MAT_ORE_THUNDER_SCORCH_COPPER_3'] };
   ECO.harvestHerb = (W, npc, hours) => {
+    hours *= g.MARTIAL ? g.MARTIAL.lifeMult(npc, 'herbalism') : 1;
     const b = W.map.byId.herb_garden, sk = npc.h.skills.herbalism || 0;
     const out = [];
     const n = Math.max(0, Math.round(hours * (0.9 + sk / 60) * (0.7 + b.level * 0.3) * (0.8 + W.rng.next() * 0.4) * (W.season === 3 ? 0.55 : W.season === 0 ? 1.2 : 1)));
@@ -349,11 +350,13 @@
     return out;
   };
   ECO.harvestGrain = (W, npc, hours) => {
+    hours *= g.MARTIAL ? g.MARTIAL.lifeMult(npc, 'herbalism') : 1;
     const b = W.map.byId.farm;
     const n = Math.round(hours * (1.1 + (npc.h.skills.herbalism || 0) / 70 + HC.eff(npc, 'physiology.strength') / 250) * (0.8 + b.level * 0.25) * (W.season === 3 ? 0.4 : W.season === 1 ? 1.2 : 1) * (0.85 + W.rng.next() * 0.3));
     ECO.add(W, 'grain', n); return n;
   };
   ECO.mineYield = (W, npc, hours) => {
+    hours *= g.MARTIAL ? g.MARTIAL.lifeMult(npc, 'mining') : 1;
     const b = W.map.byId.mine, sk = npc.h.skills.mining || 0, out = [];
     const n = Math.max(0, Math.round(hours * (0.55 + sk / 120) * (0.7 + b.level * 0.3) * (0.7 + W.rng.next() * 0.6)));
     for (let i = 0; i < n; i++) {

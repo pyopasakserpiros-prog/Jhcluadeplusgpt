@@ -4,7 +4,7 @@
   'use strict';
   const U = g.U || require('./util.js'), HC = g.HC, MAP = g.MAP, CULT = g.CULT, ECO = g.ECO, SECT = g.SECT, AI = g.AI, COMBAT = g.COMBAT, EXPED = g.EXPED, JD = g.JD;
   const clamp = U.clamp;
-  const SIM = { VERSION: '1.10.10', MIN_PER_YEAR: 360 * 1440 };
+  const SIM = { VERSION: '1.10.11', MIN_PER_YEAR: 360 * 1440 };
   const E = (n, p) => HC.eff(n, p);
 
   const SEASON_TH = ['ฤดูใบไม้ผลิ', 'ฤดูร้อน', 'ฤดูใบไม้ร่วง', 'ฤดูหนาว'];
@@ -24,11 +24,12 @@
     return npc;
   };
   SIM.awaken = (W, rng, npc, stage) => {
-    CULT.awaken(npc, rng, null, W.day);
+    const chosen = CULT.awaken(npc, rng, null, W.day);
+    if (W._founding !== false) { npc.cult.sub = chosen.sub; if (CULT.trackDef(chosen.sub)) npc.cult.track = CULT.initTrack(chosen.sub, 1, W.day); }
     const c = npc.cult; if (typeof stage === 'function') stage = stage(c.path); c.stage = Math.min(stage, CULT.maxStage(npc));
     c.prog = Math.round(CULT.threshold(npc) * (0.1 + rng.next() * 0.6));
     const m = CULT.bestMantra(c.path, c.stage, npc); if (m) c.mantra = m.id;
-    const lib = JD.TECH.techniques.filter(t => !t.sourcePack).map(t => t.id);
+    const lib = JD.TECH.techniques.filter(t => !t.sourcePack && !t.martialRare).map(t => t.id);
     const cand = CULT.learnable(npc, lib).map(CULT.tech).filter(t => t.tier <= c.stage);
     const want = Math.min(CULT.maxTechs(npc) - 1, c.stage);
     for (let i = 0; i < want && cand.length; i++) { const t = rng.weighted(cand, x => 1 + x.power / 60 + (x.sub === c.sub ? 2 : 0)); c.techs.push(t.id); cand.splice(cand.indexOf(t), 1); }
@@ -56,7 +57,7 @@
     opts = opts || {};
     if (g.STATS) g.STATS.now = 0;
     const rng = new U.RNG(String(seed) + ':world');
-    const W = { v: SIM.VERSION, seed: String(seed), rng, t: 360 + 360 * 1440, speed: 1, npcs: [], byId: {}, logs: [], logSeq: 0, seqN: 0, fights: [], foes: [], foeById: {}, duelQueue: [], graveyard: [], gone: [], deaths: 0, avgSat: 60, avgMood: 10, weather: { kind: 'clear', t: 0 }, season: 0, day: 0, createdAt: 0 };
+    const W = { _founding: true, v: SIM.VERSION, seed: String(seed), rng, t: 360 + 360 * 1440, speed: 1, npcs: [], byId: {}, logs: [], logSeq: 0, seqN: 0, fights: [], foes: [], foeById: {}, duelQueue: [], graveyard: [], gone: [], deaths: 0, avgSat: 60, avgMood: 10, weather: { kind: 'clear', t: 0 }, season: 0, day: 0, createdAt: 0 };
     const cal = SIM.calendar(W.t); W.day = cal.day; W.season = cal.season; HC.nowDay = W.day;
     W.map = MAP.create(W.seed);
     W.market = ECO.newMarket(rng);
@@ -73,14 +74,15 @@
     // เริ่มเล็ก ๆ: เจ้าสำนัก + ศิษย์ 2 คน ที่เหลือรอผู้สมัครมาเอง
     for (let i = 0; i < 2; i++) { const n = SIM.buildNpc(W, rng, { sex: i === 0 ? (master.h.sex === 'M' ? 'F' : 'M') : rng.chance(0.5) ? 'M' : 'F', ageYears: rng.int(16, 23), quality: 0.5 + rng.gauss(0, 0.3), skillExp: 0.25, trainedness: 0.55, rank: 1, stage: 1, tenure: rng.int(200, 700), merit: 40 }); SIM.register(W, n); n.mentor = master.id; master.h.life.family.disciples.push(n.id); n.h.life.family.master = master.id; }
     // ---- ห้องสมุด/คลัง/ตำรับ ----
-    W.sect.library = JD.TECH.techniques.filter(t => !t.sourcePack && t.tier <= 2).map(t => t.id).concat(JD.TECH.techniques.filter(t => !t.sourcePack && t.tier === 3).slice(0, 12).map(t => t.id)).concat(JD.TECH.techniques.filter(t => !t.sourcePack && t.tier === 3 && (t.path === 'DEMON' || t.path === 'HEART_SOUL')).map(t => t.id));
+    W.sect.library = JD.TECH.techniques.filter(t => !t.sourcePack && !t.martialRare && t.tier <= 2).map(t => t.id).concat(JD.TECH.techniques.filter(t => !t.sourcePack && !t.martialRare && t.tier === 3).slice(0, 12).map(t => t.id)).concat(JD.TECH.techniques.filter(t => !t.sourcePack && !t.martialRare && t.tier === 3 && (t.path === 'DEMON' || t.path === 'HEART_SOUL')).map(t => t.id));
+    W._founding = false;
     const S = W.sect; S.stock.grain = 150; S.stock.meal = 30;
     ECO.recipesFor(W, ['ALCHEMY', 'FORGING', 'ARRAY', 'TALISMAN']).forEach(r => r.inputs.forEach(i => { const m = ECO.matById[i.matId]; if (m && m.tier <= 2) S.stock[i.matId] = Math.max(S.stock[i.matId] || 0, 8 + (m.tier === 1 ? 6 : 0)); }));
     // ไม่แจกโอสถจากอากาศเป็นสต็อกเริ่มต้น: ให้สมาชิกหลอมจากวัตถุดิบที่มี หรือหาได้จากภายนอก
     S.policy = SECT.initPolicy(W); if (SECT.ensureDirectives) { SECT.ensureDirectives(W); SECT.updateReserveDirectives(W); }
     if (g.ECO && g.ECO.ensureStockTracker) g.ECO.ensureStockTracker(W);
     if (g.SECT && g.SECT.ensureFacilityDemand) g.SECT.ensureFacilityDemand(W);
-    g.CPE.init(W); if (g.SECT && g.SECT.ensureDirectives) g.SECT.ensureDirectives(W); g.CONTENT.ensure(W);
+    g.CPE.init(W); if (g.SECT && g.SECT.ensureDirectives) g.SECT.ensureDirectives(W); g.CONTENT.ensure(W); g.MARTIAL.ensure(W);
     // ตำแหน่งผู้อาวุโส: เลือกผู้เหมาะสมที่สุด
     // วางตำแหน่งเริ่มต้น
     const pl = W.map.byId.plaza; W.npcs.forEach(n => SIM.placeNear(W, n, pl.x + pl.w / 2, pl.y + pl.h / 2, 12));
@@ -130,6 +132,7 @@
     if (g.CPE && g.CPE.retireNpc) g.CPE.retireNpc(W, n, 'ออกจากสำนัก');
     for (const k of Object.keys(n.equip || {})) { if (n.equip[k]) W.sect.gear.push(n.equip[k]); } n.equip = {};
     for (const k of Object.keys((n.inv && n.inv.pills) || {})) ECO.add(W, k, n.inv.pills[k]);
+    g.MARTIAL.returnKnowledge(W, n);
     for (const k of Object.keys((n.inv && n.inv.mats) || {})) ECO.add(W, k, n.inv.mats[k]);
     for (const id of ((n.inv && n.inv.techs) || [])) if (CULT.tech(id) && !W.sect.library.includes(id)) W.sect.library.push(id);
     for (const id of ((n.inv && n.inv.recipes) || [])) if (ECO.recipeById[id] && !W.sect.knownRecipes.includes(id)) { W.sect.knownRecipes.push(id); if (W.world && W.world.contentMetrics) W.world.contentMetrics.formulas++; }
@@ -217,9 +220,9 @@
         const cur = n.equip[slot];
         const cands = S.gear.filter(x => x.slot === slot && (x.minStage || 1) <= n.cult.stage + 1 && ((x.tier || 1) <= 1 || n.rank >= 4 || n.post));
         if (!cands.length) return;
-        cands.sort((a, b) => g.STATS.gearScore(b) - g.STATS.gearScore(a));
+        cands.sort((a, b) => g.MARTIAL.gearSuitability(n, b).score - g.MARTIAL.gearSuitability(n, a).score);
         const best = cands[0];
-        if (!cur || g.STATS.gearScore(best) > g.STATS.gearScore(cur) * 1.15) {
+        if (!cur || g.MARTIAL.gearSuitability(n, best).score > g.MARTIAL.gearSuitability(n, cur).score * 1.15) {
           S.gear.splice(S.gear.indexOf(best), 1);
           if (cur) S.gear.push(cur);
           n.equip[slot] = best;
@@ -349,7 +352,7 @@
       if (g.SECT && g.SECT.ensureFacilityDemand) g.SECT.ensureFacilityDemand(W);
       if (g.ECO && g.ECO.ensureStockTracker) g.ECO.ensureStockTracker(W);
       if (g.CPE && g.CPE.S) g.CPE.S(W);
-      g.CONTENT.ensure(W);
+      g.CONTENT.ensure(W); W._founding = false; g.MARTIAL.restore(W);
       if (legacyContent) W.npcs.forEach(n => {
         const a=n.act, ctx=a&&a.ctx;
         if(a && ['brew','forge','brewBasic'].includes(a.id) && a.stage==='do' && a.started2 && ctx && !ctx.craftReceipt) {

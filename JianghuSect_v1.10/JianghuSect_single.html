@@ -7556,6 +7556,59 @@ JD.EXPANSION=JD.EXPANSION||data;
 
 </script>
 <script>
+/* data/data_martial.js */
+/* Martial paths v1.10.11: native catalog extension; stable codes and no RNG. */
+(function(g){
+'use strict';
+const JD=g.JD, D=JD.MARTIAL={version:'1.10.11',types:{SWORD:'กระบี่',BLADE:'ดาบ',BOW:'ธนู',SPEAR:'หอก/ทวน',STAFF:'พลอง',FIST:'สนับหมัด',FOCUS:'สื่อปราณ',HEAVY:'เกราะหนัก',LIGHT:'เกราะเบา',ROBE:'อาภรณ์',RING:'แหวน',NECKLACE:'สร้อย',BRACELET:'กำไล',CHARM:'เครื่องราง'}};
+D.classify=(slot,name)=>{
+ if(slot==='WEAPON'){for(const [re,t] of [[/ธนู|คันศร/,'BOW'],[/กระบี่/,'SWORD'],[/ดาบ|กริช|มีด|ขวาน|ง้าว/,'BLADE'],[/หอก|ทวน/,'SPEAR'],[/พลอง|กระบอง|ค้อน|ไม้เท้า/,'STAFF'],[/หมัด|สนับ|กรงเล็บ/,'FIST']])if(re.test(name||''))return t;return 'FOCUS';}
+ if(slot==='ARMOR')return /เสื้อคลุม|อาภรณ์|จีวร|ชุดแพร|袍/.test(name||'')?'ROBE':/เกราะ|เหล็ก|โลหะ/.test(name||'')?'HEAVY':'LIGHT';
+ return /แหวน/.test(name||'')?'RING':/สร้อย|จี้/.test(name||'')?'NECKLACE':/กำไล|ข้อมือ/.test(name||'')?'BRACELET':'CHARM';
+};
+const branches=[
+ {id:'STAR_ARCHER',nameTh:'เซียนศรดารา',path:'XIAN',combatBonus:1.06,defenseBonus:.94,breakthroughMod:.96,cultivationBonus:1,descTh:'ยิงแม่นจากระยะไกล เติบโตปลายทาง แต่รับแรงปะทะไม่เก่ง'},
+ {id:'STAFF_GUARD',nameTh:'องครักษ์พลองเหล็ก',path:'BODY',combatBonus:.95,defenseBonus:1.12,breakthroughMod:1.03,cultivationBonus:1,descTh:'ตั้งรับด้วยพลองและเกราะหนัก แข็งแกร่งแต่เชื่องช้า'}
+];
+branches.forEach(s=>JD.CULT.paths[s.path].subPaths.push(s));D.subPaths=branches;
+const gearNames={SWORD:'กระบี่',BLADE:'ดาบ',BOW:'ธนู',SPEAR:'หอก',STAFF:'พลอง',FIST:'สนับหมัด',FOCUS:'ตราสื่อปราณ',HEAVY:'เกราะหนัก',LIGHT:'เกราะเบา',ROBE:'อาภรณ์',RING:'แหวน',NECKLACE:'สร้อย',BRACELET:'กำไล',CHARM:'เครื่องราง'};
+D.items=[];D.recipes=[];
+for(const tier of [1,3,5])for(const type of Object.keys(gearNames)){
+ const slot=['HEAVY','LIGHT','ROBE'].includes(type)?'ARMOR':['RING','NECKLACE','BRACELET','CHARM'].includes(type)?'ACCESSORY':'WEAPON',id='MP_'+type+'_'+tier;
+ const mat=tier===1?'MAT_ORE_BLACK_IRON_1':tier===3?'MAT_ORE_STAR_COPPER_3':'MAT_ORE_METEOR_IRON_5';
+ const item={id,nameTh:gearNames[type]+(['HEAVY','LIGHT','ROBE'].includes(type)?'พิทักษ์':'')+({1:'เหล็กดำ',3:'ดารา',5:'อุกกาบาต'}[tier]),slot,gearType:type,tier,minStage:tier===5?3:tier===3?2:1,value:30*Math.pow(2.1,tier-1),craft:'FORGING',out:'EQUIPMENT'};
+ const recipe={id:'MP_REC_'+type+'_'+tier,nameTh:'ตำรับสร้าง'+item.nameTh,craft:'FORGING',tier,minMastery:tier*11,days:tier*2,inputs:[{matId:mat,count:2+tier},{matId:'MAT_BP_WOLF_PELT_1',count:slot==='ARMOR'?4:1}],outType:'EQUIPMENT',outItemId:id,outNameTh:item.nameTh,yield:1,gearType:type};
+ D.items.push(item);D.recipes.push(recipe);JD.ITEMS.items.push(item);JD.ITEMS.recipes.push(recipe);
+}
+// Curated branches plus equipment-conditioned fundamentals for existing identities.
+D.techniques=[
+ {id:'MP_BOW_RAIN',nameTh:'ฝนศรเจ็ดดารา',path:'XIAN',sub:'STAR_ARCHER',tier:2,combatArch:'sweep',element:'ASTRAL',weaponTypes:['BOW']},
+ {id:'MP_BOW_FOCUS',nameTh:'จิตสงบเหนี่ยวสายศร',path:'XIAN',sub:'STAR_ARCHER',tier:2,cat:'PASSIVE',weaponTypes:['BOW'],passive:{f:{crit:9,acc:24}}},
+ {id:'MP_STAFF_WALL',nameTh:'กำแพงพลองพิทักษ์',path:'BODY',sub:'STAFF_GUARD',tier:2,combatArch:'guard',element:'EARTH_METAL',weaponTypes:['STAFF']},
+ {id:'MP_STAFF_ROOT',nameTh:'หยั่งรากพลองเหล็ก',path:'BODY',sub:'STAFF_GUARD',tier:2,cat:'PASSIVE',weaponTypes:['STAFF'],passive:{p:{def:.15},f:{pen:6}}},
+ {id:'MP_SPEAR_LINE',nameTh:'ทวนธงรบทะลวงแนว',path:'GOD',sub:'WAR_DEITY',tier:2,combatArch:'pierce',element:'LIGHT_YANG',weaponTypes:['SPEAR']},
+ {id:'MP_BLADE_SHADOW',nameTh:'คมเงาตัดชีพจร',path:'DEMON',sub:'SHADOW_ASSASSIN',tier:2,combatArch:'flurry',element:'YIN_SHADOW',weaponTypes:['BLADE']},
+ {id:'MP_FOCUS_SEAL',nameTh:'ตราจิตผนึกคลื่นฝัน',path:'HEART_SOUL',sub:'DREAM_ILLUSION_WEAVER',tier:2,combatArch:'control',element:'ASTRAL',weaponTypes:['FOCUS']},
+ {id:'MP_SWORD_POISE',nameTh:'ตั้งจิตรับคมกระบี่',path:'XIAN',sub:'SWORD_IMMORTAL',tier:2,cat:'PASSIVE',weaponTypes:['SWORD'],passive:{f:{pen:9,crit:4}}},
+ {id:'MP_FIST_BREATH',nameTh:'ลมหายใจพยัคฆ์ไร้ศาสตรา',path:'BODY',sub:'TIGER_SOVEREIGN',tier:2,cat:'PASSIVE',weaponTypes:['FIST'],passive:{p:{atk:.12},f:{cast:7}}},
+ {id:'MP_ROBE_WARD',nameTh:'อาภรณ์ประสานห้าธาตุ',path:'XIAN',sub:'FIVE_ELEMENTS',tier:2,cat:'PASSIVE',armorTypes:['ROBE'],passive:{p:{mdef:.18},f:{cast:8}}}
+].map(t=>Object.assign({cat:'COMBAT_TECHNIQUE',role:'COMBAT_DEFENSE',reqTier:t.tier,power:t.tier*42,martialRare:true,moves:[]},t));
+D.curriculum=[
+ ['XIAN','ฝ่ามือปราณตั้งต้น','strike','NEUTRAL'],['BODY','หมัดหินตั้งต้น','strike','EARTH_METAL'],['GOD','ศรัทธาคุ้มใจตั้งต้น','support','LIGHT_YANG'],['DEMON','เคล็ดโลหิตตั้งต้น','drain','BLOOD_DEMON'],['HEART_SOUL','คลื่นจิตตั้งต้น','control','ASTRAL']
+].map(([path,nameTh,combatArch,element])=>({id:'MP_BASE_'+path,nameTh,path,sub:null,tier:1,reqTier:1,cat:'COMBAT_TECHNIQUE',role:'COMBAT_DEFENSE',combatArch,element,power:30,moves:[],martialBootstrap:true}));
+D.curriculum.forEach(t=>JD.TECH.techniques.push(t));
+D.techniques.forEach(t=>JD.TECH.techniques.push(t));
+// Older text-only weapons receive a deterministic type once at the catalog boundary.
+JD.ITEMS.items.forEach(i=>{if(i.slot)i.gearType=i.gearType||D.classify(i.slot,i.nameTh);});
+JD.ITEMS.recipes.forEach(r=>{if(r.outType==='EQUIPMENT'){const it=JD.ITEMS.items.find(i=>i.id===r.outItemId);if(it)r.gearType=it.gearType;}});
+const preferred={SWORD_IMMORTAL:['SWORD'],MIND_SWORD_TELEKINESIS:['SWORD','FOCUS'],SHADOW_ASSASSIN:['BLADE'],WAR_DEITY:['SPEAR','BLADE'],TIGER_SOVEREIGN:['FIST'],BLOOD_DRAGON:['FIST'],VAJRA_BODHI:['STAFF','FIST'],STAFF_GUARD:['STAFF'],STAR_ARCHER:['BOW']};
+JD.TECH.techniques.forEach(t=>{if(t.cat==='COMBAT_TECHNIQUE'&&!t.weaponTypes&&preferred[t.sub])t.weaponTypes=preferred[t.sub].slice();});
+D.preferred=preferred;
+D.subPreferences={STAR_ARCHER:{aff:{SWORD:.2,WIND:.5},p:{'physiology.dexterity':.7,'intellect.perceptiveness':.6,'personality.caution':.3}},STAFF_GUARD:{aff:{BODY_REFINING:.8},p:{'physiology.toughness':.7,'physiology.endurance':.6,'personality.loyalty':.3}}};
+})(typeof globalThis!=='undefined'?globalThis:this);
+
+</script>
+<script>
 /* js/util.js */
 /* util.js — เครื่องมือพื้นฐาน: สุ่มแบบกำหนดเมล็ด (seeded RNG), คณิตศาสตร์, heap
  * ทำงานได้ทั้งใน browser และ Node (สำหรับ test) */
@@ -8887,11 +8940,12 @@ JD.EXPANSION=JD.EXPANSION||data;
       HEART_SOUL: soul * 0.85 + HC.eff(npc, 'aptitudes.comprehension') * 0.4 + HC.eff(npc, 'interests.meditation') * 0.2 - 5
     };
     CULT.subList.forEach(({ path, sub }) => {
-      const pref = SUBPREF[sub.id] || (JD.EXPANSION.subPreferences || {})[sub.id] || { aff: {}, p: {} };
+      const pref = SUBPREF[sub.id] || (JD.EXPANSION.subPreferences || {})[sub.id] || (JD.MARTIAL.subPreferences || {})[sub.id] || { aff: {}, p: {} };
       let s = base[path] || 0;
       Object.keys(pref.aff).forEach(k => { s += (HC.eff(npc, 'affinities.' + k) - 30) * pref.aff[k] * 0.45; });
       Object.keys(pref.p).forEach(k => { const w = pref.p[k]; s += (w >= 0 ? pval(npc, k) - 50 : 50 - pval(npc, k)) * Math.abs(w) * 0.4; });
       if (bias && bias[sub.id]) s += bias[sub.id];
+      if (g.MARTIAL && g.MARTIAL.pathSkillAffinity) s += g.MARTIAL.pathSkillAffinity(npc, path, sub.id);
       out.push({ path, sub: sub.id, score: s });
     });
     return out.sort((a, b) => b.score - a.score);
@@ -8902,7 +8956,8 @@ JD.EXPANSION=JD.EXPANSION||data;
     const pick = rng.weighted(top, x => Math.exp((x.score - top[0].score) / 7));
     return pick;
   };
-  CULT.subInfo = (path, sub) => CULT.PATHS[path].subPaths.find(s => s.id === sub) || CULT.PATHS[path].subPaths[0];
+  CULT.BASE_SUB = Object.freeze({ id: 'NONE', nameTh: 'พื้นฐาน (ยังไม่เลือกสายย่อย)', combatBonus: 1, defenseBonus: 1, breakthroughMod: 1, cultivationBonus: 1 });
+  CULT.subInfo = (path, sub) => (CULT.PATHS[path] && CULT.PATHS[path].subPaths.find(s => s.id === sub)) || CULT.BASE_SUB;
   CULT.stageInfo = (npc) => {
     const c = npc.cult; if (!c) return { nameTh: 'ปุถุชน (ยังไม่เปิดเส้นลมปราณ)', stage: 0, lifespanMax: 70, combatPower: 25, breakthroughBaseChance: 1 };
     return CULT.PATHS[c.path].stages[c.stage - 1];
@@ -8921,18 +8976,16 @@ JD.EXPANSION=JD.EXPANSION||data;
   };
   CULT.refreshLifespan = npc => { npc.lifespanMax = CULT.lifespan(npc); HC.touch(npc); };
   CULT.hpMult = npc => npc.cult ? 1 + 0.42 * (npc.cult.stage - 1) + 0.25 : 1;
-  CULT.hpMax = npc => Math.round(HC.derived(npc).hpMax * CULT.hpMult(npc));
-  CULT.qiMax = npc => npc.cult ? Math.round((40 + HC.eff(npc, 'physiology.meridianCapacity') * 0.9) * (1 + 0.5 * (npc.cult.stage - 1))) : 0;
+  CULT.hpMax = npc => Math.round((g.MARTIAL ? g.MARTIAL.derived(npc) : HC.derived(npc)).hpMax * CULT.hpMult(npc));
+  CULT.qiMax = npc => npc.cult ? Math.round((40 + (g.MARTIAL ? g.MARTIAL.eff(npc, 'physiology.meridianCapacity') : HC.eff(npc, 'physiology.meridianCapacity')) * 0.9) * (1 + 0.5 * (npc.cult.stage - 1))) : 0;
   CULT.speedMult = npc => npc.cult ? 1 + 0.05 * (npc.cult.stage - 1) : 1;
 
   /* ----- ตั้งต้นการบำเพ็ญ: เปิดเส้นลมปราณ (awakening) ----- */
   CULT.awaken = (npc, rng, bias, day) => {
     const ch = CULT.choosePath(npc, rng, bias);
     const mant = CULT.bestMantra(ch.path, 1, npc);
-    npc.cult = { path: ch.path, sub: ch.sub, stage: 1, prog: 0, mantra: mant ? mant.id : null, techs: [], learning: null, toxic: 0, lifeBonus: 0, since: day, attempts: 0, secl: null, rate: 0, pillT: 0 };
-    if (CULT.trackDef(ch.sub)) {
-      npc.cult.track = CULT.initTrack(ch.sub, 1, day || 0);
-    }
+    npc.cult = { path: ch.path, sub: 'NONE', stage: 1, prog: 0, mantra: mant ? mant.id : null, techs: [], learning: null, toxic: 0, lifeBonus: 0, since: day, attempts: 0, secl: null, rate: 0, pillT: 0 };
+    // Specializations are acquired from finite crystals or reusable manuals. Founding bootstrap lives in SIM.awaken.
     CULT.refreshLifespan(npc);
     HC.bump(npc);
     return ch;
@@ -8985,7 +9038,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     }
     const pill = c.pillT > 0 ? 1 + (c.pillBoost || 0) : 1;
     const sp = 1 + HC.special(npc, 'cultivation.rateBonus');
-    return base * mantraK * focus * rest * toxic * dev * pill * (env || 1) * sp;
+    return base * (g.MARTIAL ? g.MARTIAL.skillEffects(npc).cultivation : 1) * mantraK * focus * rest * toxic * dev * pill * (env || 1) * sp;
   };
   CULT.gain = (npc, pts) => {
     const c = npc.cult; if (!c) return;
@@ -9120,7 +9173,7 @@ JD.EXPANSION=JD.EXPANSION||data;
       const t = TECH_BY_ID[id]; if (!t || c.techs.includes(id)) return false;
       if (/FORBIDDEN/.test(t.cat)) return false;
       if (t.path !== 'ANY' && t.path !== c.path) return false;
-      if (t.sub && t.sub !== c.sub && (t.sourcePack || c.stage < 4)) return false; // สายย่อยเฉพาะ จนกว่าจะขั้นสูง
+      if (t.sub && t.sub !== c.sub) return false; // One specialization; high stage never bypasses identity.
       if (/_MANTRA$|^QI_MANTRA$/.test(t.cat)) return false;
       return (t.reqTier || t.tier) <= c.stage + 0;
     });
@@ -9171,6 +9224,7 @@ JD.EXPANSION=JD.EXPANSION||data;
 
   CULT.ensureTrack = (npc, day) => {
     if (!npc || !npc.cult) return null;
+    if (g.MARTIAL) g.MARTIAL.normalize(npc);
     if (!npc.cult.track && CULT.trackDef(npc.cult.sub)) {
       npc.cult.track = CULT.initTrack(npc.cult.sub, 1, day || 0);
       CULT.refreshLifespan(npc);
@@ -9638,7 +9692,7 @@ JD.EXPANSION=JD.EXPANSION||data;
   }
   ECO.successChance = (npc, r) => {
     const skill = npc.h.skills[r.craft] != null ? npc.h.skills[r.craft] : 0;
-    return clamp(0.55 + (skill - r.minMastery) / 110 + HC.eff(npc, 'physiology.dexterity') / 500 + HC.eff(npc, 'intellect.focus') / 600 + HC.special(npc, 'craft.successBonus'), 0.15, 0.98);
+    return clamp(0.55 + (skill - r.minMastery) / 110 + HC.eff(npc, 'physiology.dexterity') / 500 + HC.eff(npc, 'intellect.focus') / 600 + HC.special(npc, 'craft.successBonus') + (g.MARTIAL ? (g.MARTIAL.lifeMult(npc, r.craft) - 1) * .35 : 0), 0.15, 0.98);
   };
   ECO.mintGear = (itemOrRecipe, q) => {
     q = q || 1;
@@ -9658,7 +9712,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     if (!paid) return { ok: false, rejected: true, text: 'ไม่มีวัตถุดิบที่จองไว้สำหรับงานนี้' };
     const ok = W.rng.next() < ECO.successChance(npc, r);
     const skill = npc.h.skills[r.craft] || 0;
-    HC.practice(npc, r.craft, ECO.craftHours(r, skill), 1.1);
+    (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(npc, r.craft, ECO.craftHours(r, skill), 1.1);
     if (!ok) {
       paid.inputs.forEach(i => { if (W.rng.chance(0.4)) ECO.add(W, i.matId, Math.min(i.count, Math.max(1, Math.floor(i.count / 2)))); });
       return { ok: false, text: 'ล้มเหลว สูญวัตถุดิบ' };
@@ -9698,7 +9752,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     quote.missing.forEach(i => ECO.take(W, i.id, i.n));
     quote.owned.forEach(i => { npc.inv.mats[i.id] -= i.n; if (npc.inv.mats[i.id] <= 0) delete npc.inv.mats[i.id]; });
     const skill = npc.h.skills[r.craft] || 0, ok = W.rng.next() < ECO.successChance(npc, r);
-    HC.practice(npc, r.craft, ECO.craftHours(r, skill), 1.1);
+    (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(npc, r.craft, ECO.craftHours(r, skill), 1.1);
     if (!ok) return { ok: false, reason: 'failed', cost: quote.cost };
     const q = clamp(0.85 + (skill - r.minMastery) / 160 + W.rng.gauss(0, 0.06), 0.7, 1.5);
     const qty = (r.yield || 1) + (W.rng.chance(clamp((skill - r.minMastery) / 120, 0, 0.5)) ? 1 : 0) + (r.starter ? 1 : 0);
@@ -9805,6 +9859,7 @@ JD.EXPANSION=JD.EXPANSION||data;
   const HERBS = { 1: ['MAT_HERB_DEW_GRASS_1', 'MAT_HERB_CINDER_LEAF_1'], 2: ['MAT_HERB_JADE_LOTUS_2', 'MAT_HERB_MIST_ORCHID_2'], 3: ['MAT_HERB_BLOOD_GINSENG_3', 'MAT_HERB_VENOM_VINE_3', 'MAT_HERB_ANCIENT_MIST_FERN_3', 'MAT_HERB_MERIDIAN_FLOWER_3'] };
   const ORES = { 1: ['MAT_ORE_BLACK_IRON_1', 'MAT_ORE_CINNABAR_1'], 2: ['MAT_ORE_COLD_STEEL_2', 'MAT_ORE_JADE_SLATE_2'], 3: ['MAT_ORE_STAR_COPPER_3', 'MAT_ORE_MAGNET_LODESTONE_3', 'MAT_ORE_THUNDER_SCORCH_COPPER_3'] };
   ECO.harvestHerb = (W, npc, hours) => {
+    hours *= g.MARTIAL ? g.MARTIAL.lifeMult(npc, 'herbalism') : 1;
     const b = W.map.byId.herb_garden, sk = npc.h.skills.herbalism || 0;
     const out = [];
     const n = Math.max(0, Math.round(hours * (0.9 + sk / 60) * (0.7 + b.level * 0.3) * (0.8 + W.rng.next() * 0.4) * (W.season === 3 ? 0.55 : W.season === 0 ? 1.2 : 1)));
@@ -9817,11 +9872,13 @@ JD.EXPANSION=JD.EXPANSION||data;
     return out;
   };
   ECO.harvestGrain = (W, npc, hours) => {
+    hours *= g.MARTIAL ? g.MARTIAL.lifeMult(npc, 'herbalism') : 1;
     const b = W.map.byId.farm;
     const n = Math.round(hours * (1.1 + (npc.h.skills.herbalism || 0) / 70 + HC.eff(npc, 'physiology.strength') / 250) * (0.8 + b.level * 0.25) * (W.season === 3 ? 0.4 : W.season === 1 ? 1.2 : 1) * (0.85 + W.rng.next() * 0.3));
     ECO.add(W, 'grain', n); return n;
   };
   ECO.mineYield = (W, npc, hours) => {
+    hours *= g.MARTIAL ? g.MARTIAL.lifeMult(npc, 'mining') : 1;
     const b = W.map.byId.mine, sk = npc.h.skills.mining || 0, out = [];
     const n = Math.max(0, Math.round(hours * (0.55 + sk / 120) * (0.7 + b.level * 0.3) * (0.7 + W.rng.next() * 0.6)));
     for (let i = 0; i < n; i++) {
@@ -10640,7 +10697,9 @@ JD.EXPANSION=JD.EXPANSION||data;
     }
 
     if (!ECO.pay(W, best.cost, 'ขยาย' + best.b.nameTh)) return;
-    best.b.building = { until: W.t + 8 * 1440, to: best.b.level + 1 };
+    const builder = SECT.holder(W, 'steward') || m, buildSkill = g.MARTIAL ? g.MARTIAL.skillRead(builder, 'construction') : 0, management = g.MARTIAL ? g.MARTIAL.skillRead(builder, 'administration') : 0;
+    best.b.building = { until: W.t + Math.round(8 * 1440 / (1 + buildSkill * .004 + management * .0015)), to: best.b.level + 1 };
+    if (g.MARTIAL) g.MARTIAL.skillPractice(builder, 'construction', 1.5, 1.1);
     const fd = S.facilityDemand[best.id];
     if (fd) {
       fd.lastUpgradedDay = W.day;
@@ -10965,7 +11024,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     ECO.earn(W, tribute, 'ค่าคุ้มครองและของกำนัลจากชุมชนรอบเขา');
     ECO.monthlyMarket(W);
     // ค่าใช้จ่ายประจำ: ซ่อมบำรุง/เสบียงเครื่องใช้/ธูปเทียน ตามจำนวนคนและอาคาร + ข้าวเสื่อมคุณภาพ
-    { const popN = W.npcs.filter(n => !n.dead).length, upkeep = Math.round(popN * 7 + W.map.buildings.reduce((s2, b) => s2 + b.level * 15, 0) * clamp((popN + 8) / 45, 0.3, 1));
+    { const popN = W.npcs.filter(n => !n.dead).length, upkeep = Math.round((1 - (g.MARTIAL ? g.MARTIAL.skillRead(SECT.holder(W, 'treasury') || W.byId[S.masterId], 'administration') * .001 : 0)) * (popN * 7 + W.map.buildings.reduce((s2, b) => s2 + b.level * 15, 0) * clamp((popN + 8) / 45, 0.3, 1)));
       ECO.pay(W, Math.min(upkeep, Math.max(0, S.stones)), 'ค่าบำรุงรักษาสำนัก');
       const gr = ECO.count(W, 'grain'), lim = popN * 25; if (gr > lim) { const rot = Math.floor((gr - lim) * 0.15); if (rot > 0) ECO.take(W, 'grain', rot); }
       const ml = ECO.count(W, 'meal'), ml2 = popN * 8; if (ml > ml2) { const rot = Math.floor((ml - ml2) * 0.25); if (rot > 0) ECO.take(W, 'meal', rot); } }
@@ -11250,7 +11309,7 @@ JD.EXPANSION=JD.EXPANSION||data;
       } else if (c.path === 'DEMON') {
         if (W.t % 25 === 0) {
           const dSkill = c.sub === 'VENOM_GU_SOVEREIGN' ? 'POISON' : c.sub === 'SHADOW_ASSASSIN' ? 'stealth' : 'SOUL_DIVINE';
-          HC.practice(n, dSkill, 0.08, 1.1);
+          (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, dSkill, 0.08, 1.1);
           HC.trainMind(n, 'willpower', 0.6);
           HC.trainBody(n, 'explosiveness', 0.6);
         }
@@ -11267,7 +11326,7 @@ JD.EXPANSION=JD.EXPANSION||data;
         s.stress = Math.max(0, (s.stress || 0) - 0.012);
         if (W.t % 25 === 0) {
           const hsSkill = c.sub === 'CALLIGRAPHY_PAINTING_SAGE' ? 'arts' : 'SOUL_DIVINE';
-          HC.practice(n, hsSkill, 0.08, 1.15);
+          (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, hsSkill, 0.08, 1.15);
           HC.trainMind(n, 'focus', 1.2);
           HC.trainMind(n, 'comprehension', 1.0);
           HC.gainWisdom(n, 0.006);
@@ -11339,7 +11398,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     dur: n => 90 + Math.round(E(n, 'personality.discipline') * 0.6),
     tick(n, W, ctx) {
       const s = n.h.state; const head = SECT.holder(W, 'martial'); const q = 1 + (head && !head.dead ? 0.25 + E(head, 'social.teaching') / 300 : 0) + 0.1 * (W.map.byId.training_ground.level - 1);
-      HC.practice(n, ctx.skill, 1 / 60, q);
+      (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, ctx.skill, 1 / 60, q);
       if (W.t % 25 === 0) { HC.trainBody(n, 'strength', 1); HC.trainBody(n, 'reflex', 1); HC.trainBody(n, 'agility', 1); HC.trainBody(n, 'explosiveness', 0.8); }
       s.energy = Math.max(0, s.energy - 0.1); s.rest -= 0.02; s.stress = Math.max(0, s.stress - 0.01);
       AI.vf(n, { martialPeak: 0.05 });
@@ -11362,11 +11421,11 @@ JD.EXPANSION=JD.EXPANSION||data;
     dur: n => 100 + Math.round(E(n, 'intellect.focus') * 0.5),
     start(n, W, ctx) { if (n.cult && !n.cult.learning) { const t = AI.nextTechToStudy(W, n); if (t) n.cult.learning = { id: t.id, need: CULT.studyCost(t), got: 0 }; } return true; },
     tick(n, W) {
-      const s = n.h.state; HC.practice(n, 'SCRIPTURE', 1 / 60, 1); if (E(n, 'affinities.ARRAY') >= 55) HC.practice(n, 'ARRAY', 1 / 90, 1); if (E(n, 'affinities.TALISMAN') >= 55) HC.practice(n, 'TALISMAN', 1 / 90, 1);
+      const s = n.h.state; (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'SCRIPTURE', 1 / 60, 1); if (E(n, 'affinities.ARRAY') >= 55) (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'ARRAY', 1 / 90, 1); if (E(n, 'affinities.TALISMAN') >= 55) (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'TALISMAN', 1 / 90, 1);
       if (W.t % 40 === 0) { HC.trainMind(n, 'comprehension', 1); HC.trainMind(n, 'memory', 0.8); HC.gainWisdom(n, 0.003); }
       const c = n.cult;
       if (c && c.learning) {
-        c.learning.got += (0.7 + E(n, 'intellect.learningSpeed') / 100 + E(n, 'intellect.comprehension') / 250) * (n.insightT > 0 ? 1.45 : 1);
+        c.learning.got += (0.7 + E(n, 'intellect.learningSpeed') / 100 + E(n, 'intellect.comprehension') / 250) * (n.insightT > 0 ? 1.45 : 1) * (g.MARTIAL ? g.MARTIAL.lifeMult(n, 'SCRIPTURE') * g.MARTIAL.skillEffects(n).study : 1);
         if (c.learning.got >= c.learning.need) { const t = CULT.tech(c.learning.id); c.techs.push(c.learning.id); c.learning = null; if (c.techs.length > CULT.maxTechs(n)) c.techs.shift(); W.log('learn', n.h.name.given + ' เรียนรู้วิชา「' + t.nameTh + '」สำเร็จ', [n.id]); AI.mem(W, n, 'เรียนรู้ ' + t.nameTh, 0.6); HC.experience(n, 'craft_success', 0.6); return 'done'; }
       }
       s.energy = Math.max(0, s.energy - 0.025); s.rest -= 0.03; AI.vf(n, { knowledgeCraft: 0.05 });
@@ -11446,7 +11505,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     },
     dur: n => 150 + Math.round(E(n, 'personality.discipline') * 0.8),
     tick(n, W, ctx) {
-      n.h.state.energy = Math.max(0, n.h.state.energy - 0.06); n.h.state.rest -= 0.03; HC.practice(n, 'herbalism', 1 / 60, 1);
+      n.h.state.energy = Math.max(0, n.h.state.energy - 0.06); n.h.state.rest -= 0.03; (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'herbalism', 1 / 60, 1);
       if (W.t % 60 === 0) {
         if (ctx.herb) {
           const got = ECO.harvestHerb(W, n, 1);
@@ -11479,7 +11538,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     where: (W, n) => { const s = AI.freeStation(W, n, 'mine', 'mine'); return s ? { st: s } : null; },
     dur: () => 200,
     tick(n, W, ctx) {
-      n.h.state.energy = Math.max(0, n.h.state.energy - 0.09); n.h.state.rest -= 0.03; HC.practice(n, 'mining', 1 / 60, 1);
+      n.h.state.energy = Math.max(0, n.h.state.energy - 0.09); n.h.state.rest -= 0.03; (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'mining', 1 / 60, 1);
       if (W.t % 60 === 0) { const r = ECO.mineYield(W, n, 1); ctx.got = (ctx.got || 0) + r.out.length; if (W.rng.chance(0.012 * (1 - E(n, 'intellect.perceptiveness') / 160))) AI.injure(W, n, 1, 'ถ้ำถล่มเล็กน้อย'); HC.trainBody(n, 'strength', 0.9); }
       AI.vf(n, { sectDuty: 0.02, wealthResource: 0.05 });
       if (n.h.state.energy < 14) return 'done';
@@ -11497,7 +11556,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     },
     where: (W, n) => { const s = AI.freeStation(W, n, 'cook', 'canteen'); return s ? { st: s } : null; },
     dur: () => 150,
-    tick(n, W, ctx) { n.h.state.energy = Math.max(0, n.h.state.energy - 0.045); HC.practice(n, 'cooking', 1 / 60, 1); if (W.t % 30 === 0) { ctx.m = (ctx.m || 0) + ECO.cookMeals(W, 0.5, n.h.skills.cooking || 0); } AI.vf(n, { sectDuty: 0.04, familyClan: 0.02 }); },
+    tick(n, W, ctx) { n.h.state.energy = Math.max(0, n.h.state.energy - 0.045); (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'cooking', 1 / 60, 1); if (W.t % 30 === 0) { ctx.m = (ctx.m || 0) + ECO.cookMeals(W, 0.5, n.h.skills.cooking || 0); } AI.vf(n, { sectDuty: 0.04, familyClan: 0.02 }); },
     done(n, W, ctx) { n.merit += 0.6; },
     inside: true
   };
@@ -11523,15 +11582,15 @@ JD.EXPANSION=JD.EXPANSION||data;
     },
     dur: () => 150,
     tick(n, W, ctx) {
-      HC.practice(n, 'administration', 1 / 60, 1); n.h.state.stress += 0.004; AI.vf(n, { sectDuty: 0.06, powerStatus: 0.05 });
-      if (ctx.kind === 'heal') HC.practice(n, 'MEDICINE', 1 / 60, 1);
-      if (ctx.kind === 'guard') { n.h.state.energy = Math.max(0, n.h.state.energy - 0.02); HC.practice(n, 'survival', 1 / 90, 1); }
-      if (ctx.kind === 'class') { HC.practice(n, 'administration', 1 / 120, 1); AI.teachClass(W, n); }
-      if (ctx.kind === 'craftmgmt') { const h = n.post || n.assist; if (h === 'alchemy') HC.practice(n, 'ALCHEMY', 1 / 60, 1.1); else { HC.practice(n, 'FORGING', 1 / 60, 1.1); HC.practice(n, 'ARRAY', 1 / 60, 1.1); HC.practice(n, 'TALISMAN', 1 / 60, 1.1); } }
+      (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'administration', 1 / 60, 1); n.h.state.stress += 0.004; AI.vf(n, { sectDuty: 0.06, powerStatus: 0.05 });
+      if (ctx.kind === 'heal') (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'MEDICINE', 1 / 60, 1);
+      if (ctx.kind === 'guard') { n.h.state.energy = Math.max(0, n.h.state.energy - 0.02); (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'survival', 1 / 90, 1); }
+      if (ctx.kind === 'class') { (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'administration', 1 / 120, 1); AI.teachClass(W, n); }
+      if (ctx.kind === 'craftmgmt') { const h = n.post || n.assist; if (h === 'alchemy') (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'ALCHEMY', 1 / 60, 1.1); else { (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'FORGING', 1 / 60, 1.1); (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'ARRAY', 1 / 60, 1.1); (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'TALISMAN', 1 / 60, 1.1); } }
     },
     done(n, W) { if(g.COG)g.COG.performDuty(W,n); W.sect.lastDuty[n.id] = W.t; n.merit += 2; W.sect.efficiency = (W.sect.efficiency || 0) + 1; }
   };
-  AI.teachClass = (W, n) => { /* หัวหน้าหอยุทธ์ได้ทักษะสอน + ฝึกลูกศิษย์ใกล้ ๆ ผ่าน q ใน practice */ if (W.t % 30 === 0) HC.practice(n, 'diplomacy', 0.2, 0.5); };
+  AI.teachClass = (W, n) => { /* หัวหน้าหอยุทธ์ได้ทักษะสอน + ฝึกลูกศิษย์ใกล้ ๆ ผ่าน q ใน practice */ if (W.t % 30 === 0) (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'diplomacy', 0.2, 0.5); };
 
   A.guard = {
     nameTh: 'เฝ้ายาม', icon: '🛡️', color: '#6b9ac4',
@@ -11546,7 +11605,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     },
     where: (W, n) => { const s = AI.freeStation(W, n, 'guard', ['gate', 'tower0', 'tower1', 'tower2', 'tower3', 'discipline']); return s ? { st: s } : null; },
     dur: () => 240,
-    tick(n, W, ctx) { n.h.state.energy = Math.max(0, n.h.state.energy - 0.025); HC.practice(n, 'survival', 1 / 80, 0.8); AI.vf(n, { sectDuty: 0.05, honorLegacy: .02 }); if (W.t % 30 === 0) HC.trainMind(n, 'perceptiveness', 0.8); },
+    tick(n, W, ctx) { n.h.state.energy = Math.max(0, n.h.state.energy - 0.025); (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'survival', 1 / 80, 0.8); AI.vf(n, { sectDuty: 0.05, honorLegacy: .02 }); if (W.t % 30 === 0) HC.trainMind(n, 'perceptiveness', 0.8); },
     done(n, W) { n.merit += 1.8; }
   };
   A.heal = {
@@ -11562,9 +11621,9 @@ JD.EXPANSION=JD.EXPANSION||data;
     dur: () => 360,
     tick(n, W) {
       const s = n.h.state, hm = CULT.hpMax(n); const healer = SECT.holder(W, 'healer'); const k = 3 + (healer && !healer.dead ? E(healer, 'intellect.comprehension') / 60 : 0) + W.map.byId.infirmary.level * 0.3;
-      s.hp = Math.min(hm, s.hp + hm * 0.00012 * k * (0.6 + E(n, 'physiology.recoveryRate') / 100)); s.rest = Math.min(100, s.rest + 0.05);
+      s.hp = Math.min(hm, s.hp + hm * 0.00012 * k * (0.6 + E(n, 'physiology.recoveryRate') / 100) * (g.MARTIAL && healer ? g.MARTIAL.lifeMult(healer, 'MEDICINE') * g.MARTIAL.skillEffects(healer).medicine : 1)); s.rest = Math.min(100, s.rest + 0.05);
       if (n.inj) n.inj.forEach(i => { i.until -= 3.2; });
-      if (healer && !healer.dead && W.t % 120 === 0) HC.practice(healer, 'MEDICINE', 0.5, 1.2);
+      if (healer && !healer.dead && W.t % 120 === 0) (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(healer, 'MEDICINE', 0.5, 1.2);
       if (s.hp >= hm * 0.97 && (!n.inj || !n.inj.length)) return 'done';
     },
     done(n, W) {
@@ -11608,8 +11667,8 @@ JD.EXPANSION=JD.EXPANSION||data;
     },
     dur: () => 70,
     tick(n, W, ctx) {
-      const s = n.h.state; s.stress = Math.max(0, s.stress - 0.1); s.mood = Math.min(100, s.mood + 0.09); s.novelty = Math.min(100, s.novelty + 0.08);
-      if (ctx.mode === 'music') { HC.practice(n, 'arts', 1 / 60, 1); AI.vf(n, { freedom: .03 }); }
+      const s = n.h.state; s.stress = Math.max(0, s.stress - 0.1 * (ctx.mode === 'music' && g.MARTIAL ? g.MARTIAL.skillEffects(n).music : 1)); s.mood = Math.min(100, s.mood + 0.09 * (ctx.mode === 'music' && g.MARTIAL ? g.MARTIAL.skillEffects(n).music : 1)); s.novelty = Math.min(100, s.novelty + 0.08);
+      if (ctx.mode === 'music') { (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'arts', 1 / 60, 1); AI.vf(n, { freedom: .03 }); }
       if (ctx.mode === 'fish' && W.t % 90 === 0 && W.rng.chance(0.4)) ECO.add(W, 'meal', 2);
       AI.vf(n, { freedom: 0.035 }); s.energy = Math.min(100, s.energy + 0.05);
     }
@@ -11859,7 +11918,7 @@ JD.EXPANSION=JD.EXPANSION||data;
       if (type === 'chat' || type === 'date' || type === 'argue') { if (d.left % 8 === 0) AI.interact(W, n, o, type, 0.5); }
       else if (type === 'teach') {
         if (n.act.ctx.skillTgt == null) { n.act.ctx.skillTgt = o.cult ? AI.pickTeachSkill(n, o) : 'SCRIPTURE'; }
-        HC.practice(o, n.act.ctx.skillTgt, 1 / 60, 1.7 + E(n, 'social.teaching') / 100); HC.practice(n, 'diplomacy', 1 / 120, 1);
+        (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(o, n.act.ctx.skillTgt, 1 / 60, 1.7 + E(n, 'social.teaching') / 100); (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'diplomacy', 1 / 120, 1);
         if (d.left % 10 === 0) { AI.interact(W, n, o, 'teach', 0.5); CULT.gain(o, 0.8); }
         n.merit += 0.01;
       } else if (type === 'spar') {
@@ -11926,6 +11985,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     for (const k in (n.inv.mats || {})) ECO.add(W, k, n.inv.mats[k]); n.inv.mats = {};
     for (const id of (n.inv.techs || [])) if (CULT.tech(id) && !W.sect.library.includes(id)) W.sect.library.push(id); n.inv.techs = [];
     for (const id of (n.inv.recipes || [])) if (ECO.recipeById[id] && !W.sect.knownRecipes.includes(id)) { W.sect.knownRecipes.push(id); if (W.world && W.world.contentMetrics) W.world.contentMetrics.formulas++; } n.inv.recipes = [];
+    if (g.MARTIAL) g.MARTIAL.returnKnowledge(W, n);
     for (const k in n.equip) { if (n.equip[k]) W.sect.gear.push(n.equip[k]); } n.equip = {};
     W.sect.fallen = (W.sect.fallen || []); W.sect.fallen.push({ id: n.id, name: n.h.name.family + n.h.name.given, day: W.day, why, rank: n.rank });
   };
@@ -12121,7 +12181,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     if (pa > pb) d.sc.a += pa / (pa + pb); else d.sc.b += pb / (pa + pb);
     d.rounds++;
     a.fx = { t: W.t, text: '⚔' }; b.fx = { t: W.t, text: '⚔' };
-    [a, b].forEach(x => { x.h.state.energy = Math.max(0, x.h.state.energy - 0.9); HC.trainBody(x, 'reflex', 0.5); HC.trainBody(x, 'agility', 0.4); HC.practice(x, g.AI.pickTeachSkill(x, x), 1 / 30, 1.2); if (x.cult) CULT.gain(x, 0.15); });
+    [a, b].forEach(x => { x.h.state.energy = Math.max(0, x.h.state.energy - 0.9); HC.trainBody(x, 'reflex', 0.5); HC.trainBody(x, 'agility', 0.4); (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(x, g.AI.pickTeachSkill(x, x), 1 / 30, 1.2); if (x.cult) CULT.gain(x, 0.15); });
     if (a.h.state.energy < 12 || b.h.state.energy < 12) return 'end';
     if (d.rounds >= 14) return 'end';
   };
@@ -12240,10 +12300,10 @@ JD.EXPANSION=JD.EXPANSION||data;
     let frac = 0.2 * (A0 / (A0 + 0.8 * Math.max(0, D))) * (o.M || 1) * (0.85 + W.rng.next() * 0.3);
     if (crit) frac *= sa.critDmg / 100;
     if (nonlethal) frac *= 0.55;
-    const hm = C.hpMax(d), dmg = hm * frac;
+    const hm = C.hpMax(d), beastGuard = !d.foe && g.MARTIAL && g.MARTIAL.isBeast(a) ? g.MARTIAL.skillEffects(d).beastDamage : 1, dmg = hm * frac * beastGuard;
     a.fx = a.fx || {}; if (!o.silent) { a.fx = { t: W.t, text: o.label || (crit ? 'จุดตาย!' : type === 'p' ? W.rng.pick(FX_PHYS) : W.rng.pick(FX_MAG)) }; }
     d.fx = { t: W.t, text: (crit ? '✦' : '') + '-' + Math.max(1, Math.round(dmg)) };
-    if (!a.foe) { a.h.state.energy = Math.max(0, a.h.state.energy - 0.15); HC.practice(a, g.AI.pickTeachSkill(a, a), 1 / 90, 1.1); HC.trainBody(a, 'reflex', 0.1); a.lastHurt = null; }
+    if (!a.foe) { a.h.state.energy = Math.max(0, a.h.state.energy - 0.15); (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(a, (g.MARTIAL ? ({ FIST: 'FIST_PALM' }[g.MARTIAL.equippedType(a)] || g.MARTIAL.equippedType(a)) : g.AI.pickTeachSkill(a, a)), 1 / 90, 1.1); HC.trainBody(a, 'reflex', 0.1); a.lastHurt = null; }
     const killed = C.applyDamage(W, f, a, d, dmg);
     let lifesteal = 0, reflected = 0;
     if (!a.foe && !a.dead && a.cult && a.cult.path === 'DEMON' && dmg > 0) {
@@ -12313,7 +12373,9 @@ JD.EXPANSION=JD.EXPANSION||data;
   }
   function lowestAlly(W, f, a) { const side = C.sideOf(f, a.id) === 'A' ? f.A : f.B; let w = null, m = 2; side.forEach(id => { const u = C.unit(W, id); if (!C.alive(u) || u.id === a.id) return; const r = hpFrac(u); if (r < m) { m = r; w = u; } }); return w; }
   function useSkill(W, f, a, d, p, ctx) {
-    const SK = SKs(), ST = STs(), sa = ST.get(a); ctx.cds = ctx.cds || {};
+    const SK = SKs(), ST = STs(), sa = ST.get(a);
+    if (!a.foe && g.MARTIAL) { const efficiency = g.MARTIAL.skillEfficiency(a, p); if (!efficiency) return; p = Object.assign({}, p, { M: p.M * efficiency, shield: p.shield * efficiency, heal: p.heal * efficiency, dot: p.dot * efficiency }); if (p.channel && typeof p.channel === 'object') p.channel = Object.assign({}, p.channel, { tickM: p.channel.tickM * efficiency, finishM: p.channel.finishM * efficiency }); }
+    ctx.cds = ctx.cds || {};
     ctx.cds[p.id] = W.t + Math.max(Math.round(p.cd * 0.5), Math.round(p.cd * 100 / sa.cast));
     if (!a.foe) { const cost = SK.qiCost(a, p); a.h.state.qi = Math.max(0, (a.h.state.qi == null ? cost : a.h.state.qi) - cost); a.cult.tm = a.cult.tm || {}; a.cult.tm[p.id] = (a.cult.tm[p.id] || 0) + 1; }
     const label = p.moves && p.moves.length ? W.rng.pick(p.moves) : p.nameTh;
@@ -12399,7 +12461,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     }
     // ท่าโจมตี
     const targets = p.aoe ? C.enemies(W, f, a.id).filter(x => Math.hypot(x.x - d.x, x.y - d.y) < 2.6) : [d]; if (!targets.includes(d)) targets.unshift(d);
-    const mas = a.foe ? 1 : SK.mastery(a, p); let dealt = 0;
+    const mas = a.foe ? 1 : SK.mastery(a, p) / (g.MARTIAL ? g.MARTIAL.skillEfficiency(a, p) : 1); let dealt = 0;
     targets.slice(0, 6).forEach(t => {
       if (!C.alive(t)) return;
       for (let i = 0; i < (p.hits || 1); i++) {
@@ -12436,7 +12498,7 @@ JD.EXPANSION=JD.EXPANSION||data;
   C.statusTick = (W, f, u) => {
     const ST = STs(); if (!u.sx || !u.sx.length) return;
     const SK = SKs(); const keep = [];
-    u.sx.forEach(x => { if (x.until <= W.t) return; keep.push(x); const S = SK.STATUS[x.k]; if (S && S.dot && x.per && !u.dead) { const src = x.src ? C.unit(W, x.src) : null; C.applyDamage(W, f, src && !src.dead ? src : null, u, C.hpMax(u) * x.per * (f.serious ? 1 : 0.55)); u.fx = { t: W.t, text: S.icon }; } });
+    u.sx.forEach(x => { if (x.until <= W.t) return; keep.push(x); const S = SK.STATUS[x.k]; if (S && S.dot && x.per && !u.dead) { const src = x.src ? C.unit(W, x.src) : null; C.applyDamage(W, f, src && !src.dead ? src : null, u, C.hpMax(u) * x.per * (f.serious ? 1 : 0.55) * (src && !src.foe && g.MARTIAL && ['poison','bleed'].includes(x.k) ? g.MARTIAL.skillEffects(src).poisonPower : 1)); u.fx = { t: W.t, text: S.icon }; } });
     if (keep.length !== u.sx.length) { u.sx = keep; ST.dirty(u); }
   };
   C.interruptChannel = (W, f, u, reason) => {
@@ -12880,7 +12942,7 @@ JD.EXPANSION=JD.EXPANSION||data;
         if (win) {
           ex.journal.push('สังหาร' + b.nameTh + ' ได้');
           if (reg.sourcePack) { g.CONTENT.gather(W, ex, alive, out, reg, 'hunt', b); } else {
-          const d = rng.pick(b.drops); out.mats[d] = (out.mats[d] || 0) + 1 + (rng.chance(0.4) ? 1 : 0);
+          const d = rng.pick(b.drops); out.mats[d] = (out.mats[d] || 0) + Math.round((1 + (rng.chance(0.4) ? 1 : 0)) * Math.max(...alive.map(n => g.MARTIAL.lifeMult(n, 'hunting'))));
           if (rng.chance(0.5)) { const d2 = rng.pick(b.drops); out.mats[d2] = (out.mats[d2] || 0) + 1; }
           }
           const dmgFrac = clamp((1 - p) * 0.55 + rng.next() * 0.1, 0.02, 0.6);
@@ -12901,15 +12963,15 @@ JD.EXPANSION=JD.EXPANSION||data;
         if (!mats.length) continue;
         const m = rng.weighted(mats, x => 1 / (x.tier * x.tier));
         const q = 1 + Math.floor((perceive - 40) / 40 + Math.max(...alive.map(a => a.h.skills.herbalism || 0)) / 60 + rng.next());
-        out.mats[m.id] = (out.mats[m.id] || 0) + Math.max(1, q); ex.journal.push('พบ' + m.nameTh);
-        alive.forEach(a => HC.practice(a, m.category === 'HERB' ? 'herbalism' : 'mining', 0.4, 1));
+        out.mats[m.id] = (out.mats[m.id] || 0) + Math.max(1, Math.round(q * Math.max(...alive.map(n => g.MARTIAL.lifeMult(n, m.category === 'ORE' ? 'mining' : 'herbalism'))))); ex.journal.push('พบ' + m.nameTh);
+        alive.forEach(a => (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(a, m.category === 'HERB' ? 'herbalism' : 'mining', 0.4, 1));
       } else if (r < wBeast + wFind + wFort) {
         X.fortuneEvent(W, ex, alive, out, reg);
       } else {
         const ev = rng.pick(['storm', 'lost', 'traveler', 'bandits']);
         if (ev === 'storm') { ex.journal.push('เจอพายุ ต้องหลบอยู่หลายวัน'); alive.forEach(a => HC.feel(a, { stress: 4, energy: -10 })); }
         else if (ev === 'lost') { ex.journal.push('หลงทางในป่า'); ex.ret += Math.round(rng.int(60, 600)); }
-        else if (ev === 'traveler') { ex.journal.push('พบนักเดินทางร่วมทาง แลกเปลี่ยนเรื่องราว'); alive.forEach(a => { HC.feel(a, { mood: 4, novelty: 8 }); HC.practice(a, 'diplomacy', 0.5, 1); }); out.rep += 0.2; }
+        else if (ev === 'traveler') { ex.journal.push('พบนักเดินทางร่วมทาง แลกเปลี่ยนเรื่องราว'); alive.forEach(a => { HC.feel(a, { mood: 4, novelty: 8 }); (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(a, 'diplomacy', 0.5, 1); }); out.rep += 0.2; }
         else { // โจรป่า
           const bp = (30 + reg.danger * 70) * (0.6 + rng.next()), pw = alive.reduce((s, m) => s + CULT.power(m), 0);
           if (pw > bp * 1.2 || rng.chance(clamp(pw / (pw + bp), 0.1, 0.9))) { ex.journal.push('ปราบโจรป่า'); const loot = Math.round(15 + rng.next() * 40 * reg.danger); out.stones += loot; HC.experience(rng.pick(alive), 'victory', 0.3); }
@@ -12947,8 +13009,8 @@ JD.EXPANSION=JD.EXPANSION||data;
     if (kind === 'herb') { const hs = JD.ITEMS.materials.filter(m => !m.sourcePack && m.category === 'HERB' && m.tier <= reg.danger + 2); const m = rng.pick(hs); const n = 1 + rng.int(0, 2); out.mats[m.id] = (out.mats[m.id] || 0) + n; ex.journal.push('พบสมุนไพรหายาก「' + m.nameTh + '」'); out.notes.push(v.h.name.given + ' พบ' + m.nameTh); }
     else if (kind === 'pill') { const ps = Object.keys(W.sect.stock).length ? ECO.recipesFor(W, ['ALCHEMY']).filter(r => r.outType === 'PILL' && r.tier <= reg.danger + 1) : []; if (ps.length) { const r = rng.pick(ps); const key = r.outItemId || 'P:' + r.id; out.pills[key] = (out.pills[key] || 0) + 1 + rng.int(0, 1); ex.journal.push('พบโอสถในซากโบราณ'); out.notes.push(v.h.name.given + ' พบ' + (r.outNameTh)); } }
     else if (kind === 'gear') { const rs = ECO.recipesFor(W, ['FORGING']).filter(r => r.outType === 'EQUIPMENT' && r.tier <= reg.danger + 2); if (rs.length) { const r = rng.pick(rs); const gear = ECO.mintGear(r, 1.1 + rng.next() * 0.3); gear.nameTh = (gear.nameTh || 'ศาสตรา') + ' (ของโบราณ)'; gear.q = 1.2; out.gear.push(gear); ex.journal.push('ขุดพบ' + gear.nameTh); out.notes.push(v.h.name.given + ' ขุดพบ' + gear.nameTh); } }
-    else if (kind === 'scroll') { const lib = new Set(W.sect.library); const pool = JD.TECH.techniques.filter(t => !t.sourcePack && !lib.has(t.id) && t.tier <= Math.max(2, reg.danger + 2)); if (pool.length) { const t = rng.pick(pool); out.techs.push(t.id); ex.journal.push('ได้คัมภีร์「' + t.nameTh + '」'); out.notes.push(v.h.name.given + ' ได้คัมภีร์「' + t.nameTh + '」'); } }
-    else if (kind === 'master') { const sk = AI.pickTeachSkill(v, v); HC.practice(v, sk, 6, 2.2); if (v.cult) CULT.gain(v, CULT.threshold(v) * 0.08); HC.experience(v, 'insight', 0.9); ex.journal.push('พบผู้เฒ่าลึกลับชี้แนะ'); out.notes.push(v.h.name.given + ' ได้รับการชี้แนะจากผู้เฒ่าลึกลับ'); }
+    else if (kind === 'scroll') { const drop = g.MARTIAL.discover(W, out, { tier: Math.max(2, reg.danger + 2), source: 'expedition' }); if (drop) { ex.journal.push('พบองค์ความรู้หายาก'); out.notes.push(v.h.name.given + ' พบองค์ความรู้หายาก'); } }
+    else if (kind === 'master') { const sk = AI.pickTeachSkill(v, v); (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(v, sk, 6, 2.2); if (v.cult) CULT.gain(v, CULT.threshold(v) * 0.08); HC.experience(v, 'insight', 0.9); ex.journal.push('พบผู้เฒ่าลึกลับชี้แนะ'); out.notes.push(v.h.name.given + ' ได้รับการชี้แนะจากผู้เฒ่าลึกลับ'); }
     else if (kind === 'spring') { if (v.cult) { CULT.gain(v, CULT.threshold(v) * 0.15); } v.h.state.hp = CULT.hpMax(v); HC.trainBody(v, 'vitality' in {} ? '' : 'endurance', 4); HC.experience(v, 'insight', 0.5); ex.journal.push('พบสระปราณธรรมชาติ'); out.notes.push(v.h.name.given + ' พบสระปราณลับ ตบะก้าวหน้า'); }
     else { HC.feel(v, { stress: 10, mood: -6 }); v.h.state.heartDemon = clamp(v.h.state.heartDemon + 7, 0, 100); if (rng.chance(0.3)) AI.injure(W, v, 1, 'ถูกคำสาปโบราณ'); ex.journal.push('ต้องคำสาปโบราณ'); out.notes.push(v.h.name.given + ' ต้องคำสาปโบราณ'); }
     out.rep += 0.3;
@@ -12961,7 +13023,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     const buy = (W.sect.buyList || []).slice(0, 5); let spent = 0;
     buy.forEach(b => { const pr = Math.round(ECO.price(W, b.id) * 1.05 * (1.15 - best / 400)); const cost = pr * b.n; if (W.sect.stones + out.stones - spent >= cost + 100) { spent += cost; out.mats[b.id] = (out.mats[b.id] || 0) + b.n; } });
     if (spent) { out.stones -= spent; ex.journal.push('ซื้อเสบียง/วัตถุดิบใช้ ' + spent + ' ศิลา'); }
-    alive.forEach(a => HC.practice(a, 'trading', 1.2, 1));
+    alive.forEach(a => (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(a, 'trading', 1.2, 1));
     out.rep += 0.1;
   };
   X.diplomacyResult = (W, ex, alive, out) => {
@@ -12970,9 +13032,9 @@ JD.EXPANSION=JD.EXPANSION||data;
     const delta = Math.round((skill - 45) / 4 + W.rng.gauss(0, 4) - (s.style === 'ทะนง' ? 3 : 0) + (W.sect.policy.openness - 50) / 15);
     s.attitude = clamp(s.attitude + delta, -100, 100); s.contact = W.day;
     ex.journal.push('เยือน' + s.nameTh + ' ท่าทีเปลี่ยน ' + (delta >= 0 ? '+' : '') + delta);
-    if (delta > 6 && W.rng.chance(0.4)) { const pool = JD.TECH.techniques.filter(t => !t.sourcePack && !W.sect.library.includes(t.id) && t.tier <= 3); if (pool.length) { const t = W.rng.pick(pool); out.techs.push(t.id); out.notes.push('แลกเปลี่ยนวิชา「' + t.nameTh + '」กับ' + s.nameTh); } }
+    if (delta > 6 && W.rng.chance(.4)) { const drop = g.MARTIAL.discover(W, out, { tier: 3, source: 'diplomacy' }); if (drop) out.notes.push('แลกเปลี่ยนองค์ความรู้กับ' + s.nameTh); }
     if (delta > 8) { const gift = Math.round(30 + W.rng.next() * 60); out.stones += gift; } out.rep += Math.max(0, delta) * 0.05 + 0.2;
-    alive.forEach(a => HC.practice(a, 'diplomacy', 1.5, 1.2));
+    alive.forEach(a => (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(a, 'diplomacy', 1.5, 1.2));
   };
   X.recruitResult = (W, ex, alive, out) => {
     const lead = alive[0]; if (!lead) return;
@@ -13152,8 +13214,8 @@ JD.EXPANSION=JD.EXPANSION||data;
       const gain = Math.round(40 + rng.next() * 100); W.log('event', 'พ่อค้าเร่แวะสำนัก ซื้อโอสถและของเหลือใช้ ได้ ' + gain + ' ศิลา', []); ECO.earn(W, gain, 'พ่อค้าเร่');
     }
     if (rng.chance(0.012) && W.season !== 3) { // ยอดฝีมือเร่ร่อนมาเยือน
-      const t = SECT.holder(W, 'scripture') || W.byId[W.sect.masterId]; const pool = JD.TECH.techniques.filter(x => !x.sourcePack && !W.sect.library.includes(x.id) && x.tier <= 4);
-      if (pool.length && t) { const tt = rng.pick(pool); W.sect.library.push(tt.id); W.log('event', 'ยอดฝีมือเร่ร่อนแวะเยือน และมอบคัมภีร์「' + tt.nameTh + '」ให้หอคัมภีร์ (' + t.h.name.given + ' เป็นผู้ต้อนรับ)', [t.id]); W.fame(1); }
+      const t = SECT.holder(W, 'scripture') || W.byId[W.sect.masterId];
+      if (t) { const drop = g.MARTIAL.personalDiscovery(W, t, { tier: 4, source: 'visitor' }); if (drop) { W.log('event', 'ยอดฝีมือเร่ร่อนมอบองค์ความรู้หายากให้ ' + t.h.name.given, [t.id]); W.fame(1); } }
     }
     if (rng.chance(0.014)) { // โรคระบาดเบา
       const hit = W.npcs.filter(n => !n.dead && !n.away && rng.chance(0.18 * (1 - E(n, 'physiology.immunity') / 130)));
@@ -13394,11 +13456,11 @@ JD.EXPANSION=JD.EXPANSION||data;
     HC.feel(n, { novelty: 12, mood: 1.5 });
     if (spot === 'stele') {
       const sc = (E(n, 'intellect.comprehension') + E(n, 'intellect.reasoning') + per) / 3 + (luck - 45) / 10 + rng.gauss(0, 12) + s.lvl * 3;
-      if (sc > 72) { s.frag += 2; if (n.cult) CULT.gain(n, CULT.threshold(n) * 0.09); HC.practice(n, 'SCRIPTURE', 3, 1.5); HC.experience(n, 'insight', 0.5); logText = nm + ' ถอดความศิลาจารึกได้อย่างลึกซึ้ง'; }
-      else if (sc > 50) { s.frag += 1; HC.practice(n, 'SCRIPTURE', 1.2, 1); if (n.cult) CULT.gain(n, CULT.threshold(n) * 0.02); }
+      if (sc > 72) { s.frag += 2; if (n.cult) CULT.gain(n, CULT.threshold(n) * 0.09); (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'SCRIPTURE', 3, 1.5); HC.experience(n, 'insight', 0.5); logText = nm + ' ถอดความศิลาจารึกได้อย่างลึกซึ้ง'; }
+      else if (sc > 50) { s.frag += 1; (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'SCRIPTURE', 1.2, 1); if (n.cult) CULT.gain(n, CULT.threshold(n) * 0.02); }
       else HC.feel(n, { stress: 3 });
       if (rng.chance(0.012 + luck / 9000)) { dex(W).gate.next = Math.min(dex(W).gate.next, W.day + 2); logText = nm + ' ถอดจารึกพบข้อความ “ประตูจะเปิดในไม่ช้า” — ลานประตูมิติเริ่มมีแสงสั่นไหว'; note(W, 'จารึกเผยว่าประตูมิติจะเปิดเร็ว ๆ นี้'); }
-      while (s.frag >= 6) { s.frag -= 6; s.lvl++; const pool = JD.TECH.techniques.filter(t => !t.sourcePack && !W.sect.library.includes(t.id) && t.tier <= Math.min(5, 2 + s.lvl)); if (pool.length) { const t = rng.pick(pool); W.sect.library.push(t.id); logText = nm + ' ถอดเศษจารึกครบ ได้คัมภีร์「' + t.nameTh + '」เข้าหอคัมภีร์'; note(W, 'ถอดจารึกได้คัมภีร์ ' + t.nameTh); W.fame(0.3); big.push(1); } }
+      while (s.frag >= 6) { s.frag -= 6; s.lvl++; const drop = g.MARTIAL.personalDiscovery(W, n, { tier: Math.min(5, 2 + s.lvl), source: 'stele' }); if (drop) { logText = nm + ' ถอดจารึกพบองค์ความรู้หายาก'; note(W, logText); W.fame(.3); big.push(1); } }
     } else if (spot === 'spring') {
       if (s.charge >= 12) { s.charge -= 12; if (n.cult) CULT.gain(n, CULT.threshold(n) * (0.035 + 0.01 * s.lvl)); n.h.state.stress = Math.max(0, n.h.state.stress - 8); n.h.state.hp = Math.min(CULT.hpMax(n), n.h.state.hp + CULT.hpMax(n) * 0.2); if (n.cult) n.h.state.qi = CULT.qiMax(n);
         if (rng.chance(0.03 + luck / 6000)) { n.h.destiny.luck = Math.min(100, n.h.destiny.luck + 1); HC.touch(n); logText = nm + ' ได้พรจากวิญญาณน้ำพุ โชคชะตาดีขึ้น'; } if (s.visits % 30 === 0) { s.lvl++; s.max += 25; logText = 'ตาน้ำปราณลับขยายตัว (ระดับ ' + (s.lvl + 1) + ') เก็บปราณได้มากขึ้น'; note(W, logText); } }
@@ -13411,11 +13473,11 @@ JD.EXPANSION=JD.EXPANSION||data;
       else if (sc > 75 && r < 0.6) { const rs = ECO.recipesFor(W, ['FORGING']).filter(x => x.outType === 'EQUIPMENT' && x.tier <= 2 + s.lvl); if (rs.length) { const gear = ECO.mintGear(rng.pick(rs), 1.1 + rng.next() * 0.2); gear.nameTh = (gear.nameTh || 'ศาสตรา') + ' (ของโบราณ)'; W.sect.gear.push(gear); logText = nm + ' พบ' + gear.nameTh + 'ในซากเจดีย์'; note(W, logText); big.push(1); } }
       else if (sc > 80 && r < 0.72) { s.secrets++; s.lvl++; const cv = dex(W).cave; if (cv.cap < 10 && cv.guard[5]) cv.cap = 10; logText = nm + ' พบเงื่อนงำลึกลับ (ความลับที่ ' + s.secrets + ') ทำให้เข้าใจซากเจดีย์มากขึ้น'; note(W, logText); big.push(1); if (s.secrets === 3) { dex(W).gate.next = Math.min(dex(W).gate.next, W.day + 4); logText += ' — ประตูมิติกำลังจะเปิด'; } }
       else if (sc > 55) { const m = matOf('FORMATION_PART', 3, rng); if (m) { ECO.add(W, m.id, 1); } }
-      HC.practice(n, 'survival', 0.5, 1);
+      (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'survival', 0.5, 1);
     } else if (spot === 'grove') {
       const sc = per * 0.5 + (n.h.skills.herbalism || 0) * 0.5 + (luck - 45) / 8 + rng.gauss(0, 12) + s.lvl * 2;
       const tier = Math.min(5, 2 + s.lvl + (sc > 85 ? 1 : 0)); const m = matOf('HERB', sc > 60 ? tier : 3, rng, sc > 60 ? 2 : 1);
-      if (m && sc > 38) { const q = 1 + (sc > 70 ? 1 : 0) + (rng.chance(0.25) ? 1 : 0); ECO.add(W, m.id, q); HC.practice(n, 'herbalism', 1.2, 1); if (sc > 85 && m.tier >= 4) { logText = nm + ' พบ' + m.nameTh + 'ในป่าลับ'; note(W, logText); big.push(1); } }
+      if (m && sc > 38) { const q = 1 + (sc > 70 ? 1 : 0) + (rng.chance(0.25) ? 1 : 0); ECO.add(W, m.id, q); (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'herbalism', 1.2, 1); if (sc > 85 && m.tier >= 4) { logText = nm + ' พบ' + m.nameTh + 'ในป่าลับ'; note(W, logText); big.push(1); } }
       if (rng.chance(0.08)) { const dm = PW(n); if (dm < 25 && rng.chance(0.5)) AI.injure(W, n, 1, 'ถูกสัตว์วิญญาณขวิด'); else HC.experience(n, 'victory', 0.15); }
       if (rng.chance(0.012)) { s.lvl++; logText = nm + ' พบมุมลับของป่า สมุนไพรหายากขึ้น'; note(W, logText); }
     }
@@ -13435,7 +13497,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     else if (k === 'relicmat') { const m = matOf('HERITAGE_RELIC', 7, rng); if (m) { out.mats[m.id] = (out.mats[m.id] || 0) + 1; txt = e[2] + '「' + m.nameTh + '」'; } }
     else if (k === 'pill') { const ps = ECO.recipesFor(W, ['ALCHEMY']).filter(r => r.outType === 'PILL' && r.tier <= p1 && r.tier >= Math.max(1, p1 - 2)); if (ps.length) { const r = rng.pick(ps); const key = r.outItemId || 'P:' + r.id; out.pills[key] = (out.pills[key] || 0) + 1 + (rng.chance(0.3) ? 1 : 0); txt = e[2] + '「' + r.outNameTh + '」'; } }
     else if (k === 'gear') { const rs = ECO.recipesFor(W, ['FORGING']).filter(r => r.outType === 'EQUIPMENT' && r.tier <= p1 && r.tier >= Math.max(1, p1 - 2)); if (rs.length) { const r = rng.pick(rs); const gear = ECO.mintGear(r, 1.05 + rng.next() * 0.35); gear.nameTh = (gear.nameTh || 'ศาสตรา') + ' (' + site.short || site.nameTh + ')'; gear.q = 1.2; out.gear.push(gear); txt = e[2] + '「' + gear.nameTh + '」'; } }
-    else if (k === 'tech') { const pl = JD.TECH.techniques.filter(t => !t.sourcePack && !W.sect.library.includes(t.id) && !out.techs.includes(t.id) && t.tier <= p1 && t.tier >= Math.max(1, p1 - 2)); const pl2 = pl.length ? pl : JD.TECH.techniques.filter(t => !t.sourcePack && !W.sect.library.includes(t.id) && !out.techs.includes(t.id) && t.tier <= p1); if (pl2.length) { const t = rng.pick(pl2); out.techs.push(t.id); txt = e[2] + '「' + t.nameTh + '」'; } }
+    else if (k === 'tech') { const drop = g.MARTIAL.discover(W, out, { tier: p1, source: 'cave-gate' }); if (drop) txt = e[2] + ' · องค์ความรู้หายาก'; }
     else if (k === 'boon') { const b = p1; if (b === 'qi' && finder.cult) CULT.gain(finder, CULT.threshold(finder) * 0.14); else if (b === 'body') { HC.trainBody(finder, 'strength', 4); HC.trainBody(finder, 'endurance', 4); } else if (b === 'mind') { HC.trainMind(finder, 'comprehension', 3); HC.trainMind(finder, 'willpower', 3); } else if (b === 'luck') { finder.h.destiny.luck = Math.min(100, finder.h.destiny.luck + 3); HC.touch(finder); } else if (finder.cult) CULT.gain(finder, CULT.threshold(finder) * 0.08); HC.experience(finder, 'insight', 0.8); txt = e[2] + ' (ผู้รับ: ' + nm + ')'; }
     else if (k === 'curse') { finder.h.state.heartDemon = clamp(finder.h.state.heartDemon + 8, 0, 100); HC.feel(finder, { stress: 8, mood: -4 }); if (rng.chance(0.25)) AI.injure(W, finder, 1, 'ถูกพลังมารกัดกร่อน'); txt = e[2] + ' — ' + nm + ' ได้รับผลกระทบ'; }
     else if (k === 'person') { const q = clamp(rng.gauss(1.1, 0.5), 0, 2.5); const nn = W.makeNpc({ quality: q, ageYears: rng.int(16, 30), rank: 0, rootBias: 1, fromExped: true }); if (nn) { nn.x = (ex.px || MAP.EXIT.x) + .5; nn.y = (ex.py || MAP.EXIT.y) + .5; nn.travel = null; nn.h.origin.region = site.nameTh; nn.joinDay = W.day; txt = e[2] + ' ' + nn.h.name.given + ' ขอติดตามเข้าสำนัก'; W.log('recruit', nn.h.name.given + ' ผู้พเนจรจาก' + site.nameTh + ' ตามคณะสำรวจมาเข้าสำนัก', [nn.id]); } }
@@ -13459,11 +13521,11 @@ JD.EXPANSION=JD.EXPANSION||data;
       if (chk > 28 + d * 8) { ex.journal.push('พบ' + text); lootRoll(W, ex, alive, out, site, d); if (k === 'gather' || rng.chance(0.3)) lootRoll(W, ex, alive, out, site, d); } else if (rng.chance(0.4)) { ex.journal.push(text + ' เป็นกับดัก'); dmgOne(W, alive, 0.08 + rng.next() * 0.12, 'ติดกับดัก'); } else ex.journal.push('สำรวจ' + text + ' แต่ไม่พบอะไร');
     } else if (k === 'hazard') {
       const chk = avg(m => E(m, 'physiology.endurance') * 0.4 + E(m, 'intellect.intuition') * 0.4) + surv * 0.3 + (luck - 45) / 8 + rng.gauss(0, 11);
-      if (chk > 26 + d * 9) { ex.journal.push('ผ่าน' + text + ' ไปได้'); alive.forEach(m => HC.practice(m, 'survival', 0.4, 1)); }
+      if (chk > 26 + d * 9) { ex.journal.push('ผ่าน' + text + ' ไปได้'); alive.forEach(m => (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(m, 'survival', 0.4, 1)); }
       else { ex.journal.push('ถูก' + text + 'เล่นงาน'); const v = dmgOne(W, alive, 0.1 + rng.next() * 0.25 * (d / 3 + 0.5), 'ถูก' + text); alive.forEach(m => HC.feel(m, { stress: 3 })); }
     } else if (k === 'lore') {
       const chk = best(m => E(m, 'intellect.comprehension') * 0.5 + E(m, 'intellect.reasoning') * 0.3 + (m.h.skills.SCRIPTURE || 0) * 0.3) + rng.gauss(0, 9);
-      if (chk > 32 + d * 6) { const v = rng.weighted(alive, a => 1 + E(a, 'intellect.comprehension') / 50); if (v.cult) CULT.gain(v, CULT.threshold(v) * 0.07); HC.practice(v, 'SCRIPTURE', 2.5, 1.3); HC.experience(v, 'insight', 0.5); const wd = dex(W).codex.worlds[site.id] = dex(W).codex.worlds[site.id] || { visits: 0, lore: 0 }; wd.lore = (wd.lore || 0) + 1; ex.journal.push('ถอดความ' + text + ' ได้'); if (wd.lore % 3 === 0) { site.loot.length && lootRoll(W, ex, alive, out, site, d + 0.5); } } else ex.journal.push('ไม่เข้าใจ' + text);
+      if (chk > 32 + d * 6) { const v = rng.weighted(alive, a => 1 + E(a, 'intellect.comprehension') / 50); if (v.cult) CULT.gain(v, CULT.threshold(v) * 0.07); (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(v, 'SCRIPTURE', 2.5, 1.3); HC.experience(v, 'insight', 0.5); const wd = dex(W).codex.worlds[site.id] = dex(W).codex.worlds[site.id] || { visits: 0, lore: 0 }; wd.lore = (wd.lore || 0) + 1; ex.journal.push('ถอดความ' + text + ' ได้'); if (wd.lore % 3 === 0) { site.loot.length && lootRoll(W, ex, alive, out, site, d + 0.5); } } else ex.journal.push('ไม่เข้าใจ' + text);
     } else if (k === 'trial') {
       const chk = avg(m => E(m, 'intellect.willpower') * 0.5 + E(m, 'personality.composure') * 0.3 + E(m, 'personality.courage') * 0.2) + rng.gauss(0, 10) + (luck - 45) / 10;
       const v = rng.weighted(alive, a => 1 + E(a, 'intellect.willpower') / 50);
@@ -13472,7 +13534,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     } else if (k === 'rest') { alive.forEach(m => { m.h.state.hp = Math.min(CULT.hpMax(m), m.h.state.hp + CULT.hpMax(m) * 0.35); HC.feel(m, { stress: -6, mood: 2 }); }); ex.journal.push('พักที่' + text);
     } else if (k === 'npc') {
       const sub = rng.weighted([{ s: 'sage', w: 1 + avg(m => E(m, 'social.charisma')) / 60 }, { s: 'trade', w: 2 }, { s: 'trick', w: 1 + (100 - best(m => E(m, 'intellect.judgement'))) / 60 }], x => x.w).s;
-      if (sub === 'sage') { const v = rng.pick(alive); HC.practice(v, AI.pickTeachSkill ? AI.pickTeachSkill(v, v) : 'SCRIPTURE', 5, 2); if (v.cult) CULT.gain(v, CULT.threshold(v) * 0.05); ex.journal.push(v.h.name.given + ' ได้รับคำชี้แนะจาก' + text); }
+      if (sub === 'sage') { const v = rng.pick(alive); (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(v, AI.pickTeachSkill ? AI.pickTeachSkill(v, v) : 'SCRIPTURE', 5, 2); if (v.cult) CULT.gain(v, CULT.threshold(v) * 0.05); ex.journal.push(v.h.name.given + ' ได้รับคำชี้แนะจาก' + text); }
       else if (sub === 'trade') { const cost = Math.min(Math.round(40 + d * 30), Math.max(0, W.sect.stones + out.stones)); if (cost > 20) { out.stones -= cost; ex.journal.push('แลกของกับ' + text + ' จ่าย ' + cost + ' ศิลา'); lootRoll(W, ex, alive, out, site, d + 0.5); lootRoll(W, ex, alive, out, site, d + 0.5); } else ex.journal.push('พบ' + text + ' แต่ไม่มีเงินแลก'); }
       else { const lose = Math.min(Math.round(20 + d * 20), Math.max(0, W.sect.stones + out.stones)); out.stones -= lose; ex.journal.push(text + ' หลอกเอาศิลาไป ' + lose); }
     }
@@ -13901,7 +13963,7 @@ JD.EXPANSION=JD.EXPANSION||data;
   function rnd(h, k) { let x = (h ^ Math.imul(k + 1, 0x9e3779b1)) >>> 0; x = Math.imul(x ^ (x >>> 15), 2246822519) >>> 0; x = Math.imul(x ^ (x >>> 13), 3266489917) >>> 0; return ((x ^ (x >>> 16)) >>> 0) / 4294967296; }
   const cache = {};
   SK.profile = t => {
-    if (!t) return null; if (cache[t.id]) return cache[t.id];
+    if (!t || t.passive || t.cat === 'PASSIVE') return null; if (cache[t.id]) return cache[t.id];
     const h = hash(t.id); let arch;
     if (t.combatArch && SK.ARCH[t.combatArch]) arch = t.combatArch;
     else if (t.cat === 'FORBIDDEN_ART') arch = 'forbid';
@@ -13963,7 +14025,8 @@ JD.EXPANSION=JD.EXPANSION||data;
       };
       prof.ticks = ticks;
     }
-    prof.summary = SK.summary(prof); return (cache[t.id] = prof);
+    prof.weaponTypes = t.weaponTypes; prof.armorTypes = t.armorTypes; prof.requiresWeapon = t.requiresWeapon;
+    prof.summary = SK.summary(prof) + ((t.weaponTypes || t.armorTypes) ? ' · ' + g.JD.MARTIAL.types[(t.weaponTypes || t.armorTypes)[0]] + ' ตรง ×1.15 / อื่น ×0.65' : ''); return (cache[t.id] = prof);
   };
   SK.summary = p => {
     const A = SK.ARCH[p.arch], bits = [];
@@ -13982,9 +14045,9 @@ JD.EXPANSION=JD.EXPANSION||data;
     return A.icon + ' ' + A.nameTh + ' · ' + (p.type === 'p' ? 'กายภาพ' : 'วิชา') + ' · ธาตุ' + p.elemTh + ' — ' + bits.join(' · ');
   };
   /* วิชาที่ตัวละครใช้ได้ในการรบ */
-  SK.list = n => { if (n.foe) return n.skl || []; if (!n.cult) return []; return n.cult.techs.map(id => SK.profile(g.CULT.tech(id))).filter(Boolean); };
+  SK.list = n => { if (n.foe) return n.skl || []; if (!n.cult) return []; return (g.MARTIAL ? g.MARTIAL.activeTechs(n) : n.cult.techs).map(id => SK.profile(g.CULT.tech(id))).filter(Boolean); };
   SK.qiCost = (n, p) => Math.round(g.CULT.qiMax(n) * p.costPct / 100);
-  SK.mastery = (n, p) => { const c = n.cult; return c && c.tm ? 1 + Math.min(0.15, (c.tm[p.id] || 0) * 0.002) : 1; };
+  SK.mastery = (n, p) => { const c = n.cult, base = c && c.tm ? 1 + Math.min(0.15, (c.tm[p.id] || 0) * 0.002) : 1; return base * (g.MARTIAL ? g.MARTIAL.skillEfficiency(n, p) : 1); };
 
   /* ศัตรู: สร้างชุดวิชาแบบเรียบง่ายตามชนิด/ระดับ */
   SK.foeSkills = u => {
@@ -14015,7 +14078,7 @@ JD.EXPANSION=JD.EXPANSION||data;
 (function (g) {
   'use strict';
   const U = g.U, HC = g.HC, CULT = g.CULT, ECO = g.ECO, SK = g.SK, JD = g.JD;
-  const clamp = U.clamp, E = (n, p) => HC.eff(n, p);
+  const clamp = U.clamp, E = (n, p) => g.MARTIAL ? g.MARTIAL.eff(n, p) : HC.eff(n, p);
   const ST = { now: 0 };
   ST.KEYS = ['hp', 'atk', 'matk', 'def', 'mdef', 'crit', 'critDmg', 'eva', 'acc', 'pen', 'cast', 'move'];
   ST.INFO = {
@@ -14064,6 +14127,8 @@ JD.EXPANSION=JD.EXPANSION||data;
     MIND_SWORD_TELEKINESIS: { p: { matk: .16, acc: .1, def: -.06 }, f: { pen: 20, crit: 8, critDmg: 18 } }
   };
 
+  ST.SUBFX = SUBFX;
+
   /* ---------- อุปกรณ์: ค่าสเตตัสต่อชิ้น (คำนวณเมื่อใช้ครั้งแรก เก็บไว้ในชิ้นนั้น) ---------- */
   const GT = [28, 62, 130, 270, 560, 1100, 2100];
   function hash(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
@@ -14073,10 +14138,13 @@ JD.EXPANSION=JD.EXPANSION||data;
     const tier = clamp(it.tier || 1, 1, 7), q = it.q || 1, base = GT[tier - 1] * q, h = hash((it.id || '') + (it.nameTh || '')), f = 1 + 0.12 * tier, s = {};
     const pool = [['crit', () => (2.2 + 2 * rn(h, 5)) * f], ['critDmg', () => (8 + 8 * rn(h, 6)) * f], ['pen', () => (3 + 4 * rn(h, 7)) * f], ['acc', () => base * 0.12], ['cast', () => (3 + 4 * rn(h, 8)) * f], ['eva', () => base * 0.1], ['hp', () => base * 0.45], ['move', () => 3 + 3 * rn(h, 9)], ['mdef', () => base * 0.18], ['def', () => base * 0.18]];
     const pickAff = (n, ex) => { const used = {}; for (let i = 0; i < n; i++) { let k = Math.floor(rn(h, 20 + i) * pool.length), tries = 0; while ((used[pool[k][0]] || (ex && ex.includes(pool[k][0]))) && tries++ < 12) k = (k + 1) % pool.length; used[pool[k][0]] = 1; s[pool[k][0]] = (s[pool[k][0]] || 0) + pool[k][1](); } };
-    if (it.slot === 'WEAPON') { const phys = /กระบี่|ดาบ|ทวน|หอก|ค้อน|ง้าว|ขวาน|มีด|กริช|เหล็ก|เขี้ยว|ธนู/.test(it.nameTh || ''); s[phys ? 'atk' : 'matk'] = base * 0.55; s[phys ? 'matk' : 'atk'] = base * 0.1; pickAff(tier >= 4 ? 2 : 1, ['hp', 'mdef', 'def', 'eva']); }
+    if (it.slot === 'WEAPON') { const phys = (it.gearType || JD.MARTIAL.classify(it.slot, it.nameTh)) !== 'FOCUS'; s[phys ? 'atk' : 'matk'] = base * 0.55; s[phys ? 'matk' : 'atk'] = base * 0.1; pickAff(tier >= 4 ? 2 : 1, ['hp', 'mdef', 'def', 'eva']); }
     else if (it.slot === 'ARMOR') { s.def = base * 0.55; s.mdef = base * 0.28; s.hp = base * 0.5; pickAff(tier >= 4 ? 1 : 0, ['crit', 'critDmg', 'pen']); if (tier >= 4 && rn(h, 3) < 0.5) s.eva = (s.eva || 0) + base * 0.06; }
     else { pickAff(2); const r = rn(h, 4); if (r < 0.3) s.atk = (s.atk || 0) + base * 0.2; else if (r < 0.6) s.matk = (s.matk || 0) + base * 0.2; }
     (it.fx || []).forEach(x => { const p = x.params || {}; if (p.armorReductionRatio) s.pen = (s.pen || 0) + p.armorReductionRatio * 40; });
+    const type = it.gearType || JD.MARTIAL.classify(it.slot, it.nameTh);
+    const typed = { SWORD: { crit: 3 }, BLADE: { atk: base * .12 }, BOW: { acc: base * .18, crit: 2 }, SPEAR: { pen: 5 }, STAFF: { def: base * .16 }, FIST: { cast: 5 }, FOCUS: { matk: base * .12 }, HEAVY: { def: base * .18, move: -4 }, LIGHT: { eva: base * .15, move: 4 }, ROBE: { mdef: base * .2, cast: 4 }, RING: { crit: 2 }, NECKLACE: { hp: base * .3 }, BRACELET: { cast: 4 }, CHARM: { mdef: base * .12 } }[type] || {};
+    for (const k in typed) s[k] = (s[k] || 0) + typed[k];
     for (const k in s) s[k] = Math.round(s[k] * 10) / 10;
     it.st = s; return s;
   };
@@ -14097,7 +14165,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     const addAll = (label, o, kind) => { for (const k in o) if (A[k]) add(k, label, kind, o[k]); };
     if (n.foe) return computeFoe(n, A, add, wp);
     const c = n.cult, st = CULT.stageInfo(n), L = st.combatPower, sub = c ? CULT.subInfo(c.path, c.sub) : null;
-    const Lo = L * (sub ? sub.combatBonus : 1), Ld = L * (sub ? sub.defenseBonus : 1), pw = PATHW[c && PATHW[c.path] ? c.path : 'NONE'], d = HC.derived(n);
+    const Lo = L * (sub ? sub.combatBonus : 1), Ld = L * (sub ? sub.defenseBonus : 1), pw = PATHW[c && PATHW[c.path] ? c.path : 'NONE'], d = g.MARTIAL ? g.MARTIAL.derived(n) : HC.derived(n);
     const stLabel = c ? CULT.stageName(n) : 'ปุถุชน';
     A.atk.b = Lo * 0.6 * pw.atk; A.matk.b = Lo * 0.6 * pw.matk; A.def.b = Ld * 0.5 * pw.def; A.mdef.b = Ld * 0.45 * pw.mdef; A.acc.b = Lo * 0.55; A.eva.b = Lo * 0.55;
     A.hp.b = d.hpMax * CULT.hpMult(n); A.crit.b = 5; A.critDmg.b = 150; A.cast.b = 100; A.move.b = 100 * d.walkSpeed / 1.05;
@@ -14105,7 +14173,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     // ร่างกาย/จิต
     const strF = 0.65 + 0.6 * (E(n, 'physiology.strength') * .4 + E(n, 'physiology.toughness') * .2 + E(n, 'physiology.explosiveness') * .2 + E(n, 'physiology.endurance') * .2) / 100;
     const sk = n.h.skills;
-    const martial = Math.max(sk.SWORD || 0, sk.BLADE || 0, sk.SPEAR || 0, sk.FIST_PALM || 0, sk.BODY_REFINING || 0, sk.SOUL_DIVINE || 0, sk.POISON || 0);
+    const martial = g.MARTIAL ? g.MARTIAL.weaponSkill(n) : (sk.FIST_PALM || 0);
     add('atk', 'พละกำลัง/ความทนทาน', 'p', strF - 1); add('atk', 'ฝีมือยุทธ์ (ชำนาญ ' + Math.round(martial) + ')', 'p', 0.8 + 0.45 * martial / 100 - 1);
     const qiF = 0.65 + 0.6 * (E(n, 'physiology.spiritualFoundation') * .35 + E(n, 'physiology.meridianCapacity') * .25 + E(n, 'intellect.comprehension') * .2 + E(n, 'intellect.willpower') * .2) / 100;
     add('matk', 'รากฐานปราณ/เส้นลมปราณ/ความเข้าใจ', 'p', qiF - 1);
@@ -14119,7 +14187,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     add('cast', 'ปฏิกิริยา/สมาธิ/ความเข้าใจ', 'f', (E(n, 'physiology.reflex') - 50) * 0.4 + (E(n, 'intellect.focus') - 50) * 0.3 + (E(n, 'intellect.comprehension') - 50) * 0.2);
     if (c) {
       add('cast', 'ขั้นบำเพ็ญ', 'f', 2 * (c.stage - 1)); add('move', 'ขั้นบำเพ็ญ', 'f', 4 * (c.stage - 1));
-      const fx = SUBFX[c.sub] || (JD.EXPANSION.subStats || {})[c.sub]; if (fx) { addAll('สาย' + (sub ? sub.nameTh : c.sub), fx.p || {}, 'p'); addAll('สาย' + (sub ? sub.nameTh : c.sub), fx.f || {}, 'f'); }
+      const rawFx = SUBFX[c.sub] || (JD.EXPANSION.subStats || {})[c.sub], fx = rawFx && g.MARTIAL ? g.MARTIAL.subStats(n, rawFx) : rawFx; if (fx) { addAll('สาย' + (sub ? sub.nameTh : c.sub), fx.p || {}, 'p'); addAll('สาย' + (sub ? sub.nameTh : c.sub), fx.f || {}, 'f'); }
       const m = c.mantra ? CULT.tech(c.mantra) : null;
       if (m) {
         const lab = 'คัมภีร์หลัก「' + m.nameTh + '」';
@@ -14130,7 +14198,7 @@ JD.EXPANSION=JD.EXPANSION||data;
         else { add('mdef', lab, 'p', 0.04 * m.tier); add('hp', lab, 'p', 0.03 * m.tier); add('matk', lab, 'p', 0.02 * m.tier); }
       }
       let techT = 0;
-      c.techs.forEach(id => { const t = CULT.tech(id); if (!t) return; techT += t.cat === 'COMBAT_TECHNIQUE' ? t.tier : 0;
+      (g.MARTIAL ? g.MARTIAL.activeTechs(n) : c.techs).forEach(id => { const t = CULT.tech(id); if (!t) return; techT += t.cat === 'COMBAT_TECHNIQUE' ? t.tier : 0;
         if (t.cat === 'LIGHTNESS_ART') { add('move', 'วิชาเบาตัว「' + t.nameTh + '」', 'f', 3 + 2 * t.tier); add('eva', 'วิชาเบาตัว「' + t.nameTh + '」', 'p', 0.02 * t.tier); }
         else if (t.cat === 'AUXILIARY_ART' && t.role !== 'PROFESSION_LIFESTYLE') add('mdef', 'วิชาเสริม「' + t.nameTh + '」', 'p', 0.012 * t.tier); });
       const tf = Math.min(0.3, 0.03 * techT); add('atk', 'วิชาต่อสู้ที่เรียน (Σระดับ ' + techT + ')', 'p', tf); add('matk', 'วิชาต่อสู้ที่เรียน', 'p', tf);
@@ -14160,12 +14228,13 @@ JD.EXPANSION=JD.EXPANSION||data;
         }
       }
     }
+    if (g.MARTIAL) { const skills = g.MARTIAL.skillEffects(n); addAll('ทักษะที่ฝึก (อาวุธตรงประเภท)', skills.p, 'p'); addAll('ทักษะที่ฝึก', skills.f, 'f'); const growth = g.MARTIAL.progression(n), passive = g.MARTIAL.passiveStats(n); addAll('พัฒนาวิถีตามขั้น (สรีระอยู่ในสูตรฐานแล้ว)', growth.p, 'p'); addAll('วิชาติดตัวตามอุปกรณ์', passive.p, 'p'); addAll('วิชาติดตัวตามอุปกรณ์', passive.f, 'f'); }
     // ใจสู้/พิเศษ
     const mind = 0.9 + E(n, 'personality.courage') / 100 * 0.12 + E(n, 'aptitudes.combat') / 100 * 0.18 - 1; add('atk', 'ใจสู้/พรสวรรค์', 'p', mind); add('matk', 'ใจสู้/พรสวรรค์', 'p', mind);
     const sp = HC.special(n, 'combat.powerMult') - 1; if (sp) { add('atk', 'คุณสมบัติพิเศษ', 'p', sp); add('matk', 'คุณสมบัติพิเศษ', 'p', sp); }
     // อุปกรณ์
     const Eq = n.equip || {};
-    for (const k in Eq) { const it = Eq[k]; if (!it) continue; const gs = ST.gearStats(it), df = it.dur == null ? 1 : clamp(it.dur / 100, 0.3, 1); const lab = '「' + it.nameTh + '」' + (df < 1 ? ' (สึก ' + Math.round(df * 100) + '%)' : ''); for (const key in gs) if (A[key]) add(key, lab, 'f', gs[key] * df); }
+    for (const k in Eq) { const it = Eq[k]; if (!it || (g.MARTIAL && !g.MARTIAL.gearUsable(n,it))) continue; const gs = ST.gearStats(it), df = it.dur == null ? 1 : clamp(it.dur / 100, 0.3, 1); const lab = '「' + it.nameTh + '」' + (df < 1 ? ' (สึก ' + Math.round(df * 100) + '%)' : ''); for (const key in gs) if (A[key]) add(key, lab, 'f', gs[key] * df); }
     // บัฟโอสถ + สถานะ
     (n.buffs || []).forEach(b => { if (b.until <= ST.now && ST.now > 0) return; addAll('โอสถ' + b.name, b.p, 'p'); addAll('โอสถ' + b.name, b.f, 'f'); });
     statusMods(n, add);
@@ -14196,7 +14265,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     const addF = (k, v) => { if (!v) return; if (k === 'move') p.move += v / 100; else f[k] += v; };
     const addAll = (o, isF) => { for (const k in o) if (k in b) { if (isF) addF(k, o[k]); else addP(k, o[k]); } };
     const st = CULT.stageInfo(n), L = st.combatPower, sub = c ? CULT.subInfo(c.path, c.sub) : null;
-    const Lo = L * (sub ? sub.combatBonus : 1), Ld = L * (sub ? sub.defenseBonus : 1), pw = PATHW[c && PATHW[c.path] ? c.path : 'NONE'], d = HC.derived(n);
+    const Lo = L * (sub ? sub.combatBonus : 1), Ld = L * (sub ? sub.defenseBonus : 1), pw = PATHW[c && PATHW[c.path] ? c.path : 'NONE'], d = g.MARTIAL ? g.MARTIAL.derived(n) : HC.derived(n);
     b.atk = Lo * 0.6 * pw.atk; b.matk = Lo * 0.6 * pw.matk; b.def = Ld * 0.5 * pw.def; b.mdef = Ld * 0.45 * pw.mdef; b.acc = Lo * 0.55; b.eva = Lo * 0.55;
     b.hp = d.hpMax * CULT.hpMult(n); b.move = 100 * d.walkSpeed / 1.05;
     const strF = 0.65 + 0.6 * (E(n, 'physiology.strength') * .4 + E(n, 'physiology.toughness') * .2 + E(n, 'physiology.explosiveness') * .2 + E(n, 'physiology.endurance') * .2) / 100;
@@ -14212,7 +14281,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     addF('cast', (E(n, 'physiology.reflex') - 50) * 0.4 + (E(n, 'intellect.focus') - 50) * 0.3 + (E(n, 'intellect.comprehension') - 50) * 0.2);
     if (c) {
       addF('cast', 2 * (c.stage - 1)); addF('move', 4 * (c.stage - 1));
-      const fx = SUBFX[c.sub] || (JD.EXPANSION.subStats || {})[c.sub]; if (fx) { if (fx.p) addAll(fx.p, false); if (fx.f) addAll(fx.f, true); }
+      const rawFx = SUBFX[c.sub] || (JD.EXPANSION.subStats || {})[c.sub], fx = rawFx && g.MARTIAL ? g.MARTIAL.subStats(n, rawFx) : rawFx; if (fx) { if (fx.p) addAll(fx.p, false); if (fx.f) addAll(fx.f, true); }
       const m = c.mantra ? CULT.tech(c.mantra) : null;
       if (m) {
         if (c.path === 'XIAN') { addP('matk', 0.04 * m.tier); addP('mdef', 0.02 * m.tier); }
@@ -14222,7 +14291,7 @@ JD.EXPANSION=JD.EXPANSION||data;
         else { addP('mdef', 0.04 * m.tier); addP('hp', 0.03 * m.tier); addP('matk', 0.02 * m.tier); }
       }
       let techT = 0;
-      const techs = c.techs;
+      const techs = g.MARTIAL ? g.MARTIAL.activeTechs(n) : c.techs;
       for (let i = 0; i < techs.length; i++) {
         const t = CULT.tech(techs[i]); if (!t) continue;
         if (t.cat === 'COMBAT_TECHNIQUE') techT += t.tier;
@@ -14257,9 +14326,10 @@ JD.EXPANSION=JD.EXPANSION||data;
         }
       }
     }
+    if (g.MARTIAL) { const skills = g.MARTIAL.skillEffects(n); addAll(skills.p, false); addAll(skills.f, true); const growth = g.MARTIAL.progression(n), passive = g.MARTIAL.passiveStats(n); addAll(growth.p, false); addAll(passive.p, false); addAll(passive.f, true); }
     const mind = 0.9 + E(n, 'personality.courage') / 100 * 0.12 + E(n, 'aptitudes.combat') / 100 * 0.18 - 1; addP('atk', mind); addP('matk', mind);
     const sp = HC.special(n, 'combat.powerMult') - 1; if (sp) { addP('atk', sp); addP('matk', sp); }
-    for (const k in Eq) { const it = Eq[k]; if (!it) continue; const gs = ST.gearStats(it), df = it.dur == null ? 1 : clamp(it.dur / 100, 0.3, 1); for (const key in gs) if (key in b) addF(key, gs[key] * df); }
+    for (const k in Eq) { const it = Eq[k]; if (!it || (g.MARTIAL && !g.MARTIAL.gearUsable(n,it))) continue; const gs = ST.gearStats(it), df = it.dur == null ? 1 : clamp(it.dur / 100, 0.3, 1); for (const key in gs) if (key in b) addF(key, gs[key] * df); }
     const hpVal = Math.round(Math.max(1, b.hp * (1 + p.hp) + f.hp));
     const vMove0 = Math.round(clamp(Math.max(30, b.move * (1 + p.move) + f.move), 30, 320));
     const moveMult0 = clamp(vMove0 / b.move, 0.6, 2.2);
@@ -14273,7 +14343,7 @@ JD.EXPANSION=JD.EXPANSION||data;
   function computeFast(n) {
     const base = getBaseFast(n), b = base.b, p0 = base.p, f0 = base.f;
     const sk = n.h.skills;
-    const martial = Math.max(sk.SWORD || 0, sk.BLADE || 0, sk.SPEAR || 0, sk.FIST_PALM || 0, sk.BODY_REFINING || 0, sk.SOUL_DIVINE || 0, sk.POISON || 0);
+    const martial = g.MARTIAL ? g.MARTIAL.weaponSkill(n) : (sk.FIST_PALM || 0);
     const mAtkP = 0.8 + 0.45 * martial / 100 - 1, mPenF = martial * 0.05;
     const s = n.h.state;
     const cond = (0.8 + 0.2 * (n._hpf == null ? 1 : n._hpf)) * (0.8 + 0.2 * s.energy / 100) * (1 - 0.3 * s.heartDemon / 100);
@@ -14349,12 +14419,12 @@ JD.EXPANSION=JD.EXPANSION||data;
     return { v, parts };
   }
   ST.get = n => {
-    const c = n._cs; if (c && ST.now > 0 && ST.now - c.t < 3) return c.v;
+    const c = n._cs, eq = n.equip || {}; if (c && ST.now > 0 && ST.now - c.t < 3 && c.eqW === eq.WEAPON && c.eqA === eq.ARMOR && c.eqX === eq.ACCESSORY && c.ver === n._ver && c.sub === (n.cult && n.cult.sub) && c.stage === (n.cult && n.cult.stage)) return c.v;
     if (n.foe) { const r = compute(n, false); n._cs = { t: ST.now, v: r.v }; return r.v; }
     n._hpf = clamp(n.h.state.hp / Math.max(1, hpMaxBase(n)), 0, 1);
-    const v = computeFast(n); n._cs = { t: ST.now, v }; return v;
+    const v = computeFast(n); n._cs = { t: ST.now, v, eqW: eq.WEAPON, eqA: eq.ARMOR, eqX: eq.ACCESSORY, ver: n._ver, sub: n.cult && n.cult.sub, stage: n.cult && n.cult.stage }; return v;
   };
-  function hpMaxBase(n) { const d = HC.derived(n); return d.hpMax * CULT.hpMult(n); }
+  function hpMaxBase(n) { const d = g.MARTIAL ? g.MARTIAL.derived(n) : HC.derived(n); return d.hpMax * CULT.hpMult(n); }
   ST.explain = n => { if (!n.foe) n._hpf = clamp(n.h.state.hp / Math.max(1, hpMaxBase(n)), 0, 1); return compute(n, true); };
   ST.hpMax = n => {
     if (n.foe) return n.hpMax;
@@ -14370,7 +14440,7 @@ JD.EXPANSION=JD.EXPANSION||data;
       const vMove = Math.round(clamp(Math.max(30, base.b.move * (1 + base.p.move - 0.1 * injSev) + base.f.move), 30, 320));
       return clamp(vMove / base.b.move, 0.6, 2.2);
     }
-    const v = ST.get(n); const d = HC.derived(n); const base = 100 * d.walkSpeed / 1.05; return clamp(v.move / base, 0.6, 2.2);
+    const v = ST.get(n); const d = g.MARTIAL ? g.MARTIAL.derived(n) : HC.derived(n); const base = 100 * d.walkSpeed / 1.05; return clamp(v.move / base, 0.6, 2.2);
   };
   /* พลังรบรวม (ใช้ในภารกิจ/จัดอันดับ) — ปรับเทียบให้ใกล้ของเดิม (ST.RK) */
   ST.RK = 1.15;
@@ -14554,7 +14624,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     dur: n => 150 + Math.round(E(n, 'personality.discipline') * 0.5),
     start(n, W, ctx) { ctx.items = {}; ctx.cpValue = 0; return true; },
     tick(n, W, ctx) {
-      n.h.state.energy = Math.max(0, n.h.state.energy - 0.06); n.h.state.rest -= 0.03; HC.practice(n, 'herbalism', 1 / 55, 1);
+      n.h.state.energy = Math.max(0, n.h.state.energy - 0.06); n.h.state.rest -= 0.03; (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'herbalism', 1 / 55, 1);
       if (W.t % 60 === 0) {
         const sk = n.h.skills.herbalism || 0, cnt = Math.max(1, Math.round((1.4 + sk / 55) * (0.7 + W.rng.next() * 0.6) * (W.season === 3 ? 0.6 : W.season === 0 ? 1.2 : 1)));
         for (let i = 0; i < cnt; i++) { const r = W.rng.next(); const tier = r < 0.02 + sk / 1500 ? 3 : r < 0.18 + sk / 400 ? 2 : 1; const pool = ECO.herbPool ? ECO.herbPool(tier) : null; const id = pool ? W.rng.pick(pool) : null; if (id) { ctx.cpValue += CPE.reward(W, id, 1); ECO.add(W, id, 1); ctx.items[id] = (ctx.items[id] || 0) + 1; } }
@@ -14692,7 +14762,7 @@ JD.EXPANSION=JD.EXPANSION||data;
       if (e.cbBuff) return;
       if (e.cultivationProgress && info.tier <= c.stage + 1 && c.prog < CULT.threshold(n) * 0.85 && (c.toxic || 0) < (c.path === 'DEMON' ? 50 : 35)) consider(it, 0.5 + e.cultivationProgress / 160 + (E(n, 'personality.ambition') - 50) / 250, 'เร่งตบะ');
     });
-    if (c) { ['WEAPON', 'ARMOR', 'ACCESSORY'].forEach(slot => { const cur = n.equip && n.equip[slot], cs = cur ? ST.gearScore(cur) : 0; W.sect.gear.forEach(gr => { if (gr.slot !== slot || (gr.minStage || 1) > c.stage + 1) return; const gs = ST.gearScore(gr); if (gs > cs * 1.2 + 8) consider({ kind: 'gear', gear: gr, price: CPE.gearPrice(W, gr) }, 0.6 + Math.min(1.2, (gs - cs) / Math.max(40, cs)) * 0.5, 'อุปกรณ์ที่ดีกว่า'); }); }); }
+    if (c) { ['WEAPON', 'ARMOR', 'ACCESSORY'].forEach(slot => { const cur = n.equip && n.equip[slot], cs = cur ? g.MARTIAL.gearSuitability(n, cur).score : 0; W.sect.gear.forEach(gr => { if (gr.slot !== slot || (gr.minStage || 1) > c.stage + 1) return; const gs = g.MARTIAL.gearSuitability(n, gr, CPE.gearPrice(W, gr)).score; if (gs > cs * 1.2 + 8) consider({ kind: 'gear', gear: gr, price: CPE.gearPrice(W, gr) }, 0.6 + Math.min(1.2, (gs - cs) / Math.max(40, cs)) * 0.5, g.MARTIAL.gearSuitability(n, gr).reasons.join(' · ')); }); }); }
     if (W.t > 0) n._pickCache = { t: W.t, cp, hp: n.h.state.hp, gearLen: W.sect.gear.length, val: best };
     return best;
   };
@@ -14702,13 +14772,13 @@ JD.EXPANSION=JD.EXPANSION||data;
     if(p.price!==quote || (p.kind==='pill' && (!ECO.isPill(p.key) || !ECO.pillInfo(p.key)))) return false;
     const c = CPE.S(W);
     if (p.kind === 'pill') { const quality = ECO.pillQuality(W, p.key); if (!ECO.take(W, p.key, 1)) return false; if (!CPE.spend(W, n, p.price, 'ซื้อ' + ECO.name(p.key))) { ECO.add(W, p.key, 1, quality); return false; } ECO.addPersonalPill(n, p.key, quality); }
-    else { const i = W.sect.gear.indexOf(p.gear); if (i < 0) return false; if (!CPE.spend(W, n, p.price, 'ซื้อ' + p.gear.nameTh)) return false; W.sect.gear.splice(i, 1); const cur = n.equip[p.gear.slot]; if (cur) W.sect.gear.push(cur); n.equip[p.gear.slot] = p.gear; ST.dirty(n); W.log('gear', n.h.name.given + ' แลกคุณูปการซื้อ「' + p.gear.nameTh + '」จากร้านสำนัก', [n.id]); }
-    c.sales++; HC.feel(n, { mood: 1.5 }); AI.mem(W, n, 'ซื้อ' + (p.kind === 'pill' ? ECO.name(p.key) : p.gear.nameTh) + 'ด้วยแต้มคุณูปการ', 0.25); return true;
+    else { if (!n.cult || !['WEAPON', 'ARMOR', 'ACCESSORY'].includes(p.gear && p.gear.slot) || (p.gear.minStage || 1) > n.cult.stage + 1) return false; const i = W.sect.gear.indexOf(p.gear); if (i < 0) return false; if (!CPE.spend(W, n, p.price, 'ซื้อ' + p.gear.nameTh)) return false; W.sect.gear.splice(i, 1); const cur = n.equip[p.gear.slot]; if (cur) W.sect.gear.push(cur); n.equip[p.gear.slot] = p.gear; ST.dirty(n); W.log('gear', n.h.name.given + ' แลกคุณูปการซื้อ「' + p.gear.nameTh + '」จากร้านสำนัก', [n.id]); }
+    c.sales++; HC.feel(n, { mood: 1.5 }); AI.mem(W, n, 'ซื้อ' + (p.kind === 'gear' ? p.gear.nameTh : ECO.name(p.key)) + 'ด้วยแต้มคุณูปการ', 0.25); return true;
   };
   A.shop = {
     nameTh: 'ร้านค้าสำนัก', icon: '🛒', color: '#e0b84a',
     can: (n, W) => (n.cp || 0) >= 4 && !!CPE.pickPurchase(W, n),
-    score(n, W, S) { const p = CPE.pickPurchase(W, n); if (!p) return S.add('ไม่มีของที่อยากได้', -3); S.add('อยากได้ ' + (p.kind === 'pill' ? ECO.name(p.key) : p.gear.nameTh) + ' (' + p.price + ' คป. · ' + p.why + ')', 0.55 + p.s * 0.35 + (E(n, 'values.wealthResource') - 50) / 300); },
+    score(n, W, S) { const p = CPE.pickPurchase(W, n); if (!p) return S.add('ไม่มีของที่อยากได้', -3); S.add('อยากได้ ' + (p.kind === 'gear' ? p.gear.nameTh : ECO.name(p.key)) + ' (' + p.price + ' คป. · ' + p.why + ')', 0.55 + p.s * 0.35 + (E(n, 'values.wealthResource') - 50) / 300); },
     where: (W, n) => { const s = AI.freeStation(W, n, 'browse', 'market'); return s ? { st: s } : null; },
     dur: () => 25,
     done(n, W) { CPE.buy(W, n, CPE.pickPurchase(W, n)); }
@@ -14759,8 +14829,8 @@ JD.EXPANSION=JD.EXPANSION||data;
       const learning = n.cult && n.cult.learning;
       if (!learning) return 'done';
       learning.got = Math.min(learning.need, learning.got + learning.need * (ctx.rate || 0.005));
-      HC.practice(n, 'SCRIPTURE', 1 / 30, 1.1);
-      const teacher = W.byId[ctx.teacherId]; if (teacher && !teacher.dead) { HC.practice(teacher, 'SCRIPTURE', 1 / 60, 0.8); teacher.merit = (teacher.merit || 0) + 0.005; }
+      (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'SCRIPTURE', 1 / 30, 1.1);
+      const teacher = W.byId[ctx.teacherId]; if (teacher && !teacher.dead) { (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(teacher, 'SCRIPTURE', 1 / 60, 0.8); teacher.merit = (teacher.merit || 0) + 0.005; }
       n.h.state.energy = Math.max(10, n.h.state.energy - 0.012); n.h.state.rest = Math.max(10, n.h.state.rest - 0.006);
     },
     done(n, W, ctx) {
@@ -14812,14 +14882,14 @@ JD.EXPANSION=JD.EXPANSION||data;
       const before = n.cult.prog; CULT.gain(n, ctx.perTick || 0.1); ctx.gained += Math.max(0, n.cult.prog - before);
       n.h.state.energy = Math.max(10, n.h.state.energy - 0.018); n.h.state.rest = Math.max(10, n.h.state.rest - 0.012);
       if (W.t % 15 === 0) {
-        if (n.cult.path === 'BODY') HC.practice(n, 'BODY_REFINING', 0.05, 1.1);
+        if (n.cult.path === 'BODY') (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'BODY_REFINING', 0.05, 1.1);
         else if (n.cult.path === 'DEMON') {
-          HC.practice(n, n.cult.sub === 'VENOM_GU_SOVEREIGN' ? 'POISON' : 'SOUL_DIVINE', 0.05, 1.15);
+          (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, n.cult.sub === 'VENOM_GU_SOVEREIGN' ? 'POISON' : 'SOUL_DIVINE', 0.05, 1.15);
           if (n.h.state.heartDemon < 55) n.h.state.heartDemon = Math.min(55, (n.h.state.heartDemon || 0) + 0.15);
         } else if (n.cult.path === 'HEART_SOUL') {
-          HC.practice(n, 'SOUL_DIVINE', 0.05, 1.15);
+          (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'SOUL_DIVINE', 0.05, 1.15);
           n.h.state.heartDemon = Math.max(0, (n.h.state.heartDemon || 0) - 0.35);
-        } else HC.practice(n, 'SCRIPTURE', 0.05, 1.1);
+        } else (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'SCRIPTURE', 0.05, 1.1);
       }
     },
     done(n, W, ctx) {
@@ -14842,6 +14912,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     if (c && !c.learning) {
       const t = AI.nextTechToStudy(W, n);
       if (t) {
+        if (g.MARTIAL) return g.MARTIAL.startStudy(W, n, t.id).ok;
         const price = CPE.techPrice(W, t);
         if (price > 0 && !CPE.spend(W, n, price, 'เรียนวิชา「' + t.nameTh + '」')) return false;
         if (price > 0) CPE.S(W).techSales += price;
@@ -15826,7 +15897,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     }
     C.grantRecipeAuth(W,actor,id);
     if(!dest.inv.recipes.includes(id)) dest.inv.recipes.push(id);
-    HC.practice(actor,'SCRIPTURE',0.5,1);
+    (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(actor,'SCRIPTURE',0.5,1);
     W.world.contentMetrics.formulasCopied++;
     W.log('research',actor.h.name.given+' คัดลอกม้วนตำรับ「'+r.nameTh+'」'+(dest!==actor?' ให้ '+dest.h.name.given:''),[actor.id].concat(dest!==actor?[dest.id]:[]));
     return {ok:true,id,from:actor.id,to:dest.id,costKind,cost};
@@ -15865,7 +15936,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     const dissectSkill=Math.max(...alive.map(n=>(n.h.skills.survival||0)*0.4+(n.h.skills.MEDICINE||0)*0.35+HC.eff(n,'physiology.dexterity')*0.3+HC.eff(n,'intellect.perceptiveness')*0.25));
     const recChance=clamp(0.42+(dissectSkill-organ.dissectionDifficulty)*0.012,0.15,0.96);
     const recovered=!!opts.guaranteeRecovery || (!opts.forceDamage && W.rng.chance(recChance));
-    alive.forEach(n=>{HC.practice(n,'survival',0.35,1);HC.practice(n,'MEDICINE',0.25,1);});
+    alive.forEach(n=>{(g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n,'survival',0.35,1);(g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n,'MEDICINE',0.25,1);});
     if(organ.propertyTags && organ.propertyTags.length) {
       const t0=organ.propertyTags[0];
       W.sect.experiments.propertyKnowledge[t0]=(W.sect.experiments.propertyKnowledge[t0]||0)+1;
@@ -15961,8 +16032,8 @@ JD.EXPANSION=JD.EXPANSION||data;
     (organ.propertyTags||[]).forEach(tag=>{
       W.sect.experiments.propertyKnowledge[tag]=(W.sect.experiments.propertyKnowledge[tag]||0)+1;
     });
-    HC.practice(npc,'MEDICINE',0.8,1.1);
-    HC.practice(npc,'ALCHEMY',0.6,1.1);
+    (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(npc,'MEDICINE',0.8,1.1);
+    (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(npc,'ALCHEMY',0.6,1.1);
     W.world.contentMetrics.organsRefined++;
     if(!opts.quiet) W.log('research',npc.h.name.given+' หลอมสกัด「'+organ.nameTh+'」ชุบชีพจรและตบะสำเร็จ',[npc.id]);
     return {ok:true,organId,npcId:npc.id,stoneCost,applied};
@@ -16029,8 +16100,8 @@ JD.EXPANSION=JD.EXPANSION||data;
     const success=opts.forceSuccess?true:opts.forceFail?false:W.rng.chance(chance);
 
     W.world.contentMetrics.experimentsRun++;
-    HC.practice(npc,exp.discipline,1.1,1.2);
-    HC.practice(npc,'SCRIPTURE',0.5,1);
+    (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(npc,exp.discipline,1.1,1.2);
+    (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(npc,'SCRIPTURE',0.5,1);
 
     let unlockedRecipeId=null, prototype=null, rewardCp=0;
     if(success) {
@@ -16209,7 +16280,7 @@ JD.EXPANSION=JD.EXPANSION||data;
       const dipSkill=lead?(HC.eff(lead,'social.charisma')*0.5+(lead.h.skills.diplomacy||0)*0.6):35;
       if(choice==='PARLEY' && dipSkill>=45) {
         deltaAtt=5; outcome='PARLEY_SUCCESS';
-        if(lead) HC.practice(lead,'diplomacy',1.2,1.2);
+        if(lead) (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(lead,'diplomacy',1.2,1.2);
         summaryTh=(lead?lead.h.name.given:'ทูตสำนัก')+' เจรจาคลี่คลายคำขาดของ'+s.nameTh+' โดยไม่ต้องเสียศิลา';
       } else if(choice==='PAY' && W.sect.stones>=ev.demandStones) {
         ECO.pay(W,ev.demandStones,'จ่ายค่าคุ้มครองชายแดนให้'+s.nameTh);
@@ -16365,7 +16436,8 @@ JD.EXPANSION=JD.EXPANSION||data;
     const r=W.rng.weighted(pool,r=>r.weight*CPE.scarcity(W,r.id));
     const skill=kind==='hunt'?'survival':ECO.matById[r.id].category==='ORE'?'mining':'herbalism';
     const best=Math.max(...alive.map(n=>n.h.skills[skill]||0));
-    const quantity=C.takeResource(W,reg,r.id,1+Math.floor(best/55)+W.rng.int(0,1));
+    const life=g.MARTIAL?Math.max(...alive.map(n=>g.MARTIAL.lifeMult(n,kind==='hunt'?'hunting':skill))):1;
+    const quantity=C.takeResource(W,reg,r.id,Math.round((1+Math.floor(best/55)+W.rng.int(0,1))*life));
     if(!quantity) return false;
     out.mats[r.id]=(out.mats[r.id]||0)+quantity;
     C.ensure(W)[kind==='hunt'?'hunted':'gathered']+=quantity;
@@ -16373,7 +16445,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     if(kind==='hunt' && beast) {
       C.harvestOrgan(W,ex,alive,out,reg,beast);
     }
-    alive.forEach(n=>HC.practice(n,skill,.5,1));return true;
+    alive.forEach(n=>(g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n,skill,.5,1));return true;
   };
   C.discover=(W,ex,alive,out,reg)=>{
     out.recipes=out.recipes||[];
@@ -16383,9 +16455,11 @@ JD.EXPANSION=JD.EXPANSION||data;
     const p=clamp(.20+scholar/400+(ex.kind==='fortune'?.12:0),.20,.65);
     if(recipes.length && W.rng.chance(p)) {
       const id=W.rng.pick(recipes);out.recipes.push(id);ex.journal.push('พบม้วนตำรับ '+ECO.recipeById[id].nameTh);
-    } else if(techs.length && W.rng.chance(p)) {
-      const id=W.rng.pick(techs);out.techs.push(id);ex.journal.push('พบคัมภีร์ '+CULT.tech(id).nameTh);
     }
+    // Rare martial knowledge uses the same daily budget and odds as native ruins/caves.
+    const extra=JD.MARTIAL.techniques.filter(t=>reg.techniques.some(id=>CULT.tech(id).path===t.path)).map(t=>t.id);
+    const drop=g.MARTIAL.discover(W,out,{tier:Math.max(2,reg.danger+2),techs:reg.techniques.concat(extra),source:'region'});
+    if(drop) ex.journal.push('พบองค์ความรู้หายาก');
   };
   C.fortune=(W,ex,alive,out,reg)=>{
     if(!regionById[reg.id]) return false;
@@ -16707,6 +16781,397 @@ JD.EXPANSION=JD.EXPANSION||data;
 
 </script>
 <script>
+/* js/martial.js */
+/* Derived martial identity and shared equipment suitability. Never writes HC attributes. */
+(function(g){
+'use strict';
+const {JD,HC,U,CULT,ECO,STATS:ST}=g,D=JD.MARTIAL,clamp=U.clamp;
+const M=g.MARTIAL={VERSION:D.version,TYPES:D.types};
+const paths={
+ XIAN:{body:{meridianCapacity:28,spiritualFoundation:24,reflex:8},p:{matk:.14,def:-.05},life:{ARRAY:.12,TALISMAN:.10},curve:'late',weapons:['FOCUS','SWORD'],armor:['ROBE']},
+ BODY:{body:{strength:34,toughness:30,endurance:26,vitality:22},p:{atk:.08,matk:-.1},life:{mining:.20,FORGING:.08},curve:'early',weapons:['FIST','STAFF','SPEAR'],armor:['HEAVY']},
+ GOD:{body:{vitality:20,spiritualFoundation:18,endurance:12},p:{mdef:.12,cast:-.04},life:{MEDICINE:.12,herbalism:.10},curve:'steady',weapons:['SPEAR','FOCUS'],armor:['HEAVY','ROBE']},
+ DEMON:{body:{strength:24,explosiveness:26,agility:18},p:{atk:.10,def:-.10},life:{POISON:.17,hunting:.12},curve:'early',weapons:['BLADE','FIST'],armor:['LIGHT']},
+ HEART_SOUL:{body:{reflex:18,spiritualFoundation:30,meridianCapacity:16},p:{matk:.13,hp:-.06},life:{SCRIPTURE:.18,ARRAY:.12},curve:'late',weapons:['FOCUS','SWORD'],armor:['ROBE','LIGHT']}
+};
+// [body, productive life skills, curve, preferred weapons, armor]. All current branches have a distinct record.
+const profiles={
+ SWORD_IMMORTAL:[{reflex:16,agility:10},{SWORD:.20},'late',['SWORD'],['LIGHT']],
+ FIVE_ELEMENTS:[{meridianCapacity:14,spiritualFoundation:12},{ALCHEMY:.12,ARRAY:.12},'late',['FOCUS'],['ROBE']],
+ ELIXIR_DAO:[{vitality:20,recoveryRate:15},{ALCHEMY:.32,MEDICINE:.22},'steady',['FOCUS'],['ROBE']],
+ ASTRAL_ARRAY:[{spiritualFoundation:15},{ARRAY:.35,TALISMAN:.15},'late',['FOCUS'],['ROBE']],
+ BLOOD_DEMON:[{explosiveness:22,strength:12},{hunting:.25},'early',['BLADE','FIST'],['LIGHT']],
+ PHANTOM_SOUL:[{agility:18,reflex:12},{survival:.20,SCRIPTURE:.12},'late',['FOCUS','BLADE'],['LIGHT']],
+ TIME_VOID:[{speed:18,reflex:18},{ARRAY:.20,SCRIPTURE:.22},'late',['FOCUS'],['ROBE']],
+ SOUND_ZITHER:[{spiritualFoundation:15,dexterity:18},{MEDICINE:.14,TALISMAN:.22},'steady',['FOCUS'],['ROBE']],
+ YIN_YANG_HARMONY:[{recoveryRate:20,meridianCapacity:12},{ALCHEMY:.18,MEDICINE:.20},'steady',['FOCUS','STAFF'],['ROBE']],
+ TIGER_SOVEREIGN:[{strength:22,explosiveness:20},{hunting:.28},'early',['FIST'],['LIGHT']],
+ BLOOD_DRAGON:[{vitality:24,strength:18},{hunting:.18,mining:.16},'late',['FIST','SPEAR'],['HEAVY']],
+ VAJRA_BODHI:[{toughness:28,endurance:16},{MEDICINE:.16,mining:.18},'late',['STAFF','FIST'],['HEAVY']],
+ DEVOURING_FIEND:[{immunity:24,strength:18},{hunting:.24,POISON:.15},'early',['FIST','BLADE'],['HEAVY']],
+ SOLAR_FORGE:[{strength:20,dexterity:20},{FORGING:.38,mining:.14},'steady',['STAFF','FIST'],['HEAVY']],
+ THUNDER_BODY:[{reflex:26,speed:18},{mining:.20,FORGING:.16},'early',['SPEAR','FIST'],['LIGHT']],
+ JADE_IMMORTAL_BODY:[{vitality:28,recoveryRate:26},{MEDICINE:.24,herbalism:.22},'late',['STAFF','FOCUS'],['ROBE']],
+ TITAN_MOUNTAIN_BODY:[{toughness:32,endurance:26,speed:-8},{mining:.36},'late',['STAFF'],['HEAVY']],
+ WAR_DEITY:[{strength:16,endurance:20},{FORGING:.20,hunting:.15},'steady',['SPEAR','BLADE'],['HEAVY']],
+ MERCY_DEITY:[{vitality:22,recoveryRate:18},{MEDICINE:.38,ALCHEMY:.16},'steady',['FOCUS','STAFF'],['ROBE']],
+ FATE_ORACLE:[{reflex:20,spiritualFoundation:12},{SCRIPTURE:.30,TALISMAN:.20},'late',['FOCUS'],['ROBE']],
+ TOTEM_BEAST_GOD:[{strength:16,agility:16},{BEAST_TAMING:.35,hunting:.18},'early',['SPEAR','FIST'],['LIGHT']],
+ UNDERWORLD_JUDGE:[{spiritualFoundation:22,endurance:14},{SCRIPTURE:.24,POISON:.16},'late',['STAFF','FOCUS'],['HEAVY']],
+ OCEAN_SOVEREIGN:[{meridianCapacity:24,flexibility:18},{MEDICINE:.20,ALCHEMY:.18},'late',['SPEAR','FOCUS'],['ROBE']],
+ HARVEST_EARTH_GOD:[{vitality:20,endurance:18},{herbalism:.38,MEDICINE:.18},'steady',['STAFF','FOCUS'],['ROBE']],
+ FROST_MOON_IMMORTAL:[{meridianCapacity:18,reflex:16},{ALCHEMY:.24,herbalism:.18},'late',['SWORD','FOCUS'],['ROBE']],
+ WOOD_SPRING_BODY:[{vitality:26,recoveryRate:28},{herbalism:.30,MEDICINE:.22},'late',['STAFF','FIST'],['LIGHT']],
+ MEDICINE_BODHI_GOD:[{vitality:20,spiritualFoundation:20},{MEDICINE:.34,ALCHEMY:.26},'steady',['FOCUS','STAFF'],['ROBE']],
+ SHADOW_ASSASSIN:[{agility:26,speed:18},{survival:.28,hunting:.18},'early',['BLADE'],['LIGHT']],
+ VENOM_GU_SOVEREIGN:[{immunity:32,dexterity:16},{POISON:.36,ALCHEMY:.24},'late',['FOCUS','BLADE'],['ROBE']],
+ NETHER_GHOST_KING:[{spiritualFoundation:28,endurance:12},{SCRIPTURE:.24,BEAST_TAMING:.18},'late',['FOCUS','STAFF'],['ROBE']],
+ HEAVEN_DEVOURING_DEMON:[{strength:26,explosiveness:24},{hunting:.30,mining:.16},'early',['FIST','BLADE'],['HEAVY']],
+ ZEN_VOID_MIND:[{spiritualFoundation:22,recoveryRate:18},{SCRIPTURE:.32,MEDICINE:.20},'late',['STAFF','FOCUS'],['ROBE']],
+ CALLIGRAPHY_PAINTING_SAGE:[{dexterity:24,meridianCapacity:18},{TALISMAN:.35,ARRAY:.24},'late',['FOCUS'],['ROBE']],
+ DREAM_ILLUSION_WEAVER:[{reflex:22,agility:18},{SCRIPTURE:.24,TALISMAN:.20},'late',['FOCUS'],['LIGHT']],
+ MIND_SWORD_TELEKINESIS:[{reflex:24,spiritualFoundation:20},{SWORD:.20,ARRAY:.22},'late',['SWORD','FOCUS'],['ROBE']],
+ STAR_ARCHER:[{reflex:24,dexterity:20},{hunting:.28,survival:.20},'late',['BOW'],['LIGHT']],
+ STAFF_GUARD:[{toughness:26,endurance:24,speed:-6},{mining:.28,FORGING:.18},'early',['STAFF'],['HEAVY']]
+};
+M.PATHS=paths;M.PROFILES=profiles;
+M.normalize=n=>{if(!n.cult)return;const c=n.cult,p=CULT.PATHS[c.path];if(!p)return;if(c.sub!=='NONE'&&!p.subPaths.some(s=>s.id===c.sub)){c.sub='NONE';c.track=null;ST.dirty(n);}if(c.sub==='NONE'&&c.track){c.track=null;ST.dirty(n);}};
+const growth=(stage,max,curve)=>{const x=clamp((stage-1)/Math.max(1,max-1),0,1);return .18+.82*(curve==='early'?Math.sqrt(x):curve==='late'?x*x:x);};
+const progressCache=new WeakMap();
+M.progression=(n,stage)=>{
+ const c=n.cult;if(!c||!paths[c.path])return {identity:'ปุถุชน',body:{},p:{},f:{},life:{},scale:0};
+ const rank=Math.min(CULT.PATHS[c.path].maxStage,stage==null?c.stage:stage),track=c.track?c.track.ordinal||1:1,key=c.path+'|'+c.sub+'|'+rank+'|'+track;
+ const cache=progressCache.get(n);if(cache&&cache.key===key)return cache.value;
+ const path=paths[c.path],sub=CULT.PATHS[c.path].subPaths.some(s=>s.id===c.sub)?profiles[c.sub]:null,max=CULT.PATHS[c.path].maxStage,ps=growth(rank,max,path.curve),ss=Math.max(growth(rank,max,sub?sub[2]:'steady'),track>1?growth(track,9,sub?sub[2]:'steady')*.85:0);
+ const body={},p={},life={};for(const k in path.body)body[k]=path.body[k]*ps;if(sub)for(const k in sub[0])body[k]=(body[k]||0)+sub[0][k]*ss;
+ for(const k in path.p)p[k]=path.p[k]*ps;for(const k in path.life)life[k]=1+path.life[k]*ps;if(sub)for(const k in sub[1])life[k]=(life[k]||1)+sub[1][k]*ss;
+ Object.keys(body).forEach(k=>body[k]=Math.round(body[k]*10)/10);
+ const value={identity:sub?CULT.subInfo(c.path,c.sub).nameTh:'พื้นฐาน (ยังไม่เลือกสายย่อย)',body,p,f:{},life,scale:ss,curve:sub?sub[2]:path.curve};
+ progressCache.set(n,{key,value});return value;
+};
+M.eff=(n,path)=>{const value=HC.eff(n,path);return path.startsWith('physiology.')?clamp(value+(M.progression(n).body[path.slice(11)]||0),0,180):value;};
+M.derived=n=>{const d=HC.derived(n),b=M.progression(n).body;return Object.assign({},d,{hpMax:Math.round(d.hpMax+(b.vitality||0)*1.1+(b.toughness||0)*.5+(b.strength||0)*.2),walkSpeed:d.walkSpeed+((b.speed||0)*.7+(b.agility||0)*.3)/100*.9});};
+M.lifeMult=(n,skill)=>M.progression(n).life[skill]||1;
+M.subStats=(n,fx,stage)=>{if(!n.cult||!CULT.PATHS[n.cult.path].subPaths.some(s=>s.id===n.cult.sub))return {p:{},f:{}};const scale=M.progression(n,stage).scale;return {p:Object.fromEntries(Object.entries(fx.p||{}).map(([k,v])=>[k,v*scale])),f:Object.fromEntries(Object.entries(fx.f||{}).map(([k,v])=>[k,v*scale]))};};
+M.gearType=it=>it?(it.gearType||D.classify(it.slot,it.nameTh)):null;
+M.conditionMatches=(n,t)=>{
+ if(t.weaponTypes){const type=(M.equippedType?M.equippedType(n):M.gearType(n.equip&&n.equip.WEAPON)||'FIST');if(!t.weaponTypes.includes(type))return false;}
+ if(t.armorTypes&&(!M.gearUsable(n,n.equip&&n.equip.ARMOR)||!t.armorTypes.includes(M.gearType(n.equip&&n.equip.ARMOR))))return false;
+ return true;
+};
+M.skillEfficiency=(n,p)=>{const t=CULT.tech(p.tech||p.id)||p;if(!t.weaponTypes&&!t.armorTypes)return 1;return M.conditionMatches(n,t)?1.15:(t.requiresWeapon?0:.65);};
+M.passiveStats=n=>{const p={},f={};if(n.cult)for(const id of n.cult.techs){const t=CULT.tech(id);if(M.activeTechs&&!M.activeTechs(n).includes(id)||!t||!t.passive||!M.conditionMatches(n,t))continue;for(const k in t.passive.p)p[k]=(p[k]||0)+t.passive.p[k];for(const k in t.passive.f)f[k]=(f[k]||0)+t.passive.f[k];}return {p,f};};
+M.conditionText=t=>{const a=[];if(t.weaponTypes)a.push(t.weaponTypes.map(x=>D.types[x]).join('/'));if(t.armorTypes)a.push(t.armorTypes.map(x=>D.types[x]).join('/'));return a.length?a.join(' + ')+(t.passive?' · ถอดแล้วผลหาย':t.requiresWeapon?' · จำเป็น':' · ตรง ×1.15 / อื่น ×0.65'):'ใช้ได้ทุกอุปกรณ์';};
+M.gearSuitability=(n,it,price)=>{
+ if(!it||!n.cult||(it.minStage||1)>n.cult.stage+1)return {score:-Infinity,reasons:['ขั้นบำเพ็ญไม่ถึง']};
+ const c=n.cult,path=paths[c.path]||paths.XIAN,sub=profiles[c.sub],type=M.gearType(it),weapons=sub?sub[3]:path.weapons,armor=sub?sub[4]:path.armor,reasons=[],s=it.st||ST.gearStats(Object.assign({},it));
+ let fit=1;if(it.slot==='WEAPON'){fit=weapons.includes(type)?1.45:.68;reasons.push(weapons.includes(type)?'ตรงแนวสายบำเพ็ญ':'อาวุธไม่ถนัด');}
+ if(it.slot==='ARMOR'){fit=armor.includes(type)?1.25:.85;reasons.push(armor.includes(type)?'เกราะตรงวิถี':'เกราะต่างแนว');}
+ const role=c.path==='BODY'?{atk:1.35,matk:.45,def:1.2,mdef:1.1}:c.path==='HEART_SOUL'||c.path==='XIAN'?{atk:.65,matk:1.35,def:1.1,mdef:1}:c.path==='DEMON'?{atk:1.15,matk:1.15,def:.85,mdef:.9}:{atk:1,matk:1.1,def:1,mdef:1.2};
+ let power=(s.atk||0)*role.atk+(s.matk||0)*role.matk+(s.def||0)*role.def+(s.mdef||0)*role.mdef+(s.hp||0)*.5+(s.crit||0)*8+(s.critDmg||0)*1.5+(s.pen||0)*6+(s.cast||0)*3+(s.eva||0)*.6+(s.acc||0)*.6+(s.move||0)*2;
+ let moves=0;for(const id of c.techs){const t=CULT.tech(id);if(t&&((it.slot==='WEAPON'&&t.weaponTypes&&t.weaponTypes.includes(type))||(it.slot==='ARMOR'&&t.armorTypes&&t.armorTypes.includes(type))))moves++;}if(moves){fit+=Math.min(.5,moves*.12);reasons.push('หนุนวิชาที่เรียน '+moves+' วิชา');}
+ const caution=HC.eff(n,'personality.caution')/100,aggression=HC.eff(n,'personality.aggression')/100;
+ power+=(s.def||0)*caution*.35+(s.hp||0)*caution*.18+(s.atk||0)*aggression*.2;
+ if(n.h.state.hp<CULT.hpMax(n)*.6){power+=(s.def||0)*.45+(s.hp||0)*.4;reasons.push('ต้องการเอาตัวรอด');}
+ if(it.fx)for(const fx of it.fx){const skill=(fx.params||{}).craftBonusPath;if(skill&&M.lifeMult(n,skill)>1.05){power+=30*M.lifeMult(n,skill);reasons.push('หนุนงาน '+skill);}}
+ const cost=Number.isFinite(price)?price:0,thrift=.08+HC.eff(n,'values.wealthResource')/350;
+ return {score:power*fit-cost*thrift,reasons,type};
+};
+M.describe=(W,n)=>{const now=M.progression(n),next=n.cult&&n.cult.stage<CULT.maxStage(n)?M.progression(n,n.cult.stage+1):now,raw=n.cult&&(ST.SUBFX[n.cult.sub]||(JD.EXPANSION.subStats||{})[n.cult.sub])||{p:{},f:{}};return {now,next,subNow:M.subStats(n,raw),subNext:n.cult?M.subStats(n,raw,n.cult.stage+1):{p:{},f:{}},desires:n.cult?((profiles[n.cult.sub]||[null,null,null,paths[n.cult.path].weapons])[3]).map(x=>D.types[x]):[],crystals:Object.entries(n.inv&&n.inv.crystals||{}).filter(x=>x[1]>0)};};
+// Mint/catalog boundary types also cover historical recipe-only equipment.
+const oldMint=ECO.mintGear;ECO.mintGear=(r,q)=>{const it=oldMint(r,q),source=ECO.itemById[r.outItemId]||r;it.gearType=source.gearType||D.classify(it.slot,it.nameTh);return it;};
+})(typeof globalThis!=='undefined'?globalThis:this);
+
+</script>
+<script>
+/* js/proficiency.js */
+/* All skill reads/practice share one authority; extra weapon skills stay outside locked HC. */
+(function(g){
+'use strict';
+const {MARTIAL:M,HC,STATS:ST,AI,CULT,U}=g,clamp=U.clamp;
+const extra={BOW:'ฝีมือธนู',STAFF:'ฝีมือพลอง',FOCUS:'ฝีมือสื่อปราณ'};
+const groups={weapon:['SWORD','BLADE','SPEAR','FIST_PALM','BOW','STAFF','FOCUS'],cultivation:['MOVEMENT','BODY_REFINING','SOUL_DIVINE','POISON','SCRIPTURE','ritual'],production:['ALCHEMY','FORGING','ARRAY','TALISMAN','MEDICINE','herbalism','mining','cooking','construction'],exploration:['BEAST_TAMING','stealth','survival'],social:['trading','administration','diplomacy','arts']};
+M.SKILL_GROUPS=groups;M.SKILL_GROUP_NAMES={weapon:'อาวุธ',cultivation:'บำเพ็ญและเคล็ดภายใน',production:'การผลิตและการแพทย์',exploration:'สำรวจและอสูร',social:'สังคมและการจัดการ'};
+M.SKILL_IDS=HC.SKILL_IDS.concat(Object.keys(extra));
+const effects={
+ SWORD:'เพิ่มพลัง/ความแม่นยำและเจาะเกราะเมื่อใช้กระบี่',BLADE:'เพิ่มพลัง/ความแม่นยำและเจาะเกราะเมื่อใช้ดาบ',SPEAR:'เพิ่มพลัง/ความแม่นยำและเจาะเกราะเมื่อใช้หอก',FIST_PALM:'เพิ่มพลัง/ความแม่นยำและเจาะเกราะเมื่อใช้สนับหรือมือเปล่า',BOW:'เพิ่มพลัง/ความแม่นยำและเจาะเกราะเมื่อใช้ธนู',STAFF:'เพิ่มพลัง/ความแม่นยำและเจาะเกราะเมื่อใช้พลอง',FOCUS:'เพิ่มพลังวิชา/ความแม่นยำและเจาะเกราะเมื่อใช้สื่อปราณ',
+ ALCHEMY:'เพิ่มโอกาสสำเร็จ คุณภาพและความเร็วหลอมโอสถ',FORGING:'เพิ่มโอกาสสำเร็จ คุณภาพและความเร็วหลอมอุปกรณ์',ARRAY:'เพิ่มโอกาสสร้างค่ายกลและป้องกันวิชาในการรบ',TALISMAN:'เพิ่มโอกาสสร้างยันต์และเกราะในการรบ',BEAST_TAMING:'ลดความเสียหายจากอสูรจริง',POISON:'เพิ่มความแรงแผลพิษ/โลหิตจากวิชา',MEDICINE:'เพิ่มการฟื้นตัวของผู้ป่วยเมื่อเป็นหมอและโอกาสชำแหละอวัยวะ',SCRIPTURE:'เพิ่มความเร็วศึกษาวิชาและโอกาสถอดจารึก',MOVEMENT:'เพิ่มความเร็วเคลื่อนที่และหลบหลีก',BODY_REFINING:'เพิ่มพลังชีวิตและป้องกัน',SOUL_DIVINE:'เพิ่มโจมตีวิชาและป้องกันวิชา',herbalism:'เพิ่มจำนวน/ระดับสมุนไพรและข้าวที่เก็บได้',mining:'เพิ่มจำนวน/ระดับแร่ที่ขุดได้',cooking:'เพิ่มอาหารจากข้าวหนึ่งหน่วย',trading:'เพิ่มรายได้จากการค้าเดินทาง',administration:'ลดค่าใช้จ่ายดูแลสำนักและช่วยความเร็วขยายอาคาร',diplomacy:'เพิ่มผลเจรจาความสัมพันธ์/สนธิสัญญา',stealth:'เพิ่มหลบหลีกและคริติคอล',survival:'เพิ่มโอกาสผ่านอันตราย/หนีและลดอุบัติเหตุ',arts:'เพิ่มการคลายเครียดและขวัญใจจากดนตรี',construction:'ลดเวลาขยายอาคารจริง',ritual:'เพิ่มอัตราบำเพ็ญ โดยเฉพาะวิถีเทพ'};
+const interests={ALCHEMY:'alchemy',FORGING:'forging',ARRAY:'arrays',TALISMAN:'arrays',BEAST_TAMING:'beasts',MEDICINE:'medicine',SCRIPTURE:'scholarship',MOVEMENT:'exploring',BODY_REFINING:'combat',SOUL_DIVINE:'worship',POISON:'alchemy',herbalism:'herbs',mining:'labor',cooking:'cuisine',trading:'trade',administration:'leading',diplomacy:'socializing',stealth:'intrigue',survival:'exploring',arts:'arts',construction:'building',ritual:'worship'};
+M.SKILL_INFO=Object.fromEntries(M.SKILL_IDS.map(id=>[id,{id,nameTh:extra[id]||HC.nameOf('skills.'+id),group:Object.keys(groups).find(k=>groups[k].includes(id)),effect:effects[id],route:groups.weapon.includes(id)?'ฝึกหอยุทธ์/ใช้อาวุธจริง/รับการสอน':'งานที่เกี่ยวข้อง/ฝึกทักษะเฉพาะ/รับการสอน',interest:interests[id]||'combat'}]));
+M.skillRead=(n,id)=>!n||!n.h||!M.SKILL_INFO[id]?0:clamp(Number.isFinite(extra[id]?n.martialSkills&&n.martialSkills[id]:n.h.skills[id])?(extra[id]?n.martialSkills[id]:n.h.skills[id]):0,0,100);
+M.skillPractice=(n,id,hours,quality)=>{
+ if(!M.SKILL_INFO[id]||!Number.isFinite(hours)||hours<=0||!Number.isFinite(quality==null?1:quality)||(quality!=null&&quality<=0))return 0;
+ const q=clamp(quality==null?1:quality,.1,3)*(M.lifeMult?M.lifeMult(n,id):1);let gain;
+ if(!extra[id])gain=HC.practice(n,id,hours,q);
+ else{const level=M.skillRead(n,id),aff={BOW:'SWORD',STAFF:'SPEAR',FOCUS:'SOUL_DIVINE'}[id],rate=(.35+(HC.eff(n,'affinities.'+aff)||30)/100*.9)*(.6+HC.eff(n,'intellect.learningSpeed')/100*.8)*(.8+HC.eff(n,'interests.combat')/250)*q;gain=hours*.075*rate*Math.pow(Math.max(.08,1-level/105),1.6);n.martialSkills=n.martialSkills||{};n.martialSkills[id]=Math.min(100,level+gain);}
+ if(gain)ST.dirty(n);return gain||0;
+};
+M.isBeast=u=>!!u&&!!u.foe&&(u.kind==='beast'||!!u.wild&&!!u.speciesId);
+M.gearUsable=(n,it)=>!!it&&(!n.cult||(it.minStage||1)<=n.cult.stage+1);
+M.equippedType=n=>M.gearUsable(n,n.equip&&n.equip.WEAPON)?M.gearType(n.equip.WEAPON):'FIST';
+M.pathSkillAffinity=(n,path,sub)=>{const profile=M.PROFILES[sub],preferred=profile?profile[3]:M.PATHS[path].weapons;return Math.max(...preferred.map(type=>M.weaponSkill(n,type)))*.18;};
+M.weaponSkill=(n,type)=>M.skillRead(n,({FIST:'FIST_PALM'}[type||M.equippedType(n)]||type||M.equippedType(n)));
+M.skillEffects=n=>{
+ const v=id=>M.skillRead(n,id),weapon=M.weaponSkill(n),p={matk:(.8+.45*weapon/100-1)+v('SOUL_DIVINE')*.0015,acc:weapon*.0015,move:v('MOVEMENT')*.0018,eva:v('MOVEMENT')*.001+v('stealth')*.0013,hp:v('BODY_REFINING')*.0015,def:v('BODY_REFINING')*.0014+v('TALISMAN')*.0007,mdef:v('SOUL_DIVINE')*.0013+v('ARRAY')*.0009+v('TALISMAN')*.0005},f={crit:v('stealth')*.025};
+ return {p,f,beastDamage:1/(1+v('BEAST_TAMING')*.004),poisonPower:1+v('POISON')*.004,cultivation:1+v('ritual')*(n.cult&&n.cult.path==='GOD'?.003:.001),medicine:1+v('MEDICINE')*.004,study:1+v('SCRIPTURE')*.003,music:1+v('arts')*.005};
+};
+M.activeTechs=n=>!n.cult?[]:n.cult.techs.filter(id=>{const t=CULT.tech(id),c=n.cult;return !!t&&(t.path==='ANY'||t.path===c.path)&&(!t.sub||t.sub===c.sub)&&(t.reqTier||t.tier)<=c.stage;});
+M.pickSkillPractice=(W,n)=>{
+ const intent=n.martialIntent;if(intent&&intent.action==='prepare'&&intent.targetKey){const k=M.knowledge&&M.knowledge(intent.targetKey),profile=k&&M.PROFILES[k.id];if(profile){const id={FIST:'FIST_PALM'}[profile[3][0]]||profile[3][0];if(M.skillRead(n,id)<75)return id;}}
+ let best=null,score=-Infinity;for(const id of M.SKILL_IDS){const info=M.SKILL_INFO[id],interest=HC.eff(n,'interests.'+info.interest),need=(100-M.skillRead(n,id))*.25,role=(n.post==='healer'&&id==='MEDICINE'||n.post==='steward'&&id==='construction'||n.post==='treasury'&&id==='administration')?20:0;const value=interest*.65+need+role+(groups.weapon.includes(id)&&id===({FIST:'FIST_PALM'}[M.equippedType(n)]||M.equippedType(n))?18:0);if(value>score){score=value;best=id;}}
+ return best;
+};
+AI.ACTS.skillDrill={nameTh:'ฝึกทักษะเฉพาะ',icon:'🎯',color:'#a6c7e8',can:n=>n.h.state.energy>35&&n.h.state.satiety>30,score(n,W,S){const id=M.pickSkillPractice(W,n);S.add('ฝึก'+M.SKILL_INFO[id].nameTh,.25+(HC.eff(n,'interests.'+M.SKILL_INFO[id].interest)-50)/180+(n.martialIntent&&n.martialIntent.action==='prepare'?.7:0));},where(W,n){const skill=M.pickSkillPractice(W,n),weapon=groups.weapon.includes(skill),st=AI.freeStation(W,n,weapon?'dummy':'read',weapon?'training_ground':'scripture');return st?{st,skill}:null;},dur:()=>100,tick(n,W,ctx){M.skillPractice(n,ctx.skill,1/60,1.1);n.h.state.energy=Math.max(0,n.h.state.energy-.055);},done(n){n.merit=(n.merit||0)+.1;}};
+// Training and teaching of additional proficiencies use the same native stations/actions.
+const practiceWhere=AI.ACTS.practice.where;AI.ACTS.practice.where=(W,n)=>{const result=practiceWhere(W,n);if(result){const equipped={FIST:'FIST_PALM'}[M.equippedType(n)]||M.equippedType(n);if(groups.weapon.includes(equipped))result.skill=equipped;if(n.martialIntent&&n.martialIntent.action==='prepare')result.skill=M.pickSkillPractice(W,n);}return result;};
+const pickTeach=AI.pickTeachSkill;AI.pickTeachSkill=(t,s)=>{const best=pickTeach(t,s),newSkill=Object.keys(extra).sort((a,b)=>M.skillRead(t,b)-M.skillRead(s,b)-M.skillRead(t,a)+M.skillRead(s,a))[0];return M.skillRead(t,newSkill)-M.skillRead(s,newSkill)>M.skillRead(t,best)-M.skillRead(s,best)?newSkill:best;};
+})(typeof globalThis!=='undefined'?globalThis:this);
+
+</script>
+<script>
+/* js/knowledge.js */
+/* Scarce reusable manuals and finite one-use knowledge. Single transactional authority. */
+(function(g){
+'use strict';
+const {MARTIAL:M,CULT,CPE,ECO,HC,AI,SECT,JD,STATS:ST,U}=g,clamp=U.clamp;
+M.RARITY=Object.freeze({dailyCap:12,techManual:.003,subManual:.0005,techCrystal:.055,subCrystal:.009});
+M.techKey=id=>'T:'+id;M.subKey=id=>'S:'+id;
+const branches=Object.values(CULT.PATHS).flatMap(p=>p.subPaths.map(s=>({id:s.id,path:p.id,nameTh:s.nameTh,tier:JD.MARTIAL.subPaths.some(x=>x.id===s.id)?2:1})));
+const subById=Object.fromEntries(branches.map(s=>[s.id,s]));
+M.knowledge=key=>typeof key!=='string'?null:key.startsWith('T:')?((t=>t?{kind:'tech',id:t.id,path:t.path,sub:t.sub,tier:t.reqTier||t.tier,nameTh:t.nameTh}:null)(CULT.tech(key.slice(2)))):key.startsWith('S:')?((s=>s?Object.assign({kind:'sub'},s):null)(subById[key.slice(2)])):null;
+const cleanCounts=map=>{const out={};for(const [key,qty] of Object.entries(map||{}))if(M.knowledge(key)&&Number.isInteger(qty)&&qty>0)out[key]=Math.min(999,qty);return out;};
+M.drainKnowledgeOverflow=W=>{const overflow=W.sect.knowledgeOverflow;if(!overflow)return;W.sect.crystals=W.sect.crystals||{};for(const key of Object.keys(overflow)){const qty=overflow[key];if(!M.knowledge(key)||!Number.isSafeInteger(qty)||qty<=0){delete overflow[key];continue;}const put=Math.min(qty,Math.max(0,999-(W.sect.crystals[key]||0)));if(put){W.sect.crystals[key]=(W.sect.crystals[key]||0)+put;if(put===qty)delete overflow[key];else overflow[key]=qty-put;}}};
+M.ensure=W=>{
+ const S=W.sect;if(!S.crystals)S.crystals={};M.drainKnowledgeOverflow(W);if(!S.subLibrary)S.subLibrary=[];
+ if(!W.world.martial)W.world.martial={discovery:{day:W.day,attempts:0},found:{techManual:0,subManual:0,crystal:0},used:0,donated:0,sold:0};
+ for(const n of W.npcs){M.normalize(n);n.martialSkills=n.martialSkills||{};n.inv=n.inv||{};if(!n.inv.crystals)n.inv.crystals={};if(!n.inv.subManuals)n.inv.subManuals=[];}
+ return W.world.martial;
+};
+M.eligible=(n,key,opts)=>{
+ const k=M.knowledge(key),c=n&&n.cult;if(!k||!c)return {ok:false,reason:'ยังไม่เปิดวิถีบำเพ็ญ'};
+ if(k.path!=='ANY'&&k.path!==c.path)return {ok:false,reason:'ต่างวิถีหลัก'};
+ if(c.stage<k.tier)return {ok:false,reason:'ขั้นบำเพ็ญไม่ถึง'};
+ if(k.kind==='sub'){
+  if(c.sub&&c.sub!=='NONE')return {ok:false,reason:c.sub===k.id?'เรียนสายนี้แล้ว':'เลือกได้เพียงสายย่อยเดียว'};
+ }else{
+  if(c.techs.includes(k.id)||c.mantra===k.id||c.learning&&c.learning.id===k.id)return {ok:false,reason:'เรียนแล้วหรือกำลังศึกษา'};
+  if(k.sub&&k.sub!==c.sub)return {ok:false,reason:'ต้องมีสายย่อยตรงกัน'};
+  if(/MANTRA/.test((CULT.tech(k.id)||{}).cat||''))return {ok:false,reason:'ผลึกนี้ไม่ใช่หลักสูตรเคล็ดหลัก'};
+  if(/FORBIDDEN/.test((CULT.tech(k.id)||{}).cat||''))return {ok:false,reason:'วิชาต้องห้ามไม่เปิดศึกษา'};
+ }
+ return {ok:true,knowledge:k};
+};
+M.crystalName=key=>{const k=M.knowledge(key);return k?'ผลึก'+(k.kind==='sub'?'สาย':'วิชา')+'「'+k.nameTh+'」':key;};
+const known=(W,k)=>k.kind==='sub'?(W.sect.subLibrary||[]).includes(k.id):W.sect.library.includes(k.id);
+M.studyFee=(W,key)=>{const k=M.knowledge(key);if(!k)return Infinity;return k.kind==='tech'?CPE.techPrice(W,CULT.tech(k.id)):Math.max(1,Math.round((80+45*k.tier*k.tier)*CPE.S(W).price));};
+M.crystalPrice=(W,key)=>{
+ const k=M.knowledge(key);if(!k)return Infinity;
+ if(known(W,k))return Math.floor(M.studyFee(W,key)*.5);
+ const demand=W.npcs.reduce((s,n)=>s+(!n.dead&&M.eligible(n,key).ok?1:0),0),base=k.kind==='sub'?100+50*k.tier*k.tier:28*Math.pow(k.tier,2.1);
+ return Math.max(2,Math.round(base*clamp(1+demand*.025,1,1.35)*clamp(CPE.S(W).price,.6,1.6)));
+};
+M.crystalReward=(W,key)=>Math.max(0,Math.floor(M.crystalPrice(W,key)*.4));
+function removeUnit(n,key){
+ const held=n.inv.crystals[key];if(!Number.isInteger(held)||held<1)return false;
+ if(held===1)delete n.inv.crystals[key];else n.inv.crystals[key]=held-1;
+ const receipt=n.inv.crystalBought&&n.inv.crystalBought[key];if(receipt){receipt.qty--;if(receipt.qty<=0)delete n.inv.crystalBought[key];}
+ return true;
+}
+M.consumeCrystalUnit=removeUnit;
+function applyKnowledge(W,n,k){
+ if(k.kind==='sub'){n.cult.sub=k.id;n.cult.track=CULT.trackDef(k.id)?CULT.initTrack(k.id,1,W.day):null;CULT.refreshLifespan(n);}
+ else {n.cult.techs.push(k.id);}
+ HC.bump(n);ST.dirty(n);
+ W.log('learn',n.h.name.given+' เรียนรู้'+k.nameTh+(k.kind==='sub'?' · เปิดสายย่อย':''),[n.id]);
+}
+M.useCrystal=(W,n,key)=>{
+ const e=M.eligible(n,key);if(!e.ok)return e;
+ if(!n.inv||!Number.isInteger(n.inv.crystals&&n.inv.crystals[key])||n.inv.crystals[key]<1)return {ok:false,reason:'ไม่มีผลึกในตัว'};
+ removeUnit(n,key);applyKnowledge(W,n,e.knowledge);M.ensure(W).used++;return {ok:true};
+};
+M.buyCrystal=(W,n,key,price)=>{
+ const e=M.eligible(n,key);if(!e.ok&&!(M.canAcquireKnowledge&&M.canAcquireKnowledge(W,n,key)))return e;
+ const quote=M.crystalPrice(W,key),have=W.sect.crystals&&W.sect.crystals[key];
+ if(!Number.isFinite(price)||price!==quote||!Number.isInteger(have)||have<1||!Number.isFinite(n.cp)||n.cp<quote)return {ok:false,reason:'ราคา คลัง หรือแต้มเปลี่ยนไป'};
+ n.inv=n.inv||{};n.inv.crystals=n.inv.crystals||{};if((n.inv.crystals[key]||0)>=999)return {ok:false,reason:'กระเป๋าเต็ม'};
+ if(!CPE.spend(W,n,quote,'ซื้อ'+M.crystalName(key)))return {ok:false,reason:'แต้มไม่พอ'};
+ if(have===1)delete W.sect.crystals[key];else W.sect.crystals[key]=have-1;
+ n.inv.crystals[key]=(n.inv.crystals[key]||0)+1;
+ const receipts=n.inv.crystalBought||(n.inv.crystalBought={}),old=receipts[key];receipts[key]={qty:(old?old.qty:0)+1,cap:old?Math.min(old.cap,quote):quote};
+ M.ensure(W).sold++;CPE.S(W).sales++;return {ok:true,price:quote};
+};
+M.donateCrystal=(W,n,key)=>{
+ if(!M.knowledge(key)||!n.inv||!Number.isInteger(n.inv.crystals&&n.inv.crystals[key])||n.inv.crystals[key]<1)return {ok:false,reason:'ไม่มีผลึก'};
+ if((W.sect.crystals&&W.sect.crystals[key]||0)>=999)return {ok:false,reason:'คลังเต็ม'};
+ const r=n.inv.crystalBought&&n.inv.crystalBought[key];let reward=M.crystalReward(W,key);
+ if(r&&r.qty>0)reward=Math.min(reward,Math.floor(r.cap*.4));
+ removeUnit(n,key);W.sect.crystals=W.sect.crystals||{};W.sect.crystals[key]=(W.sect.crystals[key]||0)+1;
+ if(reward>0){CPE.mint(W,n,reward,'บริจาค'+M.crystalName(key),true);CPE.S(W).donated+=reward;}
+ M.ensure(W).donated++;return {ok:true,reward};
+};
+M.donateManual=(W,n,id,kind)=>{
+ const isSub=kind==='sub',bag=n.inv&&(isSub?n.inv.subManuals:n.inv.techs),info=isSub?subById[id]:CULT.tech(id);
+ if(!info||!Array.isArray(bag)||!bag.includes(id))return {ok:false,reason:'ไม่มีคัมภีร์'};
+ const lib=isSub?(W.sect.subLibrary||(W.sect.subLibrary=[])):W.sect.library,duplicate=lib.includes(id),reward=duplicate?0:isSub?Math.round((100+info.tier*60)*CPE.S(W).price):CPE.techReward(W,id);
+ bag.splice(bag.indexOf(id),1);if(!duplicate)lib.push(id);
+ if(reward){CPE.mint(W,n,reward,'บริจาคคัมภีร์'+info.nameTh,true);CPE.S(W).donated+=reward;}
+ return {ok:true,reward};
+};
+M.startStudy=(W,n,id)=>{
+ const key=M.techKey(id),e=M.eligible(n,key);if(!e.ok)return e;
+ if(n.cult.learning||!W.sect.library.includes(id))return {ok:false,reason:'ไม่มีคัมภีร์ในหอหรือกำลังศึกษา'};
+ const t=CULT.tech(id),fee=M.studyFee(W,key);
+ if((t.reqTier||t.tier)>SECT.canLearnTier(W,n))return {ok:false,reason:'ยังไม่ได้รับสิทธิ์หอคัมภีร์'};
+ if(!CPE.spend(W,n,fee,'ศึกษา'+t.nameTh))return {ok:false,reason:'แต้มไม่พอ'};
+ n.cult.learning={id,need:CULT.studyCost(t),got:0};CPE.S(W).techSales+=fee;return {ok:true,fee};
+};
+M.studySubpath=(W,n,id)=>{
+ const key=M.subKey(id),e=M.eligible(n,key);if(!e.ok)return e;
+ if(!(W.sect.subLibrary||[]).includes(id)||e.knowledge.tier>SECT.canLearnTier(W,n))return {ok:false,reason:'ต้องมีคัมภีร์และสิทธิ์หอ'};
+ const fee=M.studyFee(W,key);if(!CPE.spend(W,n,fee,'ศึกษาสาย'+e.knowledge.nameTh))return {ok:false,reason:'แต้มไม่พอ'};
+ applyKnowledge(W,n,e.knowledge);CPE.S(W).techSales+=fee;return {ok:true,fee};
+};
+// Only acquisition opportunities roll this gate. Handover consumes already rolled rewards without rerolling.
+M.rollDiscovery=(W,opts)=>{
+ M.ensure(W);opts=opts||{};const state=W.world.martial.discovery,R=M.RARITY;
+ if(state.day!==W.day){state.day=W.day;state.attempts=0;}if(state.attempts>=R.dailyCap)return null;state.attempts++;
+ const r=W.rng.next();let kind;if(r<R.subManual)kind='subManual';else if(r<R.subManual+R.techManual)kind='techManual';else if(r<R.subManual+R.techManual+R.subCrystal)kind='subCrystal';else if(r<R.subManual+R.techManual+R.subCrystal+R.techCrystal)kind='techCrystal';else return null;
+ const tier=opts.tier||4;
+ if(kind==='subManual'||kind==='subCrystal'){
+  const pool=branches.filter(s=>s.tier<=tier&&(!opts.path||s.path===opts.path)&&!(kind==='subManual'&&(W.sect.subLibrary||[]).includes(s.id)));
+  if(!pool.length)return null;const sub=W.rng.pick(pool);const drop=kind==='subManual'?{kind:'subManual',id:sub.id}:{kind:'crystal',id:M.subKey(sub.id)};W.world.martial.found[drop.kind]++;return drop;
+ }
+ const ids=opts.techs?new Set(opts.techs):null,pool=JD.TECH.techniques.filter(t=>(t.reqTier||t.tier)<=tier&&!t.martialBootstrap&&!/MANTRA|FORBIDDEN/.test(t.cat)&&(!ids||ids.has(t.id))&&(!opts.path||t.path===opts.path||t.path==='ANY')&&!(kind==='techManual'&&W.sect.library.includes(t.id)));
+ if(!pool.length)return null;const t=W.rng.pick(pool),drop=kind==='techManual'?{kind:'techManual',id:t.id}:{kind:'crystal',id:M.techKey(t.id)};W.world.martial.found[drop.kind]++;return drop;
+};
+M.storeCrystal=(W,n,key,qty)=>{if(!M.knowledge(key)||!Number.isInteger(qty)||qty<1)return false;n.inv=n.inv||{};n.inv.crystals=n.inv.crystals||{};const room=Math.max(0,999-(n.inv.crystals[key]||0)),put=Math.min(room,qty);n.inv.crystals[key]=(n.inv.crystals[key]||0)+put;if(!n.inv.crystals[key])delete n.inv.crystals[key];if(qty>put){const overflow=W.sect.knowledgeOverflow||(W.sect.knowledgeOverflow={});overflow[key]=(overflow[key]||0)+qty-put;}return true;};
+M.receiveDiscovery=(W,n,drop)=>{if(!drop||!n)return null;M.ensure(W);if(drop.kind==='techManual'){n.inv.techs=n.inv.techs||[];if(!n.inv.techs.includes(drop.id))n.inv.techs.push(drop.id);}else if(drop.kind==='subManual'){if(!n.inv.subManuals.includes(drop.id))n.inv.subManuals.push(drop.id);}else if(M.knowledge(drop.id))M.storeCrystal(W,n,drop.id,1);return drop;};
+M.personalDiscovery=(W,n,opts)=>M.receiveDiscovery(W,n,M.rollDiscovery(W,opts));
+M.discover=(W,out,opts)=>{
+ const drop=M.rollDiscovery(W,opts);if(!drop)return null;
+ if(drop.kind==='techManual'){out.techs=out.techs||[];if(!out.techs.includes(drop.id))out.techs.push(drop.id);}
+ else {out.knowledge=out.knowledge||[];out.knowledge.push(drop);}
+ return drop;
+};
+M.knowledgeFit=(n,key)=>{const k=M.knowledge(key);if(!k||!n.cult||k.path!==n.cult.path&&k.path!=='ANY')return -100;
+ if(k.kind==='sub'){const score=CULT.pathScores(n).filter(s=>s.path===n.cult.path),best=score[0];const own=score.find(s=>s.sub===k.id);return own&&best?clamp(80+(own.score-best.score)*2,0,100):30;}
+ if(k.sub&&k.sub!==n.cult.sub)return -50;const t=CULT.tech(k.id),matching=!t.weaponTypes||M.conditionMatches(n,t);return 60+(matching?20:-15)+(HC.eff(n,'personality.curiosity')-50)*.15;
+};
+M.crystalDecision=(W,n,key)=>{
+ const fit=M.knowledgeFit(n,key),e=M.eligible(n,key),loyalty=HC.eff(n,'personality.loyalty'),wealth=HC.eff(n,'values.wealthResource');
+ if(e.ok&&fit>=45)return {action:'use',reason:'ตรงวิถีและความถนัด',fit};
+ const k=M.knowledge(key),future=k&&n.cult&&n.cult.stage+1>=k.tier&&fit>=55;
+ if(future&&wealth>45||fit>=65&&loyalty<45)return {action:'retain',reason:'เก็บไว้สำหรับขั้นถัดไป',fit};
+ return {action:loyalty>35||(n.cp||0)<100?'donate':'retain',reason:fit<0?'ต่างสาย/เรียนซ้ำ':'สะสมแต้มแลกของจำเป็น',fit};
+};
+M.pickSubStudy=(W,n)=>(W.sect.subLibrary||[]).map(id=>({id,key:M.subKey(id)})).filter(x=>M.eligible(n,x.key).ok&&M.studyFee(W,x.key)<=(n.cp||0)&&subById[x.id].tier<=SECT.canLearnTier(W,n)).sort((a,b)=>M.knowledgeFit(n,b.key)-M.knowledgeFit(n,a.key)).find(x=>M.knowledgeFit(n,x.key)>=55)||null;
+M.daily=W=>{
+ M.ensure(W);
+ for(const n of W.npcs){if(n.dead||n.away||n.exiled)continue;
+  // At most one choice per held knowledge type per day; finite catalog bounds state/work.
+  for(const key of Object.keys(n.inv.crystals)){const d=M.crystalDecision(W,n,key);if(d.action==='use')M.useCrystal(W,n,key);else if(d.action==='donate')M.donateCrystal(W,n,key);}
+  for(const id of [...n.inv.subManuals]){const fit=M.knowledgeFit(n,M.subKey(id));if(fit<50||HC.eff(n,'personality.loyalty')>45||(n.cp||0)<100)M.donateManual(W,n,id,'sub');}
+ }
+};
+// Extend native shop/donation/study actions, keeping shared validation at transaction boundaries.
+const oldShop=CPE.shopItems;CPE.shopItems=W=>oldShop(W).concat(Object.entries(W.sect.crystals||{}).filter(x=>x[1]>0).map(([key,n])=>({kind:'crystal',key,n,price:M.crystalPrice(W,key)})));
+const oldBuy=CPE.buy;CPE.buy=(W,n,p)=>p&&p.kind==='crystal'?M.buyCrystal(W,n,p.key,p.price).ok:oldBuy(W,n,p);
+const oldPick=CPE.pickPurchase;CPE.pickPurchase=(W,n)=>{let best=oldPick(W,n),score=best?best.s:0;for(const [key,qty] of Object.entries(W.sect.crystals||{})){if(!qty||!(M.canAcquireKnowledge?M.canAcquireKnowledge(W,n,key):M.eligible(n,key).ok)||(n.inv.crystals&&n.inv.crystals[key]||0)>0)continue;const price=M.crystalPrice(W,key),fit=M.knowledgeFit(n,key),s=.65+fit/110-price/Math.max(40,n.cp||0)*.5;if(price<=(n.cp||0)*.9&&fit>=50&&s>score){best={kind:'crystal',key,price,why:'ผลึกตรงวิถี · ใช้ครั้งเดียว',s};score=s;}}return best;};
+const oldName=ECO.name;ECO.name=id=>M.knowledge(id)?M.crystalName(id):oldName(id);
+AI.ACTS.specialize={nameTh:'ศึกษาคัมภีร์สายย่อย',icon:'📜',color:'#a7c8f0',can:(n,W)=>!!M.pickSubStudy(W,n),score(n,W,S){const p=M.pickSubStudy(W,n);if(p)S.add('เลือกสายที่ถนัดถาวร',.9+M.knowledgeFit(n,p.key)/150);},where:(W,n)=>{const st=AI.freeStation(W,n,'read','scripture');return st?{st}:null;},dur:()=>240,done(n,W){const p=M.pickSubStudy(W,n);if(p)M.studySubpath(W,n,p.id);}};
+const daily=g.CONTENT.daily;g.CONTENT.daily=W=>{daily(W);M.daily(W);};
+const handover=g.EXPED.handover;g.EXPED.handover=(W,ex,alive,out)=>{
+ if(ex.martialSettled||(ex.settlement&&ex.settlement.state==='settled')||(out.settlement&&out.settlement.state==='settled'))return handover(W,ex,alive,out);
+ const accepted=handover(W,ex,alive,out);
+ if(alive&&alive.length&&out.knowledge&&out.knowledge.length){M.ensure(W);for(const drop of out.knowledge){const key=drop.kind==='subManual'?M.subKey(drop.id):drop.id;const eligible=alive.slice().sort((a,b)=>M.knowledgeFit(b,key)-M.knowledgeFit(a,key));const owner=eligible[0];if(drop.kind==='subManual'){if(!owner.inv.subManuals.includes(drop.id))owner.inv.subManuals.push(drop.id);}else if(M.knowledge(key))M.storeCrystal(W,owner,key,1);out.notes=out.notes||[];out.notes.push(owner.h.name.given+' พบ'+(drop.kind==='subManual'?'คัมภีร์สาย'+subById[drop.id].nameTh:M.crystalName(key)));}}
+ ex.martialSettled=true;return accepted;
+};
+// Defensive bounded JSON normalizer used only at save restore, never from UI/scorers.
+M.returnKnowledge=(W,n)=>{M.ensure(W);for(const [key,qty] of Object.entries(n.inv.crystals)){const room=Math.max(0,999-(W.sect.crystals[key]||0)),put=Math.min(qty,room);W.sect.crystals[key]=(W.sect.crystals[key]||0)+put;if(qty>put){const overflow=W.sect.knowledgeOverflow||(W.sect.knowledgeOverflow={});overflow[key]=(overflow[key]||0)+qty-put;}}n.inv.crystals={};n.inv.crystalBought={};for(const id of n.inv.subManuals)if(!W.sect.subLibrary.includes(id))W.sect.subLibrary.push(id);n.inv.subManuals=[];};
+M.restore=W=>{M.ensure(W);W.sect.crystals=cleanCounts(W.sect.crystals);W.sect.subLibrary=Array.from(new Set(W.sect.subLibrary.filter(id=>subById[id])));for(const n of W.npcs){n.inv.crystals=cleanCounts(n.inv.crystals);n.inv.subManuals=Array.from(new Set(n.inv.subManuals.filter(id=>subById[id])));}};
+})(typeof globalThis!=='undefined'?globalThis:this);
+
+</script>
+<script>
+/* js/retraining.js */
+/* Explicit costly retraining, bounded NPC preparation and access-aware choice. */
+(function(g){
+'use strict';
+const {MARTIAL:M,CULT,CPE,HC,AI,STATS:ST,JD,U,SECT}=g,clamp=U.clamp;
+M.retrainingStage=(old,pathChanged)=>pathChanged?1:Math.max(1,old-Math.max(2,Math.ceil(old/2)));
+M.retrainingTarget=(n,key)=>{
+ const k=M.knowledge(key);if(!n||!n.cult||!k||k.kind!=='sub')return {ok:false,reason:'ต้องมีองค์ความรู้สายย่อยที่ถูกต้อง'};
+ if(n.cult.path===k.path&&n.cult.sub===k.id)return {ok:false,reason:'เดินสายนี้อยู่แล้ว'};
+ if(n.cult.path===k.path&&n.cult.sub==='NONE')return {ok:false,reason:'ใช้การศึกษาสายเริ่มต้น ไม่ต้องสละขั้น'};
+ if(n.cult.stage<k.tier)return {ok:false,reason:'ขั้นเดิมยังไม่ถึงเกณฑ์ความรู้'};
+ return {ok:true,knowledge:k,pathChanged:n.cult.path!==k.path,newStage:M.retrainingStage(n.cult.stage,n.cult.path!==k.path)};
+};
+M.retrainingQuote=(W,n,key,opts)=>{
+ opts=opts||{};const target=M.retrainingTarget(n,key);if(!target.ok)return target;
+ if(n.dead||n.away||n.exiled||n.act&&n.act.id==='fight')return {ok:false,reason:'ต้องปลอดภัยและอยู่ในสำนักก่อน'};
+ if(W.day<(n.retrainUntil||0))return {ok:false,reason:'พักปรับฐานวิถีถึงวันที่ '+n.retrainUntil,cooldownUntil:n.retrainUntil};
+ const id=target.knowledge.id,ownedCrystal=(n.inv&&n.inv.crystals&&n.inv.crystals[key]||0)>0,ownedManual=(n.inv&&n.inv.subManuals||[]).includes(id),sectManual=(W.sect.subLibrary||[]).includes(id)&&SECT.canLearnTier(W,n)>=target.knowledge.tier;
+ const source=opts.source||(ownedCrystal?'crystal':ownedManual?'personalManual':sectManual?'sectManual':null);
+ if(!source||source==='crystal'&&!ownedCrystal||source==='personalManual'&&!ownedManual||source==='sectManual'&&!sectManual||!['crystal','personalManual','sectManual'].includes(source))return {ok:false,reason:'ไม่มีผลึกหรือคัมภีร์ที่เข้าถึงได้จริง'};
+ const fee=source==='crystal'?0:M.studyFee(W,key),cooldownDays=target.pathChanged?60:30;
+ if(opts.price!=null&&opts.price!==fee)return {ok:false,reason:'ค่าเรียนเปลี่ยนไป'};
+ return Object.assign({},target,{ok:true,key,source,fee,lostStages:n.cult.stage-target.newStage,cooldownDays,affordable:Number.isFinite(n.cp)&&(n.cp>=fee)});
+};
+M.retrain=(W,n,key,opts)=>{
+ const quote=M.retrainingQuote(W,n,key,opts);if(!quote.ok)return quote;if(!quote.affordable)return {ok:false,reason:'แต้มไม่พอ'};
+ if(quote.source==='crystal'&&!(n.inv.crystals[key]>=1))return {ok:false,reason:'ผลึกถูกใช้ไปแล้ว'};
+ if(quote.fee&&!CPE.spend(W,n,quote.fee,'เปลี่ยนวิถีศึกษาสาย'+quote.knowledge.nameTh))return {ok:false,reason:'แต้มไม่พอ'};
+ // No RNG or fallible operation follows payment; consume a unit only on this successful commit.
+ if(quote.source==='crystal')M.consumeCrystalUnit(n,key);else CPE.S(W).techSales+=quote.fee;
+ const old=n.cult,from=old.path+'/'+old.sub,before=old.stage,k=quote.knowledge;
+ n.cult={path:k.path,sub:k.id,stage:quote.newStage,prog:0,mantra:(CULT.bestMantra(k.path,quote.newStage,n)||{}).id||null,techs:Array.from(new Set(old.techs||[])),learning:null,toxic:old.toxic||0,lifeBonus:old.lifeBonus||0,since:W.day,attempts:0,secl:null,rate:0,pillT:0,tm:old.tm||{}};
+ if(CULT.trackDef(k.id))n.cult.track=CULT.initTrack(k.id,1,W.day);
+ n.buffs=[];n.sx=[];n.castFx=null;n._pickCache=null;
+ if(n.cognition){n.cognition.goal=null;n.cognition.goalCandidates=[];}
+ n.retrainUntil=W.day+quote.cooldownDays;
+ n.martialIntent={targetKey:key,action:'restabilize',day:W.day,until:n.retrainUntil,from,oldStage:before,newStage:quote.newStage,reasons:['ยอมลดขั้น '+before+' → '+quote.newStage,'พักปรับรากฐาน '+quote.cooldownDays+' วัน']};
+ CULT.refreshLifespan(n);n.h.state.hp=Math.min(n.h.state.hp,CULT.hpMax(n));n.h.state.qi=Math.min(n.h.state.qi||0,CULT.qiMax(n));n.h.state.energy=Math.max(0,n.h.state.energy-12);HC.bump(n);ST.dirty(n);
+ W.log('learn',n.h.name.given+' เปลี่ยนจาก '+from+' เป็น '+k.path+'/'+k.id+' · ขั้น '+before+' → '+quote.newStage+' ตบะเริ่มใหม่ · ใช้'+(quote.source==='crystal'?'ผลึก1ชิ้น':'คัมภีร์ถาวร ค่าเรียน '+quote.fee+' คป.')+' · พักปรับฐาน '+quote.cooldownDays+' วัน',[n.id]);
+ return {ok:true,source:quote.source,fee:quote.fee,oldStage:before,newStage:quote.newStage};
+};
+const affinityCache=new WeakMap();
+function affinities(W,n){const c=affinityCache.get(n);if(c&&c.day===W.day&&c.ver===n._ver)return c.values;const values=CULT.pathScores(n);affinityCache.set(n,{day:W.day,ver:n._ver,values});return values;}
+M.evaluateRetraining=(W,n,key)=>{
+ const structure=M.retrainingTarget(n,key),quote=M.retrainingQuote(W,n,key),base={targetKey:key,accessible:quote.ok,action:'retain',score:-Infinity,reasons:[]};
+ if(!structure.ok)return Object.assign(base,{reason:structure.reason,reasons:[structure.reason]});
+ if(!quote.ok)return Object.assign(base,{reason:quote.reason,reasons:[quote.reason]});
+ const k=structure.knowledge,profile=M.PROFILES[k.id],current=M.PROFILES[n.cult.sub],preferred=profile?profile[3]:M.PATHS[k.path].weapons,oldPreferred=current?current[3]:M.PATHS[n.cult.path].weapons;
+ const targetSkill=Math.max(...preferred.map(type=>M.weaponSkill(n,type))),currentSkill=Math.max(...oldPreferred.map(type=>M.weaponSkill(n,type))),ambition=HC.eff(n,'personality.ambition'),caution=HC.eff(n,'personality.caution'),rational=HC.eff(n,'personality.rationality'),curiosity=HC.eff(n,'personality.curiosity');
+ const oldActive=M.activeTechs(n).map(CULT.tech).filter(Boolean),lost=oldActive.filter(t=>t.path!=='ANY'&&t.path!==k.path||t.sub&&t.sub!==k.id),compatible=oldActive.filter(t=>(t.path==='ANY'||t.path===k.path)&&(!t.sub||t.sub===k.id));
+ const sourcePool=JD.TECH.techniques.filter(t=>t.path===k.path&&t.sub===k.id&&(t.reqTier||t.tier)<=Math.max(k.tier,quote.newStage+1)&&((n.cult.techs||[]).includes(t.id)||W.sect.library.includes(t.id)||(n.inv.techs||[]).includes(t.id)||(n.inv.crystals[M.techKey(t.id)]||0)>0));
+ const gearReady=preferred.includes(M.equippedType(n)),techReady=sourcePool.length>0;
+ const rows=affinities(W,n),target=rows.find(x=>x.sub===k.id),currentAffinity=rows.find(x=>x.sub===n.cult.sub),affinityAdv=clamp((target?target.score:50)-(currentAffinity?currentAffinity.score:50),-25,25)*.4;
+ const skillAdv=(targetSkill-currentSkill)*.35,investment=quote.lostStages*(5+caution*.20+rational*.07)+lost.reduce((s,t)=>s+t.tier,0)*(1+caution/70),prepared=(gearReady?11:0)+Math.min(18,sourcePool.length*9);
+ const advantage=affinityAdv+skillAdv+(ambition-50)*.3+(curiosity-50)*.1+prepared+(compatible.length?3:0);
+ const ageRisk=HC.ageYears(n)>CULT.PATHS[k.path].stages[quote.newStage-1].lifespanMax-8?100:0,needs=n.h.state.energy<35||n.h.state.satiety<35||n.h.state.hp<CULT.hpMax(n)*.6;
+ const score=advantage-investment-ageRisk-(needs?35:0)-(!quote.affordable?25:0);
+ const reasons=['อาวุธเป้าหมาย '+preferred.map(x=>M.TYPES[x]).join('/')+' ฝีมือ '+Math.round(targetSkill),'เสียขั้น '+n.cult.stage+' → '+quote.newStage+' และพัก '+quote.cooldownDays+' วัน','วิชาเดิมจะหยุดทำงาน '+lost.length+' · ยังใช้ได้ '+compatible.length,'เตรียมอุปกรณ์ '+(gearReady?'พร้อม':'ยังไม่พร้อม')+' / วิชาทดแทน '+sourcePool.length,'นิสัยและความถนัดสุทธิ '+Math.round(advantage)+' · ต้นทุนฝึกใหม่ '+Math.round(investment)];
+ if(needs)reasons.push('ต้องดูแลสุขภาพ/อาหารก่อน');if(ageRisk)reasons.push('อายุขัยขั้นใหม่เสี่ยงเกินไป');
+ const threshold=18+caution*.08,worth=score>=threshold;
+ return Object.assign(base,{quote,score,accessible:true,action:worth&&gearReady&&techReady&&!needs&&quote.affordable?'switch':(targetSkill>=50&&advantage>investment*.5&&!needs?'prepare':'retain'),reasons,gearReady,techReady,targetSkill,lostTechniques:lost.map(t=>t.id),availableTechniques:sourcePool.map(t=>t.id)});
+};
+M.availableRetraining=(W,n)=>Array.from(new Set(Object.keys(n.inv&&n.inv.crystals||{}).filter(key=>key.startsWith('S:')&&n.inv.crystals[key]>0).concat((n.inv&&n.inv.subManuals||[]).map(M.subKey),(W.sect.subLibrary||[]).map(M.subKey))));
+M.pickRetraining=(W,n)=>M.availableRetraining(W,n).map(key=>M.evaluateRetraining(W,n,key)).filter(x=>x.accessible).sort((a,b)=>b.score-a.score)[0]||null;
+const decision=M.crystalDecision;M.crystalDecision=(W,n,key)=>{
+ const k=M.knowledge(key);
+ if(k&&k.kind==='sub'&&M.retrainingTarget(n,key).ok){const d=M.evaluateRetraining(W,n,key);if(d.accessible&&(d.action==='switch'||d.action==='prepare'||d.targetSkill>=55))return {action:'retain',reason:d.action==='switch'?'รอฝึกเปลี่ยนสายอย่างรอบคอบ':d.reasons.join(' · '),fit:d.targetSkill||50};}
+ const intent=n.martialIntent,target=intent&&M.knowledge(intent.targetKey);if(k&&k.kind==='tech'&&target&&['prepare','switch'].includes(intent.action)&&k.path===target.path&&(!k.sub||k.sub===target.id))return {action:'retain',reason:'เตรียมวิชาทดแทนก่อนยอมลดขั้น',fit:80};
+ return decision(W,n,key);
+};
+const fit=M.knowledgeFit;M.knowledgeFit=(n,key)=>{const k=M.knowledge(key);if(k&&k.kind==='sub'&&n.cult&&M.PROFILES[k.id])return Math.max(fit(n,key),35+Math.max(...M.PROFILES[k.id][3].map(type=>M.weaponSkill(n,type)))*.5);return fit(n,key);};
+M.canAcquireKnowledge=(W,n,key)=>M.eligible(n,key).ok||(M.knowledge(key)&&M.knowledge(key).kind==='sub'&&M.retrainingTarget(n,key).ok);
+const daily=M.daily;M.daily=W=>{M.ensure(W);for(const n of W.npcs){if(n.dead||n.away||n.exiled||W.day<(n.retrainUntil||0))continue;const best=M.pickRetraining(W,n);if(best&&best.action!=='retain')n.martialIntent={targetKey:best.targetKey,action:best.action,day:W.day,until:W.day+30,score:Math.round(best.score),reasons:best.reasons.slice(0,6)};else if(n.martialIntent&&n.martialIntent.until<=W.day)n.martialIntent=null;}daily(W);};
+AI.ACTS.retrain={nameTh:'ปรับฐานเปลี่ยนวิถี',icon:'🔄',color:'#d6a7e8',can(n,W){const p=M.pickRetraining(W,n);return !!p&&p.action==='switch';},score(n,W,S){const p=M.pickRetraining(W,n);if(p&&p.action==='switch')S.add('ยอมลดขั้นเพื่อสายที่เตรียมไว้',.65+Math.min(1,p.score/70));},where(W,n){const p=M.pickRetraining(W,n);if(!p||p.action!=='switch')return null;const st=AI.freeStation(W,n,'read','scripture');return st?{st,targetKey:p.targetKey}:null;},dur:()=>360,done(n,W,ctx){const p=M.evaluateRetraining(W,n,ctx.targetKey);if(p.action==='switch')M.retrain(W,n,ctx.targetKey,{source:p.quote.source,price:p.quote.fee});}};
+const suitable=M.gearSuitability;M.gearSuitability=(n,it,price)=>{const result=suitable(n,it,price),intent=n.martialIntent,target=intent&&intent.action==='prepare'&&M.knowledge(intent.targetKey),profile=target&&M.PROFILES[target.id];if(profile&&it.slot==='WEAPON'&&profile[3].includes(M.gearType(it))&&Number.isFinite(result.score)){return Object.assign({},result,{score:result.score*1.25+18,reasons:result.reasons.concat('เตรียมอาวุธก่อนยอมลดขั้นเปลี่ยนสาย')});}return result;};
+})(typeof globalThis!=='undefined'?globalThis:this);
+
+</script>
+<script>
 /* js/cognition.js */
 /* ความตั้งใจและหน้าที่ของ NPC — JSON bounded state, no RNG in scores or explanations. */
 (function(g){
@@ -16792,7 +17257,7 @@ JD.EXPANSION=JD.EXPANSION||data;
  };
  COG.techPreference=(n,t)=>{
   const rational=E(n,'personality.rationality')/100;
-  return rational*Math.log2(Math.max(1,t.power||1))+(1-rational)*((t.sub===n.cult?.sub?3:0)+(t.path===n.cult?.path?1:0))+E(n,'personality.curiosity')/100*(t.tier||1)*.2;
+  return (g.MARTIAL ? (g.MARTIAL.conditionMatches(n,t) ? .8 : -.8) : 0)+rational*Math.log2(Math.max(1,t.power||1))+(1-rational)*((t.sub===n.cult?.sub?3:0)+(t.path===n.cult?.path?1:0))+E(n,'personality.curiosity')/100*(t.tier||1)*.2;
  };
  COG.modifiers=(W,n,id)=>{
   const out=[],push=(why,x)=>{if(Number.isFinite(x)&&Math.abs(x)>.025)out.push([why,clamp(x,-2,2)]);},s=n.h.state,c=n.cognition,r=COG.role(W,n);
@@ -17306,7 +17771,7 @@ JD.EXPANSION=JD.EXPANSION||data;
   'use strict';
   const U = g.U || require('./util.js'), HC = g.HC, MAP = g.MAP, CULT = g.CULT, ECO = g.ECO, SECT = g.SECT, AI = g.AI, COMBAT = g.COMBAT, EXPED = g.EXPED, JD = g.JD;
   const clamp = U.clamp;
-  const SIM = { VERSION: '1.10.10', MIN_PER_YEAR: 360 * 1440 };
+  const SIM = { VERSION: '1.10.11', MIN_PER_YEAR: 360 * 1440 };
   const E = (n, p) => HC.eff(n, p);
 
   const SEASON_TH = ['ฤดูใบไม้ผลิ', 'ฤดูร้อน', 'ฤดูใบไม้ร่วง', 'ฤดูหนาว'];
@@ -17326,11 +17791,12 @@ JD.EXPANSION=JD.EXPANSION||data;
     return npc;
   };
   SIM.awaken = (W, rng, npc, stage) => {
-    CULT.awaken(npc, rng, null, W.day);
+    const chosen = CULT.awaken(npc, rng, null, W.day);
+    if (W._founding !== false) { npc.cult.sub = chosen.sub; if (CULT.trackDef(chosen.sub)) npc.cult.track = CULT.initTrack(chosen.sub, 1, W.day); }
     const c = npc.cult; if (typeof stage === 'function') stage = stage(c.path); c.stage = Math.min(stage, CULT.maxStage(npc));
     c.prog = Math.round(CULT.threshold(npc) * (0.1 + rng.next() * 0.6));
     const m = CULT.bestMantra(c.path, c.stage, npc); if (m) c.mantra = m.id;
-    const lib = JD.TECH.techniques.filter(t => !t.sourcePack).map(t => t.id);
+    const lib = JD.TECH.techniques.filter(t => !t.sourcePack && !t.martialRare).map(t => t.id);
     const cand = CULT.learnable(npc, lib).map(CULT.tech).filter(t => t.tier <= c.stage);
     const want = Math.min(CULT.maxTechs(npc) - 1, c.stage);
     for (let i = 0; i < want && cand.length; i++) { const t = rng.weighted(cand, x => 1 + x.power / 60 + (x.sub === c.sub ? 2 : 0)); c.techs.push(t.id); cand.splice(cand.indexOf(t), 1); }
@@ -17358,7 +17824,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     opts = opts || {};
     if (g.STATS) g.STATS.now = 0;
     const rng = new U.RNG(String(seed) + ':world');
-    const W = { v: SIM.VERSION, seed: String(seed), rng, t: 360 + 360 * 1440, speed: 1, npcs: [], byId: {}, logs: [], logSeq: 0, seqN: 0, fights: [], foes: [], foeById: {}, duelQueue: [], graveyard: [], gone: [], deaths: 0, avgSat: 60, avgMood: 10, weather: { kind: 'clear', t: 0 }, season: 0, day: 0, createdAt: 0 };
+    const W = { _founding: true, v: SIM.VERSION, seed: String(seed), rng, t: 360 + 360 * 1440, speed: 1, npcs: [], byId: {}, logs: [], logSeq: 0, seqN: 0, fights: [], foes: [], foeById: {}, duelQueue: [], graveyard: [], gone: [], deaths: 0, avgSat: 60, avgMood: 10, weather: { kind: 'clear', t: 0 }, season: 0, day: 0, createdAt: 0 };
     const cal = SIM.calendar(W.t); W.day = cal.day; W.season = cal.season; HC.nowDay = W.day;
     W.map = MAP.create(W.seed);
     W.market = ECO.newMarket(rng);
@@ -17375,14 +17841,15 @@ JD.EXPANSION=JD.EXPANSION||data;
     // เริ่มเล็ก ๆ: เจ้าสำนัก + ศิษย์ 2 คน ที่เหลือรอผู้สมัครมาเอง
     for (let i = 0; i < 2; i++) { const n = SIM.buildNpc(W, rng, { sex: i === 0 ? (master.h.sex === 'M' ? 'F' : 'M') : rng.chance(0.5) ? 'M' : 'F', ageYears: rng.int(16, 23), quality: 0.5 + rng.gauss(0, 0.3), skillExp: 0.25, trainedness: 0.55, rank: 1, stage: 1, tenure: rng.int(200, 700), merit: 40 }); SIM.register(W, n); n.mentor = master.id; master.h.life.family.disciples.push(n.id); n.h.life.family.master = master.id; }
     // ---- ห้องสมุด/คลัง/ตำรับ ----
-    W.sect.library = JD.TECH.techniques.filter(t => !t.sourcePack && t.tier <= 2).map(t => t.id).concat(JD.TECH.techniques.filter(t => !t.sourcePack && t.tier === 3).slice(0, 12).map(t => t.id)).concat(JD.TECH.techniques.filter(t => !t.sourcePack && t.tier === 3 && (t.path === 'DEMON' || t.path === 'HEART_SOUL')).map(t => t.id));
+    W.sect.library = JD.TECH.techniques.filter(t => !t.sourcePack && !t.martialRare && t.tier <= 2).map(t => t.id).concat(JD.TECH.techniques.filter(t => !t.sourcePack && !t.martialRare && t.tier === 3).slice(0, 12).map(t => t.id)).concat(JD.TECH.techniques.filter(t => !t.sourcePack && !t.martialRare && t.tier === 3 && (t.path === 'DEMON' || t.path === 'HEART_SOUL')).map(t => t.id));
+    W._founding = false;
     const S = W.sect; S.stock.grain = 150; S.stock.meal = 30;
     ECO.recipesFor(W, ['ALCHEMY', 'FORGING', 'ARRAY', 'TALISMAN']).forEach(r => r.inputs.forEach(i => { const m = ECO.matById[i.matId]; if (m && m.tier <= 2) S.stock[i.matId] = Math.max(S.stock[i.matId] || 0, 8 + (m.tier === 1 ? 6 : 0)); }));
     // ไม่แจกโอสถจากอากาศเป็นสต็อกเริ่มต้น: ให้สมาชิกหลอมจากวัตถุดิบที่มี หรือหาได้จากภายนอก
     S.policy = SECT.initPolicy(W); if (SECT.ensureDirectives) { SECT.ensureDirectives(W); SECT.updateReserveDirectives(W); }
     if (g.ECO && g.ECO.ensureStockTracker) g.ECO.ensureStockTracker(W);
     if (g.SECT && g.SECT.ensureFacilityDemand) g.SECT.ensureFacilityDemand(W);
-    g.CPE.init(W); if (g.SECT && g.SECT.ensureDirectives) g.SECT.ensureDirectives(W); g.CONTENT.ensure(W);
+    g.CPE.init(W); if (g.SECT && g.SECT.ensureDirectives) g.SECT.ensureDirectives(W); g.CONTENT.ensure(W); g.MARTIAL.ensure(W);
     // ตำแหน่งผู้อาวุโส: เลือกผู้เหมาะสมที่สุด
     // วางตำแหน่งเริ่มต้น
     const pl = W.map.byId.plaza; W.npcs.forEach(n => SIM.placeNear(W, n, pl.x + pl.w / 2, pl.y + pl.h / 2, 12));
@@ -17432,6 +17899,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     if (g.CPE && g.CPE.retireNpc) g.CPE.retireNpc(W, n, 'ออกจากสำนัก');
     for (const k of Object.keys(n.equip || {})) { if (n.equip[k]) W.sect.gear.push(n.equip[k]); } n.equip = {};
     for (const k of Object.keys((n.inv && n.inv.pills) || {})) ECO.add(W, k, n.inv.pills[k]);
+    g.MARTIAL.returnKnowledge(W, n);
     for (const k of Object.keys((n.inv && n.inv.mats) || {})) ECO.add(W, k, n.inv.mats[k]);
     for (const id of ((n.inv && n.inv.techs) || [])) if (CULT.tech(id) && !W.sect.library.includes(id)) W.sect.library.push(id);
     for (const id of ((n.inv && n.inv.recipes) || [])) if (ECO.recipeById[id] && !W.sect.knownRecipes.includes(id)) { W.sect.knownRecipes.push(id); if (W.world && W.world.contentMetrics) W.world.contentMetrics.formulas++; }
@@ -17519,9 +17987,9 @@ JD.EXPANSION=JD.EXPANSION||data;
         const cur = n.equip[slot];
         const cands = S.gear.filter(x => x.slot === slot && (x.minStage || 1) <= n.cult.stage + 1 && ((x.tier || 1) <= 1 || n.rank >= 4 || n.post));
         if (!cands.length) return;
-        cands.sort((a, b) => g.STATS.gearScore(b) - g.STATS.gearScore(a));
+        cands.sort((a, b) => g.MARTIAL.gearSuitability(n, b).score - g.MARTIAL.gearSuitability(n, a).score);
         const best = cands[0];
-        if (!cur || g.STATS.gearScore(best) > g.STATS.gearScore(cur) * 1.15) {
+        if (!cur || g.MARTIAL.gearSuitability(n, best).score > g.MARTIAL.gearSuitability(n, cur).score * 1.15) {
           S.gear.splice(S.gear.indexOf(best), 1);
           if (cur) S.gear.push(cur);
           n.equip[slot] = best;
@@ -17651,7 +18119,7 @@ JD.EXPANSION=JD.EXPANSION||data;
       if (g.SECT && g.SECT.ensureFacilityDemand) g.SECT.ensureFacilityDemand(W);
       if (g.ECO && g.ECO.ensureStockTracker) g.ECO.ensureStockTracker(W);
       if (g.CPE && g.CPE.S) g.CPE.S(W);
-      g.CONTENT.ensure(W);
+      g.CONTENT.ensure(W); W._founding = false; g.MARTIAL.restore(W);
       if (legacyContent) W.npcs.forEach(n => {
         const a=n.act, ctx=a&&a.ctx;
         if(a && ['brew','forge','brewBasic'].includes(a.id) && a.stage==='do' && a.started2 && ctx && !ctx.craftReceipt) {
@@ -18570,7 +19038,7 @@ JD.EXPANSION=JD.EXPANSION||data;
       ['alchemy', 'forge'].forEach(hh => { const o = S.orders && S.orders[hh]; const r = o ? ECO.recipeById[o.rid] : null; h += '<div class="card">' + (hh === 'alchemy' ? '⚗️ หอโอสถกำลังผลิต: ' : '🔨 โรงหลอมกำลังผลิต: ') + (r ? '<b>' + esc(r.outNameTh) + '</b> <span class="muted">(' + esc(o.why || '') + ')</span>' : '<span class="muted">ไม่มีคำสั่ง/วัตถุดิบไม่พอ</span>') + '</div>'; });
       const pills = Object.keys(S.stock).filter(k => ECO.isPill(k)).map(k => [k, S.stock[k]]); h += '<h3>โอสถ</h3><div class="card">' + (pills.length ? pills.map(p => '<span class="chip ok">' + esc(ECO.name(p[0])) + ' ×' + p[1] + '</span>').join('') : '<span class="muted">ไม่มี</span>') + '</div>';
       const mats = Object.keys(S.stock).filter(k => !ECO.isPill(k) && k !== 'grain' && k !== 'meal').map(k => [k, S.stock[k]]).sort((a, b) => b[1] - a[1]); h += '<h3>วัตถุดิบ</h3><div class="card">' + (mats.length ? mats.slice(0, 60).map(p => '<span class="chip">' + esc(ECO.name(p[0])) + ' ×' + p[1] + '</span>').join('') : '<span class="muted">ไม่มี</span>') + '</div>';
-      const gears = S.gear.slice(0, 30); h += '<h3>อุปกรณ์ในคลัง</h3><div class="card">' + (gears.length ? gears.map(x => '<span class="chip b">' + esc(x.nameTh) + '</span>').join('') : '<span class="muted">ไม่มี</span>') + '</div>';
+      const gears = S.gear.slice(0, 30); h += '<h3>อุปกรณ์ในคลัง</h3><div class="card">' + (gears.length ? gears.map(x => '<span class="chip b">' + esc(x.nameTh) + ' · ' + esc(g.MARTIAL.TYPES[g.MARTIAL.gearType(x)]) + '</span>').join('') : '<span class="muted">ไม่มี</span>') + '</div>';
       const led = S.ledger.slice(-14).reverse(); h += '<h3>บัญชีล่าสุด</h3><div class="card">' + led.map(l => '<div class="logrow"><span class="tm">' + dayStamp(l.t) + '</span><b style="color:' + (l.amt >= 0 ? '#5fd38a' : '#e0584a') + '">' + (l.amt >= 0 ? '+' : '') + l.amt + '</b> ' + esc(l.why) + '</div>').join('') + '</div>';
     } else if (tab === 'shop') {
       const c = g.CPE.S(W), al = W.npcs.filter(n => !n.dead && !n.exiled), tot = al.reduce((a, n) => a + (n.cp || 0), 0), tr = SECT.holder(W, 'treasury');
@@ -18580,7 +19048,8 @@ JD.EXPANSION=JD.EXPANSION||data;
       const need = g.JD.CP.BASIC.map(r => 'P:' + r.id);
       h += '<h3>โอสถพื้นฐาน 8 สูตร (หลอมให้สำนัก แจกเป็นสวัสดิการ/ขาย)</h3><div class="card">' + need.map(k => { const sc = g.CPE.scarcity(W, k); return '<div class="logrow"><span>' + esc(ECO.name(k)) + ' ×' + ECO.count(W, k) + '</span><b style="color:' + (sc > 1.3 ? '#e0584a' : sc < 0.8 ? '#7aa' : '#5fd38a') + '">ขาย ' + g.CPE.priceOf(W, k) + ' · รับบริจาค ' + Math.round(g.CPE.reward(W, k, 1)) + ' คป.</b></div>'; }).join('') + '</div>';
       const herbs = ['MAT_HERB_DEW_GRASS_1', 'MAT_HERB_JADE_LOTUS_2', 'MAT_HERB_BLOOD_GINSENG_3']; h += '<h3>ป้ายรับซื้อ (ค่าบริจาคตามความขาด)</h3><div class="card">' + herbs.map(k => '<div class="logrow"><span>' + esc(ECO.name(k)) + ' ในคลัง ' + ECO.count(W, k) + '</span><b>' + Math.round(g.CPE.reward(W, k, 1)) + ' คป./หน่วย</b></div>').join('') + '</div>';
-      const shop = g.CPE.shopItems(W).filter(i => !(i.kind === 'pill' && i.key.startsWith('P:BASIC'))).slice(0, 24);
+      h += UI.martialShop(W);
+      const shop = g.CPE.shopItems(W).filter(i => i.kind !== 'crystal').filter(i => !(i.kind === 'pill' && i.key.startsWith('P:BASIC'))).slice(0, 24);
       h += '<h3>โอสถและอุปกรณ์พรีเมียม (แลกซื้อด้วย คป. · ไม่อยู่ในสวัสดิการแจกฟรี)</h3><div class="card">';
       h += '<div class="muted" style="margin-bottom:6px">🛡️ โอสถนำเข้าและวิชาพิเศษต้องแลกซื้อด้วยแต้มคุณูปการ (คป.) เท่านั้น จะไม่มีการแจกฟรีเป็นสวัสดิการพื้นฐาน เพื่อรักษาสมดุลคลังสำนัก</div>';
       h += (shop.length ? shop.map(i => '<span class="chip ' + (i.kind === 'gear' ? 'b' : 'ok') + '">' + esc(i.kind === 'gear' ? i.gear.nameTh : ECO.name(i.key) + ' ×' + i.n) + ' · ' + i.price + ' คป.</span>').join('') : '<span class="muted">ยังไม่มีสินค้าพรีเมียม — ผลิตจากหอโอสถ/โรงหลอม หรือนำกลับจากการเดินทาง</span>') + '</div>';
@@ -18723,6 +19192,33 @@ JD.EXPANSION=JD.EXPANSION||data;
     }).join('');
     return h;
   };
+  UI.martialNpc = (W,n) => {
+    if(!n.cult || !g.MARTIAL) return '';
+    const M=g.MARTIAL,d=M.describe(W,n),fmt=o=>Object.entries(o).map(([k,v])=>esc(HC.nameOf('physiology.'+k)||k)+' '+(v>=0?'+':'')+Number(v).toFixed(1)).join(' · '),life=o=>Object.entries(o).map(([k,v])=>esc(HC.nameOf('skills.'+k)||k)+' +'+Math.round((v-1)*100)+'%').join(' · ');
+    let h='<h3>วิถีและการเติบโตตามขั้น</h3><div class="card"><b>'+esc(d.now.identity)+'</b><div class="muted">ใช้งานหนึ่งวิถีหลักและหนึ่งสายย่อย · เปลี่ยนได้เมื่อมีความรู้และยอมเสียขั้น · '+(n.cult.sub==='NONE'?'รอผลึกหรือคัมภีร์สายย่อย':'มีสายย่อยแล้ว')+'</div><div>อยากได้: '+d.desires.map(esc).join(' / ')+'</div><div>สรีระเสริมตอนนี้: '+fmt(d.now.body)+'</div><div class="muted">สรีระเสริมเข้าค่าสู้โดยตรง ไม่เขียนทับค่ามนุษย์และไม่นับซ้ำเป็นบัฟ</div><div>ขั้นถัดไป: '+fmt(d.next.body)+'</div><div>งานตอนนี้: '+life(d.now.life)+'</div><div>งานขั้นถัดไป: '+life(d.next.life)+'</div>';
+    const pass=n.cult.techs.map(CULT.tech).filter(t=>t&&t.passive);if(pass.length)h+='<div>'+pass.map(t=>'<div>'+esc(t.nameTh)+' · '+esc(M.conditionText(t))+' · '+(!M.activeTechs(n).includes(t.id)?'หยุดทำงาน (วิถี/สาย/ขั้นไม่ตรง)':M.conditionMatches(n,t)?'ทำงาน':'หยุดทำงาน (อุปกรณ์ไม่ตรง)')+'</div>').join('')+'</div>';
+    const combat=(p,f)=>Object.entries(p||{}).map(([k,v])=>esc(g.STATS.INFO[k]?.nameTh||k)+' '+(v>=0?'+':'')+Math.round(v*100)+'%').concat(Object.entries(f||{}).map(([k,v])=>esc(g.STATS.INFO[k]?.nameTh||k)+' '+(v>=0?'+':'')+Number(v).toFixed(1))).join(' · ');
+    h+='<div>วิถีตอนนี้: '+combat(d.now.p)+'</div><div>วิถีขั้นถัดไป: '+combat(d.next.p)+'</div><div>สายย่อยตอนนี้: '+combat(d.subNow.p,d.subNow.f)+'</div><div>สายย่อยขั้นถัดไป: '+combat(d.subNext.p,d.subNext.f)+'</div><div class="muted">แนวเติบโต: '+({early:'เด่นช่วงต้น',late:'เด่นช่วงปลาย',steady:'เพิ่มสม่ำเสมอ'})[d.now.curve]+'</div>';
+    h+='</div><h3>ผลึกความรู้ในตัว</h3><div class="card">'+(d.crystals.length?d.crystals.map(([key,qty])=>{const choice=M.crystalDecision(W,n,key),gate=M.eligible(n,key);return '<div>'+esc(M.crystalName(key))+' ×'+qty+' · '+esc(({use:'ตั้งใจใช้',retain:'เก็บไว้',donate:'ตั้งใจบริจาค'})[choice.action])+'<div class="muted">'+esc(gate.ok?choice.reason:gate.reason)+'</div></div>';}).join(''):'<span class="muted">ยังไม่มีผลึก · ผลึกใช้ได้ครั้งเดียวเมื่อเรียนสำเร็จ</span>')+'</div>';
+    return h;
+  };
+  UI.martialSkills = (W,n) => {
+    const M=g.MARTIAL;return Object.entries(M.SKILL_GROUPS).map(([group,ids])=>'<h3>ทักษะ'+esc(M.SKILL_GROUP_NAMES[group])+'</h3><div class="card">'+ids.slice().sort((a,b)=>M.skillRead(n,b)-M.skillRead(n,a)).map(id=>{const info=M.SKILL_INFO[id],boost=M.lifeMult(n,id);return bar(info.nameTh,M.skillRead(n,id),{wide:true})+'<div class="muted" style="margin-bottom:8px">'+esc(info.effect)+'<br>ฝึกได้จาก: '+esc(info.route)+(boost>1?' · ประสิทธิภาพ/การฝึกจากวิถี +'+Math.round((boost-1)*100)+'%':'')+'</div>';}).join('')+'</div>').join('');
+  };
+  UI.martialRetraining = (W,n) => {
+    const M=g.MARTIAL,intent=n.martialIntent,pick=M.pickRetraining(W,n),target=intent&&M.knowledge(intent.targetKey),rows=pick&&pick.accessible?pick.reasons:(intent&&intent.reasons||[]);
+    let h='<h3>การปรับวิถีและต้นทุนฝึกใหม่</h3><div class="card"><div class="muted">เปลี่ยนวิถีหลักเริ่มขั้น1 ตบะ0 · เปลี่ยนสายเดิมลดอย่างน้อย2ขั้นหรือครึ่งหนึ่ง · ต้องมีผลึก/คัมภีร์จริง</div>';
+    if(target)h+='<div>เป้าหมาย: '+esc(target.nameTh)+' · '+esc(({prepare:'กำลังเตรียมอาวุธ/วิชา',switch:'พร้อมยอมลดขั้น',restabilize:'พักปรับรากฐาน'})[intent.action]||'เก็บไว้พิจารณา')+'</div>';
+    h+=rows.length?rows.map(reason=>'<div class="muted">'+esc(reason)+'</div>').join(''):'<div class="muted">ยังไม่มีแผนเปลี่ยนสายที่คุ้มต้นทุน</div>';
+    if((n.retrainUntil||0)>W.day)h+='<div>พักปรับรากฐานอีก '+(n.retrainUntil-W.day)+' วัน</div>';
+    const inactive=n.cult?n.cult.techs.filter(id=>!M.activeTechs(n).includes(id)):[];if(inactive.length)h+='<div class="muted">วิชาที่จำได้แต่ยังไม่ทำงานกับวิถี/ขั้นนี้: '+inactive.map(id=>esc((CULT.tech(id)||{}).nameTh||id)).join(' · ')+'</div>';
+    return h+'</div>';
+  };
+  UI.martialShop = W => {
+    const M=g.MARTIAL;if(!M)return '';const rows=Object.entries(W.sect.crystals||{}).filter(x=>x[1]>0);
+    let h='<h3>ผลึกและคัมภีร์หายาก</h3><div class="card"><div class="muted">ผลึกเป็นของจริง ซื้อเข้ากระเป๋าก่อนใช้ · ต้องตรงวิถี/สาย/ขั้น · คัมภีร์เก็บถาวร เรียนซ้ำได้โดยจ่ายค่าศึกษา</div>'+(rows.length?rows.map(([key,qty])=>{const k=M.knowledge(key),fee=M.studyFee(W,key),held=k.kind==='sub'?(W.sect.subLibrary||[]).includes(k.id):W.sect.library.includes(k.id);return '<div class="logrow"><span>'+esc(M.crystalName(key))+' ×'+qty+'</span><b>ขาย '+M.crystalPrice(W,key)+' · บริจาคไม่เกิน '+M.crystalReward(W,key)+' คป.</b></div><div class="muted">'+esc(CULT.PATHS[k.path]?.shortTh||k.path)+' · ขั้น '+k.tier+' · '+(held?'มีคัมภีร์แล้ว · ค่าศึกษา '+fee+' คป.':'🔒 ยังไม่มีคัมภีร์ในหอ')+'</div>';}).join(''):'<div class="muted">ยังไม่มีผลึกในคลัง</div>')+'</div>';
+    h+='<div class="card">คัมภีร์สายย่อยในหอ: '+((W.sect.subLibrary||[]).length?(W.sect.subLibrary||[]).map(id=>{const k=M.knowledge(M.subKey(id));return esc(k.nameTh)+' · ขั้น '+k.tier+' · ค่าศึกษา '+M.studyFee(W,M.subKey(id))+' คป.';}).join(' / '):'ยังไม่ค้นพบ')+'</div>';return h;
+  };
   function CPEPrice(W,t){return g.CPE.techPrice(W,t);}
 
   UI.rDisc = () => {
@@ -18776,7 +19272,8 @@ JD.EXPANSION=JD.EXPANSION||data;
           h += '<div class="card" style="margin-top:6px;background:rgba(255,255,255,0.03)"><b>🌿 ขั้นสายเฉพาะทาง: ' + esc(trR ? trR.nameTh : '') + ' (ลำดับ ' + tr.ordinal + '/9)</b>' + (trTh !== Infinity ? bar('ความก้าวหน้าสายเฉพาะ', tr.prog / trTh * 100, { wide: true, txt: Math.round(tr.prog) + '/' + trTh, color: '#7fd1b9' }) : '') + '<div class="muted">เทียบเคียงขั้นหลัก: <b>' + (trR ? trR.majorBandEquivalent.toFixed(1) : '') + '</b> · พลังรบเฉพาะทางเทียบเคียง: <b>' + (trR ? trR.functionalCombatPower : '') + ' CP</b></div><div style="font-size:12px;margin-top:2px">' + (tr.ordinal >= 9 ? '<span class="chip ok">บรรลุขั้น 9 สูงสุดแล้ว</span>' : trGate.ok ? '<span class="chip ok">✔ ผ่านเกณฑ์ทักษะและศิลา พร้อมทะลวงขั้นถัดไป</span>' : '<span class="chip r">🔒 ' + esc(trGate.reason) + '</span>') + '</div></div>';
         } if (c.bn || c.found || c.failN) { const tr = g.BN.treasureOf(c); h += '<div class="card" style="margin-top:6px"><b>🚧 คอขวด</b>' + (c.bn ? ' · แผน: <b>' + (c.bn.plan === 'go' ? 'ลุยทะลวง' : 'รอเตรียมตัว') + '</b> (' + esc(c.bn.why || '') + ')' : '') + '<div class="muted">ฐานตกผลึก +' + Math.round((c.found || 0) * 100) + '% · ประสบการณ์ล้มเหลว +' + Math.round((c.failExp || 0) * 100) + '% (ล้ม ' + (c.failN || 0) + ' ครั้ง)' + (c.toxic > 5 ? ' · พิษโอสถ ' + Math.round(c.toxic) : '') + '</div>' + (tr ? '<div class="muted">ด่านใหญ่ต้องใช้ ✦' + esc(tr.nameTh) + ' — ' + (c.treasure === tr.id ? 'มีแล้ว (+16%)' : 'ยังไม่มี (−30%)') + '</div>' : '') + '<div class="muted">โอสถเฉพาะขั้น: ' + esc(ECO.name(g.BN.pillKey(c))) + (g.BN.heldPill(n) ? ' (ถืออยู่)' : '') + '</div></div>'; } if (c.mantra) h += '<div class="muted">คัมภีร์หลัก: ' + esc((CULT.tech(c.mantra) || {}).nameTh || '') + '</div>'; if (c.techs.length) h += '<div style="margin-top:4px">' + c.techs.map(id => '<span class="chip b">' + esc((CULT.tech(id) || {}).nameTh || id) + '</span>').join('') + '</div>'; if (c.learning) h += '<div class="muted">กำลังศึกษา: ' + esc((CULT.tech(c.learning.id) || {}).nameTh) + ' ' + Math.round(c.learning.got / c.learning.need * 100) + '%</div>'; }
       else h += '<div class="muted">ยังเป็นปุถุชน ยังไม่ตื่นรู้ปราณ · พลังรบ ' + Math.round(CULT.power(n)) + '</div>';
-      const eq = Object.keys(n.equip || {}).filter(k => n.equip[k]); if (eq.length) h += '<div style="margin-top:4px">' + eq.map(k => '<span class="chip g">' + esc(n.equip[k].nameTh) + '</span>').join('') + '</div>'; h += '</div>';
+      const eq = Object.keys(n.equip || {}).filter(k => n.equip[k]); if (eq.length) h += '<div style="margin-top:4px">' + eq.map(k => '<span class="chip g">' + esc(n.equip[k].nameTh) + ' · ' + esc(g.MARTIAL.TYPES[g.MARTIAL.gearType(n.equip[k])]) + '</span>').join('') + '</div>'; h += '</div>';
+      h += UI.martialNpc(W,n) + UI.martialRetraining(W,n);
       h += '<h3>ในสำนัก</h3><div class="card"><div class="grid2"><div>ระดับ: <b>' + SECT.title(n) + '</b></div><div>เข้าสำนัก: ' + Math.max(0, Math.round(W.day - n.joinDay)) + ' วันก่อน</div><div>ผลงานสะสม: ' + Math.round(n.merit) + '</div><div>พอใจสำนัก: ' + Math.round(n.sat == null ? 60 : n.sat) + '</div><div>ศิลาส่วนตัว: ' + Math.round(n.inv.stones) + '</div><div>โชค: ' + Math.round(n.h.destiny.luck) + '</div></div>' + (n.mentor && W.byId[n.mentor] ? '<div>อาจารย์: ' + nameLink(W.byId[n.mentor]) + '</div>' : '') + (n.h.life.family.spouse && W.byId[n.h.life.family.spouse] ? '<div>คู่ครอง: ' + nameLink(W.byId[n.h.life.family.spouse]) + '</div>' : '') + ((n.h.life.family.disciples || []).length ? '<div>ศิษย์: ' + n.h.life.family.disciples.map(i => W.byId[i]).filter(Boolean).map(nameLink).join('、') + '</div>' : '') + (n.stats && (n.stats.kills || n.stats.sparWin) ? '<div class="muted">สถิติ: สังหาร ' + (n.stats.kills || 0) + ' · ประลองชนะ ' + (n.stats.sparWin || 0) + ' แพ้ ' + (n.stats.sparLoss || 0) + '</div>' : '') + '</div>';
       const personalMats = Object.entries((n.inv && n.inv.mats) || {}).filter(x => x[1] > 0);
       const personalOrgans = Object.entries((n.inv && n.inv.organs) || {}).filter(x => x[1] > 0 && g.CONTENT && g.CONTENT.organById && g.CONTENT.organById[x[0]]);
@@ -18797,7 +19294,7 @@ JD.EXPANSION=JD.EXPANSION||data;
     } else if (tab === 'mind') {
       h += '<h3>สติปัญญา</h3><div class="card">' + statLayer(n, 'intellect') + '</div><h3>ทักษะสังคม</h3><div class="card">' + statLayer(n, 'social') + '</div>';
     } else if (tab === 'skill') {
-      const sk = HC.SKILL_IDS.map(id => [id, n.h.skills[id] || 0]).sort((a, b) => b[1] - a[1]); h += '<div class="card">' + sk.map(x => bar(HC.nameOf('skills.' + x[0]), x[1], { wide: true })).join('') + '</div>';
+      h += '<div class="muted">ค่าทักษะคือฝีมือที่ฝึกไว้ถาวร · ผลเสริมจากวิถีแสดงแยกและหายเมื่อเปลี่ยนสาย</div>' + UI.martialSkills(W,n);
     } else if (tab === 'rel') {
       const rs = Object.keys(n.h.mind.relations).map(id => ({ id, r: n.h.mind.relations[id], o: W.byId[id] })).filter(x => x.o).sort((a, b) => Math.abs(b.r.a) + b.r.l * .3 - Math.abs(a.r.a) - a.r.l * .3);
       h += rs.length ? rs.slice(0, 40).map(x => '<div class="prow" data-npc="' + x.id + '">' + portraitHtml(x.o, 36) + '<div class="pi"><div class="nm">' + esc(HC.fullName(x.o)) + (x.r.bond ? ' <span class="chip ' + (x.r.bond === 'ศัตรู' ? 'r' : 'g') + '">' + esc(x.r.bond) + '</span>' : '') + (x.o.dead ? ' ☠' : '') + '</div><div class="sub">ถูกชะตา ' + Math.round(x.r.a) + ' · นับถือ ' + Math.round(x.r.r) + (x.r.l > 5 ? ' · รัก ' + Math.round(x.r.l) : '') + (x.r.v > 10 ? ' · ขัดแย้ง ' + Math.round(x.r.v) : '') + ' · พบกัน ' + x.r.n + ' ครั้ง</div></div></div>').join('') : '<div class="muted">ยังไม่คุ้นเคยกับใครเป็นพิเศษ</div>';

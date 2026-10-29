@@ -9,7 +9,7 @@ const D = JD.EXPANSION;
 
 // 1. Catalog Validation & Counts
 assert.strictEqual(D.version, '1.10.9', 'Expansion version must be 1.10.9');
-assert.strictEqual(SIM.VERSION, '1.10.10', 'SIM.VERSION must be 1.10.10');
+assert.strictEqual(SIM.VERSION, '1.10.11', 'SIM.VERSION must be 1.10.11');
 assert.deepStrictEqual(C.validate(), [], 'CONTENT.validate() must pass with zero errors');
 assert.strictEqual(D.rareOrgans.length, 10, 'Must have 10 curated rare organs');
 assert.strictEqual(D.experiments.length, 8, 'Must have 8 curated property experiment designs');

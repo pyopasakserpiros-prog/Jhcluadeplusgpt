@@ -166,7 +166,7 @@
         if (win) {
           ex.journal.push('สังหาร' + b.nameTh + ' ได้');
           if (reg.sourcePack) { g.CONTENT.gather(W, ex, alive, out, reg, 'hunt', b); } else {
-          const d = rng.pick(b.drops); out.mats[d] = (out.mats[d] || 0) + 1 + (rng.chance(0.4) ? 1 : 0);
+          const d = rng.pick(b.drops); out.mats[d] = (out.mats[d] || 0) + Math.round((1 + (rng.chance(0.4) ? 1 : 0)) * Math.max(...alive.map(n => g.MARTIAL.lifeMult(n, 'hunting'))));
           if (rng.chance(0.5)) { const d2 = rng.pick(b.drops); out.mats[d2] = (out.mats[d2] || 0) + 1; }
           }
           const dmgFrac = clamp((1 - p) * 0.55 + rng.next() * 0.1, 0.02, 0.6);
@@ -187,15 +187,15 @@
         if (!mats.length) continue;
         const m = rng.weighted(mats, x => 1 / (x.tier * x.tier));
         const q = 1 + Math.floor((perceive - 40) / 40 + Math.max(...alive.map(a => a.h.skills.herbalism || 0)) / 60 + rng.next());
-        out.mats[m.id] = (out.mats[m.id] || 0) + Math.max(1, q); ex.journal.push('พบ' + m.nameTh);
-        alive.forEach(a => HC.practice(a, m.category === 'HERB' ? 'herbalism' : 'mining', 0.4, 1));
+        out.mats[m.id] = (out.mats[m.id] || 0) + Math.max(1, Math.round(q * Math.max(...alive.map(n => g.MARTIAL.lifeMult(n, m.category === 'ORE' ? 'mining' : 'herbalism'))))); ex.journal.push('พบ' + m.nameTh);
+        alive.forEach(a => (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(a, m.category === 'HERB' ? 'herbalism' : 'mining', 0.4, 1));
       } else if (r < wBeast + wFind + wFort) {
         X.fortuneEvent(W, ex, alive, out, reg);
       } else {
         const ev = rng.pick(['storm', 'lost', 'traveler', 'bandits']);
         if (ev === 'storm') { ex.journal.push('เจอพายุ ต้องหลบอยู่หลายวัน'); alive.forEach(a => HC.feel(a, { stress: 4, energy: -10 })); }
         else if (ev === 'lost') { ex.journal.push('หลงทางในป่า'); ex.ret += Math.round(rng.int(60, 600)); }
-        else if (ev === 'traveler') { ex.journal.push('พบนักเดินทางร่วมทาง แลกเปลี่ยนเรื่องราว'); alive.forEach(a => { HC.feel(a, { mood: 4, novelty: 8 }); HC.practice(a, 'diplomacy', 0.5, 1); }); out.rep += 0.2; }
+        else if (ev === 'traveler') { ex.journal.push('พบนักเดินทางร่วมทาง แลกเปลี่ยนเรื่องราว'); alive.forEach(a => { HC.feel(a, { mood: 4, novelty: 8 }); (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(a, 'diplomacy', 0.5, 1); }); out.rep += 0.2; }
         else { // โจรป่า
           const bp = (30 + reg.danger * 70) * (0.6 + rng.next()), pw = alive.reduce((s, m) => s + CULT.power(m), 0);
           if (pw > bp * 1.2 || rng.chance(clamp(pw / (pw + bp), 0.1, 0.9))) { ex.journal.push('ปราบโจรป่า'); const loot = Math.round(15 + rng.next() * 40 * reg.danger); out.stones += loot; HC.experience(rng.pick(alive), 'victory', 0.3); }
@@ -233,8 +233,8 @@
     if (kind === 'herb') { const hs = JD.ITEMS.materials.filter(m => !m.sourcePack && m.category === 'HERB' && m.tier <= reg.danger + 2); const m = rng.pick(hs); const n = 1 + rng.int(0, 2); out.mats[m.id] = (out.mats[m.id] || 0) + n; ex.journal.push('พบสมุนไพรหายาก「' + m.nameTh + '」'); out.notes.push(v.h.name.given + ' พบ' + m.nameTh); }
     else if (kind === 'pill') { const ps = Object.keys(W.sect.stock).length ? ECO.recipesFor(W, ['ALCHEMY']).filter(r => r.outType === 'PILL' && r.tier <= reg.danger + 1) : []; if (ps.length) { const r = rng.pick(ps); const key = r.outItemId || 'P:' + r.id; out.pills[key] = (out.pills[key] || 0) + 1 + rng.int(0, 1); ex.journal.push('พบโอสถในซากโบราณ'); out.notes.push(v.h.name.given + ' พบ' + (r.outNameTh)); } }
     else if (kind === 'gear') { const rs = ECO.recipesFor(W, ['FORGING']).filter(r => r.outType === 'EQUIPMENT' && r.tier <= reg.danger + 2); if (rs.length) { const r = rng.pick(rs); const gear = ECO.mintGear(r, 1.1 + rng.next() * 0.3); gear.nameTh = (gear.nameTh || 'ศาสตรา') + ' (ของโบราณ)'; gear.q = 1.2; out.gear.push(gear); ex.journal.push('ขุดพบ' + gear.nameTh); out.notes.push(v.h.name.given + ' ขุดพบ' + gear.nameTh); } }
-    else if (kind === 'scroll') { const lib = new Set(W.sect.library); const pool = JD.TECH.techniques.filter(t => !t.sourcePack && !lib.has(t.id) && t.tier <= Math.max(2, reg.danger + 2)); if (pool.length) { const t = rng.pick(pool); out.techs.push(t.id); ex.journal.push('ได้คัมภีร์「' + t.nameTh + '」'); out.notes.push(v.h.name.given + ' ได้คัมภีร์「' + t.nameTh + '」'); } }
-    else if (kind === 'master') { const sk = AI.pickTeachSkill(v, v); HC.practice(v, sk, 6, 2.2); if (v.cult) CULT.gain(v, CULT.threshold(v) * 0.08); HC.experience(v, 'insight', 0.9); ex.journal.push('พบผู้เฒ่าลึกลับชี้แนะ'); out.notes.push(v.h.name.given + ' ได้รับการชี้แนะจากผู้เฒ่าลึกลับ'); }
+    else if (kind === 'scroll') { const drop = g.MARTIAL.discover(W, out, { tier: Math.max(2, reg.danger + 2), source: 'expedition' }); if (drop) { ex.journal.push('พบองค์ความรู้หายาก'); out.notes.push(v.h.name.given + ' พบองค์ความรู้หายาก'); } }
+    else if (kind === 'master') { const sk = AI.pickTeachSkill(v, v); (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(v, sk, 6, 2.2); if (v.cult) CULT.gain(v, CULT.threshold(v) * 0.08); HC.experience(v, 'insight', 0.9); ex.journal.push('พบผู้เฒ่าลึกลับชี้แนะ'); out.notes.push(v.h.name.given + ' ได้รับการชี้แนะจากผู้เฒ่าลึกลับ'); }
     else if (kind === 'spring') { if (v.cult) { CULT.gain(v, CULT.threshold(v) * 0.15); } v.h.state.hp = CULT.hpMax(v); HC.trainBody(v, 'vitality' in {} ? '' : 'endurance', 4); HC.experience(v, 'insight', 0.5); ex.journal.push('พบสระปราณธรรมชาติ'); out.notes.push(v.h.name.given + ' พบสระปราณลับ ตบะก้าวหน้า'); }
     else { HC.feel(v, { stress: 10, mood: -6 }); v.h.state.heartDemon = clamp(v.h.state.heartDemon + 7, 0, 100); if (rng.chance(0.3)) AI.injure(W, v, 1, 'ถูกคำสาปโบราณ'); ex.journal.push('ต้องคำสาปโบราณ'); out.notes.push(v.h.name.given + ' ต้องคำสาปโบราณ'); }
     out.rep += 0.3;
@@ -247,7 +247,7 @@
     const buy = (W.sect.buyList || []).slice(0, 5); let spent = 0;
     buy.forEach(b => { const pr = Math.round(ECO.price(W, b.id) * 1.05 * (1.15 - best / 400)); const cost = pr * b.n; if (W.sect.stones + out.stones - spent >= cost + 100) { spent += cost; out.mats[b.id] = (out.mats[b.id] || 0) + b.n; } });
     if (spent) { out.stones -= spent; ex.journal.push('ซื้อเสบียง/วัตถุดิบใช้ ' + spent + ' ศิลา'); }
-    alive.forEach(a => HC.practice(a, 'trading', 1.2, 1));
+    alive.forEach(a => (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(a, 'trading', 1.2, 1));
     out.rep += 0.1;
   };
   X.diplomacyResult = (W, ex, alive, out) => {
@@ -256,9 +256,9 @@
     const delta = Math.round((skill - 45) / 4 + W.rng.gauss(0, 4) - (s.style === 'ทะนง' ? 3 : 0) + (W.sect.policy.openness - 50) / 15);
     s.attitude = clamp(s.attitude + delta, -100, 100); s.contact = W.day;
     ex.journal.push('เยือน' + s.nameTh + ' ท่าทีเปลี่ยน ' + (delta >= 0 ? '+' : '') + delta);
-    if (delta > 6 && W.rng.chance(0.4)) { const pool = JD.TECH.techniques.filter(t => !t.sourcePack && !W.sect.library.includes(t.id) && t.tier <= 3); if (pool.length) { const t = W.rng.pick(pool); out.techs.push(t.id); out.notes.push('แลกเปลี่ยนวิชา「' + t.nameTh + '」กับ' + s.nameTh); } }
+    if (delta > 6 && W.rng.chance(.4)) { const drop = g.MARTIAL.discover(W, out, { tier: 3, source: 'diplomacy' }); if (drop) out.notes.push('แลกเปลี่ยนองค์ความรู้กับ' + s.nameTh); }
     if (delta > 8) { const gift = Math.round(30 + W.rng.next() * 60); out.stones += gift; } out.rep += Math.max(0, delta) * 0.05 + 0.2;
-    alive.forEach(a => HC.practice(a, 'diplomacy', 1.5, 1.2));
+    alive.forEach(a => (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(a, 'diplomacy', 1.5, 1.2));
   };
   X.recruitResult = (W, ex, alive, out) => {
     const lead = alive[0]; if (!lead) return;
@@ -438,8 +438,8 @@
       const gain = Math.round(40 + rng.next() * 100); W.log('event', 'พ่อค้าเร่แวะสำนัก ซื้อโอสถและของเหลือใช้ ได้ ' + gain + ' ศิลา', []); ECO.earn(W, gain, 'พ่อค้าเร่');
     }
     if (rng.chance(0.012) && W.season !== 3) { // ยอดฝีมือเร่ร่อนมาเยือน
-      const t = SECT.holder(W, 'scripture') || W.byId[W.sect.masterId]; const pool = JD.TECH.techniques.filter(x => !x.sourcePack && !W.sect.library.includes(x.id) && x.tier <= 4);
-      if (pool.length && t) { const tt = rng.pick(pool); W.sect.library.push(tt.id); W.log('event', 'ยอดฝีมือเร่ร่อนแวะเยือน และมอบคัมภีร์「' + tt.nameTh + '」ให้หอคัมภีร์ (' + t.h.name.given + ' เป็นผู้ต้อนรับ)', [t.id]); W.fame(1); }
+      const t = SECT.holder(W, 'scripture') || W.byId[W.sect.masterId];
+      if (t) { const drop = g.MARTIAL.personalDiscovery(W, t, { tier: 4, source: 'visitor' }); if (drop) { W.log('event', 'ยอดฝีมือเร่ร่อนมอบองค์ความรู้หายากให้ ' + t.h.name.given, [t.id]); W.fame(1); } }
     }
     if (rng.chance(0.014)) { // โรคระบาดเบา
       const hit = W.npcs.filter(n => !n.dead && !n.away && rng.chance(0.18 * (1 - E(n, 'physiology.immunity') / 130)));

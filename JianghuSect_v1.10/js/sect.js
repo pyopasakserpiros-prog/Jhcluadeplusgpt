@@ -551,7 +551,9 @@
     }
 
     if (!ECO.pay(W, best.cost, 'ขยาย' + best.b.nameTh)) return;
-    best.b.building = { until: W.t + 8 * 1440, to: best.b.level + 1 };
+    const builder = SECT.holder(W, 'steward') || m, buildSkill = g.MARTIAL ? g.MARTIAL.skillRead(builder, 'construction') : 0, management = g.MARTIAL ? g.MARTIAL.skillRead(builder, 'administration') : 0;
+    best.b.building = { until: W.t + Math.round(8 * 1440 / (1 + buildSkill * .004 + management * .0015)), to: best.b.level + 1 };
+    if (g.MARTIAL) g.MARTIAL.skillPractice(builder, 'construction', 1.5, 1.1);
     const fd = S.facilityDemand[best.id];
     if (fd) {
       fd.lastUpgradedDay = W.day;
@@ -876,7 +878,7 @@
     ECO.earn(W, tribute, 'ค่าคุ้มครองและของกำนัลจากชุมชนรอบเขา');
     ECO.monthlyMarket(W);
     // ค่าใช้จ่ายประจำ: ซ่อมบำรุง/เสบียงเครื่องใช้/ธูปเทียน ตามจำนวนคนและอาคาร + ข้าวเสื่อมคุณภาพ
-    { const popN = W.npcs.filter(n => !n.dead).length, upkeep = Math.round(popN * 7 + W.map.buildings.reduce((s2, b) => s2 + b.level * 15, 0) * clamp((popN + 8) / 45, 0.3, 1));
+    { const popN = W.npcs.filter(n => !n.dead).length, upkeep = Math.round((1 - (g.MARTIAL ? g.MARTIAL.skillRead(SECT.holder(W, 'treasury') || W.byId[S.masterId], 'administration') * .001 : 0)) * (popN * 7 + W.map.buildings.reduce((s2, b) => s2 + b.level * 15, 0) * clamp((popN + 8) / 45, 0.3, 1)));
       ECO.pay(W, Math.min(upkeep, Math.max(0, S.stones)), 'ค่าบำรุงรักษาสำนัก');
       const gr = ECO.count(W, 'grain'), lim = popN * 25; if (gr > lim) { const rot = Math.floor((gr - lim) * 0.15); if (rot > 0) ECO.take(W, 'grain', rot); }
       const ml = ECO.count(W, 'meal'), ml2 = popN * 8; if (ml > ml2) { const rot = Math.floor((ml - ml2) * 0.25); if (rot > 0) ECO.take(W, 'meal', rot); } }

@@ -82,7 +82,7 @@
  };
  COG.techPreference=(n,t)=>{
   const rational=E(n,'personality.rationality')/100;
-  return rational*Math.log2(Math.max(1,t.power||1))+(1-rational)*((t.sub===n.cult?.sub?3:0)+(t.path===n.cult?.path?1:0))+E(n,'personality.curiosity')/100*(t.tier||1)*.2;
+  return (g.MARTIAL ? (g.MARTIAL.conditionMatches(n,t) ? .8 : -.8) : 0)+rational*Math.log2(Math.max(1,t.power||1))+(1-rational)*((t.sub===n.cult?.sub?3:0)+(t.path===n.cult?.path?1:0))+E(n,'personality.curiosity')/100*(t.tier||1)*.2;
  };
  COG.modifiers=(W,n,id)=>{
   const out=[],push=(why,x)=>{if(Number.isFinite(x)&&Math.abs(x)>.025)out.push([why,clamp(x,-2,2)]);},s=n.h.state,c=n.cognition,r=COG.role(W,n);

@@ -217,11 +217,11 @@
     HC.feel(n, { novelty: 12, mood: 1.5 });
     if (spot === 'stele') {
       const sc = (E(n, 'intellect.comprehension') + E(n, 'intellect.reasoning') + per) / 3 + (luck - 45) / 10 + rng.gauss(0, 12) + s.lvl * 3;
-      if (sc > 72) { s.frag += 2; if (n.cult) CULT.gain(n, CULT.threshold(n) * 0.09); HC.practice(n, 'SCRIPTURE', 3, 1.5); HC.experience(n, 'insight', 0.5); logText = nm + ' ถอดความศิลาจารึกได้อย่างลึกซึ้ง'; }
-      else if (sc > 50) { s.frag += 1; HC.practice(n, 'SCRIPTURE', 1.2, 1); if (n.cult) CULT.gain(n, CULT.threshold(n) * 0.02); }
+      if (sc > 72) { s.frag += 2; if (n.cult) CULT.gain(n, CULT.threshold(n) * 0.09); (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'SCRIPTURE', 3, 1.5); HC.experience(n, 'insight', 0.5); logText = nm + ' ถอดความศิลาจารึกได้อย่างลึกซึ้ง'; }
+      else if (sc > 50) { s.frag += 1; (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'SCRIPTURE', 1.2, 1); if (n.cult) CULT.gain(n, CULT.threshold(n) * 0.02); }
       else HC.feel(n, { stress: 3 });
       if (rng.chance(0.012 + luck / 9000)) { dex(W).gate.next = Math.min(dex(W).gate.next, W.day + 2); logText = nm + ' ถอดจารึกพบข้อความ “ประตูจะเปิดในไม่ช้า” — ลานประตูมิติเริ่มมีแสงสั่นไหว'; note(W, 'จารึกเผยว่าประตูมิติจะเปิดเร็ว ๆ นี้'); }
-      while (s.frag >= 6) { s.frag -= 6; s.lvl++; const pool = JD.TECH.techniques.filter(t => !t.sourcePack && !W.sect.library.includes(t.id) && t.tier <= Math.min(5, 2 + s.lvl)); if (pool.length) { const t = rng.pick(pool); W.sect.library.push(t.id); logText = nm + ' ถอดเศษจารึกครบ ได้คัมภีร์「' + t.nameTh + '」เข้าหอคัมภีร์'; note(W, 'ถอดจารึกได้คัมภีร์ ' + t.nameTh); W.fame(0.3); big.push(1); } }
+      while (s.frag >= 6) { s.frag -= 6; s.lvl++; const drop = g.MARTIAL.personalDiscovery(W, n, { tier: Math.min(5, 2 + s.lvl), source: 'stele' }); if (drop) { logText = nm + ' ถอดจารึกพบองค์ความรู้หายาก'; note(W, logText); W.fame(.3); big.push(1); } }
     } else if (spot === 'spring') {
       if (s.charge >= 12) { s.charge -= 12; if (n.cult) CULT.gain(n, CULT.threshold(n) * (0.035 + 0.01 * s.lvl)); n.h.state.stress = Math.max(0, n.h.state.stress - 8); n.h.state.hp = Math.min(CULT.hpMax(n), n.h.state.hp + CULT.hpMax(n) * 0.2); if (n.cult) n.h.state.qi = CULT.qiMax(n);
         if (rng.chance(0.03 + luck / 6000)) { n.h.destiny.luck = Math.min(100, n.h.destiny.luck + 1); HC.touch(n); logText = nm + ' ได้พรจากวิญญาณน้ำพุ โชคชะตาดีขึ้น'; } if (s.visits % 30 === 0) { s.lvl++; s.max += 25; logText = 'ตาน้ำปราณลับขยายตัว (ระดับ ' + (s.lvl + 1) + ') เก็บปราณได้มากขึ้น'; note(W, logText); } }
@@ -234,11 +234,11 @@
       else if (sc > 75 && r < 0.6) { const rs = ECO.recipesFor(W, ['FORGING']).filter(x => x.outType === 'EQUIPMENT' && x.tier <= 2 + s.lvl); if (rs.length) { const gear = ECO.mintGear(rng.pick(rs), 1.1 + rng.next() * 0.2); gear.nameTh = (gear.nameTh || 'ศาสตรา') + ' (ของโบราณ)'; W.sect.gear.push(gear); logText = nm + ' พบ' + gear.nameTh + 'ในซากเจดีย์'; note(W, logText); big.push(1); } }
       else if (sc > 80 && r < 0.72) { s.secrets++; s.lvl++; const cv = dex(W).cave; if (cv.cap < 10 && cv.guard[5]) cv.cap = 10; logText = nm + ' พบเงื่อนงำลึกลับ (ความลับที่ ' + s.secrets + ') ทำให้เข้าใจซากเจดีย์มากขึ้น'; note(W, logText); big.push(1); if (s.secrets === 3) { dex(W).gate.next = Math.min(dex(W).gate.next, W.day + 4); logText += ' — ประตูมิติกำลังจะเปิด'; } }
       else if (sc > 55) { const m = matOf('FORMATION_PART', 3, rng); if (m) { ECO.add(W, m.id, 1); } }
-      HC.practice(n, 'survival', 0.5, 1);
+      (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'survival', 0.5, 1);
     } else if (spot === 'grove') {
       const sc = per * 0.5 + (n.h.skills.herbalism || 0) * 0.5 + (luck - 45) / 8 + rng.gauss(0, 12) + s.lvl * 2;
       const tier = Math.min(5, 2 + s.lvl + (sc > 85 ? 1 : 0)); const m = matOf('HERB', sc > 60 ? tier : 3, rng, sc > 60 ? 2 : 1);
-      if (m && sc > 38) { const q = 1 + (sc > 70 ? 1 : 0) + (rng.chance(0.25) ? 1 : 0); ECO.add(W, m.id, q); HC.practice(n, 'herbalism', 1.2, 1); if (sc > 85 && m.tier >= 4) { logText = nm + ' พบ' + m.nameTh + 'ในป่าลับ'; note(W, logText); big.push(1); } }
+      if (m && sc > 38) { const q = 1 + (sc > 70 ? 1 : 0) + (rng.chance(0.25) ? 1 : 0); ECO.add(W, m.id, q); (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'herbalism', 1.2, 1); if (sc > 85 && m.tier >= 4) { logText = nm + ' พบ' + m.nameTh + 'ในป่าลับ'; note(W, logText); big.push(1); } }
       if (rng.chance(0.08)) { const dm = PW(n); if (dm < 25 && rng.chance(0.5)) AI.injure(W, n, 1, 'ถูกสัตว์วิญญาณขวิด'); else HC.experience(n, 'victory', 0.15); }
       if (rng.chance(0.012)) { s.lvl++; logText = nm + ' พบมุมลับของป่า สมุนไพรหายากขึ้น'; note(W, logText); }
     }
@@ -258,7 +258,7 @@
     else if (k === 'relicmat') { const m = matOf('HERITAGE_RELIC', 7, rng); if (m) { out.mats[m.id] = (out.mats[m.id] || 0) + 1; txt = e[2] + '「' + m.nameTh + '」'; } }
     else if (k === 'pill') { const ps = ECO.recipesFor(W, ['ALCHEMY']).filter(r => r.outType === 'PILL' && r.tier <= p1 && r.tier >= Math.max(1, p1 - 2)); if (ps.length) { const r = rng.pick(ps); const key = r.outItemId || 'P:' + r.id; out.pills[key] = (out.pills[key] || 0) + 1 + (rng.chance(0.3) ? 1 : 0); txt = e[2] + '「' + r.outNameTh + '」'; } }
     else if (k === 'gear') { const rs = ECO.recipesFor(W, ['FORGING']).filter(r => r.outType === 'EQUIPMENT' && r.tier <= p1 && r.tier >= Math.max(1, p1 - 2)); if (rs.length) { const r = rng.pick(rs); const gear = ECO.mintGear(r, 1.05 + rng.next() * 0.35); gear.nameTh = (gear.nameTh || 'ศาสตรา') + ' (' + site.short || site.nameTh + ')'; gear.q = 1.2; out.gear.push(gear); txt = e[2] + '「' + gear.nameTh + '」'; } }
-    else if (k === 'tech') { const pl = JD.TECH.techniques.filter(t => !t.sourcePack && !W.sect.library.includes(t.id) && !out.techs.includes(t.id) && t.tier <= p1 && t.tier >= Math.max(1, p1 - 2)); const pl2 = pl.length ? pl : JD.TECH.techniques.filter(t => !t.sourcePack && !W.sect.library.includes(t.id) && !out.techs.includes(t.id) && t.tier <= p1); if (pl2.length) { const t = rng.pick(pl2); out.techs.push(t.id); txt = e[2] + '「' + t.nameTh + '」'; } }
+    else if (k === 'tech') { const drop = g.MARTIAL.discover(W, out, { tier: p1, source: 'cave-gate' }); if (drop) txt = e[2] + ' · องค์ความรู้หายาก'; }
     else if (k === 'boon') { const b = p1; if (b === 'qi' && finder.cult) CULT.gain(finder, CULT.threshold(finder) * 0.14); else if (b === 'body') { HC.trainBody(finder, 'strength', 4); HC.trainBody(finder, 'endurance', 4); } else if (b === 'mind') { HC.trainMind(finder, 'comprehension', 3); HC.trainMind(finder, 'willpower', 3); } else if (b === 'luck') { finder.h.destiny.luck = Math.min(100, finder.h.destiny.luck + 3); HC.touch(finder); } else if (finder.cult) CULT.gain(finder, CULT.threshold(finder) * 0.08); HC.experience(finder, 'insight', 0.8); txt = e[2] + ' (ผู้รับ: ' + nm + ')'; }
     else if (k === 'curse') { finder.h.state.heartDemon = clamp(finder.h.state.heartDemon + 8, 0, 100); HC.feel(finder, { stress: 8, mood: -4 }); if (rng.chance(0.25)) AI.injure(W, finder, 1, 'ถูกพลังมารกัดกร่อน'); txt = e[2] + ' — ' + nm + ' ได้รับผลกระทบ'; }
     else if (k === 'person') { const q = clamp(rng.gauss(1.1, 0.5), 0, 2.5); const nn = W.makeNpc({ quality: q, ageYears: rng.int(16, 30), rank: 0, rootBias: 1, fromExped: true }); if (nn) { nn.x = (ex.px || MAP.EXIT.x) + .5; nn.y = (ex.py || MAP.EXIT.y) + .5; nn.travel = null; nn.h.origin.region = site.nameTh; nn.joinDay = W.day; txt = e[2] + ' ' + nn.h.name.given + ' ขอติดตามเข้าสำนัก'; W.log('recruit', nn.h.name.given + ' ผู้พเนจรจาก' + site.nameTh + ' ตามคณะสำรวจมาเข้าสำนัก', [nn.id]); } }
@@ -282,11 +282,11 @@
       if (chk > 28 + d * 8) { ex.journal.push('พบ' + text); lootRoll(W, ex, alive, out, site, d); if (k === 'gather' || rng.chance(0.3)) lootRoll(W, ex, alive, out, site, d); } else if (rng.chance(0.4)) { ex.journal.push(text + ' เป็นกับดัก'); dmgOne(W, alive, 0.08 + rng.next() * 0.12, 'ติดกับดัก'); } else ex.journal.push('สำรวจ' + text + ' แต่ไม่พบอะไร');
     } else if (k === 'hazard') {
       const chk = avg(m => E(m, 'physiology.endurance') * 0.4 + E(m, 'intellect.intuition') * 0.4) + surv * 0.3 + (luck - 45) / 8 + rng.gauss(0, 11);
-      if (chk > 26 + d * 9) { ex.journal.push('ผ่าน' + text + ' ไปได้'); alive.forEach(m => HC.practice(m, 'survival', 0.4, 1)); }
+      if (chk > 26 + d * 9) { ex.journal.push('ผ่าน' + text + ' ไปได้'); alive.forEach(m => (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(m, 'survival', 0.4, 1)); }
       else { ex.journal.push('ถูก' + text + 'เล่นงาน'); const v = dmgOne(W, alive, 0.1 + rng.next() * 0.25 * (d / 3 + 0.5), 'ถูก' + text); alive.forEach(m => HC.feel(m, { stress: 3 })); }
     } else if (k === 'lore') {
       const chk = best(m => E(m, 'intellect.comprehension') * 0.5 + E(m, 'intellect.reasoning') * 0.3 + (m.h.skills.SCRIPTURE || 0) * 0.3) + rng.gauss(0, 9);
-      if (chk > 32 + d * 6) { const v = rng.weighted(alive, a => 1 + E(a, 'intellect.comprehension') / 50); if (v.cult) CULT.gain(v, CULT.threshold(v) * 0.07); HC.practice(v, 'SCRIPTURE', 2.5, 1.3); HC.experience(v, 'insight', 0.5); const wd = dex(W).codex.worlds[site.id] = dex(W).codex.worlds[site.id] || { visits: 0, lore: 0 }; wd.lore = (wd.lore || 0) + 1; ex.journal.push('ถอดความ' + text + ' ได้'); if (wd.lore % 3 === 0) { site.loot.length && lootRoll(W, ex, alive, out, site, d + 0.5); } } else ex.journal.push('ไม่เข้าใจ' + text);
+      if (chk > 32 + d * 6) { const v = rng.weighted(alive, a => 1 + E(a, 'intellect.comprehension') / 50); if (v.cult) CULT.gain(v, CULT.threshold(v) * 0.07); (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(v, 'SCRIPTURE', 2.5, 1.3); HC.experience(v, 'insight', 0.5); const wd = dex(W).codex.worlds[site.id] = dex(W).codex.worlds[site.id] || { visits: 0, lore: 0 }; wd.lore = (wd.lore || 0) + 1; ex.journal.push('ถอดความ' + text + ' ได้'); if (wd.lore % 3 === 0) { site.loot.length && lootRoll(W, ex, alive, out, site, d + 0.5); } } else ex.journal.push('ไม่เข้าใจ' + text);
     } else if (k === 'trial') {
       const chk = avg(m => E(m, 'intellect.willpower') * 0.5 + E(m, 'personality.composure') * 0.3 + E(m, 'personality.courage') * 0.2) + rng.gauss(0, 10) + (luck - 45) / 10;
       const v = rng.weighted(alive, a => 1 + E(a, 'intellect.willpower') / 50);
@@ -295,7 +295,7 @@
     } else if (k === 'rest') { alive.forEach(m => { m.h.state.hp = Math.min(CULT.hpMax(m), m.h.state.hp + CULT.hpMax(m) * 0.35); HC.feel(m, { stress: -6, mood: 2 }); }); ex.journal.push('พักที่' + text);
     } else if (k === 'npc') {
       const sub = rng.weighted([{ s: 'sage', w: 1 + avg(m => E(m, 'social.charisma')) / 60 }, { s: 'trade', w: 2 }, { s: 'trick', w: 1 + (100 - best(m => E(m, 'intellect.judgement'))) / 60 }], x => x.w).s;
-      if (sub === 'sage') { const v = rng.pick(alive); HC.practice(v, AI.pickTeachSkill ? AI.pickTeachSkill(v, v) : 'SCRIPTURE', 5, 2); if (v.cult) CULT.gain(v, CULT.threshold(v) * 0.05); ex.journal.push(v.h.name.given + ' ได้รับคำชี้แนะจาก' + text); }
+      if (sub === 'sage') { const v = rng.pick(alive); (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(v, AI.pickTeachSkill ? AI.pickTeachSkill(v, v) : 'SCRIPTURE', 5, 2); if (v.cult) CULT.gain(v, CULT.threshold(v) * 0.05); ex.journal.push(v.h.name.given + ' ได้รับคำชี้แนะจาก' + text); }
       else if (sub === 'trade') { const cost = Math.min(Math.round(40 + d * 30), Math.max(0, W.sect.stones + out.stones)); if (cost > 20) { out.stones -= cost; ex.journal.push('แลกของกับ' + text + ' จ่าย ' + cost + ' ศิลา'); lootRoll(W, ex, alive, out, site, d + 0.5); lootRoll(W, ex, alive, out, site, d + 0.5); } else ex.journal.push('พบ' + text + ' แต่ไม่มีเงินแลก'); }
       else { const lose = Math.min(Math.round(20 + d * 20), Math.max(0, W.sect.stones + out.stones)); out.stones -= lose; ex.journal.push(text + ' หลอกเอาศิลาไป ' + lose); }
     }

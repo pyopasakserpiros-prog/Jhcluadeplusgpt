@@ -4,7 +4,7 @@
 (function (g) {
   'use strict';
   const U = g.U, HC = g.HC, CULT = g.CULT, ECO = g.ECO, SK = g.SK, JD = g.JD;
-  const clamp = U.clamp, E = (n, p) => HC.eff(n, p);
+  const clamp = U.clamp, E = (n, p) => g.MARTIAL ? g.MARTIAL.eff(n, p) : HC.eff(n, p);
   const ST = { now: 0 };
   ST.KEYS = ['hp', 'atk', 'matk', 'def', 'mdef', 'crit', 'critDmg', 'eva', 'acc', 'pen', 'cast', 'move'];
   ST.INFO = {
@@ -53,6 +53,8 @@
     MIND_SWORD_TELEKINESIS: { p: { matk: .16, acc: .1, def: -.06 }, f: { pen: 20, crit: 8, critDmg: 18 } }
   };
 
+  ST.SUBFX = SUBFX;
+
   /* ---------- อุปกรณ์: ค่าสเตตัสต่อชิ้น (คำนวณเมื่อใช้ครั้งแรก เก็บไว้ในชิ้นนั้น) ---------- */
   const GT = [28, 62, 130, 270, 560, 1100, 2100];
   function hash(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
@@ -62,10 +64,13 @@
     const tier = clamp(it.tier || 1, 1, 7), q = it.q || 1, base = GT[tier - 1] * q, h = hash((it.id || '') + (it.nameTh || '')), f = 1 + 0.12 * tier, s = {};
     const pool = [['crit', () => (2.2 + 2 * rn(h, 5)) * f], ['critDmg', () => (8 + 8 * rn(h, 6)) * f], ['pen', () => (3 + 4 * rn(h, 7)) * f], ['acc', () => base * 0.12], ['cast', () => (3 + 4 * rn(h, 8)) * f], ['eva', () => base * 0.1], ['hp', () => base * 0.45], ['move', () => 3 + 3 * rn(h, 9)], ['mdef', () => base * 0.18], ['def', () => base * 0.18]];
     const pickAff = (n, ex) => { const used = {}; for (let i = 0; i < n; i++) { let k = Math.floor(rn(h, 20 + i) * pool.length), tries = 0; while ((used[pool[k][0]] || (ex && ex.includes(pool[k][0]))) && tries++ < 12) k = (k + 1) % pool.length; used[pool[k][0]] = 1; s[pool[k][0]] = (s[pool[k][0]] || 0) + pool[k][1](); } };
-    if (it.slot === 'WEAPON') { const phys = /กระบี่|ดาบ|ทวน|หอก|ค้อน|ง้าว|ขวาน|มีด|กริช|เหล็ก|เขี้ยว|ธนู/.test(it.nameTh || ''); s[phys ? 'atk' : 'matk'] = base * 0.55; s[phys ? 'matk' : 'atk'] = base * 0.1; pickAff(tier >= 4 ? 2 : 1, ['hp', 'mdef', 'def', 'eva']); }
+    if (it.slot === 'WEAPON') { const phys = (it.gearType || JD.MARTIAL.classify(it.slot, it.nameTh)) !== 'FOCUS'; s[phys ? 'atk' : 'matk'] = base * 0.55; s[phys ? 'matk' : 'atk'] = base * 0.1; pickAff(tier >= 4 ? 2 : 1, ['hp', 'mdef', 'def', 'eva']); }
     else if (it.slot === 'ARMOR') { s.def = base * 0.55; s.mdef = base * 0.28; s.hp = base * 0.5; pickAff(tier >= 4 ? 1 : 0, ['crit', 'critDmg', 'pen']); if (tier >= 4 && rn(h, 3) < 0.5) s.eva = (s.eva || 0) + base * 0.06; }
     else { pickAff(2); const r = rn(h, 4); if (r < 0.3) s.atk = (s.atk || 0) + base * 0.2; else if (r < 0.6) s.matk = (s.matk || 0) + base * 0.2; }
     (it.fx || []).forEach(x => { const p = x.params || {}; if (p.armorReductionRatio) s.pen = (s.pen || 0) + p.armorReductionRatio * 40; });
+    const type = it.gearType || JD.MARTIAL.classify(it.slot, it.nameTh);
+    const typed = { SWORD: { crit: 3 }, BLADE: { atk: base * .12 }, BOW: { acc: base * .18, crit: 2 }, SPEAR: { pen: 5 }, STAFF: { def: base * .16 }, FIST: { cast: 5 }, FOCUS: { matk: base * .12 }, HEAVY: { def: base * .18, move: -4 }, LIGHT: { eva: base * .15, move: 4 }, ROBE: { mdef: base * .2, cast: 4 }, RING: { crit: 2 }, NECKLACE: { hp: base * .3 }, BRACELET: { cast: 4 }, CHARM: { mdef: base * .12 } }[type] || {};
+    for (const k in typed) s[k] = (s[k] || 0) + typed[k];
     for (const k in s) s[k] = Math.round(s[k] * 10) / 10;
     it.st = s; return s;
   };
@@ -86,7 +91,7 @@
     const addAll = (label, o, kind) => { for (const k in o) if (A[k]) add(k, label, kind, o[k]); };
     if (n.foe) return computeFoe(n, A, add, wp);
     const c = n.cult, st = CULT.stageInfo(n), L = st.combatPower, sub = c ? CULT.subInfo(c.path, c.sub) : null;
-    const Lo = L * (sub ? sub.combatBonus : 1), Ld = L * (sub ? sub.defenseBonus : 1), pw = PATHW[c && PATHW[c.path] ? c.path : 'NONE'], d = HC.derived(n);
+    const Lo = L * (sub ? sub.combatBonus : 1), Ld = L * (sub ? sub.defenseBonus : 1), pw = PATHW[c && PATHW[c.path] ? c.path : 'NONE'], d = g.MARTIAL ? g.MARTIAL.derived(n) : HC.derived(n);
     const stLabel = c ? CULT.stageName(n) : 'ปุถุชน';
     A.atk.b = Lo * 0.6 * pw.atk; A.matk.b = Lo * 0.6 * pw.matk; A.def.b = Ld * 0.5 * pw.def; A.mdef.b = Ld * 0.45 * pw.mdef; A.acc.b = Lo * 0.55; A.eva.b = Lo * 0.55;
     A.hp.b = d.hpMax * CULT.hpMult(n); A.crit.b = 5; A.critDmg.b = 150; A.cast.b = 100; A.move.b = 100 * d.walkSpeed / 1.05;
@@ -94,7 +99,7 @@
     // ร่างกาย/จิต
     const strF = 0.65 + 0.6 * (E(n, 'physiology.strength') * .4 + E(n, 'physiology.toughness') * .2 + E(n, 'physiology.explosiveness') * .2 + E(n, 'physiology.endurance') * .2) / 100;
     const sk = n.h.skills;
-    const martial = Math.max(sk.SWORD || 0, sk.BLADE || 0, sk.SPEAR || 0, sk.FIST_PALM || 0, sk.BODY_REFINING || 0, sk.SOUL_DIVINE || 0, sk.POISON || 0);
+    const martial = g.MARTIAL ? g.MARTIAL.weaponSkill(n) : (sk.FIST_PALM || 0);
     add('atk', 'พละกำลัง/ความทนทาน', 'p', strF - 1); add('atk', 'ฝีมือยุทธ์ (ชำนาญ ' + Math.round(martial) + ')', 'p', 0.8 + 0.45 * martial / 100 - 1);
     const qiF = 0.65 + 0.6 * (E(n, 'physiology.spiritualFoundation') * .35 + E(n, 'physiology.meridianCapacity') * .25 + E(n, 'intellect.comprehension') * .2 + E(n, 'intellect.willpower') * .2) / 100;
     add('matk', 'รากฐานปราณ/เส้นลมปราณ/ความเข้าใจ', 'p', qiF - 1);
@@ -108,7 +113,7 @@
     add('cast', 'ปฏิกิริยา/สมาธิ/ความเข้าใจ', 'f', (E(n, 'physiology.reflex') - 50) * 0.4 + (E(n, 'intellect.focus') - 50) * 0.3 + (E(n, 'intellect.comprehension') - 50) * 0.2);
     if (c) {
       add('cast', 'ขั้นบำเพ็ญ', 'f', 2 * (c.stage - 1)); add('move', 'ขั้นบำเพ็ญ', 'f', 4 * (c.stage - 1));
-      const fx = SUBFX[c.sub] || (JD.EXPANSION.subStats || {})[c.sub]; if (fx) { addAll('สาย' + (sub ? sub.nameTh : c.sub), fx.p || {}, 'p'); addAll('สาย' + (sub ? sub.nameTh : c.sub), fx.f || {}, 'f'); }
+      const rawFx = SUBFX[c.sub] || (JD.EXPANSION.subStats || {})[c.sub], fx = rawFx && g.MARTIAL ? g.MARTIAL.subStats(n, rawFx) : rawFx; if (fx) { addAll('สาย' + (sub ? sub.nameTh : c.sub), fx.p || {}, 'p'); addAll('สาย' + (sub ? sub.nameTh : c.sub), fx.f || {}, 'f'); }
       const m = c.mantra ? CULT.tech(c.mantra) : null;
       if (m) {
         const lab = 'คัมภีร์หลัก「' + m.nameTh + '」';
@@ -119,7 +124,7 @@
         else { add('mdef', lab, 'p', 0.04 * m.tier); add('hp', lab, 'p', 0.03 * m.tier); add('matk', lab, 'p', 0.02 * m.tier); }
       }
       let techT = 0;
-      c.techs.forEach(id => { const t = CULT.tech(id); if (!t) return; techT += t.cat === 'COMBAT_TECHNIQUE' ? t.tier : 0;
+      (g.MARTIAL ? g.MARTIAL.activeTechs(n) : c.techs).forEach(id => { const t = CULT.tech(id); if (!t) return; techT += t.cat === 'COMBAT_TECHNIQUE' ? t.tier : 0;
         if (t.cat === 'LIGHTNESS_ART') { add('move', 'วิชาเบาตัว「' + t.nameTh + '」', 'f', 3 + 2 * t.tier); add('eva', 'วิชาเบาตัว「' + t.nameTh + '」', 'p', 0.02 * t.tier); }
         else if (t.cat === 'AUXILIARY_ART' && t.role !== 'PROFESSION_LIFESTYLE') add('mdef', 'วิชาเสริม「' + t.nameTh + '」', 'p', 0.012 * t.tier); });
       const tf = Math.min(0.3, 0.03 * techT); add('atk', 'วิชาต่อสู้ที่เรียน (Σระดับ ' + techT + ')', 'p', tf); add('matk', 'วิชาต่อสู้ที่เรียน', 'p', tf);
@@ -149,12 +154,13 @@
         }
       }
     }
+    if (g.MARTIAL) { const skills = g.MARTIAL.skillEffects(n); addAll('ทักษะที่ฝึก (อาวุธตรงประเภท)', skills.p, 'p'); addAll('ทักษะที่ฝึก', skills.f, 'f'); const growth = g.MARTIAL.progression(n), passive = g.MARTIAL.passiveStats(n); addAll('พัฒนาวิถีตามขั้น (สรีระอยู่ในสูตรฐานแล้ว)', growth.p, 'p'); addAll('วิชาติดตัวตามอุปกรณ์', passive.p, 'p'); addAll('วิชาติดตัวตามอุปกรณ์', passive.f, 'f'); }
     // ใจสู้/พิเศษ
     const mind = 0.9 + E(n, 'personality.courage') / 100 * 0.12 + E(n, 'aptitudes.combat') / 100 * 0.18 - 1; add('atk', 'ใจสู้/พรสวรรค์', 'p', mind); add('matk', 'ใจสู้/พรสวรรค์', 'p', mind);
     const sp = HC.special(n, 'combat.powerMult') - 1; if (sp) { add('atk', 'คุณสมบัติพิเศษ', 'p', sp); add('matk', 'คุณสมบัติพิเศษ', 'p', sp); }
     // อุปกรณ์
     const Eq = n.equip || {};
-    for (const k in Eq) { const it = Eq[k]; if (!it) continue; const gs = ST.gearStats(it), df = it.dur == null ? 1 : clamp(it.dur / 100, 0.3, 1); const lab = '「' + it.nameTh + '」' + (df < 1 ? ' (สึก ' + Math.round(df * 100) + '%)' : ''); for (const key in gs) if (A[key]) add(key, lab, 'f', gs[key] * df); }
+    for (const k in Eq) { const it = Eq[k]; if (!it || (g.MARTIAL && !g.MARTIAL.gearUsable(n,it))) continue; const gs = ST.gearStats(it), df = it.dur == null ? 1 : clamp(it.dur / 100, 0.3, 1); const lab = '「' + it.nameTh + '」' + (df < 1 ? ' (สึก ' + Math.round(df * 100) + '%)' : ''); for (const key in gs) if (A[key]) add(key, lab, 'f', gs[key] * df); }
     // บัฟโอสถ + สถานะ
     (n.buffs || []).forEach(b => { if (b.until <= ST.now && ST.now > 0) return; addAll('โอสถ' + b.name, b.p, 'p'); addAll('โอสถ' + b.name, b.f, 'f'); });
     statusMods(n, add);
@@ -185,7 +191,7 @@
     const addF = (k, v) => { if (!v) return; if (k === 'move') p.move += v / 100; else f[k] += v; };
     const addAll = (o, isF) => { for (const k in o) if (k in b) { if (isF) addF(k, o[k]); else addP(k, o[k]); } };
     const st = CULT.stageInfo(n), L = st.combatPower, sub = c ? CULT.subInfo(c.path, c.sub) : null;
-    const Lo = L * (sub ? sub.combatBonus : 1), Ld = L * (sub ? sub.defenseBonus : 1), pw = PATHW[c && PATHW[c.path] ? c.path : 'NONE'], d = HC.derived(n);
+    const Lo = L * (sub ? sub.combatBonus : 1), Ld = L * (sub ? sub.defenseBonus : 1), pw = PATHW[c && PATHW[c.path] ? c.path : 'NONE'], d = g.MARTIAL ? g.MARTIAL.derived(n) : HC.derived(n);
     b.atk = Lo * 0.6 * pw.atk; b.matk = Lo * 0.6 * pw.matk; b.def = Ld * 0.5 * pw.def; b.mdef = Ld * 0.45 * pw.mdef; b.acc = Lo * 0.55; b.eva = Lo * 0.55;
     b.hp = d.hpMax * CULT.hpMult(n); b.move = 100 * d.walkSpeed / 1.05;
     const strF = 0.65 + 0.6 * (E(n, 'physiology.strength') * .4 + E(n, 'physiology.toughness') * .2 + E(n, 'physiology.explosiveness') * .2 + E(n, 'physiology.endurance') * .2) / 100;
@@ -201,7 +207,7 @@
     addF('cast', (E(n, 'physiology.reflex') - 50) * 0.4 + (E(n, 'intellect.focus') - 50) * 0.3 + (E(n, 'intellect.comprehension') - 50) * 0.2);
     if (c) {
       addF('cast', 2 * (c.stage - 1)); addF('move', 4 * (c.stage - 1));
-      const fx = SUBFX[c.sub] || (JD.EXPANSION.subStats || {})[c.sub]; if (fx) { if (fx.p) addAll(fx.p, false); if (fx.f) addAll(fx.f, true); }
+      const rawFx = SUBFX[c.sub] || (JD.EXPANSION.subStats || {})[c.sub], fx = rawFx && g.MARTIAL ? g.MARTIAL.subStats(n, rawFx) : rawFx; if (fx) { if (fx.p) addAll(fx.p, false); if (fx.f) addAll(fx.f, true); }
       const m = c.mantra ? CULT.tech(c.mantra) : null;
       if (m) {
         if (c.path === 'XIAN') { addP('matk', 0.04 * m.tier); addP('mdef', 0.02 * m.tier); }
@@ -211,7 +217,7 @@
         else { addP('mdef', 0.04 * m.tier); addP('hp', 0.03 * m.tier); addP('matk', 0.02 * m.tier); }
       }
       let techT = 0;
-      const techs = c.techs;
+      const techs = g.MARTIAL ? g.MARTIAL.activeTechs(n) : c.techs;
       for (let i = 0; i < techs.length; i++) {
         const t = CULT.tech(techs[i]); if (!t) continue;
         if (t.cat === 'COMBAT_TECHNIQUE') techT += t.tier;
@@ -246,9 +252,10 @@
         }
       }
     }
+    if (g.MARTIAL) { const skills = g.MARTIAL.skillEffects(n); addAll(skills.p, false); addAll(skills.f, true); const growth = g.MARTIAL.progression(n), passive = g.MARTIAL.passiveStats(n); addAll(growth.p, false); addAll(passive.p, false); addAll(passive.f, true); }
     const mind = 0.9 + E(n, 'personality.courage') / 100 * 0.12 + E(n, 'aptitudes.combat') / 100 * 0.18 - 1; addP('atk', mind); addP('matk', mind);
     const sp = HC.special(n, 'combat.powerMult') - 1; if (sp) { addP('atk', sp); addP('matk', sp); }
-    for (const k in Eq) { const it = Eq[k]; if (!it) continue; const gs = ST.gearStats(it), df = it.dur == null ? 1 : clamp(it.dur / 100, 0.3, 1); for (const key in gs) if (key in b) addF(key, gs[key] * df); }
+    for (const k in Eq) { const it = Eq[k]; if (!it || (g.MARTIAL && !g.MARTIAL.gearUsable(n,it))) continue; const gs = ST.gearStats(it), df = it.dur == null ? 1 : clamp(it.dur / 100, 0.3, 1); for (const key in gs) if (key in b) addF(key, gs[key] * df); }
     const hpVal = Math.round(Math.max(1, b.hp * (1 + p.hp) + f.hp));
     const vMove0 = Math.round(clamp(Math.max(30, b.move * (1 + p.move) + f.move), 30, 320));
     const moveMult0 = clamp(vMove0 / b.move, 0.6, 2.2);
@@ -262,7 +269,7 @@
   function computeFast(n) {
     const base = getBaseFast(n), b = base.b, p0 = base.p, f0 = base.f;
     const sk = n.h.skills;
-    const martial = Math.max(sk.SWORD || 0, sk.BLADE || 0, sk.SPEAR || 0, sk.FIST_PALM || 0, sk.BODY_REFINING || 0, sk.SOUL_DIVINE || 0, sk.POISON || 0);
+    const martial = g.MARTIAL ? g.MARTIAL.weaponSkill(n) : (sk.FIST_PALM || 0);
     const mAtkP = 0.8 + 0.45 * martial / 100 - 1, mPenF = martial * 0.05;
     const s = n.h.state;
     const cond = (0.8 + 0.2 * (n._hpf == null ? 1 : n._hpf)) * (0.8 + 0.2 * s.energy / 100) * (1 - 0.3 * s.heartDemon / 100);
@@ -338,12 +345,12 @@
     return { v, parts };
   }
   ST.get = n => {
-    const c = n._cs; if (c && ST.now > 0 && ST.now - c.t < 3) return c.v;
+    const c = n._cs, eq = n.equip || {}; if (c && ST.now > 0 && ST.now - c.t < 3 && c.eqW === eq.WEAPON && c.eqA === eq.ARMOR && c.eqX === eq.ACCESSORY && c.ver === n._ver && c.sub === (n.cult && n.cult.sub) && c.stage === (n.cult && n.cult.stage)) return c.v;
     if (n.foe) { const r = compute(n, false); n._cs = { t: ST.now, v: r.v }; return r.v; }
     n._hpf = clamp(n.h.state.hp / Math.max(1, hpMaxBase(n)), 0, 1);
-    const v = computeFast(n); n._cs = { t: ST.now, v }; return v;
+    const v = computeFast(n); n._cs = { t: ST.now, v, eqW: eq.WEAPON, eqA: eq.ARMOR, eqX: eq.ACCESSORY, ver: n._ver, sub: n.cult && n.cult.sub, stage: n.cult && n.cult.stage }; return v;
   };
-  function hpMaxBase(n) { const d = HC.derived(n); return d.hpMax * CULT.hpMult(n); }
+  function hpMaxBase(n) { const d = g.MARTIAL ? g.MARTIAL.derived(n) : HC.derived(n); return d.hpMax * CULT.hpMult(n); }
   ST.explain = n => { if (!n.foe) n._hpf = clamp(n.h.state.hp / Math.max(1, hpMaxBase(n)), 0, 1); return compute(n, true); };
   ST.hpMax = n => {
     if (n.foe) return n.hpMax;
@@ -359,7 +366,7 @@
       const vMove = Math.round(clamp(Math.max(30, base.b.move * (1 + base.p.move - 0.1 * injSev) + base.f.move), 30, 320));
       return clamp(vMove / base.b.move, 0.6, 2.2);
     }
-    const v = ST.get(n); const d = HC.derived(n); const base = 100 * d.walkSpeed / 1.05; return clamp(v.move / base, 0.6, 2.2);
+    const v = ST.get(n); const d = g.MARTIAL ? g.MARTIAL.derived(n) : HC.derived(n); const base = 100 * d.walkSpeed / 1.05; return clamp(v.move / base, 0.6, 2.2);
   };
   /* พลังรบรวม (ใช้ในภารกิจ/จัดอันดับ) — ปรับเทียบให้ใกล้ของเดิม (ST.RK) */
   ST.RK = 1.15;

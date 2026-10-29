@@ -282,7 +282,7 @@
     }
     C.grantRecipeAuth(W,actor,id);
     if(!dest.inv.recipes.includes(id)) dest.inv.recipes.push(id);
-    HC.practice(actor,'SCRIPTURE',0.5,1);
+    (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(actor,'SCRIPTURE',0.5,1);
     W.world.contentMetrics.formulasCopied++;
     W.log('research',actor.h.name.given+' คัดลอกม้วนตำรับ「'+r.nameTh+'」'+(dest!==actor?' ให้ '+dest.h.name.given:''),[actor.id].concat(dest!==actor?[dest.id]:[]));
     return {ok:true,id,from:actor.id,to:dest.id,costKind,cost};
@@ -321,7 +321,7 @@
     const dissectSkill=Math.max(...alive.map(n=>(n.h.skills.survival||0)*0.4+(n.h.skills.MEDICINE||0)*0.35+HC.eff(n,'physiology.dexterity')*0.3+HC.eff(n,'intellect.perceptiveness')*0.25));
     const recChance=clamp(0.42+(dissectSkill-organ.dissectionDifficulty)*0.012,0.15,0.96);
     const recovered=!!opts.guaranteeRecovery || (!opts.forceDamage && W.rng.chance(recChance));
-    alive.forEach(n=>{HC.practice(n,'survival',0.35,1);HC.practice(n,'MEDICINE',0.25,1);});
+    alive.forEach(n=>{(g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n,'survival',0.35,1);(g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n,'MEDICINE',0.25,1);});
     if(organ.propertyTags && organ.propertyTags.length) {
       const t0=organ.propertyTags[0];
       W.sect.experiments.propertyKnowledge[t0]=(W.sect.experiments.propertyKnowledge[t0]||0)+1;
@@ -417,8 +417,8 @@
     (organ.propertyTags||[]).forEach(tag=>{
       W.sect.experiments.propertyKnowledge[tag]=(W.sect.experiments.propertyKnowledge[tag]||0)+1;
     });
-    HC.practice(npc,'MEDICINE',0.8,1.1);
-    HC.practice(npc,'ALCHEMY',0.6,1.1);
+    (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(npc,'MEDICINE',0.8,1.1);
+    (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(npc,'ALCHEMY',0.6,1.1);
     W.world.contentMetrics.organsRefined++;
     if(!opts.quiet) W.log('research',npc.h.name.given+' หลอมสกัด「'+organ.nameTh+'」ชุบชีพจรและตบะสำเร็จ',[npc.id]);
     return {ok:true,organId,npcId:npc.id,stoneCost,applied};
@@ -485,8 +485,8 @@
     const success=opts.forceSuccess?true:opts.forceFail?false:W.rng.chance(chance);
 
     W.world.contentMetrics.experimentsRun++;
-    HC.practice(npc,exp.discipline,1.1,1.2);
-    HC.practice(npc,'SCRIPTURE',0.5,1);
+    (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(npc,exp.discipline,1.1,1.2);
+    (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(npc,'SCRIPTURE',0.5,1);
 
     let unlockedRecipeId=null, prototype=null, rewardCp=0;
     if(success) {
@@ -665,7 +665,7 @@
       const dipSkill=lead?(HC.eff(lead,'social.charisma')*0.5+(lead.h.skills.diplomacy||0)*0.6):35;
       if(choice==='PARLEY' && dipSkill>=45) {
         deltaAtt=5; outcome='PARLEY_SUCCESS';
-        if(lead) HC.practice(lead,'diplomacy',1.2,1.2);
+        if(lead) (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(lead,'diplomacy',1.2,1.2);
         summaryTh=(lead?lead.h.name.given:'ทูตสำนัก')+' เจรจาคลี่คลายคำขาดของ'+s.nameTh+' โดยไม่ต้องเสียศิลา';
       } else if(choice==='PAY' && W.sect.stones>=ev.demandStones) {
         ECO.pay(W,ev.demandStones,'จ่ายค่าคุ้มครองชายแดนให้'+s.nameTh);
@@ -821,7 +821,8 @@
     const r=W.rng.weighted(pool,r=>r.weight*CPE.scarcity(W,r.id));
     const skill=kind==='hunt'?'survival':ECO.matById[r.id].category==='ORE'?'mining':'herbalism';
     const best=Math.max(...alive.map(n=>n.h.skills[skill]||0));
-    const quantity=C.takeResource(W,reg,r.id,1+Math.floor(best/55)+W.rng.int(0,1));
+    const life=g.MARTIAL?Math.max(...alive.map(n=>g.MARTIAL.lifeMult(n,kind==='hunt'?'hunting':skill))):1;
+    const quantity=C.takeResource(W,reg,r.id,Math.round((1+Math.floor(best/55)+W.rng.int(0,1))*life));
     if(!quantity) return false;
     out.mats[r.id]=(out.mats[r.id]||0)+quantity;
     C.ensure(W)[kind==='hunt'?'hunted':'gathered']+=quantity;
@@ -829,7 +830,7 @@
     if(kind==='hunt' && beast) {
       C.harvestOrgan(W,ex,alive,out,reg,beast);
     }
-    alive.forEach(n=>HC.practice(n,skill,.5,1));return true;
+    alive.forEach(n=>(g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n,skill,.5,1));return true;
   };
   C.discover=(W,ex,alive,out,reg)=>{
     out.recipes=out.recipes||[];
@@ -839,9 +840,11 @@
     const p=clamp(.20+scholar/400+(ex.kind==='fortune'?.12:0),.20,.65);
     if(recipes.length && W.rng.chance(p)) {
       const id=W.rng.pick(recipes);out.recipes.push(id);ex.journal.push('พบม้วนตำรับ '+ECO.recipeById[id].nameTh);
-    } else if(techs.length && W.rng.chance(p)) {
-      const id=W.rng.pick(techs);out.techs.push(id);ex.journal.push('พบคัมภีร์ '+CULT.tech(id).nameTh);
     }
+    // Rare martial knowledge uses the same daily budget and odds as native ruins/caves.
+    const extra=JD.MARTIAL.techniques.filter(t=>reg.techniques.some(id=>CULT.tech(id).path===t.path)).map(t=>t.id);
+    const drop=g.MARTIAL.discover(W,out,{tier:Math.max(2,reg.danger+2),techs:reg.techniques.concat(extra),source:'region'});
+    if(drop) ex.journal.push('พบองค์ความรู้หายาก');
   };
   C.fortune=(W,ex,alive,out,reg)=>{
     if(!regionById[reg.id]) return false;

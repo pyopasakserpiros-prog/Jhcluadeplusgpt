@@ -24,7 +24,7 @@
     if (pa > pb) d.sc.a += pa / (pa + pb); else d.sc.b += pb / (pa + pb);
     d.rounds++;
     a.fx = { t: W.t, text: '⚔' }; b.fx = { t: W.t, text: '⚔' };
-    [a, b].forEach(x => { x.h.state.energy = Math.max(0, x.h.state.energy - 0.9); HC.trainBody(x, 'reflex', 0.5); HC.trainBody(x, 'agility', 0.4); HC.practice(x, g.AI.pickTeachSkill(x, x), 1 / 30, 1.2); if (x.cult) CULT.gain(x, 0.15); });
+    [a, b].forEach(x => { x.h.state.energy = Math.max(0, x.h.state.energy - 0.9); HC.trainBody(x, 'reflex', 0.5); HC.trainBody(x, 'agility', 0.4); (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(x, g.AI.pickTeachSkill(x, x), 1 / 30, 1.2); if (x.cult) CULT.gain(x, 0.15); });
     if (a.h.state.energy < 12 || b.h.state.energy < 12) return 'end';
     if (d.rounds >= 14) return 'end';
   };
@@ -143,10 +143,10 @@
     let frac = 0.2 * (A0 / (A0 + 0.8 * Math.max(0, D))) * (o.M || 1) * (0.85 + W.rng.next() * 0.3);
     if (crit) frac *= sa.critDmg / 100;
     if (nonlethal) frac *= 0.55;
-    const hm = C.hpMax(d), dmg = hm * frac;
+    const hm = C.hpMax(d), beastGuard = !d.foe && g.MARTIAL && g.MARTIAL.isBeast(a) ? g.MARTIAL.skillEffects(d).beastDamage : 1, dmg = hm * frac * beastGuard;
     a.fx = a.fx || {}; if (!o.silent) { a.fx = { t: W.t, text: o.label || (crit ? 'จุดตาย!' : type === 'p' ? W.rng.pick(FX_PHYS) : W.rng.pick(FX_MAG)) }; }
     d.fx = { t: W.t, text: (crit ? '✦' : '') + '-' + Math.max(1, Math.round(dmg)) };
-    if (!a.foe) { a.h.state.energy = Math.max(0, a.h.state.energy - 0.15); HC.practice(a, g.AI.pickTeachSkill(a, a), 1 / 90, 1.1); HC.trainBody(a, 'reflex', 0.1); a.lastHurt = null; }
+    if (!a.foe) { a.h.state.energy = Math.max(0, a.h.state.energy - 0.15); (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(a, (g.MARTIAL ? ({ FIST: 'FIST_PALM' }[g.MARTIAL.equippedType(a)] || g.MARTIAL.equippedType(a)) : g.AI.pickTeachSkill(a, a)), 1 / 90, 1.1); HC.trainBody(a, 'reflex', 0.1); a.lastHurt = null; }
     const killed = C.applyDamage(W, f, a, d, dmg);
     let lifesteal = 0, reflected = 0;
     if (!a.foe && !a.dead && a.cult && a.cult.path === 'DEMON' && dmg > 0) {
@@ -216,7 +216,9 @@
   }
   function lowestAlly(W, f, a) { const side = C.sideOf(f, a.id) === 'A' ? f.A : f.B; let w = null, m = 2; side.forEach(id => { const u = C.unit(W, id); if (!C.alive(u) || u.id === a.id) return; const r = hpFrac(u); if (r < m) { m = r; w = u; } }); return w; }
   function useSkill(W, f, a, d, p, ctx) {
-    const SK = SKs(), ST = STs(), sa = ST.get(a); ctx.cds = ctx.cds || {};
+    const SK = SKs(), ST = STs(), sa = ST.get(a);
+    if (!a.foe && g.MARTIAL) { const efficiency = g.MARTIAL.skillEfficiency(a, p); if (!efficiency) return; p = Object.assign({}, p, { M: p.M * efficiency, shield: p.shield * efficiency, heal: p.heal * efficiency, dot: p.dot * efficiency }); if (p.channel && typeof p.channel === 'object') p.channel = Object.assign({}, p.channel, { tickM: p.channel.tickM * efficiency, finishM: p.channel.finishM * efficiency }); }
+    ctx.cds = ctx.cds || {};
     ctx.cds[p.id] = W.t + Math.max(Math.round(p.cd * 0.5), Math.round(p.cd * 100 / sa.cast));
     if (!a.foe) { const cost = SK.qiCost(a, p); a.h.state.qi = Math.max(0, (a.h.state.qi == null ? cost : a.h.state.qi) - cost); a.cult.tm = a.cult.tm || {}; a.cult.tm[p.id] = (a.cult.tm[p.id] || 0) + 1; }
     const label = p.moves && p.moves.length ? W.rng.pick(p.moves) : p.nameTh;
@@ -302,7 +304,7 @@
     }
     // ท่าโจมตี
     const targets = p.aoe ? C.enemies(W, f, a.id).filter(x => Math.hypot(x.x - d.x, x.y - d.y) < 2.6) : [d]; if (!targets.includes(d)) targets.unshift(d);
-    const mas = a.foe ? 1 : SK.mastery(a, p); let dealt = 0;
+    const mas = a.foe ? 1 : SK.mastery(a, p) / (g.MARTIAL ? g.MARTIAL.skillEfficiency(a, p) : 1); let dealt = 0;
     targets.slice(0, 6).forEach(t => {
       if (!C.alive(t)) return;
       for (let i = 0; i < (p.hits || 1); i++) {
@@ -339,7 +341,7 @@
   C.statusTick = (W, f, u) => {
     const ST = STs(); if (!u.sx || !u.sx.length) return;
     const SK = SKs(); const keep = [];
-    u.sx.forEach(x => { if (x.until <= W.t) return; keep.push(x); const S = SK.STATUS[x.k]; if (S && S.dot && x.per && !u.dead) { const src = x.src ? C.unit(W, x.src) : null; C.applyDamage(W, f, src && !src.dead ? src : null, u, C.hpMax(u) * x.per * (f.serious ? 1 : 0.55)); u.fx = { t: W.t, text: S.icon }; } });
+    u.sx.forEach(x => { if (x.until <= W.t) return; keep.push(x); const S = SK.STATUS[x.k]; if (S && S.dot && x.per && !u.dead) { const src = x.src ? C.unit(W, x.src) : null; C.applyDamage(W, f, src && !src.dead ? src : null, u, C.hpMax(u) * x.per * (f.serious ? 1 : 0.55) * (src && !src.foe && g.MARTIAL && ['poison','bleed'].includes(x.k) ? g.MARTIAL.skillEffects(src).poisonPower : 1)); u.fx = { t: W.t, text: S.icon }; } });
     if (keep.length !== u.sx.length) { u.sx = keep; ST.dirty(u); }
   };
   C.interruptChannel = (W, f, u, reason) => {

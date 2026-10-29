@@ -1,6 +1,17 @@
 # JIANGHU SECT — AUTONOMOUS ECONOMY & FACILITY EXPANSION HANDOFF
 
-## Current handoff — v1.10.10 NPC cognition / main-1 (2026-10-28)
+## Current handoff — v1.10.11 martial paths / main-1 (2026-10-29)
+
+Read [`JianghuSect_v1.10/docs/MARTIAL_PATHS.md`](JianghuSect_v1.10/docs/MARTIAL_PATHS.md) for mechanics, rates, catalog counts, save state and checks. Root [`docs/MARTIAL_IMPLEMENTATION_REPORT.md`](docs/MARTIAL_IMPLEMENTATION_REPORT.md) lists public interfaces and evidence; [`docs/MARTIAL_PATCH_LEDGER.md`](docs/MARTIAL_PATCH_LEDGER.md) records implementation decisions and final validation ownership. Preserve `main` and the byte-locked HC source.
+
+The patch adds `data/data_martial.js`, `js/martial.js`, `js/knowledge.js`, `js/proficiency.js`, `js/retraining.js`; connects every native/adapted martial discovery source to a shared seeded rarity budget; integrates finite crystals, reusable manuals, CP transactions, member decisions, typed gear, branch acquisition, derived physical/life growth, active/passive conditions, shop/distribution suitability and explanatory UI. New content: 42 typed items/forge recipes across14 types, 2 branches, 10 rare techniques/passives plus5 free fundamentals. Catalog totals:37 branches,114 items,198 recipes,309 techniques. Runtime/martial version1.10.11; preserved imported source catalog1.10.9. Single file:36 scripts. No runtime LLM. Ordinary new cultivators use `NONE` until knowledge unlocks their first branch; founding valid branches are explicit bootstrap.
+
+
+All29 skills now use shared read/practice and grouped UI (7 weapon skills, including external BOW/STAFF/FOCUS). Read [SKILL_EFFECTS.md](JianghuSect_v1.10/docs/SKILL_EFFECTS.md). Explicit retraining requires accessible knowledge and current transaction validation. Changing major path resetsstage1/prog0; same-path sub change yields max(1,oldStage-max(2,ceil(oldStage/2))). Track/learning/bottleneck/old identity effects reset, independent practice stays, and the NPC weighs skills, lost levels and known techniques, replacement knowledge, gear, personality, health and remaining life. It may prepare rather than switch;30/60-day cooldown prevents flipflops.
+
+Release controller verified44/44 testgroups, browser/mobile0–48x/80NPC,518400ticks/360days and ZIP validation. See test/results/assertions.json, long_martial_paths_360d.json and docs/MARTIAL_IMPLEMENTATION_REPORT.md. Natural seed found10techcrystals and0retraining events; controlledtests verify acquisition/use/switching behavior. Final publication is to main-1; preserve main.
+
+## Previous handoff — v1.10.10 NPC cognition / main-1 (2026-10-28)
 
 Start with [`JianghuSect_v1.10/docs/NPC_HUMANLIKE_AI.md`](JianghuSect_v1.10/docs/NPC_HUMANLIKE_AI.md). It documents shipped behavior, office authority, locked future offices, test commands, and deliberately deferred Gemini ideas. The blueprint below is historical design input, not an unfinished requirement checklist. Preserve `main`; develop `main-1`.
 
@@ -204,3 +215,7 @@ Key areas covered in the blueprint:
 5. **Emotional State Overrides**: Grief mourning at the ancestral hall, anger-driven sparring/arguing, heart-demon temptation, and burnout vs. workaholism.
 6. **Environmental & Weather Sensitivity**: Element-aligned cultivation bonuses during snow/storms (`FROST`/`THUNDER`) and risk-aware outer zone selection.
 7. **Inner Monologue UI (`UI.rNpc`)**: Displaying active personal goals and thoughts while strictly preserving the `js/human_core.js` byte-lock (`155:2f9c9dd7`), `W.rng` determinism, save/load compatibility, and 32×/48× mobile speed budget.
+
+## Next assigned patch — Gemini 3.8 ecology/content expansion
+
+The user requests the next agent to begin without another prompt. Open [GEMINI_NEXT_TASK.md](GEMINI_NEXT_TASK.md), then execute [docs/GEMINI_ECOLOGY_CONTENT_PROMPT.md](docs/GEMINI_ECOLOGY_CONTENT_PROMPT.md). This is an authorized future task, not a claim that80 new beasts already ship in the current martial patch. Target80 species/160 materials/80 recipes with real spawn/drop/crafting/NPC/economy links, preserve current martial knowledge/retraining rules and main branch. Exact schema examples, phases, acceptance tests and creative discretion are in the prompt. Read actual final APIs before editing; extend long simulation observational reporting for ECO2_ IDs.

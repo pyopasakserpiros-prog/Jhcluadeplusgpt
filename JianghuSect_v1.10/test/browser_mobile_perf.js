@@ -277,6 +277,8 @@ const { chromium } = require('playwright');
       const ticks = (G.W.t - tStart) + G.acc;
       return {
         speed,
+        runtimeError: G.err ? (G.err.stack || String(G.err)) : null,
+        actualSpeed: G.speed,
         targetTicksPerSec: speed * 4,
         measuredTicksPerSec: Math.round((ticks / elapsedSec) * 10) / 10,
         completedTicks: G.W.t - tStart,
@@ -285,6 +287,7 @@ const { chromium } = require('playwright');
       };
     }, sp);
     speedBenchStandard[sp + 'x'] = res;
+    assert(!res.runtimeError, 'Runtime error during speed benchmark: '+res.runtimeError);
     if (sp === 0) {
       assert.strictEqual(res.measuredTicksPerSec, 0, '0x speed must execute 0 ticks/s');
     } else {

@@ -72,11 +72,12 @@
       HEART_SOUL: soul * 0.85 + HC.eff(npc, 'aptitudes.comprehension') * 0.4 + HC.eff(npc, 'interests.meditation') * 0.2 - 5
     };
     CULT.subList.forEach(({ path, sub }) => {
-      const pref = SUBPREF[sub.id] || (JD.EXPANSION.subPreferences || {})[sub.id] || { aff: {}, p: {} };
+      const pref = SUBPREF[sub.id] || (JD.EXPANSION.subPreferences || {})[sub.id] || (JD.MARTIAL.subPreferences || {})[sub.id] || { aff: {}, p: {} };
       let s = base[path] || 0;
       Object.keys(pref.aff).forEach(k => { s += (HC.eff(npc, 'affinities.' + k) - 30) * pref.aff[k] * 0.45; });
       Object.keys(pref.p).forEach(k => { const w = pref.p[k]; s += (w >= 0 ? pval(npc, k) - 50 : 50 - pval(npc, k)) * Math.abs(w) * 0.4; });
       if (bias && bias[sub.id]) s += bias[sub.id];
+      if (g.MARTIAL && g.MARTIAL.pathSkillAffinity) s += g.MARTIAL.pathSkillAffinity(npc, path, sub.id);
       out.push({ path, sub: sub.id, score: s });
     });
     return out.sort((a, b) => b.score - a.score);
@@ -87,7 +88,8 @@
     const pick = rng.weighted(top, x => Math.exp((x.score - top[0].score) / 7));
     return pick;
   };
-  CULT.subInfo = (path, sub) => CULT.PATHS[path].subPaths.find(s => s.id === sub) || CULT.PATHS[path].subPaths[0];
+  CULT.BASE_SUB = Object.freeze({ id: 'NONE', nameTh: 'พื้นฐาน (ยังไม่เลือกสายย่อย)', combatBonus: 1, defenseBonus: 1, breakthroughMod: 1, cultivationBonus: 1 });
+  CULT.subInfo = (path, sub) => (CULT.PATHS[path] && CULT.PATHS[path].subPaths.find(s => s.id === sub)) || CULT.BASE_SUB;
   CULT.stageInfo = (npc) => {
     const c = npc.cult; if (!c) return { nameTh: 'ปุถุชน (ยังไม่เปิดเส้นลมปราณ)', stage: 0, lifespanMax: 70, combatPower: 25, breakthroughBaseChance: 1 };
     return CULT.PATHS[c.path].stages[c.stage - 1];
@@ -106,18 +108,16 @@
   };
   CULT.refreshLifespan = npc => { npc.lifespanMax = CULT.lifespan(npc); HC.touch(npc); };
   CULT.hpMult = npc => npc.cult ? 1 + 0.42 * (npc.cult.stage - 1) + 0.25 : 1;
-  CULT.hpMax = npc => Math.round(HC.derived(npc).hpMax * CULT.hpMult(npc));
-  CULT.qiMax = npc => npc.cult ? Math.round((40 + HC.eff(npc, 'physiology.meridianCapacity') * 0.9) * (1 + 0.5 * (npc.cult.stage - 1))) : 0;
+  CULT.hpMax = npc => Math.round((g.MARTIAL ? g.MARTIAL.derived(npc) : HC.derived(npc)).hpMax * CULT.hpMult(npc));
+  CULT.qiMax = npc => npc.cult ? Math.round((40 + (g.MARTIAL ? g.MARTIAL.eff(npc, 'physiology.meridianCapacity') : HC.eff(npc, 'physiology.meridianCapacity')) * 0.9) * (1 + 0.5 * (npc.cult.stage - 1))) : 0;
   CULT.speedMult = npc => npc.cult ? 1 + 0.05 * (npc.cult.stage - 1) : 1;
 
   /* ----- ตั้งต้นการบำเพ็ญ: เปิดเส้นลมปราณ (awakening) ----- */
   CULT.awaken = (npc, rng, bias, day) => {
     const ch = CULT.choosePath(npc, rng, bias);
     const mant = CULT.bestMantra(ch.path, 1, npc);
-    npc.cult = { path: ch.path, sub: ch.sub, stage: 1, prog: 0, mantra: mant ? mant.id : null, techs: [], learning: null, toxic: 0, lifeBonus: 0, since: day, attempts: 0, secl: null, rate: 0, pillT: 0 };
-    if (CULT.trackDef(ch.sub)) {
-      npc.cult.track = CULT.initTrack(ch.sub, 1, day || 0);
-    }
+    npc.cult = { path: ch.path, sub: 'NONE', stage: 1, prog: 0, mantra: mant ? mant.id : null, techs: [], learning: null, toxic: 0, lifeBonus: 0, since: day, attempts: 0, secl: null, rate: 0, pillT: 0 };
+    // Specializations are acquired from finite crystals or reusable manuals. Founding bootstrap lives in SIM.awaken.
     CULT.refreshLifespan(npc);
     HC.bump(npc);
     return ch;
@@ -170,7 +170,7 @@
     }
     const pill = c.pillT > 0 ? 1 + (c.pillBoost || 0) : 1;
     const sp = 1 + HC.special(npc, 'cultivation.rateBonus');
-    return base * mantraK * focus * rest * toxic * dev * pill * (env || 1) * sp;
+    return base * (g.MARTIAL ? g.MARTIAL.skillEffects(npc).cultivation : 1) * mantraK * focus * rest * toxic * dev * pill * (env || 1) * sp;
   };
   CULT.gain = (npc, pts) => {
     const c = npc.cult; if (!c) return;
@@ -305,7 +305,7 @@
       const t = TECH_BY_ID[id]; if (!t || c.techs.includes(id)) return false;
       if (/FORBIDDEN/.test(t.cat)) return false;
       if (t.path !== 'ANY' && t.path !== c.path) return false;
-      if (t.sub && t.sub !== c.sub && (t.sourcePack || c.stage < 4)) return false; // สายย่อยเฉพาะ จนกว่าจะขั้นสูง
+      if (t.sub && t.sub !== c.sub) return false; // One specialization; high stage never bypasses identity.
       if (/_MANTRA$|^QI_MANTRA$/.test(t.cat)) return false;
       return (t.reqTier || t.tier) <= c.stage + 0;
     });
@@ -356,6 +356,7 @@
 
   CULT.ensureTrack = (npc, day) => {
     if (!npc || !npc.cult) return null;
+    if (g.MARTIAL) g.MARTIAL.normalize(npc);
     if (!npc.cult.track && CULT.trackDef(npc.cult.sub)) {
       npc.cult.track = CULT.initTrack(npc.cult.sub, 1, day || 0);
       CULT.refreshLifespan(npc);

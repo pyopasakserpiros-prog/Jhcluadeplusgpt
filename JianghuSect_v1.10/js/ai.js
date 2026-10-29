@@ -232,7 +232,7 @@
       } else if (c.path === 'DEMON') {
         if (W.t % 25 === 0) {
           const dSkill = c.sub === 'VENOM_GU_SOVEREIGN' ? 'POISON' : c.sub === 'SHADOW_ASSASSIN' ? 'stealth' : 'SOUL_DIVINE';
-          HC.practice(n, dSkill, 0.08, 1.1);
+          (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, dSkill, 0.08, 1.1);
           HC.trainMind(n, 'willpower', 0.6);
           HC.trainBody(n, 'explosiveness', 0.6);
         }
@@ -249,7 +249,7 @@
         s.stress = Math.max(0, (s.stress || 0) - 0.012);
         if (W.t % 25 === 0) {
           const hsSkill = c.sub === 'CALLIGRAPHY_PAINTING_SAGE' ? 'arts' : 'SOUL_DIVINE';
-          HC.practice(n, hsSkill, 0.08, 1.15);
+          (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, hsSkill, 0.08, 1.15);
           HC.trainMind(n, 'focus', 1.2);
           HC.trainMind(n, 'comprehension', 1.0);
           HC.gainWisdom(n, 0.006);
@@ -321,7 +321,7 @@
     dur: n => 90 + Math.round(E(n, 'personality.discipline') * 0.6),
     tick(n, W, ctx) {
       const s = n.h.state; const head = SECT.holder(W, 'martial'); const q = 1 + (head && !head.dead ? 0.25 + E(head, 'social.teaching') / 300 : 0) + 0.1 * (W.map.byId.training_ground.level - 1);
-      HC.practice(n, ctx.skill, 1 / 60, q);
+      (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, ctx.skill, 1 / 60, q);
       if (W.t % 25 === 0) { HC.trainBody(n, 'strength', 1); HC.trainBody(n, 'reflex', 1); HC.trainBody(n, 'agility', 1); HC.trainBody(n, 'explosiveness', 0.8); }
       s.energy = Math.max(0, s.energy - 0.1); s.rest -= 0.02; s.stress = Math.max(0, s.stress - 0.01);
       AI.vf(n, { martialPeak: 0.05 });
@@ -344,11 +344,11 @@
     dur: n => 100 + Math.round(E(n, 'intellect.focus') * 0.5),
     start(n, W, ctx) { if (n.cult && !n.cult.learning) { const t = AI.nextTechToStudy(W, n); if (t) n.cult.learning = { id: t.id, need: CULT.studyCost(t), got: 0 }; } return true; },
     tick(n, W) {
-      const s = n.h.state; HC.practice(n, 'SCRIPTURE', 1 / 60, 1); if (E(n, 'affinities.ARRAY') >= 55) HC.practice(n, 'ARRAY', 1 / 90, 1); if (E(n, 'affinities.TALISMAN') >= 55) HC.practice(n, 'TALISMAN', 1 / 90, 1);
+      const s = n.h.state; (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'SCRIPTURE', 1 / 60, 1); if (E(n, 'affinities.ARRAY') >= 55) (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'ARRAY', 1 / 90, 1); if (E(n, 'affinities.TALISMAN') >= 55) (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'TALISMAN', 1 / 90, 1);
       if (W.t % 40 === 0) { HC.trainMind(n, 'comprehension', 1); HC.trainMind(n, 'memory', 0.8); HC.gainWisdom(n, 0.003); }
       const c = n.cult;
       if (c && c.learning) {
-        c.learning.got += (0.7 + E(n, 'intellect.learningSpeed') / 100 + E(n, 'intellect.comprehension') / 250) * (n.insightT > 0 ? 1.45 : 1);
+        c.learning.got += (0.7 + E(n, 'intellect.learningSpeed') / 100 + E(n, 'intellect.comprehension') / 250) * (n.insightT > 0 ? 1.45 : 1) * (g.MARTIAL ? g.MARTIAL.lifeMult(n, 'SCRIPTURE') * g.MARTIAL.skillEffects(n).study : 1);
         if (c.learning.got >= c.learning.need) { const t = CULT.tech(c.learning.id); c.techs.push(c.learning.id); c.learning = null; if (c.techs.length > CULT.maxTechs(n)) c.techs.shift(); W.log('learn', n.h.name.given + ' เรียนรู้วิชา「' + t.nameTh + '」สำเร็จ', [n.id]); AI.mem(W, n, 'เรียนรู้ ' + t.nameTh, 0.6); HC.experience(n, 'craft_success', 0.6); return 'done'; }
       }
       s.energy = Math.max(0, s.energy - 0.025); s.rest -= 0.03; AI.vf(n, { knowledgeCraft: 0.05 });
@@ -428,7 +428,7 @@
     },
     dur: n => 150 + Math.round(E(n, 'personality.discipline') * 0.8),
     tick(n, W, ctx) {
-      n.h.state.energy = Math.max(0, n.h.state.energy - 0.06); n.h.state.rest -= 0.03; HC.practice(n, 'herbalism', 1 / 60, 1);
+      n.h.state.energy = Math.max(0, n.h.state.energy - 0.06); n.h.state.rest -= 0.03; (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'herbalism', 1 / 60, 1);
       if (W.t % 60 === 0) {
         if (ctx.herb) {
           const got = ECO.harvestHerb(W, n, 1);
@@ -461,7 +461,7 @@
     where: (W, n) => { const s = AI.freeStation(W, n, 'mine', 'mine'); return s ? { st: s } : null; },
     dur: () => 200,
     tick(n, W, ctx) {
-      n.h.state.energy = Math.max(0, n.h.state.energy - 0.09); n.h.state.rest -= 0.03; HC.practice(n, 'mining', 1 / 60, 1);
+      n.h.state.energy = Math.max(0, n.h.state.energy - 0.09); n.h.state.rest -= 0.03; (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'mining', 1 / 60, 1);
       if (W.t % 60 === 0) { const r = ECO.mineYield(W, n, 1); ctx.got = (ctx.got || 0) + r.out.length; if (W.rng.chance(0.012 * (1 - E(n, 'intellect.perceptiveness') / 160))) AI.injure(W, n, 1, 'ถ้ำถล่มเล็กน้อย'); HC.trainBody(n, 'strength', 0.9); }
       AI.vf(n, { sectDuty: 0.02, wealthResource: 0.05 });
       if (n.h.state.energy < 14) return 'done';
@@ -479,7 +479,7 @@
     },
     where: (W, n) => { const s = AI.freeStation(W, n, 'cook', 'canteen'); return s ? { st: s } : null; },
     dur: () => 150,
-    tick(n, W, ctx) { n.h.state.energy = Math.max(0, n.h.state.energy - 0.045); HC.practice(n, 'cooking', 1 / 60, 1); if (W.t % 30 === 0) { ctx.m = (ctx.m || 0) + ECO.cookMeals(W, 0.5, n.h.skills.cooking || 0); } AI.vf(n, { sectDuty: 0.04, familyClan: 0.02 }); },
+    tick(n, W, ctx) { n.h.state.energy = Math.max(0, n.h.state.energy - 0.045); (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'cooking', 1 / 60, 1); if (W.t % 30 === 0) { ctx.m = (ctx.m || 0) + ECO.cookMeals(W, 0.5, n.h.skills.cooking || 0); } AI.vf(n, { sectDuty: 0.04, familyClan: 0.02 }); },
     done(n, W, ctx) { n.merit += 0.6; },
     inside: true
   };
@@ -505,15 +505,15 @@
     },
     dur: () => 150,
     tick(n, W, ctx) {
-      HC.practice(n, 'administration', 1 / 60, 1); n.h.state.stress += 0.004; AI.vf(n, { sectDuty: 0.06, powerStatus: 0.05 });
-      if (ctx.kind === 'heal') HC.practice(n, 'MEDICINE', 1 / 60, 1);
-      if (ctx.kind === 'guard') { n.h.state.energy = Math.max(0, n.h.state.energy - 0.02); HC.practice(n, 'survival', 1 / 90, 1); }
-      if (ctx.kind === 'class') { HC.practice(n, 'administration', 1 / 120, 1); AI.teachClass(W, n); }
-      if (ctx.kind === 'craftmgmt') { const h = n.post || n.assist; if (h === 'alchemy') HC.practice(n, 'ALCHEMY', 1 / 60, 1.1); else { HC.practice(n, 'FORGING', 1 / 60, 1.1); HC.practice(n, 'ARRAY', 1 / 60, 1.1); HC.practice(n, 'TALISMAN', 1 / 60, 1.1); } }
+      (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'administration', 1 / 60, 1); n.h.state.stress += 0.004; AI.vf(n, { sectDuty: 0.06, powerStatus: 0.05 });
+      if (ctx.kind === 'heal') (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'MEDICINE', 1 / 60, 1);
+      if (ctx.kind === 'guard') { n.h.state.energy = Math.max(0, n.h.state.energy - 0.02); (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'survival', 1 / 90, 1); }
+      if (ctx.kind === 'class') { (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'administration', 1 / 120, 1); AI.teachClass(W, n); }
+      if (ctx.kind === 'craftmgmt') { const h = n.post || n.assist; if (h === 'alchemy') (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'ALCHEMY', 1 / 60, 1.1); else { (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'FORGING', 1 / 60, 1.1); (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'ARRAY', 1 / 60, 1.1); (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'TALISMAN', 1 / 60, 1.1); } }
     },
     done(n, W) { if(g.COG)g.COG.performDuty(W,n); W.sect.lastDuty[n.id] = W.t; n.merit += 2; W.sect.efficiency = (W.sect.efficiency || 0) + 1; }
   };
-  AI.teachClass = (W, n) => { /* หัวหน้าหอยุทธ์ได้ทักษะสอน + ฝึกลูกศิษย์ใกล้ ๆ ผ่าน q ใน practice */ if (W.t % 30 === 0) HC.practice(n, 'diplomacy', 0.2, 0.5); };
+  AI.teachClass = (W, n) => { /* หัวหน้าหอยุทธ์ได้ทักษะสอน + ฝึกลูกศิษย์ใกล้ ๆ ผ่าน q ใน practice */ if (W.t % 30 === 0) (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'diplomacy', 0.2, 0.5); };
 
   A.guard = {
     nameTh: 'เฝ้ายาม', icon: '🛡️', color: '#6b9ac4',
@@ -528,7 +528,7 @@
     },
     where: (W, n) => { const s = AI.freeStation(W, n, 'guard', ['gate', 'tower0', 'tower1', 'tower2', 'tower3', 'discipline']); return s ? { st: s } : null; },
     dur: () => 240,
-    tick(n, W, ctx) { n.h.state.energy = Math.max(0, n.h.state.energy - 0.025); HC.practice(n, 'survival', 1 / 80, 0.8); AI.vf(n, { sectDuty: 0.05, honorLegacy: .02 }); if (W.t % 30 === 0) HC.trainMind(n, 'perceptiveness', 0.8); },
+    tick(n, W, ctx) { n.h.state.energy = Math.max(0, n.h.state.energy - 0.025); (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'survival', 1 / 80, 0.8); AI.vf(n, { sectDuty: 0.05, honorLegacy: .02 }); if (W.t % 30 === 0) HC.trainMind(n, 'perceptiveness', 0.8); },
     done(n, W) { n.merit += 1.8; }
   };
   A.heal = {
@@ -544,9 +544,9 @@
     dur: () => 360,
     tick(n, W) {
       const s = n.h.state, hm = CULT.hpMax(n); const healer = SECT.holder(W, 'healer'); const k = 3 + (healer && !healer.dead ? E(healer, 'intellect.comprehension') / 60 : 0) + W.map.byId.infirmary.level * 0.3;
-      s.hp = Math.min(hm, s.hp + hm * 0.00012 * k * (0.6 + E(n, 'physiology.recoveryRate') / 100)); s.rest = Math.min(100, s.rest + 0.05);
+      s.hp = Math.min(hm, s.hp + hm * 0.00012 * k * (0.6 + E(n, 'physiology.recoveryRate') / 100) * (g.MARTIAL && healer ? g.MARTIAL.lifeMult(healer, 'MEDICINE') * g.MARTIAL.skillEffects(healer).medicine : 1)); s.rest = Math.min(100, s.rest + 0.05);
       if (n.inj) n.inj.forEach(i => { i.until -= 3.2; });
-      if (healer && !healer.dead && W.t % 120 === 0) HC.practice(healer, 'MEDICINE', 0.5, 1.2);
+      if (healer && !healer.dead && W.t % 120 === 0) (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(healer, 'MEDICINE', 0.5, 1.2);
       if (s.hp >= hm * 0.97 && (!n.inj || !n.inj.length)) return 'done';
     },
     done(n, W) {
@@ -590,8 +590,8 @@
     },
     dur: () => 70,
     tick(n, W, ctx) {
-      const s = n.h.state; s.stress = Math.max(0, s.stress - 0.1); s.mood = Math.min(100, s.mood + 0.09); s.novelty = Math.min(100, s.novelty + 0.08);
-      if (ctx.mode === 'music') { HC.practice(n, 'arts', 1 / 60, 1); AI.vf(n, { freedom: .03 }); }
+      const s = n.h.state; s.stress = Math.max(0, s.stress - 0.1 * (ctx.mode === 'music' && g.MARTIAL ? g.MARTIAL.skillEffects(n).music : 1)); s.mood = Math.min(100, s.mood + 0.09 * (ctx.mode === 'music' && g.MARTIAL ? g.MARTIAL.skillEffects(n).music : 1)); s.novelty = Math.min(100, s.novelty + 0.08);
+      if (ctx.mode === 'music') { (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'arts', 1 / 60, 1); AI.vf(n, { freedom: .03 }); }
       if (ctx.mode === 'fish' && W.t % 90 === 0 && W.rng.chance(0.4)) ECO.add(W, 'meal', 2);
       AI.vf(n, { freedom: 0.035 }); s.energy = Math.min(100, s.energy + 0.05);
     }
@@ -841,7 +841,7 @@
       if (type === 'chat' || type === 'date' || type === 'argue') { if (d.left % 8 === 0) AI.interact(W, n, o, type, 0.5); }
       else if (type === 'teach') {
         if (n.act.ctx.skillTgt == null) { n.act.ctx.skillTgt = o.cult ? AI.pickTeachSkill(n, o) : 'SCRIPTURE'; }
-        HC.practice(o, n.act.ctx.skillTgt, 1 / 60, 1.7 + E(n, 'social.teaching') / 100); HC.practice(n, 'diplomacy', 1 / 120, 1);
+        (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(o, n.act.ctx.skillTgt, 1 / 60, 1.7 + E(n, 'social.teaching') / 100); (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'diplomacy', 1 / 120, 1);
         if (d.left % 10 === 0) { AI.interact(W, n, o, 'teach', 0.5); CULT.gain(o, 0.8); }
         n.merit += 0.01;
       } else if (type === 'spar') {
@@ -908,6 +908,7 @@
     for (const k in (n.inv.mats || {})) ECO.add(W, k, n.inv.mats[k]); n.inv.mats = {};
     for (const id of (n.inv.techs || [])) if (CULT.tech(id) && !W.sect.library.includes(id)) W.sect.library.push(id); n.inv.techs = [];
     for (const id of (n.inv.recipes || [])) if (ECO.recipeById[id] && !W.sect.knownRecipes.includes(id)) { W.sect.knownRecipes.push(id); if (W.world && W.world.contentMetrics) W.world.contentMetrics.formulas++; } n.inv.recipes = [];
+    if (g.MARTIAL) g.MARTIAL.returnKnowledge(W, n);
     for (const k in n.equip) { if (n.equip[k]) W.sect.gear.push(n.equip[k]); } n.equip = {};
     W.sect.fallen = (W.sect.fallen || []); W.sect.fallen.push({ id: n.id, name: n.h.name.family + n.h.name.given, day: W.day, why, rank: n.rank });
   };

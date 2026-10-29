@@ -93,7 +93,7 @@
   function rnd(h, k) { let x = (h ^ Math.imul(k + 1, 0x9e3779b1)) >>> 0; x = Math.imul(x ^ (x >>> 15), 2246822519) >>> 0; x = Math.imul(x ^ (x >>> 13), 3266489917) >>> 0; return ((x ^ (x >>> 16)) >>> 0) / 4294967296; }
   const cache = {};
   SK.profile = t => {
-    if (!t) return null; if (cache[t.id]) return cache[t.id];
+    if (!t || t.passive || t.cat === 'PASSIVE') return null; if (cache[t.id]) return cache[t.id];
     const h = hash(t.id); let arch;
     if (t.combatArch && SK.ARCH[t.combatArch]) arch = t.combatArch;
     else if (t.cat === 'FORBIDDEN_ART') arch = 'forbid';
@@ -155,7 +155,8 @@
       };
       prof.ticks = ticks;
     }
-    prof.summary = SK.summary(prof); return (cache[t.id] = prof);
+    prof.weaponTypes = t.weaponTypes; prof.armorTypes = t.armorTypes; prof.requiresWeapon = t.requiresWeapon;
+    prof.summary = SK.summary(prof) + ((t.weaponTypes || t.armorTypes) ? ' · ' + g.JD.MARTIAL.types[(t.weaponTypes || t.armorTypes)[0]] + ' ตรง ×1.15 / อื่น ×0.65' : ''); return (cache[t.id] = prof);
   };
   SK.summary = p => {
     const A = SK.ARCH[p.arch], bits = [];
@@ -174,9 +175,9 @@
     return A.icon + ' ' + A.nameTh + ' · ' + (p.type === 'p' ? 'กายภาพ' : 'วิชา') + ' · ธาตุ' + p.elemTh + ' — ' + bits.join(' · ');
   };
   /* วิชาที่ตัวละครใช้ได้ในการรบ */
-  SK.list = n => { if (n.foe) return n.skl || []; if (!n.cult) return []; return n.cult.techs.map(id => SK.profile(g.CULT.tech(id))).filter(Boolean); };
+  SK.list = n => { if (n.foe) return n.skl || []; if (!n.cult) return []; return (g.MARTIAL ? g.MARTIAL.activeTechs(n) : n.cult.techs).map(id => SK.profile(g.CULT.tech(id))).filter(Boolean); };
   SK.qiCost = (n, p) => Math.round(g.CULT.qiMax(n) * p.costPct / 100);
-  SK.mastery = (n, p) => { const c = n.cult; return c && c.tm ? 1 + Math.min(0.15, (c.tm[p.id] || 0) * 0.002) : 1; };
+  SK.mastery = (n, p) => { const c = n.cult, base = c && c.tm ? 1 + Math.min(0.15, (c.tm[p.id] || 0) * 0.002) : 1; return base * (g.MARTIAL ? g.MARTIAL.skillEfficiency(n, p) : 1); };
 
   /* ศัตรู: สร้างชุดวิชาแบบเรียบง่ายตามชนิด/ระดับ */
   SK.foeSkills = u => {

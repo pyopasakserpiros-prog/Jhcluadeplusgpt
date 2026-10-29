@@ -95,6 +95,9 @@ function world(seed) { return SIM.create(seed || 'cp-economy-test', { masterIdx:
   const W = world('cp-study');
   const n = W.npcs.find(x => x.cult && x.cult.stage >= 2) || W.npcs.find(x => x.cult);
   assert(n, 'test needs a cultivator');
+  // Set up an explicitly paid available manual; free fundamentals are now valid autonomous choices.
+  n.cult.path = 'XIAN'; n.cult.sub = 'SWORD_IMMORTAL'; n.cult.stage = 2; n.cult.techs = []; n.rank = 6;
+  W.sect.library = ['MP_SWORD_POISE'];
   n.cult.learning = null;
   n.cp = 1000;
   const selected = AI.nextTechToStudy(W, n);
