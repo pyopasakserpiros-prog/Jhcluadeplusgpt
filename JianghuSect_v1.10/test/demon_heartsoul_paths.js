@@ -199,8 +199,9 @@ for (const subId of demonSubs) {
   const learnable = CULT.learnable(nDemon, allTechIds);
   assert(learnable.length >= 3, 'DEMON subpath ' + subId + ' must have learnable techniques');
   learnable.forEach(id => {
-    const prof = SK.profile(CULT.tech(id));
-    assert(prof && prof.arch, 'Technique ' + id + ' must generate a valid combat profile');
+    const tech = CULT.tech(id), prof = SK.profile(tech);
+    if (tech.cat === 'PASSIVE' || tech.passive) { assert.strictEqual(prof, null, 'Passive ' + id + ' must not be a combat action'); assert(tech.passive, 'Passive must define effects'); }
+    else assert(prof && prof.arch, 'Technique ' + id + ' must generate a valid combat profile');
   });
 }
 for (const subId of soulSubs) {
@@ -210,8 +211,9 @@ for (const subId of soulSubs) {
   const learnable = CULT.learnable(nSoul, allTechIds);
   assert(learnable.length >= 3, 'HEART_SOUL subpath ' + subId + ' must have learnable techniques');
   learnable.forEach(id => {
-    const prof = SK.profile(CULT.tech(id));
-    assert(prof && prof.arch, 'Technique ' + id + ' must generate a valid combat profile');
+    const tech = CULT.tech(id), prof = SK.profile(tech);
+    if (tech.cat === 'PASSIVE' || tech.passive) { assert.strictEqual(prof, null, 'Passive ' + id + ' must not be a combat action'); assert(tech.passive, 'Passive must define effects'); }
+    else assert(prof && prof.arch, 'Technique ' + id + ' must generate a valid combat profile');
   });
 }
 const ghostSummon = SK.profile(CULT.tech('ART_C117_INNATE_NETHER_GHOST_KING'));

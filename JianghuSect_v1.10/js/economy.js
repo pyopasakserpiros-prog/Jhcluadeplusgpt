@@ -20,6 +20,7 @@
     if (id.startsWith('P:')) { const r = recipeById[id.slice(2)]; return r ? r.outNameTh : id; }
     if (id.startsWith('FORMULA:')) { const r = recipeById[id.slice(8)]; return r ? 'ม้วนตำรับ' + r.nameTh : id; }
     if (itemById[id]) return itemById[id].nameTh;
+    if (g.CONTENT && g.CONTENT.organById && g.CONTENT.organById[id]) return g.CONTENT.organById[id].nameTh;
     return id;
   };
   ECO.base = id => {
@@ -30,8 +31,15 @@
     return 5;
   };
   ECO.price = (W, id) => ECO.base(id) * ((W.market && W.market.mult[id]) || 1);
-  ECO.isPill = id => id.startsWith('P:') || (itemById[id] && itemById[id].out === 'PILL');
-  ECO.category = id => matById[id] ? matById[id].category : (id.startsWith('P:') ? 'PILL' : 'OTHER');
+  ECO.isPill = id => typeof id === 'string' && (id.startsWith('P:') || !!(itemById[id] && itemById[id].out === 'PILL'));
+  ECO.category = id => matById[id] ? matById[id].category : (ECO.isPill(id) ? 'PILL' : 'OTHER');
+
+  function invalidateStockIntel(W) {
+    if (W && W.sect) {
+      W.sect._stockDirty = true;
+      if (W.sect.inventoryIntelligence) W.sect.inventoryIntelligence.evaluatedAt = -1;
+    }
+  }
 
   /* ---------- คลัง ---------- */
   ECO.count = (W, id) => { const n = W.sect.stock[id]; return Number.isFinite(n) && n > 0 ? n : 0; };
@@ -128,7 +136,6 @@
   function registerCraft(W, npc, r, ctx, inputs) {
     const ledger = craftTransactions(W), npcId = npc ? npc.id : null;
     if (!Number.isSafeInteger(ledger.seq) || ledger.seq < 0 || ledger.seq >= Number.MAX_SAFE_INTEGER) return false;
-    // สมาชิกทำกิจกรรมผลิตได้ครั้งละหนึ่งงาน: งานใหม่ยกเลิกใบรับของงานที่ถูกขัดจังหวะ โดยไม่คืนวัตถุดิบ
     if (npcId != null) Object.keys(ledger.open).forEach(id => { if (ledger.open[id].npcId === npcId) delete ledger.open[id]; });
     const id = String(++ledger.seq), paid = { id, rid: r.id, npcId, inputs };
     ledger.open[id] = paid;
@@ -145,7 +152,6 @@
     inputs.forEach(i => ECO.take(W, i.matId, i.count));
     return registerCraft(W, npc, r, ctx, inputs);
   };
-  // ใช้เฉพาะตอนย้ายเซฟเก่า: งานในช่วงลงมือจ่ายวัตถุดิบไปแล้ว แต่ยังไม่มีใบรับ
   ECO.adoptLegacyCraft = (W, npc, r, ctx) => {
     if (!npc || npc.id == null || !ctx || typeof ctx !== 'object' || ctx.rid !== (r && r.id)) return false;
     if (ctx.craftReceipt) return !!matchingReceipt(W, npc, r, ctx);
@@ -163,7 +169,6 @@
     const ledger = W.sect.craftTransactions; if (!ledger || !r || !npc) return null;
     const paid = ctx ? matchingReceipt(W, npc, r, ctx) : Object.values(ledger.open).find(p => p.npcId == null && p.rid === r.id);
     if (!paid) return null;
-    // หักสิทธิ์ก่อนสุ่ม/ฝึกฝน/คืนของ เพื่อให้สำเร็จหรือล้มเหลวได้เพียงครั้งเดียว แม้โหลดเซฟหรือคัดลอก ctx
     delete ledger.open[paid.id];
     if (ctx) ctx.craftReceipt.state = 'settled';
     return paid;
@@ -172,17 +177,28 @@
     const skill = npc.h.skills[r.craft] != null ? npc.h.skills[r.craft] : 0;
     return clamp(0.55 + (skill - r.minMastery) / 110 + HC.eff(npc, 'physiology.dexterity') / 500 + HC.eff(npc, 'intellect.focus') / 600 + HC.special(npc, 'craft.successBonus') + (g.MARTIAL ? (g.MARTIAL.lifeMult(npc, r.craft) - 1) * .35 : 0), 0.15, 0.98);
   };
-  ECO.mintGear = (itemOrRecipe, q) => {
-    q = q || 1;
+  let gearSeq = 0;
+  ECO.mintGear = (a, b, c, d) => {
+    let itemOrRecipe = a, q = b, playerSpawned = !!c;
+    if (a && a.sect && a.npcs) {
+      itemOrRecipe = b;
+      q = c;
+      playerSpawned = !!d;
+    }
+    q = clamp(Number.isFinite(q) ? q : 1, 0.7, 1.5);
     if (itemOrRecipe.outItemId || itemOrRecipe.slot) {
       const it = itemOrRecipe.slot ? itemOrRecipe : itemById[itemOrRecipe.outItemId];
       const wp = it.slot === 'WEAPON', ar = it.slot === 'ARMOR';
       const cm = (wp ? 0.05 : ar ? 0.015 : 0.014) * it.tier * q, dm = (ar ? 0.05 : wp ? 0.012 : 0.012) * it.tier * q;
-      return { id: it.id, nameTh: it.nameTh, slot: it.slot, tier: it.tier, combatMult: cm, defMult: dm, dur: 100, minStage: it.minStage || 1, value: it.value };
+      const gOut = { id: it.id, nameTh: it.nameTh, slot: it.slot, tier: it.tier, q: Math.round(q * 100) / 100, combatMult: cm, defMult: dm, dur: 100, minStage: it.minStage || 1, value: it.value };
+      if (playerSpawned) gOut.playerSpawned = true;
+      return gOut;
     }
     const r = itemOrRecipe, e = r.effect || {};
     const slot = /กระบี่|ศาสตรา|ทวน|ดาบ|หอก|ค้อน|ง้าว/.test(r.outNameTh) || (e.combatMult || 0) > (e.defenseMult || 0) * 1.8 ? 'WEAPON' : (e.defenseMult || 0) > (e.combatMult || 0) * 1.8 ? 'ARMOR' : 'ACCESSORY';
-    return { id: r.id, nameTh: r.outNameTh, slot, tier: r.tier, combatMult: (e.combatMult || 0) * q, defMult: (e.defenseMult || 0) * q, dur: 100, minStage: e.minStageReq || 1, value: 20 * Math.pow(1.9, r.tier - 1) };
+    const gOut = { id: r.id, nameTh: r.outNameTh, slot, tier: r.tier, q: Math.round(q * 100) / 100, combatMult: (e.combatMult || 0) * q, defMult: (e.defenseMult || 0) * q, dur: 100, minStage: e.minStageReq || 1, value: 20 * Math.pow(1.9, r.tier - 1) };
+    if (playerSpawned) gOut.playerSpawned = true;
+    return gOut;
   };
   /** ผลผลิตที่ได้จากการผลิตสำเร็จ: เข้าคลังสำนัก */
   ECO.finishCraft = (W, npc, r, ctx) => {
@@ -203,7 +219,7 @@
       ECO.add(W, key, n, q); out.text = ECO.name(key) + ' ×' + n; out.key = key; out.n = n;
     } else if (r.outType === 'EQUIPMENT') {
       const gear = ECO.mintGear(r, q); gear.q = Math.round(q * 100) / 100;
-      W.sect.gear.push(gear); out.text = gear.nameTh + ' (คุณภาพ ' + gear.q + ')'; out.gear = gear;
+      W.sect.gear.push(gear); invalidateStockIntel(W); out.text = gear.nameTh + ' (คุณภาพ ' + gear.q + ')'; out.gear = gear;
     } else { out.text = r.outNameTh; }
     npc.stats = npc.stats || {}; npc.stats.crafted = (npc.stats.crafted || 0) + 1;
     return out;
@@ -213,11 +229,16 @@
     const CPE = g.CPE, inputs = recipeInputs(r, 1);
     if (!CPE || !npc || !npc.inv || !inputs || r.outType !== 'PILL') return null;
     if (!ECO.craftEligible(W, npc, r, 'alchemy') || (npc.h.skills[r.craft] || 0) + 20 < r.minMastery) return null;
-    const mats = npc.inv.mats || {}, missing = [], owned = []; let cost = 0, ownValue = 0;
+    const mats = npc.inv.mats || {}, spawned = npc.inv.spawnedMats || {}, missing = [], owned = []; let cost = 0, ownValue = 0;
     for (const input of inputs) {
       const have = Math.min(input.count, Math.max(0, Number.isFinite(mats[input.matId]) ? mats[input.matId] : 0));
       const need = input.count - have;
-      if (have) { owned.push({ id: input.matId, n: have }); ownValue += CPE.reward(W, input.matId, have); }
+      if (have) {
+        const sp = Math.min(have, Math.max(0, spawned[input.matId] || 0));
+        const earnedHave = Math.max(0, have - sp);
+        owned.push({ id: input.matId, n: have, spawnedUsed: sp });
+        ownValue += CPE.reward(W, input.matId, earnedHave);
+      }
       if (need) { if (ECO.count(W, input.matId) < need) return null; const price = CPE.priceOf(W, input.matId) * need; missing.push({ id: input.matId, n: need, price }); cost += price; }
     }
     if (!Number.isFinite(cost) || (npc.cp || 0) < cost) return null;
@@ -228,7 +249,14 @@
     if (!quote) return { ok: false, reason: 'inputs' };
     if (!CPE.spend(W, npc, quote.cost, 'ซื้อวัตถุดิบผลิตส่วนตัว')) return { ok: false, reason: 'points' };
     quote.missing.forEach(i => ECO.take(W, i.id, i.n));
-    quote.owned.forEach(i => { npc.inv.mats[i.id] -= i.n; if (npc.inv.mats[i.id] <= 0) delete npc.inv.mats[i.id]; });
+    quote.owned.forEach(i => {
+      npc.inv.mats[i.id] -= i.n;
+      if (npc.inv.mats[i.id] <= 0) delete npc.inv.mats[i.id];
+      if (i.spawnedUsed > 0 && npc.inv.spawnedMats && npc.inv.spawnedMats[i.id]) {
+        npc.inv.spawnedMats[i.id] -= i.spawnedUsed;
+        if (npc.inv.spawnedMats[i.id] <= 0) delete npc.inv.spawnedMats[i.id];
+      }
+    });
     const skill = npc.h.skills[r.craft] || 0, ok = W.rng.next() < ECO.successChance(npc, r);
     (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(npc, r.craft, ECO.craftHours(r, skill), 1.1);
     if (!ok) return { ok: false, reason: 'failed', cost: quote.cost };
@@ -241,29 +269,76 @@
     npc.inv.craftedPills.push(product); return { ok: true, product };
   };
   ECO.donatePersonalProduct = (W, npc, id, qty) => {
+    if (id && typeof id === "object" && id.kind === "PILL") {
+      qty = id.qty;
+      id = id.pillKey || id.id;
+    }
+    if (npc && npc.inv && npc.inv.pills && typeof id === "string" && (npc.inv.pills[id] || 0) > 0) {
+      qty = Number.isFinite(qty) && qty > 0 ? Math.floor(qty) : 1;
+      const count = Math.min(qty, npc.inv.pills[id]);
+      const spawnedHeld = (npc.inv.spawnedPills && npc.inv.spawnedPills[id]) || 0;
+      const spawnedUsed = Math.min(count, spawnedHeld);
+      const rewardableCount = Math.max(0, count - spawnedUsed);
+      const CPE = g.CPE;
+      const q = (npc.inv.pillQuality && npc.inv.pillQuality[id]) || 1;
+      const reward = rewardableCount > 0 && CPE ? Math.floor(CPE.reward(W, id, rewardableCount) * q * 0.88 * 10) / 10 : 0;
+      npc.inv.pills[id] -= count;
+      if (npc.inv.pills[id] <= 0) delete npc.inv.pills[id];
+      if (spawnedUsed > 0 && npc.inv.spawnedPills) {
+        npc.inv.spawnedPills[id] -= spawnedUsed;
+        if (npc.inv.spawnedPills[id] <= 0) delete npc.inv.spawnedPills[id];
+        if (!Object.keys(npc.inv.spawnedPills).length) delete npc.inv.spawnedPills;
+      }
+      ECO.add(W, id, count, q);
+      if (g.SECT && g.SECT.notifyStockChanged) g.SECT.notifyStockChanged(W, id);
+      if (CPE && reward > 0) {
+        CPE.mint(W, npc, reward, "บริจาคโอสถส่วนตัว", true);
+        CPE.S(W).donated += reward;
+      } else if (spawnedUsed > 0 && CPE && CPE.S) {
+        CPE.S(W).arbitrageBlocked = (CPE.S(W).arbitrageBlocked || 0) + 1;
+      }
+      W.log("economy", (npc.h && npc.h.name && npc.h.name.given || "สมาชิก") + " บริจาค「" + ECO.name(id) + "」×" + count + " เข้าคลังสำนัก" + (reward > 0 ? " ได้รับ " + Math.round(reward) + " แต้มคุณูปการ" : " (ของเสกโดยผู้เล่น ไม่สร้างแต้มคุณูปการ)"), [npc.id]);
+      return { ok: true, reward, qty: count, playerSpawned: spawnedUsed > 0 };
+    }
     if (npc && npc.inv && npc.inv.mats && (npc.inv.mats[id] || 0) > 0) {
       qty = Number.isFinite(qty) && qty > 0 ? Math.floor(qty) : 1;
       const count = Math.min(qty, npc.inv.mats[id]);
+      const spawnedHeld = (npc.inv.spawnedMats && npc.inv.spawnedMats[id]) || 0;
+      const spawnedUsed = Math.min(count, spawnedHeld);
+      const rewardableCount = Math.max(0, count - spawnedUsed);
       const CPE = g.CPE;
-      const reward = CPE ? CPE.reward(W, id, count) : 5;
+      const reward = rewardableCount > 0 ? (CPE ? CPE.reward(W, id, rewardableCount) : 5 * rewardableCount) : 0;
       npc.inv.mats[id] -= count;
       if (npc.inv.mats[id] <= 0) delete npc.inv.mats[id];
+      if (spawnedUsed > 0 && npc.inv.spawnedMats) {
+        npc.inv.spawnedMats[id] -= spawnedUsed;
+        if (npc.inv.spawnedMats[id] <= 0) delete npc.inv.spawnedMats[id];
+      }
       ECO.add(W, id, count);
+      if (g.SECT && g.SECT.notifyStockChanged) g.SECT.notifyStockChanged(W, id);
       if (CPE && reward > 0) {
         CPE.mint(W, npc, reward, 'บริจาควัตถุดิบเข้าคลังสำนัก', true);
         CPE.S(W).donated += reward;
+      } else if (spawnedUsed > 0 && CPE && CPE.S) {
+        CPE.S(W).arbitrageBlocked = (CPE.S(W).arbitrageBlocked || 0) + 1;
       }
-      W.log('economy', (npc.h && npc.h.name && npc.h.name.given || 'สมาชิก') + ' บริจาค「' + ECO.name(id) + '」×' + count + ' เข้าคลังสำนัก ได้รับ ' + Math.round(reward) + ' แต้มคุณูปการ', [npc.id]);
-      return { ok: true, reward };
+      W.log('economy', (npc.h && npc.h.name && npc.h.name.given || 'สมาชิก') + ' บริจาค「' + ECO.name(id) + '」×' + count + ' เข้าคลังสำนัก' + (reward > 0 ? ' ได้รับ ' + Math.round(reward) + ' แต้มคุณูปการ' : ' (ของเสกโดยผู้เล่น ไม่สร้างแต้มคุณูปการ)'), [npc.id]);
+      return { ok: true, reward, qty: count };
     }
     const products = npc.inv && npc.inv.craftedPills, index = products && products.findIndex(p => p.id === id);
     if (index == null || index < 0) return { ok: false };
     const p = products[index], CPE = g.CPE;
     if (!CPE || !ECO.pillInfo(p.key) || !Number.isFinite(p.qty) || p.qty <= 0 || !Number.isFinite(p.q)) return { ok: false };
+    if (p.playerSpawned) {
+      if (!ECO.add(W, p.key, p.qty, p.q)) return { ok: false };
+      if (g.SECT && g.SECT.notifyStockChanged) g.SECT.notifyStockChanged(W, p.key);
+      products.splice(index, 1);
+      if (CPE.S) CPE.S(W).arbitrageBlocked = (CPE.S(W).arbitrageBlocked || 0) + 1;
+      W.log('economy', npc.h.name.given + ' นำ「' + ECO.name(p.key) + '」×' + p.qty + ' เข้าคลังสำนัก (ของเสกโดยผู้เล่น ไม่สร้างแต้มคุณูปการ)', [npc.id]);
+      return { ok: true, reward: 0 };
+    }
     const purchasedCost = Number.isFinite(p.purchasedCost) ? p.purchasedCost : (Number.isFinite(p.storeBoughtCost) ? p.storeBoughtCost : 0);
     const ownValue = Number.isFinite(p.ownValue) ? p.ownValue : 0;
-    // Purchased-only loops cannot mint points: pure store-purchased inputs yield strictly < 100% of purchase cost (net negative return).
-    // Only genuine owned ingredients allow surplus contribution value.
     const maxReward = ownValue > 0
       ? purchasedCost * 0.9 + ownValue * 1.15 * p.q
       : purchasedCost * 0.88;
@@ -273,6 +348,7 @@
     }
     const reward = Math.floor(Math.max(0, Math.min(baseReward, maxReward)) * 10) / 10;
     if (!ECO.add(W, p.key, p.qty, p.q)) return { ok: false };
+    if (g.SECT && g.SECT.notifyStockChanged) g.SECT.notifyStockChanged(W, p.key);
     products.splice(index, 1); if (reward) CPE.mint(W, npc, reward, 'บริจาคโอสถส่วนตัว', true);
     CPE.S(W).donated += reward;
     W.log('economy', npc.h.name.given + ' บริจาค「' + ECO.name(p.key) + '」เข้าคลังสำนัก ได้รับ ' + Math.round(reward) + ' แต้มคุณูปการ', [npc.id]);
@@ -281,8 +357,9 @@
 
   /** ผลของโอสถ (อ่านจากข้อมูลเกมเก่า) */
   ECO.pillInfo = key => {
+    if (typeof key !== 'string') return null;
     if (key.startsWith('P:')) { const r = recipeById[key.slice(2)]; return r ? { tier: r.tier, effect: r.effect || {}, name: r.outNameTh } : null; }
-    const it = itemById[key]; if (!it) return null;
+    const it = itemById[key]; if (!it || it.out !== 'PILL') return null;
     const e = {}; (it.effects || []).forEach(x => {
       const p = x.params || {};
       if (x.effectId === 'EFX_CULTIVATION_ACCELERATOR') { e.cultivationProgress = 18 * it.tier; e.rateBoost = p.cultivationBoostRatio; }
@@ -294,8 +371,6 @@
     });
     return { tier: it.tier, effect: e, name: it.nameTh };
   };
-  // ใช้ผลโอสถโดยไม่แตะคลัง: สำหรับโอสถที่ตัวละครถืออยู่เอง
-  // แยกจาก usePill เพื่อไม่ต้องนำโอสถที่กินแล้วกลับเข้าคลังชั่วคราว (ซึ่งทำให้ของไม่เคยหมดจริง)
   ECO.applyPill = (W, npc, key) => {
     const info = ECO.pillInfo(key); if (!info) return null;
     const e = info.effect, c = npc.cult, s = npc.h.state; const msgs = [];
@@ -320,9 +395,12 @@
     return { info, msgs };
   };
   ECO.pillQuality = (W, key) => clamp((W.sect.pillQuality && W.sect.pillQuality[key]) || 1, 0.7, 1.5);
-  ECO.addPersonalPill = (npc, key, quality) => {
+  ECO.addPersonalPill = (npc, key, quality, qty) => {
+    const addN = Number.isInteger(qty) && qty > 0 ? qty : 1;
     const bag = npc.inv.pills || (npc.inv.pills = {}), map = npc.inv.pillQuality || (npc.inv.pillQuality = {}), count = bag[key] || 0;
-    map[key] = ((map[key] || 1) * count + (quality || 1)) / (count + 1); bag[key] = count + 1;
+    const q = clamp(Number.isFinite(quality) ? quality : 1, 0.7, 1.5);
+    map[key] = ((map[key] || 1) * count + q * addN) / (count + addN);
+    bag[key] = count + addN;
   };
   ECO.applyQualityPill = (W, npc, key, quality) => {
     const s = npc.h.state, before = { hp:s.hp, qi:s.qi, energy:s.energy, rest:s.rest, heartDemon:s.heartDemon }, result = ECO.applyPill(W, npc, key);
@@ -333,7 +411,6 @@
     for (const k of ['energy','rest','heartDemon']) if (Number.isFinite(s[k])) s[k] = clamp(s[k], 0, 100);
     return result;
   };
-  // ใช้โอสถจากคลังสำนัก: หักสต็อกหนึ่งเม็ดแล้วใช้ผลของโอสถ
   ECO.usePill = (W, npc, key) => {
     const quality = ECO.pillQuality(W, key); if (!ECO.pillInfo(key) || !ECO.take(W, key, 1)) return null;
     return ECO.applyQualityPill(W, npc, key, quality);
@@ -392,7 +469,6 @@
     const gear = W.sect.gear;
     return { btNeed: W.sect.btDemand || {}, pop, cultiv, btSoon, injured, noWeapon, noArmor, noAccessory, gearWeapon: gear.filter(x => x.slot === 'WEAPON').length, gearArmor: gear.filter(x => x.slot === 'ARMOR').length, gearAccessory: gear.filter(x => x.slot === 'ACCESSORY').length };
   };
-  /** เลือกตำรับถัดไปให้หอ: คืน {recipe, why, import:[...]} */
   ECO.pickOrder = (W, hall, head) => {
     const crafts = hall === 'alchemy' ? ['ALCHEMY'] : ['FORGING', 'ARRAY', 'TALISMAN'];
     const need = ECO.needSummary(W);
@@ -424,7 +500,7 @@
         why = 'อุปกรณ์ขาดแคลน';
       }
       s += Math.max(0, (ECO.outputValue(W, r) - ECO.inputCost(W, r))) / 220 * (0.4 + pol.focus.commerce) ;
-      s -= r.tier > 3 ? (r.tier - 3) * 0.12 : 0; // ของสูงเกินกำลังสำนักเริ่มต้น
+      s -= r.tier > 3 ? (r.tier - 3) * 0.12 : 0;
       if (!ECO.inputsOk(W, r)) { s -= 0.25; }
       if (head) { const iid = hall === 'alchemy' ? 'alchemy' : 'forging'; s += (HC.eff(head, 'interests.' + iid) - 50) / 400; }
       if(head&&g.COG)s+=g.COG.orderBias(W,head,r);
@@ -434,7 +510,6 @@
     best.sort((a, b) => b.s - a.s);
     const pickable = best.filter(x => ECO.inputsOk(W, x.r));
     const top = pickable[0] || null;
-    // รายการวัตถุดิบที่ขาดสำหรับตำรับอันดับต้น ๆ (ให้คลังสั่งซื้อ)
     const want = {};
     best.slice(0, 3).forEach(x => { x.r.inputs.forEach(i => { const lack = i.count * 2 - ECO.count(W, i.matId); if (lack > 0) want[i.matId] = Math.max(want[i.matId] || 0, lack); }); });
     return { recipe: top ? top.r : null, why: top ? top.why : '', want };
@@ -487,7 +562,7 @@
     if (id === 'grain') return pop * (rd.minGrainDays || 14);
     if (id === 'meal') return rd.minMealReserve || 20;
     if (rd.medicine && rd.medicine[id] != null) return rd.medicine[id];
-    if (id.startsWith('P:BASIC_')) return Math.max(2, Math.ceil(pop * 0.1));
+    if (typeof id === 'string' && id.startsWith('P:BASIC_')) return Math.max(2, Math.ceil(pop * 0.1));
     const m = matById[id];
     if (m) {
       const baseTgt = m.tier <= 1 ? 16 : m.tier === 2 ? 9 : m.tier === 3 ? 5 : 3;
@@ -509,9 +584,10 @@
         surplus: []
       };
     }
-    if (!forceRefresh && W.sect.inventoryIntelligence && W.sect.inventoryIntelligence.evaluatedAt === W.day) {
+    if (!forceRefresh && !W.sect._stockDirty && W.sect.inventoryIntelligence && W.sect.inventoryIntelligence.evaluatedAt === W.day) {
       return W.sect.inventoryIntelligence;
     }
+    W.sect._stockDirty = false;
     ECO.ensureStockTracker(W);
     const tracker = W.sect.stockTracker;
     const pop = Math.max(1, W.npcs.filter(n => !n.dead && !n.exiled).length);

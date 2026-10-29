@@ -6876,7 +6876,7 @@
       else if (sc > 50) { s.frag += 1; (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, 'SCRIPTURE', 1.2, 1); if (n.cult) CULT.gain(n, CULT.threshold(n) * 0.02); }
       else HC.feel(n, { stress: 3 });
       if (rng.chance(0.012 + luck / 9000)) { dex(W).gate.next = Math.min(dex(W).gate.next, W.day + 2); logText = nm + ' ถอดจารึกพบข้อความ “ประตูจะเปิดในไม่ช้า” — ลานประตูมิติเริ่มมีแสงสั่นไหว'; note(W, 'จารึกเผยว่าประตูมิติจะเปิดเร็ว ๆ นี้'); }
-      while (s.frag >= 6) { s.frag -= 6; s.lvl++; const drop = g.MARTIAL.personalDiscovery(W, n, { tier: Math.min(5, 2 + s.lvl), source: 'stele' }); if (drop) { logText = nm + ' ถอดจารึกพบองค์ความรู้หายาก'; note(W, logText); W.fame(.3); big.push(1); } }
+      while (s.frag >= 6) { s.frag -= 6; s.lvl++; const drop = g.MARTIAL.personalDiscovery(W, n, { tier: Math.min(5, 2 + s.lvl), rank: Math.min(4, Math.max(1, 1 + Math.floor(s.lvl / 2))), source: 'stele' }); if (drop) { logText = nm + ' ถอดจารึกพบองค์ความรู้หายาก'; note(W, logText); W.fame(.3); big.push(1); } }
     } else if (spot === 'spring') {
       if (s.charge >= 12) { s.charge -= 12; if (n.cult) CULT.gain(n, CULT.threshold(n) * (0.035 + 0.01 * s.lvl)); n.h.state.stress = Math.max(0, n.h.state.stress - 8); n.h.state.hp = Math.min(CULT.hpMax(n), n.h.state.hp + CULT.hpMax(n) * 0.2); if (n.cult) n.h.state.qi = CULT.qiMax(n);
         if (rng.chance(0.03 + luck / 6000)) { n.h.destiny.luck = Math.min(100, n.h.destiny.luck + 1); HC.touch(n); logText = nm + ' ได้พรจากวิญญาณน้ำพุ โชคชะตาดีขึ้น'; } if (s.visits % 30 === 0) { s.lvl++; s.max += 25; logText = 'ตาน้ำปราณลับขยายตัว (ระดับ ' + (s.lvl + 1) + ') เก็บปราณได้มากขึ้น'; note(W, logText); } }
@@ -6913,7 +6913,7 @@
     else if (k === 'relicmat') { const m = matOf('HERITAGE_RELIC', 7, rng); if (m) { out.mats[m.id] = (out.mats[m.id] || 0) + 1; txt = e[2] + '「' + m.nameTh + '」'; } }
     else if (k === 'pill') { const ps = ECO.recipesFor(W, ['ALCHEMY']).filter(r => r.outType === 'PILL' && r.tier <= p1 && r.tier >= Math.max(1, p1 - 2)); if (ps.length) { const r = rng.pick(ps); const key = r.outItemId || 'P:' + r.id; out.pills[key] = (out.pills[key] || 0) + 1 + (rng.chance(0.3) ? 1 : 0); txt = e[2] + '「' + r.outNameTh + '」'; } }
     else if (k === 'gear') { const rs = ECO.recipesFor(W, ['FORGING']).filter(r => r.outType === 'EQUIPMENT' && r.tier <= p1 && r.tier >= Math.max(1, p1 - 2)); if (rs.length) { const r = rng.pick(rs); const gear = ECO.mintGear(r, 1.05 + rng.next() * 0.35); gear.nameTh = (gear.nameTh || 'ศาสตรา') + ' (' + site.short || site.nameTh + ')'; gear.q = 1.2; out.gear.push(gear); txt = e[2] + '「' + gear.nameTh + '」'; } }
-    else if (k === 'tech') { const drop = g.MARTIAL.discover(W, out, { tier: p1, source: 'cave-gate' }); if (drop) txt = e[2] + ' · องค์ความรู้หายาก'; }
+    else if (k === 'tech') { const drop = g.MARTIAL.discover(W, out, { tier: p1, rank: site.rank, caveFloor: site.caveFloor, source: site.caveFloor ? 'cave' : 'cave-gate' }); if (drop) txt = e[2] + ' · องค์ความรู้หายาก'; }
     else if (k === 'boon') { const b = p1; if (b === 'qi' && finder.cult) CULT.gain(finder, CULT.threshold(finder) * 0.14); else if (b === 'body') { HC.trainBody(finder, 'strength', 4); HC.trainBody(finder, 'endurance', 4); } else if (b === 'mind') { HC.trainMind(finder, 'comprehension', 3); HC.trainMind(finder, 'willpower', 3); } else if (b === 'luck') { finder.h.destiny.luck = Math.min(100, finder.h.destiny.luck + 3); HC.touch(finder); } else if (finder.cult) CULT.gain(finder, CULT.threshold(finder) * 0.08); HC.experience(finder, 'insight', 0.8); txt = e[2] + ' (ผู้รับ: ' + nm + ')'; }
     else if (k === 'curse') { finder.h.state.heartDemon = clamp(finder.h.state.heartDemon + 8, 0, 100); HC.feel(finder, { stress: 8, mood: -4 }); if (rng.chance(0.25)) AI.injure(W, finder, 1, 'ถูกพลังมารกัดกร่อน'); txt = e[2] + ' — ' + nm + ' ได้รับผลกระทบ'; }
     else if (k === 'person') { const q = clamp(rng.gauss(1.1, 0.5), 0, 2.5); const nn = W.makeNpc({ quality: q, ageYears: rng.int(16, 30), rank: 0, rootBias: 1, fromExped: true }); if (nn) { nn.x = (ex.px || MAP.EXIT.x) + .5; nn.y = (ex.py || MAP.EXIT.y) + .5; nn.travel = null; nn.h.origin.region = site.nameTh; nn.joinDay = W.day; txt = e[2] + ' ' + nn.h.name.given + ' ขอติดตามเข้าสำนัก'; W.log('recruit', nn.h.name.given + ' ผู้พเนจรจาก' + site.nameTh + ' ตามคณะสำรวจมาเข้าสำนัก', [nn.id]); } }
@@ -7008,7 +7008,7 @@
       ex.caveFloors = [];
       for (let f = 1; f <= ex.target && alive.length; f++) {
         const band = EX.bandOf(f), floor = CAVE_FLOORS[f - 1]; const d = 0.55 + f * 0.33;
-        const site = { id: band.id, nameTh: 'ถ้ำหมื่นสายหมอก ชั้น ' + f, short: 'ถ้ำหมอก', loot: band.loot, tide: { loot: 0.35 + 0.65 * (cv.fresh == null ? 1 : cv.fresh), danger: 1 } };
+        const site = { id: band.id, nameTh: 'ถ้ำหมื่นสายหมอก ชั้น ' + f, short: 'ถ้ำหมอก', caveFloor: f, rank: f <= 3 ? 1 : f <= 6 ? 2 : f <= 8 ? 3 : 4, loot: band.loot, tide: { loot: 0.35 + 0.65 * (cv.fresh == null ? 1 : cv.fresh), danger: 1 } };
         const visit = { floor: f, id: floor.id, nameTh: floor.nameTh, pools: [], encounters: [] };
         ex.caveFloors.push(visit); ex.journal.push('ชั้น ' + f + ' — ' + floor.nameTh);
         const gd = CAVE_GUARD[f];

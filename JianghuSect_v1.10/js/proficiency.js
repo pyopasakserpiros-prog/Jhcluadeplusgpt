@@ -17,7 +17,7 @@ M.skillPractice=(n,id,hours,quality)=>{
  const q=clamp(quality==null?1:quality,.1,3)*(M.lifeMult?M.lifeMult(n,id):1);let gain;
  if(!extra[id])gain=HC.practice(n,id,hours,q);
  else{const level=M.skillRead(n,id),aff={BOW:'SWORD',STAFF:'SPEAR',FOCUS:'SOUL_DIVINE'}[id],rate=(.35+(HC.eff(n,'affinities.'+aff)||30)/100*.9)*(.6+HC.eff(n,'intellect.learningSpeed')/100*.8)*(.8+HC.eff(n,'interests.combat')/250)*q;gain=hours*.075*rate*Math.pow(Math.max(.08,1-level/105),1.6);n.martialSkills=n.martialSkills||{};n.martialSkills[id]=Math.min(100,level+gain);}
- if(gain)ST.dirty(n);return gain||0;
+ if(gain&&(hours>=0.1||((groups.weapon.includes(id)||['SOUL_DIVINE','MOVEMENT','stealth','BODY_REFINING','TALISMAN','ARRAY'].includes(id))&&Math.floor(M.skillRead(n,id)*4)!==Math.floor((M.skillRead(n,id)-gain)*4))))ST.dirty(n);return gain||0;
 };
 M.isBeast=u=>!!u&&!!u.foe&&(u.kind==='beast'||!!u.wild&&!!u.speciesId);
 M.gearUsable=(n,it)=>!!it&&(!n.cult||(it.minStage||1)<=n.cult.stage+1);
@@ -25,13 +25,32 @@ M.equippedType=n=>M.gearUsable(n,n.equip&&n.equip.WEAPON)?M.gearType(n.equip.WEA
 M.pathSkillAffinity=(n,path,sub)=>{const profile=M.PROFILES[sub],preferred=profile?profile[3]:M.PATHS[path].weapons;return Math.max(...preferred.map(type=>M.weaponSkill(n,type)))*.18;};
 M.weaponSkill=(n,type)=>M.skillRead(n,({FIST:'FIST_PALM'}[type||M.equippedType(n)]||type||M.equippedType(n)));
 M.skillEffects=n=>{
+ const eqW=n.equip&&n.equip.WEAPON,cPath=n.cult&&n.cult.path,sk=n.h.skills,ms=n.martialSkills,sec=n._skillEffectsCache;
+ const skSig=(sk.ritual||0)+(sk.SCRIPTURE||0)*2+(sk.SOUL_DIVINE||0)*3+(sk.MOVEMENT||0)*5+(sk.BODY_REFINING||0)*7+(sk.POISON||0)*11+(sk.MEDICINE||0)*13+(sk.BEAST_TAMING||0)*17+(sk.SWORD||0)*19+(sk.BLADE||0)*23+(sk.SPEAR||0)*29+(sk.FIST_PALM||0)*31+(ms?(ms.BOW||0)*37+(ms.STAFF||0)*41+(ms.FOCUS||0)*43:0);
+ if(sec&&sec.eqW===eqW&&sec.cPath===cPath&&sec.ver===n._ver&&sec.skSig===skSig)return sec.out;
  const v=id=>M.skillRead(n,id),weapon=M.weaponSkill(n),p={matk:(.8+.45*weapon/100-1)+v('SOUL_DIVINE')*.0015,acc:weapon*.0015,move:v('MOVEMENT')*.0018,eva:v('MOVEMENT')*.001+v('stealth')*.0013,hp:v('BODY_REFINING')*.0015,def:v('BODY_REFINING')*.0014+v('TALISMAN')*.0007,mdef:v('SOUL_DIVINE')*.0013+v('ARRAY')*.0009+v('TALISMAN')*.0005},f={crit:v('stealth')*.025};
- return {p,f,beastDamage:1/(1+v('BEAST_TAMING')*.004),poisonPower:1+v('POISON')*.004,cultivation:1+v('ritual')*(n.cult&&n.cult.path==='GOD'?.003:.001),medicine:1+v('MEDICINE')*.004,study:1+v('SCRIPTURE')*.003,music:1+v('arts')*.005};
+ const out={p,f,beastDamage:1/(1+v('BEAST_TAMING')*.004),poisonPower:1+v('POISON')*.004,cultivation:1+v('ritual')*(cPath==='GOD'?.0035:.001),medicine:1+v('MEDICINE')*.004,study:1+v('SCRIPTURE')*.003,music:1+v('arts')*.005};
+ n._skillEffectsCache={eqW,cPath,ver:n._ver,skSig,out};
+ return out;
 };
-M.activeTechs=n=>!n.cult?[]:n.cult.techs.filter(id=>{const t=CULT.tech(id),c=n.cult;return !!t&&(t.path==='ANY'||t.path===c.path)&&(!t.sub||t.sub===c.sub)&&(t.reqTier||t.tier)<=c.stage;});
+M.activeTechs=n=>{
+ if(!n||!n.cult)return [];
+ const c=n.cult,tl=c.techs.length,t0=tl?c.techs[0]:'',tL=tl?c.techs[tl-1]:'',effSt=CULT.effectiveTechStage?CULT.effectiveTechStage(n):c.stage,ac=n._actTechsCache;
+ if(ac&&ac.path===c.path&&ac.sub===c.sub&&ac.st===effSt&&ac.tl===tl&&ac.t0===t0&&ac.tL===tL&&ac.ver===(n._passVer||0))return ac.out;
+ if(M.reconcileInnate)M.reconcileInnate(n);
+ const out=c.techs.filter(id=>{
+  const t=CULT.tech(id);
+  return !!t&&!M.isInnateTech(t)&&(t.path==='ANY'||t.path===c.path)&&(!t.sub||t.sub===c.sub)&&(t.reqTier||t.tier)<=effSt;
+ });
+ n._actTechsCache={path:c.path,sub:c.sub,st:effSt,tl,t0,tL,ver:n._passVer||0,out};
+ return out;
+};
 M.pickSkillPractice=(W,n)=>{
  const intent=n.martialIntent;if(intent&&intent.action==='prepare'&&intent.targetKey){const k=M.knowledge&&M.knowledge(intent.targetKey),profile=k&&M.PROFILES[k.id];if(profile){const id={FIST:'FIST_PALM'}[profile[3][0]]||profile[3][0];if(M.skillRead(n,id)<75)return id;}}
+ const wt=W?W.t:0,eqW=n.equip&&n.equip.WEAPON,psc=n._pspCache;
+ if(psc&&wt-psc.t<15&&psc.post===n.post&&psc.eqW===eqW)return psc.best;
  let best=null,score=-Infinity;for(const id of M.SKILL_IDS){const info=M.SKILL_INFO[id],interest=HC.eff(n,'interests.'+info.interest),need=(100-M.skillRead(n,id))*.25,role=(n.post==='healer'&&id==='MEDICINE'||n.post==='steward'&&id==='construction'||n.post==='treasury'&&id==='administration')?20:0;const value=interest*.65+need+role+(groups.weapon.includes(id)&&id===({FIST:'FIST_PALM'}[M.equippedType(n)]||M.equippedType(n))?18:0);if(value>score){score=value;best=id;}}
+ n._pspCache={t:wt,post:n.post,eqW,best};
  return best;
 };
 AI.ACTS.skillDrill={nameTh:'ฝึกทักษะเฉพาะ',icon:'🎯',color:'#a6c7e8',can:n=>n.h.state.energy>35&&n.h.state.satiety>30,score(n,W,S){const id=M.pickSkillPractice(W,n);S.add('ฝึก'+M.SKILL_INFO[id].nameTh,.25+(HC.eff(n,'interests.'+M.SKILL_INFO[id].interest)-50)/180+(n.martialIntent&&n.martialIntent.action==='prepare'?.7:0));},where(W,n){const skill=M.pickSkillPractice(W,n),weapon=groups.weapon.includes(skill),st=AI.freeStation(W,n,weapon?'dummy':'read',weapon?'training_ground':'scripture');return st?{st,skill}:null;},dur:()=>100,tick(n,W,ctx){M.skillPractice(n,ctx.skill,1/60,1.1);n.h.state.energy=Math.max(0,n.h.state.energy-.055);},done(n){n.merit=(n.merit||0)+.1;}};

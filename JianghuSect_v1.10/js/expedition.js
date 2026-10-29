@@ -41,7 +41,6 @@
   /* ---------- อาสาไปภารกิจ (เรียกจากกิจกรรม errand) ---------- */
   X.volunteer = (W, n) => {
     if (n.away || n.dead) return;
-    // ต้องการตัวเลือกชนิดภารกิจจากนิสัยและความถนัดจริง
     const opts = [];
     const e = p => E(n, p), pw = CULT.power(n);
     opts.push({ k: 'fortune', w: Math.max(0.1, (e('destiny.luck') - 35) / 40 + (e('temperament.sensationSeeking') - 40) / 40 + (e('interests.exploring') - 40) / 40 + (e('values.freedom') - 40) / 60) });
@@ -56,7 +55,6 @@
     if(!approver)return;
     if(g.COG)opts.forEach(o=>o.w*=Math.max(.2,1+g.COG.missionBias(W,approver,o.k)));
     const pick = W.rng.weighted(opts, o => o.w).k;
-    // อนุมัติ: ผู้อาวุโสหอภารกิจ/เจ้าสำนักพิจารณาตามนโยบายและตัวตนของตน
     if(g.COG)g.COG.officeDecision(W,approver,'พิจารณาภารกิจ '+X.MISSIONS[pick].nameTh,['ตรวจความพร้อม ผู้สมัคร นโยบายและความเสี่ยง']);
     let p = 0.6 + (W.sect.policy.expansion - 50) / 200 + (W.sect.policy.risk - 50) / 250 - (W.sect.policy.strictness - 50) / 300;
     if (pick === 'hunt' || pick === 'bounty') p += (E(approver, 'personality.courage') - 50) / 250;
@@ -67,7 +65,6 @@
     if (ECO.count(W, 'meal') < 4) p -= 0.5;
     if (W.threat.alert > 0) p -= 0.8;
     if (W.rng.next() > clamp(p, 0.05, 0.95)) { n.lastTrip = W.day - 6; HC.feel(n, { mood: -3 }); AI.mem(W, n, 'ถูกปฏิเสธไม่ให้ออกเดินทาง (' + X.MISSIONS[pick].nameTh + ')', 0.3); if (W.rng.chance(0.2)) W.log('mission', n.h.name.given + ' ขอไปภารกิจ「' + X.MISSIONS[pick].nameTh + '」แต่ไม่ได้รับอนุมัติ', [n.id]); return; }
-    // เลือกร่วมคณะ
     const party = [n];
     const want = pick === 'hunt' || pick === 'bounty' ? 2 + (pw < 200 ? 1 : 0) : pick === 'trade' ? 1 : pick === 'fortune' ? (E(n, 'personality.caution') > 55 ? 1 : 0) : (E(n, 'temperament.sociability') > 55 ? 1 : 0);
     if (want > 0) {
@@ -182,13 +179,11 @@
     const rng = W.rng; const w = W.world;
     if (!party.length || party.some(n => n.dead || n.away || n.travel || n.expId)) return null;
     const lead = party[0];
-    // คำนวณ World Rank สูงสุดของสมาชิกในคณะ ณ เวลาออกเดินทาง (Snapshot)
     const partyRank = Math.max(1, ...party.map(x => CULT.worldRank ? CULT.worldRank(x) : 1));
     const regs = X.REGIONS.filter(r => (kind !== 'trade' && kind !== 'diplomacy' || r.danger <= 2));
     region = region || (g.CONTENT && g.CONTENT.chooseRegion(W, party, kind, regs)) || rng.weighted(regs, r => 1 + (kind === 'fortune' ? r.danger * 0.4 : 0) + (kind === 'gather' ? (E(lead, 'interests.herbs') > 55 ? (r.terrain === 'forest' || r.terrain === 'mountain' ? 1 : 0) : (r.terrain === 'mountain' ? 1 : 0)) : 0) + (kind === 'hunt' ? r.danger * 0.3 : 0));
     if (!region || !X.REGIONS.includes(region)) return null;
     const days = Math.max(2, Math.round(region.days * (0.7 + rng.next() * 0.6) * (kind === 'trade' ? 1.1 : kind === 'recruit' ? 1.4 : 1)));
-    // เสบียง: เอาอาหารจากคลังโดยคำนึงถึงเกณฑ์สำรองฉุกเฉิน (v1.10.6)
     if (g.SECT && g.SECT.ensureDirectives) g.SECT.ensureDirectives(W);
     const rd = W.sect && W.sect.reserveDirectives;
     const currentMeals = ECO.count(W, 'meal');
@@ -214,7 +209,7 @@
       ex.poolId = chosenPool.id;
       ex.fortuneSite = matchSite;
     }
-    if (kind === 'trade') { // นำสินค้าไปขาย: ยาและอุปกรณ์ส่วนเกินในคลัง
+    if (kind === 'trade') {
       const sell = []; Object.keys(W.sect.stock).forEach(k => { if (ECO.isPill(k) && W.sect.stock[k] > 6 && ECO.pillInfo(k)) { const n = Math.floor((W.sect.stock[k] - 4) / 2); if (n > 0 && ECO.take(W, k, n)) sell.push({ id: k, n }); } });
       ex.carry = sell; if (!sell.length && (W.sect.stones < 1000)) { ex.kind = kind = 'gather'; }
     }
@@ -223,7 +218,6 @@
     W.log('mission', party.map(p => p.h.name.given).join('、') + ' ออกเดินทาง「' + X.MISSIONS[kind].nameTh + '」ไปยัง' + region.nameTh + ' (ราว ' + days + ' วัน)', party.map(p => p.id));
     return ex;
   };
-  /* เดินไปที่ทางออกแล้วหายไปจากแผนที่ */
   X.travelStep = (W, n) => {
     const tv = n.travel; if (!tv) return false;
     if (tv.to === 'exit') {
@@ -266,7 +260,6 @@
       const wBeast = ex.kind === 'hunt' ? 0.7 : ex.kind === 'bounty' ? 0.5 : 0.3 * dangerMult, wFind = ex.kind === 'gather' ? 0.55 : ex.kind === 'fortune' ? 0.35 : 0.2, wFort = ex.kind === 'fortune' ? 0.3 : 0.05 + (luck - 40) / 800;
       const tot = wBeast + wFind + wFort + 0.2; const r = roll * tot;
       if (r < wBeast) {
-        // เจอสัตว์อสูร: ใช้ตารางสัตว์ในข้อมูลเก่า เลือกระดับตามภูมิภาค
         const pwAll = alive.reduce((s, m) => s + CULT.power(m), 0) * (0.85 + rng.next() * 0.3);
         const bold = alive.reduce((s, m) => s + E(m, 'personality.courage'), 0) / alive.length;
         let pool = X.beastPool(reg);
@@ -283,8 +276,8 @@
         if (win) {
           ex.journal.push('สังหาร' + b.nameTh + ' ได้');
           if (reg.sourcePack) { g.CONTENT.gather(W, ex, alive, out, reg, 'hunt', b); } else {
-          const d = rng.pick(b.drops); out.mats[d] = (out.mats[d] || 0) + Math.round((1 + (rng.chance(0.4) ? 1 : 0)) * Math.max(...alive.map(n => g.MARTIAL.lifeMult(n, 'hunting'))));
-          if (rng.chance(0.5)) { const d2 = rng.pick(b.drops); out.mats[d2] = (out.mats[d2] || 0) + 1; }
+            const d = rng.pick(b.drops); out.mats[d] = (out.mats[d] || 0) + Math.round((1 + (rng.chance(0.4) ? 1 : 0)) * Math.max(...alive.map(n => g.MARTIAL.lifeMult(n, 'hunting'))));
+            if (rng.chance(0.5)) { const d2 = rng.pick(b.drops); out.mats[d2] = (out.mats[d2] || 0) + 1; }
           }
           const dmgFrac = clamp((1 - p) * 0.55 + rng.next() * 0.1, 0.02, 0.6);
           const v = rng.pick(alive); const dm = CULT.hpMax(v) * dmgFrac; v.h.state.hp = Math.max(1, v.h.state.hp - dm); totalDmg += dmgFrac;
@@ -297,9 +290,7 @@
           else { AI.injure(W, v, 2, 'ถูก' + b.nameTh + 'ทำร้ายสาหัส'); v.h.state.hp = Math.max(1, CULT.hpMax(v) * 0.15); }
         }
       } else if (r < wBeast + wFind) {
-        // New ecosystems consume finite shared site stocks, with actual hunt-only parts.
         if (reg.sourcePack) { g.CONTENT.gather(W, ex, alive, out, reg, 'gather'); continue; }
-        // เก็บของป่า/แร่: ขึ้นกับการรับรู้, ทักษะ, ภูมิประเทศ
         const mats = JD.ITEMS.materials.filter(m => !m.sourcePack && (m.terrain === reg.terrain || (reg.terrain === 'plains' && m.terrain === 'forest')) && (m.category === 'HERB' || m.category === 'ORE') && m.tier <= Math.max(1, reg.danger + 1));
         if (!mats.length) continue;
         const m = rng.weighted(mats, x => 1 / (x.tier * x.tier));
@@ -313,21 +304,19 @@
         if (ev === 'storm') { ex.journal.push('เจอพายุ ต้องหลบอยู่หลายวัน'); alive.forEach(a => HC.feel(a, { stress: 4, energy: -10 })); }
         else if (ev === 'lost') { ex.journal.push('หลงทางในป่า'); ex.ret += Math.round(rng.int(60, 600)); }
         else if (ev === 'traveler') { ex.journal.push('พบนักเดินทางร่วมทาง แลกเปลี่ยนเรื่องราว'); alive.forEach(a => { HC.feel(a, { mood: 4, novelty: 8 }); (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(a, 'diplomacy', 0.5, 1); }); out.rep += 0.2; }
-        else { // โจรป่า
+        else {
           const bp = (30 + reg.danger * 70) * (0.6 + rng.next()), pw = alive.reduce((s, m) => s + CULT.power(m), 0);
           if (pw > bp * 1.2 || rng.chance(clamp(pw / (pw + bp), 0.1, 0.9))) { ex.journal.push('ปราบโจรป่า'); const loot = Math.round(15 + rng.next() * 40 * reg.danger); out.stones += loot; HC.experience(rng.pick(alive), 'victory', 0.3); }
           else { const loss = Math.min(W.sect.stones * 0.02 + 20, 80); out.stones -= Math.round(loss); ex.journal.push('ถูกโจรปล้น'); const v = rng.pick(alive); AI.injure(W, v, 1, 'ถูกโจรทำร้าย'); }
         }
       }
     }
-    // ผลเฉพาะภารกิจ
     if (ex.kind === 'trade') X.tradeResult(W, ex, alive, out);
     if (ex.kind === 'diplomacy') X.diplomacyResult(W, ex, alive, out);
     if (ex.kind === 'recruit') X.recruitResult(W, ex, alive, out);
     if (ex.kind === 'bounty') { const fee = Math.round((60 + P * 0.05) * (0.8 + rng.next() * 0.5) * (1 + (E(alive[0] || members[0], 'aptitudes.socialCommerce') - 50) / 200)); out.stones += fee; ex.journal.push('รับค่าจ้างคุ้มกัน ' + fee + ' ศิลา'); }
     g.CONTENT.complete(W, ex, alive, out, reg);
     ex.done = true; ex.out = out;
-    // กลับสำนัก: แจกของ (ผู้ซื่อสัตย์ส่งเข้าคลัง ผู้โลภมีโอกาสเก็บเอง)
     if (alive.length) X.handover(W, ex, alive, out);
     alive.forEach(m => { m.away = false; m.hidden = false; m.x = MAP.EXIT.x + .5 + rng.gauss(0, 0.8); m.y = MAP.EXIT.y + .5; m.travel = { to: 'home' }; m.expId = null; m.path = null; m.run = false; m.h.state.satiety = Math.max(30, m.h.state.satiety); HC.experience(m, 'adventure', 0.6); m.merit += 8 + reg.danger * 3; AI.mem(W, m, 'กลับจากภารกิจ「' + X.MISSIONS[ex.kind].nameTh + '」 ณ ' + reg.nameTh + ' ' + (ex.journal.slice(-2).join(', ') || ''), 0.8); });
     const ppl = members.map(m => m.h.name.given).join('、');
@@ -353,8 +342,6 @@
       const skillName = pool.skill;
       let skillVal = 0;
       if (skillName) {
-        // Monotonic proficiency formula: learned skill strictly contributes (+0.75 per point),
-        // supplemented by underlying aptitude/attribute and cultivation stage empowerment.
         skillVal = Math.max(...alive.map(a => {
           const s = (a.h.skills && a.h.skills[skillName]) || (skillName === 'SCRIPTURE' ? (a.h.skills.SCRIPTURE || 0) : (skillName === 'ALCHEMY' ? (a.h.skills.ALCHEMY || 0) : 0)) || 0;
           let attr = 50;
@@ -402,7 +389,7 @@
           ex.journal.push('ค้นพบโอสถ「' + ECO.name(pool.pill) + '」');
         }
         if (pool.techTier && g.MARTIAL && g.MARTIAL.discover) {
-          const drop = g.MARTIAL.discover(W, out, { tier: pool.techTier, source: 'expedition' });
+          const drop = g.MARTIAL.discover(W, out, { tier: pool.techTier, rank: site.rank || rank, danger: reg.danger, source: 'expedition' });
           if (drop) {
             ex.journal.push('พบองค์ความรู้หายากขั้น ' + pool.techTier);
             out.notes.push('พบองค์ความรู้หายากใน' + site.nameTh);
@@ -453,7 +440,7 @@
     if (kind === 'herb') { const hs = JD.ITEMS.materials.filter(m => !m.sourcePack && m.category === 'HERB' && m.tier <= reg.danger + 2); const m = rng.pick(hs); const n = 1 + rng.int(0, 2); out.mats[m.id] = (out.mats[m.id] || 0) + n; ex.journal.push('พบสมุนไพรหายาก「' + m.nameTh + '」'); out.notes.push(v.h.name.given + ' พบ' + m.nameTh); }
     else if (kind === 'pill') { const ps = Object.keys(W.sect.stock).length ? ECO.recipesFor(W, ['ALCHEMY']).filter(r => r.outType === 'PILL' && r.tier <= reg.danger + 1) : []; if (ps.length) { const r = rng.pick(ps); const key = r.outItemId || 'P:' + r.id; out.pills[key] = (out.pills[key] || 0) + 1 + rng.int(0, 1); ex.journal.push('พบโอสถในซากโบราณ'); out.notes.push(v.h.name.given + ' พบ' + (r.outNameTh)); } }
     else if (kind === 'gear') { const rs = ECO.recipesFor(W, ['FORGING']).filter(r => r.outType === 'EQUIPMENT' && r.tier <= reg.danger + 2); if (rs.length) { const r = rng.pick(rs); const gear = ECO.mintGear(r, 1.1 + rng.next() * 0.3); gear.nameTh = (gear.nameTh || 'ศาสตรา') + ' (ของโบราณ)'; gear.q = 1.2; out.gear.push(gear); ex.journal.push('ขุดพบ' + gear.nameTh); out.notes.push(v.h.name.given + ' ขุดพบ' + gear.nameTh); } }
-    else if (kind === 'scroll') { const drop = g.MARTIAL.discover(W, out, { tier: Math.max(2, reg.danger + 2), source: 'expedition' }); if (drop) { ex.journal.push('พบองค์ความรู้หายาก'); out.notes.push(v.h.name.given + ' พบองค์ความรู้หายาก'); } }
+    else if (kind === 'scroll') { const drop = g.MARTIAL.discover(W, out, { tier: Math.max(2, reg.danger + 2), rank, danger: reg.danger, source: 'expedition' }); if (drop) { ex.journal.push('พบองค์ความรู้หายาก'); out.notes.push(v.h.name.given + ' พบองค์ความรู้หายาก'); } }
     else if (kind === 'master') { const sk = AI.pickTeachSkill(v, v); (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(v, sk, 6, 2.2); if (v.cult) CULT.gain(v, CULT.threshold(v) * 0.08); HC.experience(v, 'insight', 0.9); ex.journal.push('พบผู้เฒ่าลึกลับชี้แนะ'); out.notes.push(v.h.name.given + ' ได้รับการชี้แนะจากผู้เฒ่าลึกลับ'); }
     else if (kind === 'spring') { if (v.cult) { CULT.gain(v, CULT.threshold(v) * 0.15); } v.h.state.hp = CULT.hpMax(v); HC.trainBody(v, 'vitality' in {} ? '' : 'endurance', 4); HC.experience(v, 'insight', 0.5); ex.journal.push('พบสระปราณธรรมชาติ'); out.notes.push(v.h.name.given + ' พบสระปราณลับ ตบะก้าวหน้า'); }
     else { HC.feel(v, { stress: 10, mood: -6 }); v.h.state.heartDemon = clamp(v.h.state.heartDemon + 7, 0, 100); if (rng.chance(0.3)) AI.injure(W, v, 1, 'ถูกคำสาปโบราณ'); ex.journal.push('ต้องคำสาปโบราณ'); out.notes.push(v.h.name.given + ' ต้องคำสาปโบราณ'); }
@@ -463,7 +450,6 @@
     const best = Math.max(...alive.map(a => E(a, 'aptitudes.socialCommerce') + E(a, 'intellect.numeracy') + (a.h.skills.trading || 0)), 40) / 3;
     let sum = 0; (ex.carry || []).forEach(c => { const pr = ECO.price(W, c.id) * 0.85 * (0.85 + best / 200); sum += Math.round(pr * c.n); });
     if (sum) { out.stones += sum; ex.journal.push('ขายสินค้าได้ ' + sum + ' ศิลา'); }
-    // ซื้อตามรายการคลังหากมีเงิน
     const buy = (W.sect.buyList || []).slice(0, 5); let spent = 0;
     buy.forEach(b => { const pr = Math.round(ECO.price(W, b.id) * 1.05 * (1.15 - best / 400)); const cost = pr * b.n; if (W.sect.stones + out.stones - spent >= cost + 100) { spent += cost; out.mats[b.id] = (out.mats[b.id] || 0) + b.n; } });
     if (spent) { out.stones -= spent; ex.journal.push('ซื้อเสบียง/วัตถุดิบใช้ ' + spent + ' ศิลา'); }
@@ -484,17 +470,30 @@
     const lead = alive[0]; if (!lead) return;
     const eye = alive.reduce((m, a) => Math.max(m, E(a, 'intellect.judgement') * .5 + E(a, 'intellect.perceptiveness') * .3 + E(a, 'social.teaching' in {} ? '' : 'interests.teaching') * .2), 0);
     const n = W.rng.chance(0.55 + (W.sect.policy.openness - 50) / 200 + W.sect.fame / 600) ? (W.rng.chance(0.25 + eye / 400) ? 2 : 1) : 0;
-    for (let i = 0; i < n; i++) { const q = clamp((eye - 40) / 25 + W.rng.gauss(0.2, 0.7), -0.5, 2.5); const nn = W.makeNpc({ quality: q, ageYears: W.rng.int(14, 26), rank: 0, rootBias: eye > 60 ? 1 : 0, fromExped: true }); nn.x = MAP.EXIT.x + .5 + i; nn.y = MAP.EXIT.y + .5; nn.travel = { to: 'home' }; nn.mentor = lead.id; (lead.h.life.family.disciples = lead.h.life.family.disciples || []).push(nn.id); nn.h.life.family.master = lead.id; out.newDisciples++; const r = SECT.rel(nn, lead.id); r.a = 25; r.t = 55; r.r = 55; r.bond = 'อาจารย์'; const r2 = SECT.rel(lead, nn.id); r2.a = 12; r2.bond = 'ศิษย์'; ex.journal.push('พาผู้มีพรสวรรค์ชื่อ ' + nn.h.name.given + ' กลับสำนัก'); W.log('recruit', lead.h.name.given + ' พา ' + nn.h.name.given + ' เข้าสำนักเป็นศิษย์ (' + HC.identity(nn).title + ')', [lead.id, nn.id]); }
+    for (let i = 0; i < n; i++) {
+      const occ = SECT.memberOccupancy ? SECT.memberOccupancy(W) : W.npcs.filter(x => !x.dead && !x.exiled).length;
+      const cap = SECT.housingCapacity ? SECT.housingCapacity(W) : 46;
+      if (occ >= cap) {
+        ex.journal.push('พบผู้สนใจเข้าสำนัก แต่ที่พักในสำนักเต็ม (' + occ + '/' + cap + ') จึงต้องชะลอการรับ');
+        break;
+      }
+      const nn = W.makeNpc({ ageYears: W.rng.int(14, 26), rank: 0, fromExped: true, useTalentTier: true });
+      nn.x = MAP.EXIT.x + .5 + i; nn.y = MAP.EXIT.y + .5; nn.travel = { to: 'home' }; nn.mentor = lead.id;
+      (lead.h.life.family.disciples = lead.h.life.family.disciples || []).push(nn.id); nn.h.life.family.master = lead.id;
+      out.newDisciples++;
+      const r = SECT.rel(nn, lead.id); r.a = 25; r.t = 55; r.r = 55; r.bond = 'อาจารย์';
+      const r2 = SECT.rel(lead, nn.id); r2.a = 12; r2.bond = 'ศิษย์';
+      ex.journal.push('พาผู้สมัครชื่อ ' + nn.h.name.given + ' กลับสำนัก');
+      W.log('recruit', lead.h.name.given + ' พา ' + nn.h.name.given + ' เข้าสำนักเป็นศิษย์ (' + nn.h.origin.cls + ' จาก' + nn.h.origin.region + ')', [lead.id, nn.id]);
+    }
     if (!n) ex.journal.push('ตามหาศิษย์ใหม่ แต่ยังไม่พบผู้เหมาะสม');
-    out.rep += n * 0.4;
+    out.rep += out.newDisciples * 0.4;
   };
-  /* แบ่งของที่ได้: ผู้ซื่อสัตย์ส่งเข้าคลัง ผู้โลภอาจเก็บเองไว้บริจาคภายหลัง */
   X.handover = (W, ex, alive, out) => {
     const rng = W.rng;
     if (!alive || !alive.length) return { mats: {}, pills: {}, gear: [], techs: [], stones: 0, stockBefore: {}, techsAccepted: true };
     const greed = alive.reduce((s, a) => s + clamp((E(a, 'values.wealthResource') + (100 - E(a, 'personality.integrity')) + (100 - E(a, 'personality.loyalty'))) / 3 - 35, 0, 60), 0) / alive.length;
     const keepFrac = clamp(greed / 160 + (W.sect.policy.generosity < 35 ? 0.04 : 0) - (W.sect.policy.generosity > 65 ? 0.03 : 0), 0, 0.4) * (W.sect.policy.strictness > 70 ? 0.5 : 1);
-    // ใบรับบริจาคเก็บเฉพาะของที่เข้าคลังจริง ไม่รวมของที่สมาชิกเก็บไว้เอง
     const donation = out.donation = { mats: {}, pills: {}, gear: [], techs: [], stones: 0, stockBefore: {}, techsAccepted: true };
     const hoarder = () => rng.weighted(alive, a => 1 + clamp((E(a, 'values.wealthResource') + (100 - E(a, 'personality.integrity')) + (100 - E(a, 'personality.loyalty'))) / 3 - 25, 0, 75) / 30);
     Object.keys(out.mats || {}).forEach(k => {
@@ -533,37 +532,80 @@
         if (keep > 20) { holder.h.state.stress += 1; W.sect.suspicion = (W.sect.suspicion || 0) + 1; }
       }
     } else if (out.stones < 0) ECO.pay(W, Math.min(-out.stones, W.sect.stones), 'สูญเสียระหว่างเดินทาง');
+    if (SECT.notifyStockChanged) SECT.notifyStockChanged(W);
     return donation;
   };
 
   /* ---------- ผู้สมัครใหม่และการมาเยือน ---------- */
   X.recruitApplicants = (W, why) => {
-    const S = W.sect; const pop = W.npcs.filter(n => !n.dead && !n.exiled).length + (S.queue ? S.queue.length : 0);
-    const cap = 24 + Math.round(W.map.byId.dorm_outer.level * 10 + W.map.byId.dorm_inner.level * 5 + W.map.byId.dorm_core.level * 3);
-    if (pop >= cap) return 0;
-    const open = S.policy.openness / 100, drive = S.driveUntil && S.driveUntil > W.day ? 1.5 : 0;
-    const exp = (0.45 + S.fame / 220 + open * 0.8 + drive) * clamp((cap - pop) / 14, 0.2, 1.4) * (ECO.count(W, 'meal') + ECO.count(W, 'grain') * 3 > pop * 6 ? 1 : 0.4);
-    let n = Math.floor(exp); if (W.rng.next() < exp - n) n++;
-    for (let i = 0; i < n; i++) {
-      const q = clamp(W.rng.gauss(0, 0.8) + (S.policy.meritocracy - 50) / 120, -1.5, 2.2);
-      if ((S.queue || (S.queue = [])).length >= 6) break;
-      const nn = W.makeNpc({ quality: q, ageYears: W.rng.int(13, 28), rank: 0, fromApplicant: true, queue: true });
-      S.queue.push(nn);
-      W.log('recruit', nn.h.name.given + ' (' + nn.h.origin.cls + ' จาก' + nn.h.origin.region + ') มายืนรอที่หน้าประตู ขอสมัครเข้าสำนัก', []);
+    const S = W.sect;
+    if (!S) return 0;
+    if (SECT.sanitizeQueue) SECT.sanitizeQueue(W);
+    const q = S.queue || (S.queue = []);
+    const maxQueue = SECT.MAX_QUEUE || 6;
+    if (q.length >= maxQueue) return 0;
+    if (W.threat && W.threat.roadBlocked > 0) return 0;
+
+    const occ = SECT.memberOccupancy ? SECT.memberOccupancy(W) : W.npcs.filter(n => !n.dead && !n.exiled).length;
+    const cap = SECT.housingCapacity ? SECT.housingCapacity(W) : 46;
+    const totalPending = occ + q.length;
+    if (occ >= cap || totalPending >= cap) return 0;
+
+    const totalMeals = ECO.count(W, 'meal') + ECO.count(W, 'grain') * 3;
+    const foodPerPerson = totalMeals / Math.max(1, totalPending);
+    if (totalMeals <= 0 || foodPerPerson < 1.0) return 0;
+
+    if (why === 'daily' && S.lastRecruitGenDay === W.day) return 0;
+    if (why === 'daily') S.lastRecruitGenDay = W.day;
+
+    const open = (S.policy ? S.policy.openness : 50) / 100;
+    const isDrive = !!(S.driveUntil && S.driveUntil > W.day);
+    const driveBoost = isDrive ? (2.1 + open * 0.6) : 0;
+    const foodFactor = foodPerPerson > 6 ? 1 : foodPerPerson >= 3 ? 0.55 : 0.25;
+    const roomFactor = clamp((cap - totalPending) / 12, 0.25, 1.45);
+    const exp = (0.48 + (S.fame || 0) / 220 + open * 0.8 + driveBoost) * roomFactor * foodFactor;
+
+    let want = Math.floor(exp);
+    if (W.rng.next() < exp - want) want++;
+    const roomInQueue = Math.max(0, maxQueue - q.length);
+    const roomInBeds = Math.max(0, cap - totalPending);
+    const limit = Math.min(want, roomInQueue, roomInBeds);
+
+    let added = 0;
+    for (let i = 0; i < limit; i++) {
+      if (q.length >= maxQueue) break;
+      const nn = W.makeNpc({
+        ageYears: W.rng.int(13, 28),
+        rank: 0,
+        fromApplicant: true,
+        useTalentTier: true,
+        queue: true
+      });
+      if (!nn || q.some(x => x && x.id === nn.id) || W.byId[nn.id]) continue;
+      q.push(nn);
+      added++;
+      S.recruitmentStats = S.recruitmentStats || { generated: 0, driveGenerated: 0, normalGenerated: 0, admitted: 0, rejected: 0, deferred: 0, expired: 0, tiers: {}, tierCounts: {} }; S.recruitmentStats.tiers = S.recruitmentStats.tiers || {}; S.recruitmentStats.tierCounts = S.recruitmentStats.tiers;
+      S.recruitmentStats.generated = (S.recruitmentStats.generated || 0) + 1;
+      if (isDrive) S.recruitmentStats.driveGenerated = (S.recruitmentStats.driveGenerated || 0) + 1;
+      else S.recruitmentStats.normalGenerated = (S.recruitmentStats.normalGenerated || 0) + 1;
+      const tId = nn.ext && nn.ext.applicant && nn.ext.applicant.tier || 'COMMON';
+      S.recruitmentStats.tiers[tId] = (S.recruitmentStats.tiers[tId] || 0) + 1;
+
+      W.log('recruit', nn.h.name.given + ' (' + nn.h.origin.cls + ' จาก' + nn.h.origin.region + ') มายืนรอที่หน้าประตู ขอสมัครเข้าสำนัก' + (isDrive ? ' (ตามประกาศเปิดรับศิษย์)' : ''), []);
     }
-    return n;
+    return added;
   };
 
   /* ---------- คาราวานรายเดือน ---------- */
   X.caravan = W => {
     const S = W.sect; const tre = SECT.holder(W, 'treasury');
-    const pop = W.npcs.filter(n => !n.dead).length;
     let spent = 0, sold = 0;
     if (W.threat.roadBlocked > 0) { W.log('finance', 'ถนนถูกปิด คาราวานของสำนักเข้าไม่ถึง', []); return; }
     const skill = tre ? (E(tre, 'intellect.numeracy') + E(tre, 'aptitudes.socialCommerce')) / 2 : 40;
     (S.buyList || []).slice(0, 6).forEach(b => { const pr = Math.round(ECO.price(W, b.id) * (1.12 - skill / 600)); const n = b.n; const cost = pr * n; if (S.stones - spent >= cost + 150) { spent += cost; ECO.add(W, b.id, n); } });
     if (spent) { S.stones -= spent; S.ledger.push({ t: W.t, amt: -spent, why: 'คาราวานซื้อวัตถุดิบ/เสบียง' }); }
     Object.keys(S.stock).forEach(k => { if (ECO.isPill(k) && S.stock[k] > 10) { const n = S.stock[k] - 6; if (ECO.take(W, k, n)) { const v = Math.round(ECO.price(W, k) * 0.7 * n); ECO.earn(W, v, 'ขายโอสถส่วนเกิน'); sold += v; } } });
+    if (SECT.notifyStockChanged) SECT.notifyStockChanged(W);
     W.log('finance', 'คาราวานประจำเดือน: ซื้อ ' + spent + ' ศิลา' + (sold ? ', ขายโอสถส่วนเกินได้ ' + sold : ''), []);
   };
 
@@ -596,7 +638,6 @@
     foes.forEach((s, i) => { const id = 'F' + (++W.foeSeq || (W.foeSeq = 1)); const u = Object.assign({ id, foe: true, x: MAP.EXIT.x + .5 + (i % 4) * 1.1 - 1.6, y: MAP.EXIT.y + 0.5 + Math.floor(i / 4) * 1.1, px: 0, py: 0, face: 1, speed: 0.55 + s.tier * 0.02, dead: false, speedBase: 1 }, s); u.hpMax = Math.round(u.power * 1.3 + 30); u.hp = u.hpMax; u.act = { id: 'fight', ctx: { fid: f.id, target: null, cd: 3 } }; W.foes.push(u); W.foeById[id] = u; f.B.push(id); f.foes.push(id); });
     W.threat.alert = 3; W.sect.recentRaid = 1; W.threat.raid = f.id;
     W.log('raid', '⚠ ' + label + ' กำลังบุกสำนัก!', []);
-    // ระดมกำลังป้องกัน
     X.rally(W, f); return f;
   };
   X.rally = (W, f) => {
@@ -607,7 +648,7 @@
       const pw = CULT.power(n), hpR = n.h.state.hp / CULT.hpMax(n);
       let will = (E(n, 'personality.courage') - 40) / 60 + AI.dutyWeight(n) * 0.6 + (E(n, 'values.sectDuty') - 45) / 120 + (n.rank >= 3 ? 0.35 : 0) - (hpR < 0.6 ? 0.6 : 0) - (E(n, 'personality.caution') - 55) / 200 + (n.rank === 0 ? -0.6 : 0) + (pw < 25 ? -0.5 : 0) + (guardHead && !guardHead.dead ? 0.15 : 0) + (mast && mast.id === n.id ? 0.4 : 0) + (commander ? E(commander,'social.leadership')/600 - (f.ctx.formation==='ตั้งรับรักษากำลัง'&&hpR<.65?.45:0) : 0);
       if (will > 0.55 + W.rng.gauss(0, 0.12) && f.A.length < 14) { COMBAT.join(W, f, n.id, 'A'); n.h.state.stress += 3; AI.mem(W, n, 'ออกรบปกป้องสำนัก', 0.7); }
-      else { // หลบเข้าที่พัก
+      else {
         if (!(n.act && ['sleep', 'sentence'].includes(n.act.id))) { AI.interruptFor(W, n); const s = n.bed != null ? W.map.stations[n.bed] : null; if (s) { AI.begin(W, n, 'hide', { st: s }, [['หลบภัย', 9]]); } }
         if (n.rank >= 1 && n.rank < 5 && will < 0.15) HC.experience(n, 'cowardice', 0.3);
       }
@@ -635,7 +676,7 @@
     foes.forEach(u => { u.gone = true; });
     W.npcs.forEach(n => { if (n.act && n.act.id === 'hide') { AI.release(W, n); n.act = { id: 'idle', stage: 'do', left: 0, total: 0, ctx: {}, why: [] }; } });
   };
-  X.raidTick = W => { // ทุกนาทีขณะมีศัตรู
+  X.raidTick = W => {
     if (!W.foes || !W.foes.length) return;
     W.foes.forEach(u => COMBAT.foeStep(W, u));
     if (W.t % 20 === 0 && W.threat.raid) { const f = (W.fights || []).find(q => q.id === W.threat.raid); if (f && !f.over) X.rally(W, f); }
@@ -645,33 +686,32 @@
   X.daily = W => {
     const rng = W.rng; const T = W.threat;
     if (T.alert > 0) T.alert--; if (T.roadBlocked > 0) T.roadBlocked--;
-    // การบุก
     if (W.day >= T.raidCooldown && !T.raid && rng.chance(X.raidChance(W))) {
       const tension = W.world.sects.some(s => s.attitude < -40);
       const kind = tension && rng.chance(0.5) ? 'rival' : rng.chance(0.45) ? 'beast' : 'bandit';
       X.spawnRaid(W, kind); T.raidCooldown = W.day + 25 + rng.int(0, 30);
     }
-    // สำนักเพื่อนบ้าน: ทัศนคติลอยตามเวลา
     W.world.sects.forEach(s => { s.attitude = clamp(s.attitude + (s.attitude > 0 ? -0.15 : 0.15) + (s.style === 'ก้าวร้าว' ? -0.1 : 0) + rng.gauss(0, 0.8), -100, 100); });
-    // เหตุการณ์ทั่วไป
-    if (rng.chance(0.025)) { // พ่อค้าเร่
+    if (rng.chance(0.025)) {
       const gain = Math.round(40 + rng.next() * 100); W.log('event', 'พ่อค้าเร่แวะสำนัก ซื้อโอสถและของเหลือใช้ ได้ ' + gain + ' ศิลา', []); ECO.earn(W, gain, 'พ่อค้าเร่');
     }
-    if (rng.chance(0.012) && W.season !== 3) { // ยอดฝีมือเร่ร่อนมาเยือน
+    if (rng.chance(0.012) && W.season !== 3) {
       const t = SECT.holder(W, 'scripture') || W.byId[W.sect.masterId];
       if (t) { const drop = g.MARTIAL.personalDiscovery(W, t, { tier: 4, source: 'visitor' }); if (drop) { W.log('event', 'ยอดฝีมือเร่ร่อนมอบองค์ความรู้หายากให้ ' + t.h.name.given, [t.id]); W.fame(1); } }
     }
-    if (rng.chance(0.014)) { // โรคระบาดเบา
+    if (rng.chance(0.014)) {
       const hit = W.npcs.filter(n => !n.dead && !n.away && rng.chance(0.18 * (1 - E(n, 'physiology.immunity') / 130)));
       if (hit.length) { hit.forEach(n => { n.h.state.hp = Math.max(1, n.h.state.hp * 0.7); HC.feel(n, { mood: -6, stress: 4 }); n.h.state.rest = Math.max(0, n.h.state.rest - 25); }); W.log('event', 'โรคไข้หวัดใหญ่แพร่ในสำนัก ผู้ป่วย ' + hit.length + ' คน' + (SECT.holder(W, 'healer') ? ' หมอหลวงดูแลรักษา' : ' แต่ไม่มีหมอหลวง'), []); }
     }
     if (rng.chance(0.012) && W.season === 3) { T.roadBlocked = 8 + rng.int(0, 8); W.log('event', 'หิมะหนา ถนนเข้าออกถูกปิดหลายวัน', []); }
     if (rng.chance(0.008) && W.season === 0) { const g2 = Math.round(W.npcs.length * 2 + 20); ECO.add(W, 'grain', g2); W.log('event', 'ฤดูใบไม้ผลิฝนดี ผลผลิตเพิ่มพิเศษ ข้าวเพิ่ม ' + g2, []); }
     if (rng.chance(0.007)) { const b = rng.pick(W.map.buildings.filter(x => x.type !== 'gate')); b.hp = Math.max(40, b.hp - rng.int(8, 25)); W.log('event', b.nameTh + ' ชำรุดจากภัยธรรมชาติ ต้องซ่อมแซม', []); }
-    // ซ่อมแซมอาคาร: ผู้ที่ว่างงานฝีมือดีช่วยซ่อมอย่างเป็นนามธรรม
     W.map.buildings.forEach(b => { if (b.hp < 100) b.hp = Math.min(100, b.hp + 0.6); });
-    // ผู้สมัครใหม่
-    if (W.day % 6 === 0) X.recruitApplicants(W);
+    // ผู้สมัครใหม่: ช่วงปกติทุก 6 วัน ช่วงเปิดรับศิษย์ (Recruiting Drive) ทุก 2 วัน (กันซ้ำด้วย lastRecruitGenDay)
+    const isDrive = !!(W.sect && W.sect.driveUntil && W.sect.driveUntil > W.day);
+    if (W.day % 6 === 0 || (isDrive && W.day % 2 === 0)) {
+      X.recruitApplicants(W, 'daily');
+    }
   };
 
   g.EXPED = X;

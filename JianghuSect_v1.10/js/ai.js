@@ -349,7 +349,7 @@
       const c = n.cult;
       if (c && c.learning) {
         c.learning.got += (0.7 + E(n, 'intellect.learningSpeed') / 100 + E(n, 'intellect.comprehension') / 250) * (n.insightT > 0 ? 1.45 : 1) * (g.MARTIAL ? g.MARTIAL.lifeMult(n, 'SCRIPTURE') * g.MARTIAL.skillEffects(n).study : 1);
-        if (c.learning.got >= c.learning.need) { const t = CULT.tech(c.learning.id); c.techs.push(c.learning.id); c.learning = null; if (c.techs.length > CULT.maxTechs(n)) c.techs.shift(); W.log('learn', n.h.name.given + ' เรียนรู้วิชา「' + t.nameTh + '」สำเร็จ', [n.id]); AI.mem(W, n, 'เรียนรู้ ' + t.nameTh, 0.6); HC.experience(n, 'craft_success', 0.6); return 'done'; }
+        if (c.learning.got >= c.learning.need) { const oldHp = n.h && n.h.state ? n.h.state.hp : null, oldQi = n.h && n.h.state ? n.h.state.qi : null; const t = CULT.tech(c.learning.id); if (!c.techs.includes(c.learning.id)) c.techs.push(c.learning.id); c.learning = null; const nonPass = c.techs.filter(id => { const x = CULT.tech(id); return x && !x.passive && x.cat !== 'PASSIVE' && !x.innateOnly; }); while (nonPass.length > CULT.maxTechs(n)) { const dropId = nonPass.shift(); const idx = c.techs.indexOf(dropId); if (idx >= 0) c.techs.splice(idx, 1); } if (g.MARTIAL && g.MARTIAL.reconcilePassives) g.MARTIAL.reconcilePassives(n); if (g.MARTIAL && g.MARTIAL.syncResourceCaps) g.MARTIAL.syncResourceCaps(n, oldHp, oldQi); const tName = t ? t.nameTh : ''; W.log('learn', n.h.name.given + ' เรียนรู้วิชา「' + tName + '」สำเร็จ', [n.id]); AI.mem(W, n, 'เรียนรู้ ' + tName, 0.6); HC.experience(n, 'craft_success', 0.6); return 'done'; }
       }
       s.energy = Math.max(0, s.energy - 0.025); s.rest -= 0.03; AI.vf(n, { knowledgeCraft: 0.05 });
       if (n.insightT > 0) n.insightT--;
@@ -358,7 +358,7 @@
   };
   AI.nextTechToStudy = (W, n) => {
     const c = n.cult; if (!c) return null;
-    const cap = Math.min(c.stage, SECT.canLearnTier(W, n));
+    const cap = Math.min(CULT.effectiveTechStage ? CULT.effectiveTechStage(n) : c.stage, SECT.canLearnTier(W, n));
     const ids = CULT.learnable(n, W.sect.library).map(id => CULT.tech(id)).filter(t => (t.reqTier || t.tier) <= cap);
     if (!ids.length) return null;
     ids.sort((a, b) => (b.power * (b.sub === c.sub ? 1.4 : 1)) - (a.power * (a.sub === c.sub ? 1.4 : 1)));
@@ -550,7 +550,7 @@
       if (s.hp >= hm * 0.97 && (!n.inj || !n.inj.length)) return 'done';
     },
     done(n, W) {
-      const hm = CULT.hpMax(n);
+      const hm = (n._nd && n._nd.day === HC.nowDay) ? n._nd.hpMax : CULT.hpMax(n);
       if (n.h.state.hp >= hm * 0.95 && (!n.inj || !n.inj.length)) {
         W.log('heal', n.h.name.given + ' พักรักษาตัวที่หอหมอยาจนร่างกายและลมปราณฟื้นคืนสมบูรณ์', [n.id]);
       }
@@ -984,19 +984,26 @@
   /* ความต้องการ + ผลคงที่ของร่างกายทุกนาที */
   function getNeedsRates(n) {
     const cStage = n.cult ? n.cult.stage : 0;
+    const passVer = n._passVer || 0;
+    const eqA = n.equip ? n.equip.ARMOR : null;
+    const vit = n.h.physiology.vitality;
     const nd = n._nd;
-    if (nd && nd.day === HC.nowDay && nd.ver === n._ver && nd.cStage === cStage) return nd;
+    if (nd && nd.day === HC.nowDay && nd.cStage === cStage && nd.passVer === passVer && nd.eqA === eqA && nd.vit === vit) return nd;
     const next = {
       day: HC.nowDay,
       ver: n._ver,
       cStage,
+      passVer,
+      eqA,
+      vit,
       met: 0.82 + (100 - E(n, 'physiology.vitality')) / 300 + (cStage ? 0.06 * cStage : 0),
       socD: 0.016 * (0.5 + E(n, 'temperament.sociability') / 100),
       novD: 0.008 * (0.5 + E(n, 'temperament.sensationSeeking') / 100),
       optBase: 8 + (E(n, 'temperament.optimism') - 50) * 0.35,
       strD: 0.004 * (0.5 + E(n, 'personality.composure') / 100),
       recK: 0.00012 * (0.5 + E(n, 'physiology.recoveryRate') / 100),
-      qiMax: cStage ? CULT.qiMax(n) : 0
+      qiMax: cStage ? CULT.qiMax(n) : 0,
+      hpMax: CULT.hpMax(n)
     };
     n._nd = next;
     return next;
@@ -1018,7 +1025,7 @@
     if (s.satiety <= 2) { s.hp -= 0.12; s.stress += 0.02; if (W.t % 720 === 0 && s.hp < 5) AI.kill(W, n, 'อดอยาก'); }
     if (s.rest <= 1) { s.energy = Math.max(0, s.energy - 0.05); }
     // ฟื้นฟูทั่วไป
-    if (id !== 'sleep' && id !== 'heal') { const hm = CULT.hpMax(n); if (s.hp < hm && s.satiety > 15) s.hp = Math.min(hm, s.hp + hm * nr.recK); }
+    if (id !== 'sleep' && id !== 'heal') { const hm = nr.hpMax; if (s.hp < hm && s.satiety > 15) s.hp = Math.min(hm, s.hp + hm * nr.recK); }
     if (s.hp <= 0 && !n.dead) { AI.kill(W, n, n.lastHurtBy ? 'บาดเจ็บสาหัส' : 'อาการทรุด'); }
     // ปราณฟื้น
     if (n.cult && id !== 'cultivate' && s.qi < nr.qiMax) s.qi = Math.min(nr.qiMax, s.qi + 0.12);

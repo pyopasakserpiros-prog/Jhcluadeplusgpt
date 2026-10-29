@@ -205,19 +205,27 @@
       return {ok:false,duplicate:false,reward:0,reason:'not-owned'};
     }
     n.inv.recipes=n.inv.recipes.filter(x=>x!==id);
+    const spawned=Array.isArray(n.inv.spawnedRecipes)&&n.inv.spawnedRecipes.includes(id);
+    if(spawned) {
+      n.inv.spawnedRecipes=n.inv.spawnedRecipes.filter(x=>x!==id);
+      if(!n.inv.spawnedRecipes.length) delete n.inv.spawnedRecipes;
+    }
     C.grantRecipeAuth(W,n,id);
     if(W.sect.knownRecipes.includes(id)) {
       if(!opts.quiet) W.log('research',n.h.name.given+' ส่งมอบม้วนตำรับซ้ำ「'+r.nameTh+'」เข้าหอคัมภีร์ (มีอยู่แล้ว ได้ 0 คป.)',[n.id]);
-      return {ok:true,duplicate:true,reward:0};
+      return {ok:true,duplicate:true,reward:0,playerSpawned:spawned};
     }
     W.sect.knownRecipes.push(id);
-    const reward=C.recipeReward(W,id);
-    CPE.mint(W,n,reward,'บริจาคม้วนตำรับ「'+r.nameTh+'」',!!opts.quiet);
-    CPE.S(W).donated+=reward;
+    const reward=spawned?0:C.recipeReward(W,id);
+    if(reward>0) {
+      CPE.mint(W,n,reward,'บริจาคม้วนตำรับ「'+r.nameTh+'」',!!opts.quiet);
+      CPE.S(W).donated+=reward;
+    }
     W.world.contentMetrics.formulas++;
     W.world.contentMetrics.formulasDonated++;
-    if(!opts.quiet) W.log('research',n.h.name.given+' บริจาคม้วนตำรับ「'+r.nameTh+'」เข้าสู่หอคัมภีร์ ได้ '+Math.round(reward)+' คป.',[n.id]);
-    return {ok:true,duplicate:false,reward};
+    if(g.SECT&&g.SECT.notifyStockChanged) g.SECT.notifyStockChanged(W,id);
+    if(!opts.quiet) W.log('research',n.h.name.given+' บริจาคม้วนตำรับ「'+r.nameTh+'」เข้าสู่หอคัมภีร์ ได้ '+Math.round(reward)+' คป.'+(spawned?' (ไอเทมเสก)':''),[n.id]);
+    return {ok:true,duplicate:false,reward,playerSpawned:spawned};
   };
 
   C.tradeRecipe=(W,seller,buyer,id,price)=>{
@@ -298,6 +306,7 @@
     C.ensure(W);
     if(!organById[organId]||!Number.isSafeInteger(qty)||qty<=0) return false;
     W.sect.organs[organId]=(W.sect.organs[organId]||0)+qty;
+    if(g.SECT&&g.SECT.notifyStockChanged) g.SECT.notifyStockChanged(W,organId);
     return true;
   };
   C.takeOrgan=(W,organId,qty)=>{
@@ -307,6 +316,7 @@
     if(have<qty) return false;
     if(have>qty) W.sect.organs[organId]=have-qty;
     else delete W.sect.organs[organId];
+    if(g.SECT&&g.SECT.notifyStockChanged) g.SECT.notifyStockChanged(W,organId);
     return true;
   };
   C.harvestOrgan=(W,ex,alive,out,reg,beast,opts)=>{
@@ -348,13 +358,22 @@
     npc.inv.organs[organId]-=n;
     if(npc.inv.organs[organId]<=0) delete npc.inv.organs[organId];
     if(!Object.keys(npc.inv.organs).length) delete npc.inv.organs;
+    const spawned=Math.min(n,(npc.inv.spawnedOrgans&&npc.inv.spawnedOrgans[organId])||0);
+    if(spawned>0) {
+      npc.inv.spawnedOrgans[organId]-=spawned;
+      if(npc.inv.spawnedOrgans[organId]<=0) delete npc.inv.spawnedOrgans[organId];
+      if(!Object.keys(npc.inv.spawnedOrgans).length) delete npc.inv.spawnedOrgans;
+    }
     C.addOrgan(W,organId,n);
-    const reward=10*(organ.tier||1)*n;
-    CPE.mint(W,npc,reward,'บริจาคอวัยวะพิเศษ「'+organ.nameTh+'」',!!opts.quiet);
-    CPE.S(W).donated+=reward;
+    const eligible=Math.max(0,n-spawned);
+    const reward=10*(organ.tier||1)*eligible;
+    if(reward>0) {
+      CPE.mint(W,npc,reward,'บริจาคอวัยวะพิเศษ「'+organ.nameTh+'」',!!opts.quiet);
+      CPE.S(W).donated+=reward;
+    }
     W.world.contentMetrics.organsDonated+=n;
-    if(!opts.quiet) W.log('research',npc.h.name.given+' บริจาคอวัยวะพิเศษ「'+organ.nameTh+'」×'+n+' เข้าคลังสำนัก ได้ '+reward+' คป.',[npc.id]);
-    return {ok:true,organId,qty:n,reward};
+    if(!opts.quiet) W.log('research',npc.h.name.given+' บริจาคอวัยวะพิเศษ「'+organ.nameTh+'」×'+n+' เข้าคลังสำนัก ได้ '+reward+' คป.'+(spawned>0?' (ไอเทมเสกได้ 0 คป.)':''),[npc.id]);
+    return {ok:true,organId,qty:n,reward,playerSpawned:spawned>0};
   };
   C.refineOrgan=(W,npc,organId,opts)=>{
     opts=opts||{};
@@ -843,7 +862,7 @@
     }
     // Rare martial knowledge uses the same daily budget and odds as native ruins/caves.
     const extra=JD.MARTIAL.techniques.filter(t=>reg.techniques.some(id=>CULT.tech(id).path===t.path)).map(t=>t.id);
-    const drop=g.MARTIAL.discover(W,out,{tier:Math.max(2,reg.danger+2),techs:reg.techniques.concat(extra),source:'region'});
+    const drop=g.MARTIAL.discover(W,out,{tier:Math.max(2,reg.danger+2),rank:ex.partyRank||Math.min(4,Math.max(1,reg.danger)),danger:reg.danger,techs:reg.techniques.concat(extra),source:'region'});
     if(drop) ex.journal.push('พบองค์ความรู้หายาก');
   };
   C.fortune=(W,ex,alive,out,reg)=>{

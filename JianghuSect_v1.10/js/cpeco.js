@@ -13,7 +13,7 @@
 
   CPE.S = W => {
     const S = W.sect;
-    if (!S.cp) S.cp = { minted: 0, burned: 0, circulation: 0, retired: 0, arbitrageBlocked: 0, price: 1, markup: 1, welfare: 0.5, log: [], dayMint: 0, dayBurn: 0, welfareGiven: 0, donated: 0, sales: 0, techSales: 0, studyFees: 0, studyServices: 0, trainingFees: 0, trainingServices: 0, recipeFees: 0, recipeAuthorizations: 0, freeLib: S.library ? S.library.filter(id => { const t = CULT.tech(id); return t && t.tier <= 1; }) : [], hist: [] };
+    if (!S.cp) S.cp = { minted: 0, burned: 0, circulation: 0, retired: 0, arbitrageBlocked: 0, price: 1, markup: 1, welfare: 0.5, log: [], dayMint: 0, dayBurn: 0, welfareGiven: 0, donated: 0, sales: 0, techSales: 0, studyFees: 0, studyServices: 0, trainingFees: 0, trainingServices: 0, recipeFees: 0, recipeAuthorizations: 0, freeLib: S.library ? S.library.filter(id => { const t = CULT.tech(id); return t && t.tier <= 1 && !t.overhaulPack; }) : [], hist: [] };
     if (S.cp.circulation == null) S.cp.circulation = 0;
     if (S.cp.retired == null) S.cp.retired = 0;
     if (S.cp.arbitrageBlocked == null) S.cp.arbitrageBlocked = 0;
@@ -30,7 +30,6 @@
     if (!Number.isFinite(S.cp.markup)) S.cp.markup = 1;
     return S.cp;
   };
-  // ไม่เสกโอสถเข้าคลังตอนเริ่มเกม: สินค้าต้องมาจากการหลอม/การเดินทางจริง
   CPE.init = W => { CPE.S(W); W.npcs.forEach(n => { if (n.cp == null) n.cp = 40; }); };
   const note = (W, text) => { const c = CPE.S(W); c.log.push({ t: W.t, text }); if (c.log.length > 40) c.log.shift(); };
   CPE.mint = (W, n, amt, why, quiet) => { amt = Math.round(amt * 10) / 10; if (!(amt > 0)) return 0; const c = CPE.S(W); n.cp = (n.cp || 0) + amt; c.minted += amt; c.dayMint += amt; n.cpEarned = (n.cpEarned || 0) + amt; if (!quiet && amt >= 30) note(W, n.h.name.given + ' ได้ ' + Math.round(amt) + ' คป. (' + why + ')'); return amt; };
@@ -59,7 +58,6 @@
   CPE.scarcity = (W, id) => clamp((CPE.target(W, id) + 2) / (ECO.count(W, id) + 2), 0.5, 2.5);
   CPE.reward = (W, id, n, stockBefore) => {
     const tgt = CPE.target(W, id), stock = stockBefore == null ? ECO.count(W, id) : stockBefore;
-    // Keep a small positive reward, but let severe oversupply reduce payout further.
     const sc = clamp((tgt + 2) / (stock + 2), 0.05, 2.5);
     return ECO.base(id) * 0.22 * sc * (n == null ? 1 : n);
   };
@@ -68,7 +66,6 @@
     const c = CPE.S(W); let base = ECO.base(id);
     const r = id.startsWith('P:') ? ECO.recipeById[id.slice(2)] : recipeByOutput[id];
     if (r) base = Math.max(base, ECO.inputCost(W, r) * 0.45 / (r.yield || 1));
-    // ของขาดต้องแพงขึ้น ส่วนของล้นคลังต้องถูกลง — และราคาขายในร้านต้องสูงกว่าค่ารับบริจาคเสมอเพื่อป้องกัน arbitrage
     const raw = Math.round(base * 0.9 * c.price * c.markup * clamp(Math.pow(CPE.scarcity(W, id), 0.5), 0.8, 1.6));
     const minNoArb = Math.ceil(CPE.reward(W, id, 1) * 1.3) + 2;
     return Math.max(2, minNoArb, raw);
@@ -86,7 +83,6 @@
     if (out.stones > 0) a.total += out.stones * 0.2;
     return a.total;
   };
-  /* บริจาคจากคณะเดินทาง/สำรวจ: แบ่งแต้มตามบทบาท (หัวหน้า 1.3 เท่า) */
   const oHandover = X.handover;
   X.handover = (W, ex, alive, out) => {
     const accepted = oHandover(W, ex, alive, out) || out.donation || out;
@@ -173,9 +169,7 @@
     }
   };
 
-  /* ----- บริจาคของที่สมาชิกเก็บไว้เอง (วัตถุดิบ / คัมภีร์วิชา / ม้วนตำรับ) -----
-   * ของที่ถูกเก็บไว้ระหว่างเดินทางไม่หายไปจากเกม: เจ้าของตัดสินใจเองว่าจะนำกลับเข้าคลังเมื่อใด
-   */
+  /* ----- บริจาคของที่สมาชิกเก็บไว้เอง (วัตถุดิบ / คัมภีร์วิชา / ม้วนตำรับ) ----- */
   const personalMats = n => Object.keys((n.inv && n.inv.mats) || {}).filter(k => (n.inv.mats[k] || 0) > 0);
   const personalTechs = (n, W) => Array.from(new Set((n.inv && n.inv.techs) || [])).filter(id => !!CULT.tech(id) && (!W || !W.sect.library.includes(id)));
   const personalRecipes = n => Array.from(new Set((n.inv && n.inv.recipes) || [])).filter(id => !!ECO.recipeById[id]);
@@ -211,25 +205,44 @@
         const held = n.inv.mats[k] || 0;
         const give = held <= 1 ? (frac >= 0.68 ? held : 0) : Math.min(held - 1, Math.max(1, Math.floor(held * frac)));
         if (give <= 0) return;
-        const before = ECO.count(W, k), v = CPE.reward(W, k, give, before);
+        const spawnedHeld = (n.inv.spawnedMats && n.inv.spawnedMats[k]) || 0;
+        const spawnedUsed = Math.min(give, spawnedHeld);
+        const rewardable = Math.max(0, give - spawnedUsed);
+        const before = ECO.count(W, k), v = rewardable > 0 ? CPE.reward(W, k, rewardable, before) : 0;
         ECO.add(W, k, give); n.inv.mats[k] -= give; if (n.inv.mats[k] <= 0) delete n.inv.mats[k];
+        if (spawnedUsed > 0 && n.inv.spawnedMats) {
+          n.inv.spawnedMats[k] -= spawnedUsed;
+          if (n.inv.spawnedMats[k] <= 0) delete n.inv.spawnedMats[k];
+        }
         accepted[k] = give; total += v; units += give;
       });
-      // คัมภีร์ที่สมาชิกตัดสินใจนำมาบริจาคจะเข้าหอทันที และให้แต้มตามระดับวิชา
       techs.forEach(id => {
         const t = CULT.tech(id);
         if (!t) return;
-        if (!W.sect.library.includes(id)) { W.sect.library.push(id); total += CPE.techReward(W, id); scrolls++; }
+        const isSpawned = Array.isArray(n.inv.spawnedTechs) && n.inv.spawnedTechs.includes(id);
+        if (isSpawned) n.inv.spawnedTechs.splice(n.inv.spawnedTechs.indexOf(id), 1);
+        if (!W.sect.library.includes(id)) { W.sect.library.push(id); if (!isSpawned) total += CPE.techReward(W, id); scrolls++; }
         n.inv.techs = (n.inv.techs || []).filter(x => x !== id);
       });
-      // ม้วนตำรับที่สมาชิกบริจาค: ตำรับใหม่ได้แต้ม ส่วนตำรับซ้ำได้ 0 คป.
       recipes.forEach(id => {
         if (g.CONTENT && g.CONTENT.donateRecipe) {
+          const isSpawned = Array.isArray(n.inv.spawnedRecipes) && n.inv.spawnedRecipes.includes(id);
+          if (isSpawned) n.inv.spawnedRecipes.splice(n.inv.spawnedRecipes.indexOf(id), 1);
+          const beforeCp = n.cp || 0, beforeMint = CPE.S(W).minted;
           const res = g.CONTENT.donateRecipe(W, n, id, { quiet: true });
-          if (res && res.ok) { formulas++; formulaCp += res.reward || 0; }
+          if (res && res.ok) {
+            if (isSpawned && res.reward > 0) {
+              n.cp = beforeCp;
+              CPE.S(W).minted = beforeMint;
+              CPE.S(W).donated = Math.max(0, CPE.S(W).donated - res.reward);
+              res.reward = 0;
+            }
+            formulas++; formulaCp += res.reward || 0;
+          }
         }
       });
       if (!units && !scrolls && !formulas) { HC.feel(n, { mood: -0.2 }); return; }
+      if (g.SECT && g.SECT.notifyStockChanged) g.SECT.notifyStockChanged(W);
       if (total > 0) { CPE.mint(W, n, total, 'บริจาควัตถุดิบส่วนตัว', true); CPE.S(W).donated += total; }
       const grandTotal = total + formulaCp;
       const detail = Object.keys(accepted).slice(0, 3).map(k => ECO.name(k) + ' ×' + accepted[k]).join('、');
@@ -281,8 +294,27 @@
     const quote=p.kind==='pill'?CPE.priceOf(W,p.key):CPE.gearPrice(W,p.gear || {});
     if(p.price!==quote || (p.kind==='pill' && (!ECO.isPill(p.key) || !ECO.pillInfo(p.key)))) return false;
     const c = CPE.S(W);
-    if (p.kind === 'pill') { const quality = ECO.pillQuality(W, p.key); if (!ECO.take(W, p.key, 1)) return false; if (!CPE.spend(W, n, p.price, 'ซื้อ' + ECO.name(p.key))) { ECO.add(W, p.key, 1, quality); return false; } ECO.addPersonalPill(n, p.key, quality); }
-    else { if (!n.cult || !['WEAPON', 'ARMOR', 'ACCESSORY'].includes(p.gear && p.gear.slot) || (p.gear.minStage || 1) > n.cult.stage + 1) return false; const i = W.sect.gear.indexOf(p.gear); if (i < 0) return false; if (!CPE.spend(W, n, p.price, 'ซื้อ' + p.gear.nameTh)) return false; W.sect.gear.splice(i, 1); const cur = n.equip[p.gear.slot]; if (cur) W.sect.gear.push(cur); n.equip[p.gear.slot] = p.gear; ST.dirty(n); W.log('gear', n.h.name.given + ' แลกคุณูปการซื้อ「' + p.gear.nameTh + '」จากร้านสำนัก', [n.id]); }
+    if (p.kind === 'pill') {
+      const quality = ECO.pillQuality(W, p.key);
+      if (!ECO.take(W, p.key, 1)) return false;
+      if (!CPE.spend(W, n, p.price, 'ซื้อ' + ECO.name(p.key))) { ECO.add(W, p.key, 1, quality); return false; }
+      ECO.addPersonalPill(n, p.key, quality);
+      if (!BASIC_IDS.includes(p.key)) {
+        W.log('shop', '[ซื้อสินค้า] ' + n.h.name.given + ' แลกคุณูปการ ' + p.price + ' คป. ซื้อ「' + ECO.name(p.key) + '」×1 จากร้านสำนัก', [n.id], { txKind: 'purchase', itemId: p.key, qty: 1, recipientId: n.id });
+      }
+    } else {
+      if (!n.cult || !['WEAPON', 'ARMOR', 'ACCESSORY'].includes(p.gear && p.gear.slot) || (p.gear.minStage || 1) > n.cult.stage + 1) return false;
+      const i = W.sect.gear.indexOf(p.gear); if (i < 0) return false;
+      if (!CPE.spend(W, n, p.price, 'ซื้อ' + p.gear.nameTh)) return false;
+      W.sect.gear.splice(i, 1);
+      const oldHp = n.h && n.h.state ? n.h.state.hp : null, oldQi = n.h && n.h.state ? n.h.state.qi : null;
+      const cur = n.equip[p.gear.slot]; if (cur) W.sect.gear.push(cur);
+      n.equip[p.gear.slot] = p.gear; ST.dirty(n);
+      if (g.MARTIAL && g.MARTIAL.reconcilePassives) g.MARTIAL.reconcilePassives(n);
+      if (g.MARTIAL && g.MARTIAL.syncResourceCaps) g.MARTIAL.syncResourceCaps(n, oldHp, oldQi);
+      if (g.SECT && g.SECT.notifyStockChanged) g.SECT.notifyStockChanged(W, p.gear.id);
+      W.log('gear', '[ซื้อสินค้า] ' + n.h.name.given + ' แลกคุณูปการ ' + p.price + ' คป. ซื้อ「' + p.gear.nameTh + '」จากร้านสำนัก', [n.id], { txKind: 'purchase', itemId: p.gear.id, qty: 1, recipientId: n.id });
+    }
     c.sales++; HC.feel(n, { mood: 1.5 }); AI.mem(W, n, 'ซื้อ' + (p.kind === 'gear' ? p.gear.nameTh : ECO.name(p.key)) + 'ด้วยแต้มคุณูปการ', 0.25); return true;
   };
   A.shop = {
@@ -410,11 +442,22 @@
 
   /* ----- เรียนวิชา: วิชาพื้นฐานเรียนฟรี วิชาอื่นใช้แต้ม (เผาออกจากระบบ) ----- */
   AI.nextTechToStudy = (W, n) => {
-    const c = n.cult; if (!c) return null; const cap = Math.min(c.stage, SECT.canLearnTier(W, n));
+    const c = n.cult; if (!c) return null;
+    const cpBand = Math.floor((n.cp || 0) / 2), libLen = W.sect.library ? W.sect.library.length : 0, goalTgt = n.cognition?.goal?.id === 'scripture' ? (n.cognition.goal.targetId || '') : '';
+    const ntc = n._nextTechCache;
+    if (ntc && W.t - ntc.t < 15 && ntc.cpBand === cpBand && ntc.st === c.stage && ntc.sub === c.sub && ntc.tl === c.techs.length && ntc.libLen === libLen && ntc.goalTgt === goalTgt && (!ntc.out || !c.techs.includes(ntc.out.id))) {
+      return ntc.out;
+    }
+    const cap = Math.min(CULT.effectiveTechStage ? CULT.effectiveTechStage(n) : c.stage, SECT.canLearnTier(W, n));
     let ids = CULT.learnable(n, W.sect.library).map(id => CULT.tech(id)).filter(t => (t.reqTier || t.tier) <= cap);
-    ids = ids.filter(t => CPE.techPrice(W, t) <= (n.cp || 0)); if (!ids.length) return null;
-    const goal=n.cognition?.goal; if(goal?.id==='scripture'){const desired=ids.find(t=>t.id===goal.targetId);if(desired)return desired;}
-    ids.sort((a,b)=>g.COG?g.COG.techPreference(n,b)-g.COG.techPreference(n,a):b.power-a.power); return ids[0];
+    ids = ids.filter(t => CPE.techPrice(W, t) <= (n.cp || 0));
+    let out = null;
+    if (ids.length) {
+      if (goalTgt) { const desired = ids.find(t => t.id === goalTgt); if (desired) out = desired; }
+      if (!out) { ids.sort((a,b)=>g.COG?g.COG.techPreference(n,b)-g.COG.techPreference(n,a):b.power-a.power); out = ids[0]; }
+    }
+    n._nextTechCache = { t: W.t, cpBand, st: c.stage, sub: c.sub, tl: c.techs.length, libLen, goalTgt, out };
+    return out;
   };
   const SA = A.study, oStart = SA.start;
   SA.start = function (n, W, ctx) {
@@ -470,13 +513,17 @@
         delete n.inv.pills[key];
         if (n.inv.pillQuality) delete n.inv.pillQuality[key];
       }
+      if (n.inv.spawnedPills && n.inv.spawnedPills[key] > 0) {
+        n.inv.spawnedPills[key]--;
+        if (n.inv.spawnedPills[key] <= 0) delete n.inv.spawnedPills[key];
+      }
       if ((W.t + (n.n || 0)) % 2 === 0) {
         W.log('train', n.h.name.given + ' ใช้โอสถ「' + ECO.name(key) + '」เพื่อรักษาฟื้นฟูร่างกาย', [n.id]);
       }
     }
     return res;
   };
-  const firstOf = (n, list) => list.find(k => n.inv && n.inv.pills && n.inv.pills[k] > 0);
+  CPE.consumePersonalPill = consume;
   CPE.consumeCrafted = (W, n, p) => {
     const list = n.inv && n.inv.craftedPills, i = list && list.indexOf(p);
     if (i == null || i < 0 || p.intent !== 'keep' || !(p.qty > 0)) return null;
@@ -513,8 +560,6 @@
     if (n.cult && s.qi != null && s.qi < CULT.qiMax(n) * 0.2 && (k = pickPill(n, 'qiRestore', R.qi))) { ctx.pillAt = W.t + 6; if (consume(W, n, k)) { n.fx = { t: W.t, text: '💊' }; return true; } }
     return false;
   };
-  // Only the master, treasury elder, or an explicitly recorded acting officer
-  // may make allocations. Temporary absences never permanently change posts.
   CPE.welfareOfficer = W => {
     const S = W.sect, available = n => !!n && !n.dead && !n.away && !n.exiled && !n.sealed && !n.sealedBt && !(n.jail > W.t);
     const elder = SECT.holder(W, 'treasury'), master = W.byId[S.masterId], deputy = W.byId[S.deputyId];
@@ -554,7 +599,6 @@
     const passedOver = [];
 
     const give = (n, list, needScore, relScore) => {
-      // PREMIUM PILL PROTECTION: Welfare strictly distributes basic recovery medicines only.
       const k = list.find(x => BASIC_IDS.includes(x) && ECO.count(W, x) > reserveFor(x));
       if (!k) return false;
       n.inv.pills = n.inv.pills || {};
@@ -620,7 +664,6 @@
       });
     }
 
-    // Reaction and resentment check:
     const biasedRecipients = recipients.filter(r => r.biasScore > 20 && r.needScore < 30);
     if (biasedRecipients.length > 0 && passedOver.length > 0 && mer < 0.55) {
       passedOver.forEach(p => {
@@ -671,17 +714,19 @@
   };
   /* ----- รายวัน/รายเดือน ----- */
   CPE.daily = W => {
-    const S = W.sect, c = CPE.S(W); if (S.library && !c.freeLib) c.freeLib = S.library.filter(id => { const t = CULT.tech(id); return t && t.tier <= 1; });
+    const S = W.sect, c = CPE.S(W); if (S.library && !c.freeLib) c.freeLib = S.library.filter(id => { const t = CULT.tech(id); return t && t.tier <= 1 && !t.overhaulPack; });
     W.npcs.forEach(n => {
       if (n.cp == null) n.cp = 20;
       if (n.inv && n.inv.techs) n.inv.techs = n.inv.techs.filter(id => CULT.tech(id) && !S.library.includes(id));
       if (n.inv && n.inv.recipes) n.inv.recipes = n.inv.recipes.filter(id => !!ECO.recipeById[id]);
     });
     CPE.welfareDaily(W);
+    if (g.SECT && g.SECT.distributeSectStock && W.day % 2 === 0) {
+      g.SECT.distributeSectStock(W);
+    }
     const al = W.npcs.filter(n => !n.dead && !n.exiled);
     const baseTgt = 175 + al.reduce((s, n) => s + n.rank * 16 + (n.cult ? n.cult.stage * 20 : 0), 0) / Math.max(1, al.length);
     const tgt = baseTgt * Math.pow(Math.max(0.6, c.price || 1), 0.65);
-    // ดัชนีใช้ค่าเฉลี่ยต่อหัวแบบจำกัดเพดาน: สะท้อนกำลังซื้อจริงตามระดับตบะและราคาปัจจุบัน
     const cap = tgt * 4, balances = al.map(n => clamp(n.cp || 0, 0, cap));
     const avg = balances.length ? balances.reduce((s, v) => s + v, 0) / balances.length : 0;
     const median = balances.length ? balances.slice().sort((a, b) => a - b)[balances.length >> 1] : 0;
@@ -698,7 +743,6 @@
     W.npcs.forEach(n => { if (n.dead || n.exiled) return; CPE.mint(W, n, (pay[n.rank] || 10) * (n.post ? 1.25 : 1) * (0.9 + W.sect.policy.generosity / 500) * pMod, 'เบี้ยหวัดคุณูปการ', true); });
     return paid;
   };
-  // Individual artisans use their own ingredients first and pay for any missing stock.
   function personalCraftChoice(W, n) {
     if (!n.inv || !n.cult || n.dead || n.away || n.h.state.energy < 20) return null;
     if ((n.inv.craftedPills || []).length >= 3) return null;

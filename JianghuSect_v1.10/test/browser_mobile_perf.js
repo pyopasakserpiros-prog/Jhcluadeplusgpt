@@ -89,7 +89,7 @@ const { chromium } = require('playwright');
         speedBtns,
         allSpeedsVisible: speedBtns.length === 8 && speedBtns.every(b => b.inViewport),
         navBtns,
-        allNavsVisible: navBtns.length === 5 && navBtns.every(b => b.inViewport),
+        allNavsVisible: navBtns.length === 6 && navBtns.every(b => b.inViewport),
         minimapClickable: topAtMm && topAtMm.id === 'minimap'
       };
     }, vp.width);
@@ -98,7 +98,7 @@ const { chromium } = require('playwright');
     assert(layout.noHorizontalOverflow, `${vp.name}: should have no horizontal overflow (scrollWidth=${layout.docW})`);
     assert.deepStrictEqual(layout.speedBtns.map(b => b.sp), [0, 1, 2, 4, 8, 16, 32, 48], `${vp.name}: must render all 8 speed multipliers`);
     assert(layout.allSpeedsVisible, `${vp.name}: all 8 speed buttons must fit inside ${vp.width}px viewport: ${JSON.stringify(layout.speedBtns)}`);
-    assert(layout.allNavsVisible, `${vp.name}: all 5 bottom navigation buttons must fit inside ${vp.width}px viewport`);
+    assert(layout.allNavsVisible, `${vp.name}: all 6 bottom navigation buttons must fit inside ${vp.width}px viewport`);
     assert(layout.minimapClickable, `${vp.name}: #minimap must not be covered by toast or HUD overlays`);
 
     viewportReport[vp.name] = {

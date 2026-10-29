@@ -95,17 +95,51 @@
     AI.stepMove(W, u);
   }
   /* =====================================================================
-   * ระบบสู้ใหม่ (v1.4): สเตตัสจริง (STATS) + วิชาแต่ละท่า (SK) + สถานะระหว่างศึก
-   *  - โอกาสโดน = แม่นยำ ÷ (แม่นยำ + 0.55×หลบหลีก)
-   *  - ความเสียหาย = 20% ของพลังชีวิตสูงสุดเป้า × [โจมตี ÷ (โจมตี + 0.8×ป้องกันหลังเจาะเกราะ)] × ตัวคูณท่า × คริ
-   *  - ท่ากายภาพใช้ พลังโจมตี/ป้องกัน, ท่าวิชาใช้ โจมตีวิชา/ป้องกันวิชา
-   *  - จังหวะลงมือ = 4 นาที ÷ (ความเร็วร่าย/100) ท่าหนักมีเวลาร่ายยาว + คูลดาวน์ + ใช้ปราณ
+   * ระบบสู้ใหม่ (v1.4 + v1.10 Overhaul): สเตตัสจริง (STATS) + วิชาหลายกระบวนท่า (SK) + วิชาติดตัว (PASSIVE)
    * ===================================================================== */
   const STs = () => g.STATS, SKs = () => g.SK;
   const FX_PHYS = ['ฟัน', 'แทง', 'ปะทะ', 'ฝ่ามือ'], FX_MAG = ['ปราณพุ่ง', 'คลื่นวิชา', 'แสงปราณ'];
   C.stats = u => STs().get(u);
   function hpFrac(u) { return clamp(C.hp(u) / Math.max(1, C.hpMax(u)), 0, 1); }
-  function shieldOf(u) { const x = STs().statusOf(u, 'shield'); return x && x.amt > 0 ? x : null; }
+  function shieldOf(u) { const x = STs().statusOf(u, 'shield'); if (x && x.amt > 0) return x; if (u && u.shieldBp > 0) return { k: 'shield', amt: u.shieldBp }; return null; }
+
+  /* Bounded Passive Procs (with strict internal cooldown and anti-recursion guard) */
+  function runPassiveProcs(W, f, actor, target, triggerKind, dmgDealt) {
+    if (f && f._inProc) return;
+    if (!actor || actor.foe || actor.dead || !actor.cult || !g.MARTIAL || !g.MARTIAL.passiveStats) return;
+    if (f) f._inProc = true;
+    try {
+    const ps = g.MARTIAL.passiveStats(actor);
+    if (!ps || !Array.isArray(ps.procs) || !ps.procs.length) return;
+    actor._procCds = actor._procCds || {};
+    const ST = STs();
+    for (const proc of ps.procs) {
+      if (proc.kind !== triggerKind) continue;
+      if ((actor._procCds[proc.techId] || 0) > W.t) continue;
+      actor._procCds[proc.techId] = W.t + Math.max(1, proc.icdTicks || 6);
+      if (proc.qiRestorePct && actor.cult) {
+        const qm = CULT.qiMax(actor);
+        actor.h.state.qi = Math.min(qm, (actor.h.state.qi == null ? qm : actor.h.state.qi) + qm * proc.qiRestorePct);
+      }
+      if (proc.hpRestorePct && !actor.dead) {
+        const hm = C.hpMax(actor);
+        C.setHp(actor, Math.min(hm, C.hp(actor) + Math.max(1, Math.round(hm * proc.hpRestorePct))));
+      }
+      if (proc.addStatus && !actor.dead) {
+        ST.addStatus(actor, proc.addStatus, proc.dur || 6);
+      }
+      if (proc.counterStatus && target && C.alive(target)) {
+        ST.addStatus(target, proc.counterStatus, proc.dur || 8);
+      }
+      if (proc.bonusPen && target && C.alive(target)) {
+        ST.addStatus(target, 'armorbreak', 8);
+      }
+      actor.lastPassiveProc = { t: W.t, techId: proc.techId, kind: triggerKind };
+    }
+    } finally { if (f) f._inProc = false; }
+  }
+  C.runPassiveProcs = runPassiveProcs;
+
   /* รับความเสียหาย: โล่ → เลือด → ยอมแพ้/หนี/ตาย */
   C.applyDamage = (W, f, a, d, dmg, note) => {
     const sh = shieldOf(d); if (sh) { const ab = Math.min(sh.amt, dmg); sh.amt -= ab; dmg -= ab; if (sh.amt <= 0) STs().clearStatus(d, x => x.k === 'shield'); }
@@ -130,18 +164,38 @@
     }
     return false;
   };
-  /* หนึ่งการโจมตี: o = {M, type:'p'|'m', pen, dotHalf, forced, noCounter, crit+} */
+  /* หนึ่งการโจมตี: o = {M, type:'p'|'m', pen, dotHalf, forced, noCounter, noProc, crit+} */
   C.strike = (W, f, a, d, o) => {
     const ST = STs(), sa = ST.get(a), sd = ST.get(d), nonlethal = !f.serious;
     const hitP = o.forced ? 1 : clamp(sa.acc / (sa.acc + 0.55 * sd.eva), 0.12, 0.97);
     if (W.rng.next() > hitP) { d.fx = { t: W.t, text: 'หลบ' }; if (!d.foe) HC.trainBody(d, 'reflex', 0.3); return { hit: false }; }
-    // ท่าสวนกลับ: ปัดทิ้งแล้วสวน
-    if (!o.noCounter) { const cs = ST.statusOf(d, 'counter'); if (cs && !d.dead) { ST.clearStatus(d, x => x.k === 'counter'); d.fx = { t: W.t, text: '↩ ปัดสวน!' }; C.strike(W, f, d, a, { M: cs.M, type: cs.type, pen: cs.pen, forced: true, noCounter: true }); return { hit: false, countered: true }; } }
+    // ท่าสวนกลับ: ปัดทิ้งแล้วสวน (ป้องกันลูปสะท้อน/สวนซ้ำ)
+    if (!o.noCounter) { const cs = ST.statusOf(d, 'counter'); if (cs && !d.dead) { ST.clearStatus(d, x => x.k === 'counter'); d.fx = { t: W.t, text: '↩ ปัดสวน!' }; C.strike(W, f, d, a, { M: cs.M, type: cs.type, pen: cs.pen, forced: true, noCounter: true, noReflect: true, noProc: true }); return { hit: false, countered: true }; } }
+    const tb = (!a.foe && g.MARTIAL && g.MARTIAL.combatTargetBonus) ? g.MARTIAL.combatTargetBonus(a, d) : null;
     const type = o.type || (sa.atk >= sa.matk ? 'p' : 'm'), A0 = type === 'p' ? sa.atk : sa.matk;
-    let D = (type === 'p' ? sd.def : sd.mdef) * (o.dotHalf ? 0.5 : 1) * (1 - clamp(((sa.pen || 0) + (o.pen || 0)) / 100, 0, 0.8));
-    const crit = !o.noCrit && W.rng.chance(((sa.crit || 0) + (o.critAdd || 0)) / 100);
-    let frac = 0.2 * (A0 / (A0 + 0.8 * Math.max(0, D))) * (o.M || 1) * (0.85 + W.rng.next() * 0.3);
-    if (crit) frac *= sa.critDmg / 100;
+    const penTot = (sa.pen || 0) + (o.pen || 0) + (tb ? tb.penAdd : 0);
+    let D = (type === 'p' ? sd.def : sd.mdef) * (o.dotHalf ? 0.5 : 1) * (1 - clamp(penTot / 100, 0, 0.82));
+    const critChance = ((sa.crit || 0) + (o.critAdd || 0) + (tb ? tb.critAdd : 0)) / 100;
+    const crit = !o.noCrit && W.rng.chance(clamp(critChance, 0, 0.90));
+    let frac = 0.2 * (A0 / (A0 + 0.8 * Math.max(0, D))) * (o.M || 1) * (o.synDmgMult || 1) * (tb ? tb.dmgMult : 1) * (0.85 + W.rng.next() * 0.3);
+    if (crit) frac *= ((sa.critDmg || 150) + (o.critDmgAdd || 0) + (tb ? tb.critDmgAdd : 0)) / 100;
+    // Major Path Offensive/Defensive Combat Identities
+    if (!a.foe && a.cult) {
+      if (a.cult.path === 'XIAN' && o.isSkill && (a.h.state.qi || 0) >= CULT.qiMax(a) * 0.5) {
+        frac *= 1.08; // Meridian Qi Resonance
+      } else if (a.cult.path === 'GOD') {
+        const isCorrupt = !!(d.foe || (d.cult && d.cult.path === 'DEMON') || (d.h && d.h.state && (d.h.state.heartDemon || 0) >= 30));
+        frac *= isCorrupt ? 1.14 : 1.08; // Divine Mandate Verdict
+      }
+    }
+    if (!d.foe && d.cult) {
+      if (d.cult.path === 'BODY') {
+        const dHpf = hpFrac(d);
+        if (dHpf <= 0.65) frac *= (1 - 0.08 * (1 - dHpf)); // Blood-Qi Flesh Crucible unyielding mitigation
+      } else if (d.cult.path === 'GOD') {
+        frac *= 0.91; // Divine Aegis Faith Ward
+      }
+    }
     if (nonlethal) frac *= 0.55;
     const hm = C.hpMax(d), beastGuard = !d.foe && g.MARTIAL && g.MARTIAL.isBeast(a) ? g.MARTIAL.skillEffects(d).beastDamage : 1, dmg = hm * frac * beastGuard;
     a.fx = a.fx || {}; if (!o.silent) { a.fx = { t: W.t, text: o.label || (crit ? 'จุดตาย!' : type === 'p' ? W.rng.pick(FX_PHYS) : W.rng.pick(FX_MAG)) }; }
@@ -151,17 +205,24 @@
     let lifesteal = 0, reflected = 0;
     if (!a.foe && !a.dead && a.cult && a.cult.path === 'DEMON' && dmg > 0) {
       const trA = CULT.trackRealm(a);
-      const lsPct = (trA && trA.realmBuffs && trA.realmBuffs.lifestealPct) ? trA.realmBuffs.lifestealPct : (a.cult.stage * 1.2);
+      const lsPct = clamp((trA && trA.realmBuffs && trA.realmBuffs.lifestealPct) ? trA.realmBuffs.lifestealPct : (a.cult.stage * 1.15), 1, 14);
       lifesteal = Math.max(1, Math.round(dmg * (lsPct / 100)));
       C.setHp(a, Math.min(C.hpMax(a), C.hp(a) + lifesteal));
       a.lastLifesteal = lifesteal;
+    } else if (!a.foe && !a.dead && a.cult && a.cult.path === 'GOD' && dmg > 0 && o.isSkill) {
+      const faithHeal = Math.max(1, Math.round(C.hpMax(a) * 0.028));
+      C.setHp(a, Math.min(C.hpMax(a), C.hp(a) + faithHeal));
     }
     if (!o.noReflect && !d.foe && d.cult && d.cult.path === 'HEART_SOUL' && dmg > 0 && !a.dead) {
       const trD = CULT.trackRealm(d);
-      const refPct = (trD && trD.realmBuffs && trD.realmBuffs.reflectPct) ? trD.realmBuffs.reflectPct : (d.cult.stage * 1.4);
-      reflected = Math.max(1, Math.round(dmg * (refPct / 100)));
+      const refPct = clamp((trD && trD.realmBuffs && trD.realmBuffs.reflectPct) ? trD.realmBuffs.reflectPct : (d.cult.stage * 1.3), 1, 15);
+      reflected = Math.max(1, Math.min(Math.round(C.hpMax(a) * 0.18), Math.round(dmg * (refPct / 100))));
       d.lastReflect = reflected;
       C.applyDamage(W, f, d, a, reflected, 'สะท้อนจิต');
+    }
+    if (!o.noProc && dmg > 0) {
+      runPassiveProcs(W, f, a, d, 'onHit', dmg);
+      runPassiveProcs(W, f, d, a, 'onStruck', dmg);
     }
     return { hit: true, dmg, crit, killed, lifesteal, reflected };
   };
@@ -173,13 +234,20 @@
     const en = C.enemies(W, f, a.id), near = en.filter(x => Math.hypot(x.x - d.x, x.y - d.y) < 2.6).length;
     const aggr = a.foe ? 0.2 : (E(a, 'personality.aggression') - 50) / 200, caut = a.foe ? 0 : (E(a, 'personality.caution') - 50) / 200;
     const basicStat = Math.max(sa.atk, sa.matk), td = ST.get(d), tdp = C.power(d), self = C.power(a);
+    const targetShielded = !!shieldOf(d) || ST.has(d, 'guardUp');
     let best = null, bs = 1.15; ctx.cds = ctx.cds || {};
     for (const p of list) {
       if ((ctx.cds[p.id] || 0) > W.t) continue;
+      if (p.tech && p.tech !== p.id && (ctx.cds['TECH_GCD:' + p.tech] || 0) > W.t) continue;
+      if (!a.foe && g.MARTIAL && g.MARTIAL.skillEfficiency(a, p) <= 0) continue;
       const cost = a.foe ? 0 : SK.qiCost(a, p); if (qi < cost) continue;
       if (p.arch === 'forbid' && (nonlethal || (hpR > 0.45 && !(tdp > self * 1.5)))) continue;
+      if (p.drawback && p.drawback.staminaCost && !a.foe && (a.h.state.energy || 0) < p.drawback.staminaCost + 8) continue;
+      const syn = (!a.foe && g.MARTIAL && g.MARTIAL.skillSynergy) ? g.MARTIAL.skillSynergy(a, p) : null;
+      const effWind = Math.max(2, (p.wind || 4) + (syn ? syn.windDelta : 0));
       let sc = 0; const stat = p.type === 'p' ? sa.atk : sa.matk, rel = stat / Math.max(1, basicStat), mas = a.foe ? 1 : SK.mastery(a, p);
-      if (p.M) { const dmgEq = p.M * (p.hits || 1) * rel * mas * (p.aoe ? Math.max(1, near) : 1) + (p.dot || 0) * rel * 0.8; sc = dmgEq * (4 / Math.max(4, p.wind)) * 0.62; sc += aggr * 0.5; }
+      if (p.M) { const dmgEq = p.M * (p.hits || 1) * rel * mas * (p.aoe ? Math.max(1, near) : 1) + (p.dot || 0) * (syn ? syn.dotMult : 1) * rel * 0.8; sc = dmgEq * (4 / Math.max(3, effWind)) * 0.62; sc += aggr * 0.5; }
+      if (syn && syn.matched) sc += 0.28;
       if (p.arch === 'pierce') sc += clamp(td.def / Math.max(1, td.mdef), 0.5, 2) * 0.4;
       if (p.arch === 'control') sc = (ST.has(d, 'stun') || ST.has(d, 'silence') || ST.has(d, 'slow') ? 0.2 : 1.7) * (tdp > self * 0.5 ? 1 : 0.5);
       if (p.arch === 'dot') sc += (d.sx && d.sx.some(x => SK.STATUS[x.k] && SK.STATUS[x.k].dot && x.until > W.t) ? -1.5 : 0.7) + (hpFrac(d) > 0.5 ? 0.4 : -0.4);
@@ -209,25 +277,99 @@
       }
       if (p.arch === 'evade') sc = (ST.has(a, 'evadeUp') ? 0 : (hpR < 0.5 ? (0.5 - hpR) * 5 : 0) + (en.length > 2 ? 0.8 : 0) + caut);
       if (p.arch === 'forbid') sc += (hpR < 0.4 ? 2.2 : 0.4) + aggr + (tdp > self * 1.5 ? 1.2 : 0);
+      // Tactical role bonuses for multi-move techniques
+      if (p.shatterShield && targetShielded) sc += 3.2;
+      if (p.aiRole === 'anti_armor' && td.def > td.mdef * 1.1) sc += 0.7;
+      if (p.aiRole === 'finisher' && hpFrac(d) < 0.45) sc += 1.1;
+      if (p.aiRole === 'opener' && hpFrac(d) > 0.75) sc += 0.6;
+      if (p.aiRole === 'sustain' && (hpR < 0.65 || (!a.foe && qi < CULT.qiMax(a) * 0.45))) sc += 1.6;
       sc *= 0.88 + W.rng.next() * 0.24;
       if (sc > bs) { bs = sc; best = p; }
     }
     return best;
   }
+  C.chooseSkill = chooseSkill;
   function lowestAlly(W, f, a) { const side = C.sideOf(f, a.id) === 'A' ? f.A : f.B; let w = null, m = 2; side.forEach(id => { const u = C.unit(W, id); if (!C.alive(u) || u.id === a.id) return; const r = hpFrac(u); if (r < m) { m = r; w = u; } }); return w; }
   function useSkill(W, f, a, d, p, ctx) {
     const SK = SKs(), ST = STs(), sa = ST.get(a);
-    if (!a.foe && g.MARTIAL) { const efficiency = g.MARTIAL.skillEfficiency(a, p); if (!efficiency) return; p = Object.assign({}, p, { M: p.M * efficiency, shield: p.shield * efficiency, heal: p.heal * efficiency, dot: p.dot * efficiency }); if (p.channel && typeof p.channel === 'object') p.channel = Object.assign({}, p.channel, { tickM: p.channel.tickM * efficiency, finishM: p.channel.finishM * efficiency }); }
+    const syn = (!a.foe && g.MARTIAL && g.MARTIAL.skillSynergy) ? g.MARTIAL.skillSynergy(a, p) : null;
+    const masBase = a.foe ? 1 : (SK.masteryBase ? SK.masteryBase(a, p) : 1);
+    if (!a.foe && g.MARTIAL) {
+      const efficiency = g.MARTIAL.skillEfficiency(a, p);
+      if (!efficiency) return;
+      const dMult = efficiency * (syn ? syn.dmgMult : 1);
+      const shMult = efficiency * (syn ? syn.shieldMult : 1);
+      const hlMult = efficiency * (syn ? syn.healMult : 1);
+      const dtMult = efficiency * (syn ? syn.dotMult : 1);
+      p = Object.assign({}, p, {
+        M: p.M * efficiency,
+        synDmgMult: syn ? syn.dmgMult : 1,
+        shield: (p.shield || 0) * shMult,
+        heal: (p.heal || 0) * hlMult,
+        dot: (p.dot || 0) * dtMult,
+        pen: (p.pen || 0) + (syn ? syn.penAdd : 0),
+        critAdd: (p.critAdd || 0) + (syn ? syn.critAdd : 0),
+        critDmgAdd: (p.critDmgAdd || 0) + (syn ? syn.critDmgAdd : 0),
+        wind: Math.max(2, (p.wind || 3) + (syn ? syn.windDelta : 0)),
+        qiRestorePct: (p.qiRestorePct || 0) + (syn ? syn.qiRestorePct : 0)
+      });
+      if (p.support && syn && syn.extraSupportDur) {
+        p.support = Object.assign({}, p.support, { dur: (p.support.dur || 14) + syn.extraSupportDur });
+      }
+      if (p.channel && typeof p.channel === 'object') {
+        p.channel = Object.assign({}, p.channel, { tickM: p.channel.tickM * dMult * masBase, finishM: p.channel.finishM * dMult * masBase });
+      }
+    }
     ctx.cds = ctx.cds || {};
     ctx.cds[p.id] = W.t + Math.max(Math.round(p.cd * 0.5), Math.round(p.cd * 100 / sa.cast));
-    if (!a.foe) { const cost = SK.qiCost(a, p); a.h.state.qi = Math.max(0, (a.h.state.qi == null ? cost : a.h.state.qi) - cost); a.cult.tm = a.cult.tm || {}; a.cult.tm[p.id] = (a.cult.tm[p.id] || 0) + 1; }
+    if (p.tech && p.tech !== p.id) {
+      ctx.cds['TECH_GCD:' + p.tech] = W.t + Math.max(2, Math.round((p.wind || 3) * 80 / sa.cast));
+    }
+    if (!a.foe) {
+      const cost = SK.qiCost(a, p);
+      a.h.state.qi = Math.max(0, (a.h.state.qi == null ? cost : a.h.state.qi) - cost);
+      const techId = p.tech || p.id;
+      const masGain = syn ? syn.masteryMult : 1;
+      if (SK.gainMastery) SK.gainMastery(W, a, techId, masGain);
+      else { a.cult.tm = a.cult.tm || {}; a.cult.tm[techId] = (a.cult.tm[techId] || 0) + masGain; }
+      if (p.id !== techId) { a.cult.tm[p.id] = (a.cult.tm[p.id] || 0) + masGain; }
+      if (p.qiRestorePct && a.cult) {
+        const qm = CULT.qiMax(a);
+        a.h.state.qi = Math.min(qm, (a.h.state.qi || 0) + qm * p.qiRestorePct);
+      }
+      if (syn && syn.cleanseHeartDemon && a.h && a.h.state) {
+        a.h.state.heartDemon = Math.max(0, (a.h.state.heartDemon || 0) - syn.cleanseHeartDemon);
+      }
+      if (p.drawback) {
+        if (p.drawback.staminaCost) a.h.state.energy = Math.max(0, (a.h.state.energy || 0) - p.drawback.staminaCost);
+        if (p.drawback.exposeTicks) ST.addStatus(a, 'exposed', p.drawback.exposeTicks);
+        if (p.drawback.heartDemonAdd) a.h.state.heartDemon = clamp((a.h.state.heartDemon || 0) + p.drawback.heartDemonAdd, 0, 100);
+      }
+    }
     const label = p.moves && p.moves.length ? W.rng.pick(p.moves) : p.nameTh;
     a.fx = { t: W.t, text: p.icon + ' ' + label };
     // One lightweight visual event per actual activation; text/damage feedback stays independent.
     const tech = p.tech && CULT.tech(p.tech), target = p.self || p.team || ['heal', 'support', 'summon'].includes(p.arch) ? a : d || a;
-    a.castFx = { t: W.t, kind: p.arch === 'forbid' || (tech && tech.cat === 'FORBIDDEN_ART') ? 'forbidden' : 'normal', x: target.x, y: target.y, seq: ((a.castFx && a.castFx.seq) || 0) + 1 };
+    const isForbid = p.arch === 'forbid' || !!(tech && tech.cat === 'FORBIDDEN_ART');
+    const fxMotif = p.fxKind || (tech && tech.fxKind) || (isForbid ? 'forbidden' : 'normal');
+    a.castFx = {
+      t: W.t,
+      kind: isForbid ? 'forbidden' : 'normal',
+      motif: fxMotif,
+      fxKind: p.fxKind || (tech && tech.fxKind) || null,
+      legendary: !!(p.legendary || (tech && tech.legendary)),
+      techId: tech ? tech.id : p.id,
+      moveId: p.moveId || p.id,
+      x: target.x,
+      y: target.y,
+      seq: ((a.castFx && a.castFx.seq) || 0) + 1
+    };
+    if (p.shatterShield && d) {
+      ST.clearStatus(d, x => x.k === 'shield' || x.k === 'guardUp');
+      if (d.shieldBp) d.shieldBp = 0;
+    }
     const hm = C.hpMax(a);
-    if (p.arch === 'guard') { ST.addStatus(a, 'guardUp', 12); ST.addStatus(a, 'shield', 12, { amt: hm * (p.shield || 0.15) }); return; }
+    if (p.arch === 'guard') { ST.addStatus(a, 'guardUp', 12); if (p.shield > 0 || !p.qiRestorePct) ST.addStatus(a, 'shield', 12, { amt: hm * (p.shield || 0.15) }); return; }
     if (p.arch === 'evade') { ST.addStatus(a, 'evadeUp', 14); return; }
     if (p.arch === 'counter') { ST.addStatus(a, 'counter', 10, { M: p.M, type: p.type, pen: p.pen }); return; }
     if (p.arch === 'heal') {
@@ -304,18 +446,19 @@
     }
     // ท่าโจมตี
     const targets = p.aoe ? C.enemies(W, f, a.id).filter(x => Math.hypot(x.x - d.x, x.y - d.y) < 2.6) : [d]; if (!targets.includes(d)) targets.unshift(d);
-    const mas = a.foe ? 1 : SK.mastery(a, p) / (g.MARTIAL ? g.MARTIAL.skillEfficiency(a, p) : 1); let dealt = 0;
+    const mas = masBase; let dealt = 0;
     targets.slice(0, 6).forEach(t => {
       if (!C.alive(t)) return;
       for (let i = 0; i < (p.hits || 1); i++) {
         if (!C.alive(t)) break;
-        const r = C.strike(W, f, a, t, { M: p.M * mas * (p.aoe && t !== d ? 0.8 : 1), type: p.type, pen: p.pen, label: i === 0 ? label : null, silent: i > 0, critAdd: p.arch === 'flurry' ? 0 : 0 });
+        const r = C.strike(W, f, a, t, { M: p.M * mas * (p.aoe && t !== d ? 0.8 : 1), synDmgMult: p.synDmgMult || 1, type: p.type, pen: p.pen, label: i === 0 ? label : null, silent: i > 0, critAdd: p.critAdd || 0, critDmgAdd: p.critDmgAdd || 0, isSkill: true });
         if (r.hit) { dealt += r.dmg; applyRiders(W, f, a, t, p, r); }
       }
     });
     if (p.steal && dealt > 0 && !a.dead) C.setHp(a, Math.min(C.hpMax(a), C.hp(a) + dealt * p.steal));
     if (p.recoil && !a.dead) { ST.addStatus(a, 'exposed', 12); const rd = C.hpMax(a) * p.recoil; if (C.hp(a) - rd > 1) C.setHp(a, C.hp(a) - rd); else C.setHp(a, 1); }
   }
+  C.useSkill = useSkill;
   function applyRiders(W, f, a, t, p, r) {
     const SK = SKs(), ST = STs(); if (!C.alive(t) && t.dead) return;
     const ratio = clamp(C.power(a) / Math.max(1, C.power(t)), 0.3, 1.8);
@@ -325,7 +468,8 @@
       const ok = W.rng.next() < clamp(0.78 * Math.pow(ratio, 0.7), 0.1, 0.95);
       if (!ok) { t.fx = { t: W.t, text: 'ต้านทาน' }; return; }
       if (p.ctrl === 'stun' || p.ctrl === 'silence') C.interruptChannel(W, f, t, 'ถูกสะกดขัดจังหวะ');
-      const dur = { stun: 4 + Math.floor(p.tier / 2), slow: 14, silence: 10, weaken: 12, blind: 12 }[p.ctrl];
+      let dur = { stun: 4 + Math.floor(p.tier / 2), slow: 14, silence: 10, weaken: 12, blind: 12 }[p.ctrl] || 8;
+      if (!t.foe && t.cult && (t.cult.path === 'BODY' || (t.cult.path === 'HEART_SOUL' && p.ctrl === 'silence'))) dur = Math.max(2, Math.round(dur * 0.75));
       if (p.ctrl === 'burn' || p.ctrl === 'bleed') ST.addStatus(t, p.ctrl, 12, { per: 0.012 + 0.003 * p.tier, src: a.id });
       else ST.addStatus(t, p.ctrl, dur || 8);
       return;
@@ -436,7 +580,8 @@
       if (n.path) AI.stepMove(W, n); return;
     }
     const ctx = n.act.ctx; C.statusTick(W, f, n); if (n.dead || n.yield || n.fled) return;
-    if (n.h.state.qi != null && n.cult) { const qm = CULT.qiMax(n); n.h.state.qi = Math.min(qm, n.h.state.qi + qm * 0.006); }
+    runPassiveProcs(W, f, n, null, 'combatTick', 0);
+    if (n.h.state.qi != null && n.cult) { const qm = CULT.qiMax(n); const qRegen = n.cult.path === 'XIAN' ? 0.0075 : 0.006; n.h.state.qi = Math.min(qm, n.h.state.qi + qm * qRegen); }
     if (f.state === 'gather') {
       const ar = f.arena; if (Math.hypot(n.x - ar.x, n.y - ar.y) > 5 + (f.A.indexOf(n.id) + f.B.indexOf(n.id) + 1) % 3) { if (!n.path) AI.goTo(W, n, Math.floor(ar.x + (C.sideOf(f, n.id) === 'A' ? -3 : 3)), Math.floor(ar.y)); AI.stepMove(W, n); } else n.path = null;
       return;

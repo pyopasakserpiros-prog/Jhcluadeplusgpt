@@ -92,10 +92,32 @@
   CULT.subInfo = (path, sub) => (CULT.PATHS[path] && CULT.PATHS[path].subPaths.find(s => s.id === sub)) || CULT.BASE_SUB;
   CULT.stageInfo = (npc) => {
     const c = npc.cult; if (!c) return { nameTh: 'ปุถุชน (ยังไม่เปิดเส้นลมปราณ)', stage: 0, lifespanMax: 70, combatPower: 25, breakthroughBaseChance: 1 };
-    return CULT.PATHS[c.path].stages[c.stage - 1];
+    const stArr = CULT.PATHS[c.path].stages;
+    return stArr[Math.min(stArr.length - 1, Math.max(0, (c.stage || 1) - 1))];
   };
-  CULT.stageName = npc => npc.cult ? CULT.PATHS[npc.cult.path].shortTh + ' · ' + CULT.PATHS[npc.cult.path].stages[npc.cult.stage - 1].nameTh.replace(/^ขั้นที่ \d+ • /, '') + ' (' + npc.cult.stage + ')' : 'ปุถุชน';
+  CULT.stageName = npc => {
+    if (!npc.cult) return 'ปุถุชน';
+    const stArr = CULT.PATHS[npc.cult.path].stages;
+    const stObj = stArr[Math.min(stArr.length - 1, Math.max(0, (npc.cult.stage || 1) - 1))];
+    return CULT.PATHS[npc.cult.path].shortTh + ' · ' + stObj.nameTh.replace(/^ขั้นที่ \d+ • /, '') + ' (' + npc.cult.stage + ')';
+  };
   CULT.maxStage = npc => npc.cult ? CULT.PATHS[npc.cult.path].maxStage : 0;
+  CULT.normalizedStage = npc => {
+    if (!npc || !npc.cult) return 0;
+    const c = npc.cult, st = Math.max(1, c.stage || 1);
+    if (c.path === "BODY") return [1, 2.5, 4.5, 6.8, 9][Math.min(4, st - 1)] || st;
+    if (c.path === "GOD") return [1, 3.2, 6.2, 9][Math.min(3, st - 1)] || st;
+    return st;
+  };
+  CULT.effectiveTechStage = npc => {
+    if (!npc || !npc.cult) return 0;
+    const c = npc.cult, st = Math.max(1, c.stage || 1);
+    const trOrd = (c.track && c.track.ordinal) ? c.track.ordinal : 0;
+    let mapped = st;
+    if (c.path === "BODY") mapped = [1, 2, 4, 6, 7][Math.min(4, st - 1)] || st;
+    else if (c.path === "GOD") mapped = [1, 3, 5, 7][Math.min(3, st - 1)] || st;
+    return Math.max(st, mapped, trOrd);
+  };
   /* ----- ระดับแรงค์กลางยุทธภพ (World Rank 1..4 สำหรับผู้บำเพ็ญ, 0 สำหรับปุถุชน) -----
    * กำหนดจากขั้นบ่มเพาะหลัก (cult.stage) เท่านั้น ห้ามนำพลังรบ อุปกรณ์ ความคืบหน้า หรือบัฟมาเปลี่ยนแรงค์ */
   CULT.worldRankFromRaw = raw => {
@@ -130,9 +152,40 @@
     return life;
   };
   CULT.refreshLifespan = npc => { npc.lifespanMax = CULT.lifespan(npc); HC.touch(npc); };
-  CULT.hpMult = npc => npc.cult ? 1 + 0.42 * (npc.cult.stage - 1) + 0.25 : 1;
-  CULT.hpMax = npc => Math.round((g.MARTIAL ? g.MARTIAL.derived(npc) : HC.derived(npc)).hpMax * CULT.hpMult(npc));
-  CULT.qiMax = npc => npc.cult ? Math.round((40 + (g.MARTIAL ? g.MARTIAL.eff(npc, 'physiology.meridianCapacity') : HC.eff(npc, 'physiology.meridianCapacity')) * 0.9) * (1 + 0.5 * (npc.cult.stage - 1))) : 0;
+  CULT.hpMult = npc => {
+    if (!npc || !npc.cult) return 1;
+    const ns = CULT.normalizedStage(npc);
+    const pathAdd = npc.cult.path === "BODY" ? 0.09 * (ns - 1) : npc.cult.path === "GOD" ? 0.11 * (ns - 1) : 0;
+    return 1 + 0.42 * (ns - 1) + 0.25 + pathAdd;
+  };
+  CULT.hpMax = npc => {
+    const c = npc.cult, cPath = c ? c.path : '', cSub = c ? c.sub : '', cSt = c ? c.stage : 0, cTr = c && c.track ? c.track.ordinal : 0, hc = npc._hpMaxCache;
+    if (hc && hc.day === HC.nowDay && hc.ver === npc._ver && hc.pver === (npc._passVer || 0) && hc.path === cPath && hc.sub === cSub && hc.st === cSt && hc.tr === cTr) return hc.val;
+    const val = Math.round((g.MARTIAL ? g.MARTIAL.derived(npc) : HC.derived(npc)).hpMax * CULT.hpMult(npc));
+    npc._hpMaxCache = { day: HC.nowDay, ver: npc._ver, pver: npc._passVer || 0, path: cPath, sub: cSub, st: cSt, tr: cTr, val };
+    return val;
+  };
+
+  const TECH_BY_ID = {}, MOVE_PARENT_BY_ID = {};
+  JD.TECH.techniques.forEach(t => { TECH_BY_ID[t.id] = t; if (Array.isArray(t.moveDefs)) t.moveDefs.forEach(m => { MOVE_PARENT_BY_ID[m.id] = t; }); });
+  JD.TECH.mantras.forEach(t => { TECH_BY_ID[t.id] = t; if (Array.isArray(t.moveDefs)) t.moveDefs.forEach(m => { MOVE_PARENT_BY_ID[m.id] = t; }); });
+  CULT.tech = id => TECH_BY_ID[id] || MOVE_PARENT_BY_ID[id];
+
+  CULT.qiMax = npc => {
+    if (!npc || !npc.cult) return 0;
+    const c = npc.cult, qc = npc._qiMaxCache;
+    if (qc && qc.cult === c && qc.path === c.path && qc.sub === c.sub && qc.st === c.stage && qc.mantra === c.mantra && qc.ver === npc._ver && qc.pver === (npc._passVer || 0)) return qc.val;
+    const ns = CULT.normalizedStage(npc);
+    const base = (40 + (g.MARTIAL ? g.MARTIAL.eff(npc, 'physiology.meridianCapacity') : HC.eff(npc, 'physiology.meridianCapacity')) * 0.9) * (1 + 0.5 * (ns - 1));
+    const pass = g.MARTIAL && g.MARTIAL.passiveStats ? g.MARTIAL.passiveStats(npc) : null;
+    const inn = g.MARTIAL && g.MARTIAL.innateStats ? g.MARTIAL.innateStats(npc) : null;
+    const m = c.mantra ? TECH_BY_ID[c.mantra] : null;
+    const pct = (pass ? (pass.qiMaxPct || 0) : 0) + (inn ? (inn.qiMaxPct || 0) : 0) + (m && m.mantraBonus && m.mantraBonus.qiMaxPct ? m.mantraBonus.qiMaxPct : 0);
+    const flat = (pass ? (pass.qiMaxFlat || 0) : 0) + (inn ? (inn.qiMaxFlat || 0) : 0);
+    const val = Math.max(1, Math.round(base * (1 + pct) + flat));
+    npc._qiMaxCache = { cult: c, path: c.path, sub: c.sub, st: c.stage, mantra: c.mantra, ver: npc._ver, pver: npc._passVer || 0, val };
+    return val;
+  };
   CULT.speedMult = npc => npc.cult ? 1 + 0.05 * (npc.cult.stage - 1) : 1;
 
   /* ----- ตั้งต้นการบำเพ็ญ: เปิดเส้นลมปราณ (awakening) ----- */
@@ -145,45 +198,54 @@
     HC.bump(npc);
     return ch;
   };
-  CULT.mantraPool = path => JD.TECH.mantras.filter(m => m.path === path).concat(JD.TECH.techniques.filter(t => /_MANTRA$/.test(t.cat) && t.path === path).map(t => ({ id: t.id, nameTh: t.nameTh, path: t.path, tier: t.tier, power: t.power })));
+  CULT.mantraPool = path => JD.TECH.mantras.filter(m => m.path === path).concat(JD.TECH.techniques.filter(t => /_MANTRA$/.test(t.cat) && t.path === path).map(t => ({ id: t.id, nameTh: t.nameTh, path: t.path, tier: t.tier, power: t.power, legendary: !!t.legendary })));
   CULT.bestMantra = (path, maxTier, npc) => {
-    const pool = CULT.mantraPool(path).filter(m => m.tier <= maxTier);
+    const unlocked = npc && npc.cult && Array.isArray(npc.cult.unlockedMantras) ? npc.cult.unlockedMantras : [];
+    const pool = CULT.mantraPool(path).filter(m => m.tier <= maxTier && (!m.legendary || unlocked.includes(m.id)));
     pool.sort((a, b) => b.tier - a.tier || b.power - a.power);
     return pool[0] || null;
   };
-  const TECH_BY_ID = {}; JD.TECH.techniques.forEach(t => TECH_BY_ID[t.id] = t); JD.TECH.mantras.forEach(t => TECH_BY_ID[t.id] = t);
-  CULT.tech = id => TECH_BY_ID[id];
 
   /* ----- อัตราบำเพ็ญ (แต้มต่อชั่วโมงเกม) ----- */
   CULT.rate = (npc, env) => {
     const c = npc.cult; if (!c) return 0;
-    const d = HC.derived(npc);
-    const talent = clamp(d.cultivationTalent / 62, 0.35, 2.4);
-    const root = HC.ROOT_BY_ID[npc.h.root.grade] || HC.ROOT_BY_ID.MORTAL;
-    let base;
-    if (c.path === 'XIAN') base = 1.0 * talent * root.cultivationMult;
-    else if (c.path === 'BODY') base = 0.9 * clamp((HC.eff(npc, 'physiology.strength') + HC.eff(npc, 'physiology.toughness') + HC.eff(npc, 'physiology.endurance') + HC.eff(npc, 'aptitudes.cultivation')) / 4 / 55, 0.35, 2.2) * (0.8 + 0.4 * root.bodySynergy);
-    else if (c.path === 'DEMON') {
-      const demonApt = (d.cultivationTalent * 0.45 + HC.eff(npc, 'personality.ambition') * 0.25 + HC.eff(npc, 'personality.aggression') * 0.15 + Math.max(HC.eff(npc, 'affinities.YIN_SHADOW'), HC.eff(npc, 'affinities.POISON')) * 0.15) / 55;
-      base = 1.05 * clamp(demonApt, 0.4, 2.45) * (0.85 + 0.2 * root.cultivationMult);
-    } else if (c.path === 'HEART_SOUL') {
-      const soulApt = (HC.eff(npc, 'intellect.comprehension') * 0.35 + HC.eff(npc, 'intellect.willpower') * 0.25 + HC.eff(npc, 'personality.composure') * 0.25 + HC.eff(npc, 'physiology.spiritualFoundation') * 0.15) / 54;
-      base = 0.98 * clamp(soulApt, 0.4, 2.35) * (0.9 + 0.15 * root.cultivationMult);
+    let staticBase;
+    const rc = npc._cultRateBase, ritVal = npc.h.skills.ritual || 0, focVal = npc.h.intellect.focus || 0;
+    if (rc && rc.day === HC.nowDay && rc.ver === npc._ver && rc.pver === (npc._passVer || 0) && rc.path === c.path && rc.sub === c.sub && rc.st === c.stage && rc.mantra === c.mantra && rc.rit === ritVal && rc.foc === focVal) {
+      staticBase = rc.val;
     } else {
-      base = 0.85 * clamp((HC.eff(npc, 'social.charisma') + HC.eff(npc, 'intellect.willpower') + HC.eff(npc, 'aptitudes.cultivation')) / 3 / 55, 0.35, 2.2);
+      const d = HC.derived(npc);
+      const talent = clamp(d.cultivationTalent / 62, 0.35, 2.4);
+      const root = HC.ROOT_BY_ID[npc.h.root.grade] || HC.ROOT_BY_ID.MORTAL;
+      let base;
+      if (c.path === 'XIAN') base = 1.0 * talent * root.cultivationMult;
+      else if (c.path === 'BODY') base = 0.9 * clamp((HC.eff(npc, 'physiology.strength') + HC.eff(npc, 'physiology.toughness') + HC.eff(npc, 'physiology.endurance') + HC.eff(npc, 'aptitudes.cultivation')) / 4 / 55, 0.35, 2.2) * (0.8 + 0.4 * root.bodySynergy);
+      else if (c.path === 'DEMON') {
+        const demonApt = (d.cultivationTalent * 0.45 + HC.eff(npc, 'personality.ambition') * 0.25 + HC.eff(npc, 'personality.aggression') * 0.15 + Math.max(HC.eff(npc, 'affinities.YIN_SHADOW'), HC.eff(npc, 'affinities.POISON')) * 0.15) / 55;
+        base = 1.05 * clamp(demonApt, 0.4, 2.45) * (0.85 + 0.2 * root.cultivationMult);
+      } else if (c.path === 'HEART_SOUL') {
+        const soulApt = (HC.eff(npc, 'intellect.comprehension') * 0.35 + HC.eff(npc, 'intellect.willpower') * 0.25 + HC.eff(npc, 'personality.composure') * 0.25 + HC.eff(npc, 'physiology.spiritualFoundation') * 0.15) / 54;
+        base = 0.98 * clamp(soulApt, 0.4, 2.35) * (0.9 + 0.15 * root.cultivationMult);
+      } else {
+        base = 0.94 * clamp((HC.eff(npc, 'social.charisma') * 0.35 + HC.eff(npc, 'intellect.willpower') * 0.35 + HC.eff(npc, 'aptitudes.cultivation') * 0.30) / 54, 0.38, 2.35) * (0.88 + 0.18 * root.cultivationMult);
+      }
+      const m = c.mantra ? TECH_BY_ID[c.mantra] : null;
+      const mantraK = m ? 1 + 0.11 * (m.tier - 1) : 0.9;
+      const focus = 0.65 + 0.35 * HC.eff(npc, 'intellect.focus') / 100;
+      const sp = 1 + HC.special(npc, 'cultivation.rateBonus');
+      const passRate = (g.MARTIAL && g.MARTIAL.passiveStats ? g.MARTIAL.passiveStats(npc).cultRatePct : 0) || 0;
+      const innRate = (g.MARTIAL && g.MARTIAL.innateStats ? g.MARTIAL.innateStats(npc).cultRatePct : 0) || 0;
+      const manRate = (m && m.mantraBonus && m.mantraBonus.cultRatePct) || 0;
+      staticBase = base * (g.MARTIAL ? g.MARTIAL.skillEffects(npc).cultivation : 1) * mantraK * focus * sp * (1 + passRate + innRate + manRate);
+      npc._cultRateBase = { day: HC.nowDay, ver: npc._ver, pver: npc._passVer || 0, path: c.path, sub: c.sub, st: c.stage, mantra: c.mantra, rit: ritVal, foc: focVal, val: staticBase };
     }
-    const m = c.mantra ? TECH_BY_ID[c.mantra] : null;
-    const mantraK = m ? 1 + 0.11 * (m.tier - 1) : 0.9;
-    const focus = 0.65 + 0.35 * HC.eff(npc, 'intellect.focus') / 100;
     const rest = npc.h.state.rest < 30 ? 0.6 : npc.h.state.rest < 55 ? 0.85 : 1;
     let toxic, dev;
     const hd = npc.h.state.heartDemon || 0;
     if (c.path === 'DEMON') {
-      // วิถีมารอสูร: ทนพิษโอสถ/กู่สูง และเปลี่ยนปมจิตมารระดับต้น-กลาง (<=60) เป็นแรงขับเคลื่อนตบะมาร (+สูงสุด 22%) แต่หากเกิน 60 จะเสี่ยงปราณมารย้อนกลับ
       toxic = 1 - clamp(c.toxic / (c.sub === 'VENOM_GU_SOVEREIGN' ? 360 : 240), 0, 0.28);
       dev = hd <= 60 ? (1 + (hd / 60) * 0.22) : Math.max(0.55, 1.22 - ((hd - 60) / 40) * 0.65);
     } else if (c.path === 'HEART_SOUL') {
-      // วิถีจิต·เซน: ยามจิตสงบไร้ฝุ่น (จิตมาร<=10 และความเครียด<=25) จะได้โบนัสกระจกใจ +15% แต่หากจิตมารหรือความเครียดสูงจะถูกรบกวนหนักกว่าปกติ
       toxic = 1 - clamp(c.toxic / 140, 0, 0.5);
       const stressPen = clamp(Math.max(0, (npc.h.state.stress || 0) - 45) / 150, 0, 0.25);
       dev = (hd <= 10 && (npc.h.state.stress || 0) <= 25) ? 1.15 : Math.max(0.35, 1 - clamp(hd / 140, 0, 0.55) - stressPen);
@@ -192,8 +254,7 @@
       dev = 1 - clamp(hd / 200, 0, 0.4);
     }
     const pill = c.pillT > 0 ? 1 + (c.pillBoost || 0) : 1;
-    const sp = 1 + HC.special(npc, 'cultivation.rateBonus');
-    return base * (g.MARTIAL ? g.MARTIAL.skillEffects(npc).cultivation : 1) * mantraK * focus * rest * toxic * dev * pill * (env || 1) * sp;
+    return staticBase * rest * toxic * dev * pill * (env || 1);
   };
   CULT.gain = (npc, pts) => {
     const c = npc.cult; if (!c) return;
@@ -222,7 +283,7 @@
     let cp = st.combatPower;
     if (npc.cult) { const si = CULT.subInfo(npc.cult.path, npc.cult.sub); cp *= si.combatBonus; }
     const f_body = 0.7 + d.physicalIndex / 100 * 0.6;
-    const martial = Math.max(...['SWORD', 'BLADE', 'SPEAR', 'FIST_PALM', 'BODY_REFINING', 'SOUL_DIVINE', 'POISON'].map(k => npc.h.skills[k] || 0));
+    const sk = npc.h.skills; const martial = Math.max(sk.SWORD || 0, sk.BLADE || 0, sk.SPEAR || 0, sk.FIST_PALM || 0, sk.BODY_REFINING || 0, sk.SOUL_DIVINE || 0, sk.POISON || 0);
     const f_skill = 0.75 + martial / 100 * 0.5;
     let techSum = 0; (npc.cult ? npc.cult.techs : []).forEach(id => { const t = TECH_BY_ID[id]; if (t) techSum += t.tier; });
     const f_tech = 1 + Math.min(0.4, 0.04 * techSum);
@@ -321,20 +382,42 @@
     return res;
   };
 
-  /* ----- เรียนวิชา ----- */
-  CULT.learnable = (npc, library) => {
+  /* ----- เรียนวิชา (รวมถึงวิชาต้องห้ามภายใต้เงื่อนไขเข้มงวด) ----- */
+  CULT.canStudyForbidden = (npc, tOrId, opts) => {
+    const t = typeof tOrId === 'string' ? TECH_BY_ID[tOrId] : tOrId;
+    if (!t || !/FORBIDDEN/.test(t.cat || '')) return { ok: true };
+    if (!npc || !npc.cult) return { ok: false, reason: 'ยังไม่เปิดวิถีบำเพ็ญ' };
+    const c = npc.cult, req = t.reqTier || t.tier || 5;
+    if (CULT.effectiveTechStage(npc) < req) return { ok: false, reason: 'ขั้นบำเพ็ญไม่ถึงเกณฑ์วิชาต้องห้าม (ขั้น ' + req + ')' };
+    if (t.path !== 'ANY' && t.path !== c.path) return { ok: false, reason: 'ต่างวิถีหลัก' };
+    if (t.sub && t.sub !== c.sub) return { ok: false, reason: 'ต้องมีสายย่อยตรงกัน' };
+    const allowFlag = !!(opts && (opts.allowForbidden || opts.libraryStudy)) || !!npc.allowForbiddenStudy;
+    const demonPath = c.path === 'DEMON';
+    const darkDrive = HC.eff(npc, 'personality.ambition') >= 62 && HC.eff(npc, 'personality.integrity') <= 48;
+    const heartDemonDrive = !!(npc.h && npc.h.state && (npc.h.state.heartDemon || 0) >= 25);
+    if (!allowFlag && !demonPath && !darkDrive && !heartDemonDrive) {
+      return { ok: false, reason: 'วิชาต้องห้ามต้องอาศัยวิถีมาร ความทะเยอทะยานสูง หรือการเปิดอนุญาตศึกษา' };
+    }
+    return { ok: true };
+  };
+
+  CULT.learnable = (npc, library, opts) => {
     const c = npc.cult; if (!c) return [];
+    const effSt = CULT.effectiveTechStage(npc);
     return library.filter(id => {
-      const t = TECH_BY_ID[id]; if (!t || c.techs.includes(id)) return false;
-      if (/FORBIDDEN/.test(t.cat)) return false;
-      if (t.path !== 'ANY' && t.path !== c.path) return false;
-      if (t.sub && t.sub !== c.sub) return false; // One specialization; high stage never bypasses identity.
+      const t = TECH_BY_ID[id]; if (!t || t.innateOnly || (t.reqTier || t.tier) > effSt || (t.path !== 'ANY' && t.path !== c.path) || (t.sub && t.sub !== c.sub) || c.techs.includes(id)) return false;
       if (/_MANTRA$|^QI_MANTRA$/.test(t.cat)) return false;
-      return (t.reqTier || t.tier) <= c.stage + 0;
+      if (/FORBIDDEN/.test(t.cat)) {
+        if (!opts || !opts.includeForbidden) {
+          if (!npc.allowForbiddenStudy && !(opts && opts.allowForbidden)) return false;
+        }
+        if (!CULT.canStudyForbidden(npc, t, opts).ok) return false;
+      }
+      return true;
     });
   };
   CULT.studyCost = t => 90 * (t.tier + 0.5) * (1 + t.tier * 0.25); // นาทีเกมโดยประมาณ
-  CULT.maxTechs = npc => 2 + (npc.cult ? npc.cult.stage : 0);
+  CULT.maxTechs = npc => 2 + (npc.cult ? Math.round(CULT.normalizedStage(npc)) : 0);
 
 
   /* ----- สายบำเพ็ญเฉพาะทางอิสระ (Independent Specialization Tracks - v1.10.3 / v1.10.8) ----- */
@@ -661,7 +744,7 @@
       powerA: mA.power,
       powerB: mB.power,
       bandA: mA.band,
-      bandB: mB.band,
+      bandB: mA.band,
       ratio,
       bandDelta,
       assessmentTh

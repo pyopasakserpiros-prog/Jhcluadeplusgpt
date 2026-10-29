@@ -29,6 +29,33 @@
   function shade(hex, f) { const n = parseInt(hex.slice(1), 16); let r = n >> 16, g2 = (n >> 8) & 255, b = n & 255; if (f >= 0) { r += (255 - r) * f; g2 += (255 - g2) * f; b += (255 - b) * f; } else { r *= 1 + f; g2 *= 1 + f; b *= 1 + f; } return 'rgb(' + (r | 0) + ',' + (g2 | 0) + ',' + (b | 0) + ')'; }
   R.shade = shade;
 
+  /* ---------- Distinct Visual Motifs for the 22 Legendary Arts ---------- */
+  const LEGENDARY_MOTIFS = {
+    legend_dugu_sword: { kind: 'cast', primary: '#b3e5fc', secondary: '#0288d1', accent: '#ffffff', shape: 'nine_sword_vectors', labelTh: 'เก้ากระบี่เดียวดายทลายกระบวน' },
+    legend_dragon_palm: { kind: 'cast', primary: '#ffca28', secondary: '#e65100', accent: '#fff8e1', shape: 'coiling_dragon_shockwave', labelTh: 'สิบแปดฝ่ามือพิชิตมังกร' },
+    legend_feixian_beam: { kind: 'cast', primary: '#e1f5fe', secondary: '#ffd54f', accent: '#ffffff', shape: 'heavenly_feixian_beam', labelTh: 'หนึ่งกระบี่เซียนเหินฟ้า' },
+    legend_qiankun_taiji: { kind: 'cast', primary: '#f5f5f5', secondary: '#263238', accent: '#80cbc4', shape: 'yin_yang_taiji_disc', labelTh: 'เคล็ดเคลื่อนย้ายจักรวาล' },
+    legend_lingxi_gold: { kind: 'cast', primary: '#ffd54f', secondary: '#ff8f00', accent: '#fffde7', shape: 'golden_phoenix_finger_clamp', labelTh: 'ดัชนีหงส์ทองรับคมไร้พ่าย' },
+    legend_lingbo_afterimage: { kind: 'cast', primary: '#64ffda', secondary: '#0097a7', accent: '#e0f2f1', shape: 'bagua_ripple_footwork', labelTh: 'ย่างก้าวเหยียบคลื่นไร้เงา' },
+    legend_moon_shadow: { kind: 'cast', primary: '#cfd8dc', secondary: '#78909c', accent: '#ffffff', shape: 'crescent_feather_plumes', labelTh: 'ท่าร่างเงาจันทร์ค้างคาวหยก' },
+    legend_star_vortex: { kind: 'cast', primary: '#7c4dff', secondary: '#00e5ff', accent: '#e8eaf6', shape: 'abyssal_vortex_spiral', labelTh: 'มหาเวทดูดดาวกลืนชีพจร' },
+    legend_blood_lotus: { kind: 'cast', primary: '#ff1744', secondary: '#880e4f', accent: '#ffcdd2', shape: 'crimson_blood_lotus', labelTh: 'บงกชโลหิตเผาอายุขัย' },
+    legend_taixuan_runes: { kind: 'cast', primary: '#80d8ff', secondary: '#1e88e5', accent: '#e1f5fe', shape: 'taixuan_stele_runes', labelTh: 'คัมภีร์ไท่เสวียนจารึกผาหิน' },
+    legend_six_meridian: { kind: 'cast', primary: '#40c4ff', secondary: '#ff4081', accent: '#e0f7fa', shape: 'six_meridian_lasers', labelTh: 'คัมภีร์ปราณกระบี่หกชีพจร' },
+    legend_dragon_elephant: { kind: 'cast', primary: '#d4af37', secondary: '#cd7f32', accent: '#fff3cd', shape: 'twin_dharma_wheels', labelTh: 'มหาคัมภีร์นาคช้างปัญญาบารมี' },
+    legend_vajra_bell: { kind: 'cast', primary: '#ffb300', secondary: '#ff6f00', accent: '#fff8e1', shape: 'vajra_indestructible_bell', labelTh: 'คัมภีร์กายาวัชรอมตะไม่บุบสลาย' },
+    legend_eight_desolations: { kind: 'cast', primary: '#ff3d00', secondary: '#ffb300', accent: '#ffab91', shape: 'solar_corona_8directions', labelTh: 'คัมภีร์เทพบรรพกาลแปดทิศ' },
+    legend_celestial_mandate: { kind: 'cast', primary: '#7e57c2', secondary: '#ffd740', accent: '#ede7f6', shape: 'celestial_mandate_pillars', labelTh: 'มหาคัมภีร์โองการสวรรค์' },
+    legend_ashura_blood: { kind: 'cast', primary: '#d32f2f', secondary: '#4a0000', accent: '#ff8a80', shape: 'crimson_blood_tide', labelTh: 'คัมภีร์มารทะเลโลหิตอสูร' },
+    legend_gu_monarch: { kind: 'cast', primary: '#00c853', secondary: '#8e24aa', accent: '#b9f6ca', shape: 'venom_hex_spores', labelTh: 'มหาคัมภีร์กู่จักรพรรดิหมื่นพิษ' },
+    legend_nine_yin_mirror: { kind: 'cast', primary: '#80deea', secondary: '#b0bec5', accent: '#e0f7fa', shape: 'lunar_mirror_claws', labelTh: 'มหาคัมภีร์จิตเก้าหยินส่องวิญญาณ' },
+    legend_little_li_dagger: { kind: 'cast', primary: '#fff59d', secondary: '#90caf9', accent: '#ffffff', shape: 'single_intent_flash', labelTh: 'มหาคัมภีร์จิตมีดบินไร้พลาด' },
+    legend_aura_mingyu: { kind: 'aura', primary: '#80deea', secondary: '#e0f7fa', accent: '#b2ebf2', shape: 'jade_frost_lotus_aura', labelTh: 'เคล็ดปราณหยกใสไร้ราคี' },
+    legend_aura_nine_yang: { kind: 'aura', primary: '#ffca28', secondary: '#ff7043', accent: '#fff8e1', shape: 'golden_solar_bell_aura', labelTh: 'คัมภีร์เก้าสุริยันคุ้มชีพจร' },
+    legend_aura_dugu: { kind: 'aura', primary: '#b3e5fc', secondary: '#4fc3f7', accent: '#ffffff', shape: 'orbiting_sword_motes_aura', labelTh: 'จิตกระบี่ไร้พ่ายส่องใจ' }
+  };
+  R.LEGENDARY_MOTIFS = LEGENDARY_MOTIFS;
+
   /* ---------- สีภูมิประเทศตามฤดู ---------- */
   const GRASS = [['#a6c983', '#9fc57c', '#accf89'], ['#91bb74', '#8ab46d', '#99c17b'], ['#c8bc7c', '#c1b575', '#d0bf84'], ['#e2ebe5', '#dce6e1', '#e9efea']];
   function tileColor(t, x, y, season) {
@@ -359,20 +386,323 @@
         const p = kind === 'npc' ? this.npcPos(a) : a, x = p.x * TS, y = p.y * TS;
         if (!Number.isFinite(x) || !Number.isFinite(y) || Math.abs(x - this.cam.x) > hw + 48 || Math.abs(y - this.cam.y) > hh + 48) return;
         const forbidden = event.kind === 'forbidden';
+        const motif = event.motif || event.fxKind || (forbidden ? 'forbidden' : 'normal');
+        const isLegend = !!(event.legendary || (motif && String(motif).startsWith('legend_')));
         this.castActive.delete(key);
         if (this.castActive.size >= 24) this.castActive.delete(this.castActive.keys().next().value);
-        this.castActive.set(key, { kind: forbidden ? 'forbidden' : 'normal', x, y, angle: Math.atan2(event.y * TS - y, event.x * TS - x), start: this.castClock, life: forbidden ? 650 : 450 });
+        this.castActive.set(key, {
+          kind: forbidden ? 'forbidden' : 'normal',
+          motif,
+          fxKind: event.fxKind || (isLegend ? motif : null),
+          legendary: isLegend,
+          techId: event.techId || null,
+          moveId: event.moveId || null,
+          x,
+          y,
+          angle: Math.atan2(event.y * TS - y, event.x * TS - x),
+          start: this.castClock,
+          life: isLegend ? 820 : (forbidden ? 650 : 450)
+        });
       };
       W.npcs.forEach(a => read(a, 'npc')); (W.foes || []).forEach(a => read(a, 'foe'));
       // Summons receive fresh IDs; do not retain their history after despawning.
       for (const key of this.castSeen.keys()) if (!present.has(key)) this.castSeen.delete(key);
+    },
+    drawLegendaryCastMotif(ctx, fx, p, r, reduced) {
+      const mKey = fx.motif || fx.fxKind;
+      const spec = LEGENDARY_MOTIFS[mKey] || { primary: '#ffd54f', secondary: '#ff6f00', accent: '#ffffff', shape: 'solar_corona_9rays' };
+      const rot = reduced ? 0 : (p - 0.5) * 1.1;
+      // Ground resonance ring
+      ctx.fillStyle = 'rgba(20,16,32,0.22)';
+      ctx.beginPath(); ctx.ellipse(0, 5, r * 1.18, r * 0.52, 0, 0, 7); ctx.fill();
+      ctx.strokeStyle = spec.primary; ctx.lineWidth = 1.8;
+      ctx.beginPath(); ctx.ellipse(0, 5, r * 1.05, r * 0.45, 0, 0, 7); ctx.stroke();
+
+      switch (mKey) {
+        case 'legend_dugu_sword': {
+          // 9 intersecting silver-azure sword-intent vectors
+          ctx.rotate(fx.angle);
+          for (let i = 0; i < 9; i++) {
+            const ang = ((i - 4) * 0.24) + rot * (i % 2 ? 0.4 : -0.4);
+            const len = r * (0.85 + (i % 3) * 0.18);
+            ctx.strokeStyle = i % 2 === 0 ? spec.primary : spec.accent;
+            ctx.lineWidth = i === 4 ? 2.4 : 1.3;
+            ctx.beginPath();
+            ctx.moveTo(-len * 0.35, (i - 4) * 1.6);
+            ctx.lineTo(Math.cos(ang) * len, Math.sin(ang) * len);
+            ctx.stroke();
+          }
+          break;
+        }
+        case 'legend_dragon_palm': {
+          // Coiling golden-amber dragon shockwave + 3 claw arcs
+          ctx.rotate(fx.angle);
+          ctx.strokeStyle = spec.primary; ctx.lineWidth = 2.6;
+          ctx.beginPath();
+          for (let i = 0; i <= 16; i++) {
+            const u = i / 16, dx = (u - 0.15) * r * 1.45, dy = Math.sin(u * 8 + p * 6) * (4.5 + u * 4);
+            i ? ctx.lineTo(dx, dy) : ctx.moveTo(dx, dy);
+          }
+          ctx.stroke();
+          ctx.strokeStyle = spec.secondary; ctx.lineWidth = 1.6;
+          for (let c = -1; c <= 1; c++) {
+            ctx.beginPath(); ctx.arc(r * 0.65, c * 4.5, r * 0.48, -0.7, 0.7); ctx.stroke();
+          }
+          break;
+        }
+        case 'legend_six_meridian': {
+          // 6 colored meridian laser beams fanning from caster
+          const cols = ['#ff5252', '#ffd740', '#69f0ae', '#40c4ff', '#7c4dff', '#ff4081'];
+          ctx.rotate(fx.angle);
+          for (let i = 0; i < 6; i++) {
+            const a = (i - 2.5) * 0.22;
+            ctx.strokeStyle = cols[i]; ctx.lineWidth = 1.8;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(Math.cos(a) * r * 1.45, Math.sin(a) * r * 1.45);
+            ctx.stroke();
+            ctx.fillStyle = spec.accent;
+            ctx.beginPath(); ctx.arc(Math.cos(a) * r * 1.45, Math.sin(a) * r * 1.45, 2.1, 0, 7); ctx.fill();
+          }
+          break;
+        }
+        case 'legend_qiankun_taiji': {
+          // Black-and-white rotating Yin-Yang Taiji diagram
+          ctx.save(); ctx.translate(0, 4); ctx.scale(1, 0.56); ctx.rotate(fx.angle + p * 2.2);
+          ctx.fillStyle = spec.primary; ctx.beginPath(); ctx.arc(0, 0, r * 0.9, -Math.PI / 2, Math.PI / 2); ctx.fill();
+          ctx.fillStyle = spec.secondary; ctx.beginPath(); ctx.arc(0, 0, r * 0.9, Math.PI / 2, Math.PI * 1.5); ctx.fill();
+          ctx.fillStyle = spec.primary; ctx.beginPath(); ctx.arc(0, -r * 0.45, r * 0.45, 0, 7); ctx.fill();
+          ctx.fillStyle = spec.secondary; ctx.beginPath(); ctx.arc(0, r * 0.45, r * 0.45, 0, 7); ctx.fill();
+          ctx.fillStyle = spec.secondary; ctx.beginPath(); ctx.arc(0, -r * 0.45, r * 0.14, 0, 7); ctx.fill();
+          ctx.fillStyle = spec.primary; ctx.beginPath(); ctx.arc(0, r * 0.45, r * 0.14, 0, 7); ctx.fill();
+          ctx.strokeStyle = spec.accent; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(0, 0, r * 0.92, 0, 7); ctx.stroke();
+          ctx.restore();
+          break;
+        }
+        case 'legend_taixuan_runes': {
+          // Star-studded violet-cyan gravitational constellation
+          ctx.rotate(fx.angle - p * 1.6);
+          ctx.strokeStyle = spec.secondary; ctx.lineWidth = 1.3;
+          ctx.beginPath();
+          for (let i = 0; i <= 7; i++) {
+            const a = i * Math.PI * 2 / 7, rr = r * (0.55 + (i % 2) * 0.42);
+            const sx = Math.cos(a) * rr, sy = Math.sin(a) * rr * 0.65;
+            i ? ctx.lineTo(sx, sy) : ctx.moveTo(sx, sy);
+          }
+          ctx.stroke();
+          for (let i = 0; i < 7; i++) {
+            const a = i * Math.PI * 2 / 7, rr = r * (0.55 + (i % 2) * 0.42);
+            ctx.fillStyle = i % 2 ? spec.accent : spec.primary;
+            ctx.beginPath(); ctx.arc(Math.cos(a) * rr, Math.sin(a) * rr * 0.65, 2.4, 0, 7); ctx.fill();
+          }
+          break;
+        }
+        case 'legend_lingbo_afterimage': {
+          // 8-trigram Bagua footwork octagon + water ripples
+          ctx.save(); ctx.translate(0, 5); ctx.scale(1, 0.52); ctx.rotate(p * 1.4);
+          ctx.strokeStyle = spec.primary; ctx.lineWidth = 1.8;
+          ctx.beginPath();
+          for (let i = 0; i <= 8; i++) {
+            const a = i * Math.PI / 4;
+            const px = Math.cos(a) * r, py = Math.sin(a) * r;
+            i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+          }
+          ctx.stroke();
+          ctx.strokeStyle = spec.accent; ctx.lineWidth = 1.1;
+          ctx.beginPath(); ctx.arc(0, 0, r * 0.65, 0, 7); ctx.stroke();
+          ctx.restore();
+          break;
+        }
+        case 'legend_moon_shadow': {
+          // Crescent silver moon + drifting white feather silhouettes
+          ctx.rotate(fx.angle);
+          ctx.fillStyle = spec.primary;
+          ctx.beginPath(); ctx.arc(0, 0, r * 0.85, -1.1, 1.1); ctx.arc(-r * 0.28, 0, r * 0.72, 1.0, -1.0, true); ctx.closePath(); ctx.fill();
+          ctx.strokeStyle = spec.accent; ctx.lineWidth = 1.4;
+          for (let i = 0; i < 4; i++) {
+            const fx2 = r * (0.4 + i * 0.22), fy2 = (i - 1.5) * 5;
+            ctx.beginPath(); ctx.ellipse(fx2, fy2, 4.5, 1.6, 0.3, 0, 7); ctx.stroke();
+          }
+          break;
+        }
+        case 'legend_blood_lotus': {
+          // Scarlet-magenta needle starburst + 3 afterimage silhouettes
+          for (let ph = -1; ph <= 1; ph++) {
+            ctx.fillStyle = ph === 0 ? 'rgba(255,23,68,0.38)' : 'rgba(213,0,249,0.22)';
+            ctx.beginPath(); ctx.ellipse(ph * 8 * (0.5 + p), -4, 4.5, 9, ph * 0.2, 0, 7); ctx.fill();
+          }
+          ctx.strokeStyle = spec.primary; ctx.lineWidth = 1.5;
+          for (let i = 0; i < 12; i++) {
+            const a = i * Math.PI / 6 + rot;
+            ctx.beginPath();
+            ctx.moveTo(Math.cos(a) * r * 0.35, Math.sin(a) * r * 0.35);
+            ctx.lineTo(Math.cos(a) * r * 1.25, Math.sin(a) * r * 1.25);
+            ctx.stroke();
+          }
+          break;
+        }
+        case 'legend_eight_desolations': {
+          // Crimson-black tyrannical hexagram + 6 shockwave spikes
+          ctx.save(); ctx.translate(0, 4); ctx.scale(1, 0.55); ctx.rotate(rot);
+          ctx.strokeStyle = spec.primary; ctx.lineWidth = 2.2;
+          for (let t2 = 0; t2 < 2; t2++) {
+            ctx.beginPath();
+            for (let i = 0; i <= 3; i++) {
+              const a = i * Math.PI * 2 / 3 + t2 * Math.PI / 3;
+              const x2 = Math.cos(a) * r * 1.05, y2 = Math.sin(a) * r * 1.05;
+              i ? ctx.lineTo(x2, y2) : ctx.moveTo(x2, y2);
+            }
+            ctx.stroke();
+          }
+          ctx.restore();
+          ctx.strokeStyle = spec.accent; ctx.lineWidth = 2.0;
+          for (let i = 0; i < 6; i++) {
+            const a = i * Math.PI / 3;
+            ctx.beginPath(); ctx.moveTo(Math.cos(a) * r * 0.6, Math.sin(a) * r * 0.3); ctx.lineTo(Math.cos(a) * r * 1.2, Math.sin(a) * r * 0.3 - 10); ctx.stroke();
+          }
+          break;
+        }
+        case 'legend_vajra_bell': {
+          // Golden-crimson solar corona + 9 sun-rays
+          ctx.fillStyle = 'rgba(255,179,0,0.28)';
+          ctx.beginPath(); ctx.arc(0, -2, r * 0.72, 0, 7); ctx.fill();
+          ctx.strokeStyle = spec.primary; ctx.lineWidth = 2.1;
+          for (let i = 0; i < 9; i++) {
+            const a = i * Math.PI * 2 / 9 + rot;
+            ctx.beginPath();
+            ctx.moveTo(Math.cos(a) * r * 0.5, -2 + Math.sin(a) * r * 0.5);
+            ctx.lineTo(Math.cos(a) * r * 1.25, -2 + Math.sin(a) * r * 1.25);
+            ctx.stroke();
+          }
+          break;
+        }
+        case 'legend_star_vortex': {
+          // Deep-abyssal azure-indigo inward spiral vortex
+          ctx.strokeStyle = spec.primary; ctx.lineWidth = 1.9;
+          for (let arm = 0; arm < 3; arm++) {
+            ctx.beginPath();
+            for (let s = 0; s <= 14; s++) {
+              const u = s / 14, ang = arm * Math.PI * 2 / 3 + u * 4.2 - p * 3, rad = r * (1.15 - u * 0.85);
+              const vx = Math.cos(ang) * rad, vy = 3 + Math.sin(ang) * rad * 0.55;
+              s ? ctx.lineTo(vx, vy) : ctx.moveTo(vx, vy);
+            }
+            ctx.stroke();
+          }
+          break;
+        }
+        case 'legend_lingxi_gold': {
+          // Golden-amber 8-petal Bodhi lotus
+          ctx.save(); ctx.translate(0, 4); ctx.scale(1, 0.58);
+          for (let i = 0; i < 8; i++) {
+            const a = i * Math.PI / 4 + rot * 0.5;
+            ctx.save(); ctx.rotate(a);
+            ctx.fillStyle = i % 2 ? 'rgba(255,213,79,0.42)' : 'rgba(255,143,0,0.38)';
+            ctx.beginPath(); ctx.ellipse(r * 0.55, 0, r * 0.45, r * 0.22, 0, 0, 7); ctx.fill();
+            ctx.strokeStyle = spec.accent; ctx.lineWidth = 1.1; ctx.stroke();
+            ctx.restore();
+          }
+          ctx.restore();
+          break;
+        }
+        case 'legend_dragon_elephant': {
+          // Twin bronze-gold Dharma wheels counter-rotating
+          for (const dir of [-1, 1]) {
+            ctx.save(); ctx.translate(dir * 7, 2); ctx.scale(1, 0.6); ctx.rotate(dir * (0.6 + p * 2.4));
+            ctx.strokeStyle = dir < 0 ? spec.primary : spec.secondary; ctx.lineWidth = 1.8;
+            ctx.beginPath(); ctx.arc(0, 0, r * 0.68, 0, 7); ctx.stroke();
+            for (let i = 0; i < 8; i++) {
+              const a = i * Math.PI / 4;
+              ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(Math.cos(a) * r * 0.68, Math.sin(a) * r * 0.68); ctx.stroke();
+            }
+            ctx.restore();
+          }
+          break;
+        }
+        case 'legend_feixian_beam': {
+          // Jade-gold thousand-petal halo + radiant beams
+          ctx.strokeStyle = spec.secondary; ctx.lineWidth = 1.8;
+          ctx.beginPath(); ctx.arc(0, -5, r * 0.85, Math.PI * 0.85, Math.PI * 2.15); ctx.stroke();
+          ctx.strokeStyle = spec.primary; ctx.lineWidth = 1.3;
+          for (let i = 0; i < 11; i++) {
+            const a = Math.PI + (i / 10) * Math.PI;
+            ctx.beginPath();
+            ctx.moveTo(Math.cos(a) * r * 0.55, -5 + Math.sin(a) * r * 0.55);
+            ctx.lineTo(Math.cos(a) * r * 1.18, -5 + Math.sin(a) * r * 1.18);
+            ctx.stroke();
+          }
+          break;
+        }
+        case 'legend_celestial_mandate': {
+          // Nether-purple & gold judgment seal + 4 decree pillars
+          ctx.strokeStyle = spec.primary; ctx.lineWidth = 2.0;
+          ctx.strokeRect(-r * 0.65, -r * 0.32, r * 1.3, r * 0.64);
+          ctx.strokeStyle = spec.secondary; ctx.lineWidth = 1.6;
+          for (const px2 of [-r * 0.72, -r * 0.25, r * 0.25, r * 0.72]) {
+            ctx.beginPath(); ctx.moveTo(px2, 6); ctx.lineTo(px2, -14 - p * 8); ctx.stroke();
+          }
+          break;
+        }
+        case 'legend_ashura_blood': {
+          // Crimson blood-tide wave + dark scarlet crescents
+          ctx.fillStyle = 'rgba(211,47,47,0.34)';
+          ctx.beginPath(); ctx.arc(0, 2, r * 0.95, 0, Math.PI); ctx.closePath(); ctx.fill();
+          ctx.strokeStyle = spec.primary; ctx.lineWidth = 2.2;
+          for (let i = 0; i < 3; i++) {
+            ctx.beginPath(); ctx.arc((i - 1) * 6, 0, r * (0.65 + i * 0.18), -0.8, 0.8); ctx.stroke();
+          }
+          break;
+        }
+        case 'legend_gu_monarch': {
+          // Viridian-violet hex-ring + venom spores
+          ctx.save(); ctx.translate(0, 4); ctx.scale(1, 0.54);
+          ctx.strokeStyle = spec.primary; ctx.lineWidth = 1.9;
+          ctx.beginPath();
+          for (let i = 0; i <= 6; i++) {
+            const a = i * Math.PI / 3 + rot;
+            const hx = Math.cos(a) * r * 0.95, hy = Math.sin(a) * r * 0.95;
+            i ? ctx.lineTo(hx, hy) : ctx.moveTo(hx, hy);
+          }
+          ctx.stroke();
+          ctx.restore();
+          ctx.fillStyle = spec.secondary;
+          for (let i = 0; i < 6; i++) {
+            const a = i * Math.PI / 3 + p * 2;
+            ctx.beginPath(); ctx.arc(Math.cos(a) * r * 0.75, Math.sin(a) * r * 0.4 - p * 6, 2.3, 0, 7); ctx.fill();
+          }
+          break;
+        }
+        case 'legend_nine_yin_mirror': {
+          // Silver-cyan lunar mirror + phantom claw arcs
+          ctx.strokeStyle = spec.primary; ctx.lineWidth = 2.0;
+          ctx.beginPath(); ctx.ellipse(0, -2, r * 0.58, r * 0.82, 0, 0, 7); ctx.stroke();
+          ctx.strokeStyle = spec.accent; ctx.lineWidth = 1.5;
+          for (let c = -2; c <= 2; c++) {
+            ctx.beginPath(); ctx.moveTo(-r * 0.6, c * 3); ctx.quadraticCurveTo(0, c * 3 - 4, r * 0.85, c * 3 + 2); ctx.stroke();
+          }
+          break;
+        }
+        case 'legend_little_li_dagger':
+        default: {
+          // Single razor-thin platinum-gold beam + target lock cross
+          ctx.save(); ctx.rotate(fx.angle);
+          ctx.strokeStyle = spec.accent; ctx.lineWidth = 2.6;
+          ctx.beginPath(); ctx.moveTo(-r * 0.8, 0); ctx.lineTo(r * 1.55, 0); ctx.stroke();
+          ctx.strokeStyle = spec.primary; ctx.lineWidth = 1.4;
+          ctx.beginPath(); ctx.arc(r * 0.9, 0, r * 0.36, 0, 7); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(r * 0.9 - 6, 0); ctx.lineTo(r * 0.9 + 6, 0); ctx.moveTo(r * 0.9, -6); ctx.lineTo(r * 0.9, 6); ctx.stroke();
+          ctx.restore();
+          break;
+        }
+      }
     },
     drawCastEffects(ctx) {
       const reduced = this.motionQuery && this.motionQuery.matches;
       for (const fx of this.castActive.values()) {
         const p = clamp((this.castClock - fx.start) / fx.life, 0, 1), fade = Math.min(1, (1 - p) * 2.8), r = reduced ? 23 : 18 + p * 13;
         ctx.save(); ctx.translate(fx.x, fx.y - 7); ctx.globalAlpha = fade; ctx.lineCap = 'round';
-        if (fx.kind === 'normal') {
+        if (fx.legendary || (fx.motif && String(fx.motif).startsWith('legend_'))) {
+          this.drawLegendaryCastMotif(ctx, fx, p, r, reduced);
+        } else if (fx.kind === 'normal') {
           ctx.fillStyle = 'rgba(109,223,181,.14)'; ctx.beginPath(); ctx.ellipse(0, 4, r * .9, r * .38, 0, 0, 7); ctx.fill();
           ctx.strokeStyle = 'rgba(236,213,133,.78)'; ctx.lineWidth = 1.1; ctx.beginPath(); ctx.ellipse(0, 4, r * .8, r * .34, 0, 0, 7); ctx.stroke();
           ctx.rotate(fx.angle + (reduced ? 0 : (p - .5) * .7));
@@ -392,6 +722,50 @@
         }
         ctx.restore();
       }
+    },
+    drawLegendaryAura(ctx, n, act) {
+      if (!n || !n.cult) return;
+      const M = g.MARTIAL;
+      const activePassives = (M && M.activePassives) ? M.activePassives(n).map(id => CULT.tech(id)).filter(Boolean) : [];
+      const legPass = activePassives.filter(t => t && t.legendary && t.fxKind);
+      const legMantra = n.cult.mantra ? CULT.tech(n.cult.mantra) : null;
+      const hasLegMantra = !!(legMantra && legMantra.legendary && legMantra.fxKind);
+      if (!legPass.length && !hasLegMantra) return;
+      if (act !== 'fight' && act !== 'cultivate' && act !== 'practice' && act !== 'breakthrough' && this.selected !== n.id) return;
+
+      const t = this.t + (n.n || 0) * 0.7;
+      ctx.save();
+      // Draw passive legendary auras
+      for (const lp of legPass) {
+        if (lp.fxKind === 'legend_aura_mingyu') {
+          ctx.strokeStyle = 'rgba(128,222,234,0.68)'; ctx.lineWidth = 1.2;
+          ctx.beginPath(); ctx.ellipse(0, 0, 10.5, 4.6, 0, 0, 7); ctx.stroke();
+          for (let i = 0; i < 4; i++) {
+            const a = t * 1.6 + i * Math.PI / 2;
+            ctx.fillStyle = 'rgba(224,247,250,0.8)';
+            ctx.fillRect(Math.cos(a) * 9 - 1, -8 + Math.sin(a * 1.3) * 5, 2, 2);
+          }
+        } else if (lp.fxKind === 'legend_aura_nine_yang') {
+          ctx.strokeStyle = 'rgba(255,202,40,0.65)'; ctx.lineWidth = 1.4;
+          ctx.beginPath(); ctx.arc(0, -9, 11.5 + Math.sin(t * 3) * 0.8, Math.PI * 0.9, Math.PI * 2.1); ctx.stroke();
+          ctx.strokeStyle = 'rgba(255,112,67,0.45)';
+          ctx.beginPath(); ctx.ellipse(0, 1, 9.8, 4.0, 0, 0, 7); ctx.stroke();
+        } else if (lp.fxKind === 'legend_aura_dugu') {
+          ctx.strokeStyle = 'rgba(179,229,252,0.78)'; ctx.lineWidth = 1.2;
+          for (let i = 0; i < 3; i++) {
+            const a = t * 2.2 + i * Math.PI * 2 / 3;
+            const sx = Math.cos(a) * 10.5, sy = -9 + Math.sin(a) * 4.2;
+            ctx.beginPath(); ctx.moveTo(sx - 2.5, sy - 1.5); ctx.lineTo(sx + 2.5, sy + 1.5); ctx.stroke();
+          }
+        }
+      }
+      // Subtle ring for active legendary mantra
+      if (hasLegMantra) {
+        const spec = LEGENDARY_MOTIFS[legMantra.fxKind] || { primary: '#ffd54f' };
+        ctx.strokeStyle = spec.primary; ctx.globalAlpha = 0.55; ctx.lineWidth = 1.1;
+        ctx.beginPath(); ctx.ellipse(0, 1.2, 8.8, 3.6, 0, 0, 7); ctx.stroke();
+      }
+      ctx.restore();
     },
     nightFactor(h) { if (h >= 7 && h < 17.5) return 0; if (h >= 19.5 || h < 4.5) return 1; if (h >= 17.5) return (h - 17.5) / 2; if (h >= 4.5 && h < 7) return 1 - (h - 4.5) / 2.5; return 0; },
     drawWater(ctx) {
@@ -463,7 +837,7 @@
         ctx.fillStyle = 'rgba(200,230,255,' + (0.1 + 0.08 * Math.sin(t * 1.3)) + ')'; ctx.beginPath(); ctx.ellipse(cx + 10, y + 28 - Math.sin(t) * 3, 7, 11, 0, 0, 7); ctx.fill();
       } else if (b.type === 'grove') {
         for (let i = 0; i < 7; i++) { const px = x + 12 + (i * 47) % (w - 24), py = y + 18 + ((i * 29) % (h - 30)); ctx.fillStyle = '#2d6a35'; ctx.beginPath(); ctx.arc(px, py, 9, 0, 7); ctx.fill(); ctx.fillStyle = '#3f8a46'; ctx.beginPath(); ctx.arc(px - 2, py - 3, 6, 0, 7); ctx.fill(); }
-        ctx.fillStyle = 'rgba(255,240,150,' + (0.4 + 0.4 * Math.sin(t * 3)) + ')'; for (let i = 0; i < 4; i++) ctx.fillRect(x + 10 + ((i * 53 + t * 5) % (w - 20)), y + 14 + ((i * 31 + t * 3) % (h - 28)), 2, 2);
+        ctx.fillStyle = 'rgba(255,240,150,' + (0.4 + 0.4 * Math.sin(t * 3)) + ')'; for (let i = 0; i < 4; i++) { ctx.fillRect(x + 10 + ((i * 53 + t * 5) % (w - 20)), y + 14 + ((i * 31 + t * 3) % (h - 28)), 2, 2); }
       }
     },
     drawOpenArea(ctx, b, z) {
@@ -495,6 +869,8 @@
       ctx.save(); ctx.translate(x, y);
       // เงา
       ctx.fillStyle = 'rgba(0,0,0,.25)'; ctx.beginPath(); ctx.ellipse(0, 1, 5.5 * sc, 2.4, 0, 0, 7); ctx.fill();
+      // ออร่าวิชาตำนาน (ไม่ใช้ RNG เกม)
+      this.drawLegendaryAura(ctx, n, act);
       // ออร่า
       if (n.cult && (act === 'cultivate' || act === 'breakthrough')) { const pc = PATH_COL[n.cult.path]; const pr = 0.5 + 0.5 * Math.sin(this.t * 3 + n.n); const gr = ctx.createRadialGradient(0, -8, 2, 0, -8, 18 + pr * 4 + n.cult.stage * 1.5); gr.addColorStop(0, pc + '99'); gr.addColorStop(1, pc + '00'); ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(0, -8, 24 + n.cult.stage * 1.5, 0, 7); ctx.fill(); if (act === 'breakthrough') { ctx.strokeStyle = '#fff8c0'; ctx.lineWidth = 1.5; for (let i = 0; i < 6; i++) { const a = this.t * 2 + i; ctx.beginPath(); ctx.moveTo(Math.cos(a) * 8, -8 + Math.sin(a) * 8); ctx.lineTo(Math.cos(a) * 20, -8 + Math.sin(a) * 20); ctx.stroke(); } } }
       ctx.scale(face * sc, sc);

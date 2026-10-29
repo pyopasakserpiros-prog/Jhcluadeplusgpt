@@ -24,7 +24,7 @@
   const PATHW = {
     XIAN: { atk: .85, matk: 1.2, def: .8, mdef: 1.1 },
     BODY: { atk: 1.2, matk: .5, def: 1.35, mdef: .7 },
-    GOD: { atk: .95, matk: 1.05, def: 1.05, mdef: 1.25 },
+    GOD: { atk: 1.06, matk: 1.16, def: 1.14, mdef: 1.28 },
     DEMON: { atk: 1.15, matk: 1.15, def: .78, mdef: .92 },
     HEART_SOUL: { atk: .72, matk: 1.28, def: .88, mdef: 1.32 },
     NONE: { atk: 1, matk: .15, def: .9, mdef: .35 }
@@ -77,12 +77,18 @@
   ST.gearScore = it => { const s = ST.gearStats(it); return (s.atk || 0) + (s.matk || 0) + (s.def || 0) + (s.mdef || 0) + (s.hp || 0) * 0.5 + (s.eva || 0) * 0.6 + (s.acc || 0) * 0.6 + (s.crit || 0) * 8 + (s.critDmg || 0) * 1.5 + (s.pen || 0) * 6 + (s.cast || 0) * 3 + (s.move || 0) * 2; };
 
   /* ---------- สถานะ/บัฟ ---------- */
-  ST.dirty = u => { if (u) { u._cs = null; u._csBase = null; } };
+  ST.dirty = u => { if (u) { u._cs = null; u._csBase = null; u._skillEffectsCache = null; u._lifeMultCache = null; } };
   ST.addBuff = (n, b) => { n.buffs = (n.buffs || []).filter(x => x.id !== b.id && x.until > ST.now); n.buffs.push({ id: b.id, name: b.name, until: ST.now + b.dur, p: b.p || {}, f: b.f || {} }); ST.dirty(n); };
   ST.addStatus = (u, k, dur, extra) => { u.sx = (u.sx || []).filter(x => x.until > ST.now); const ex = u.sx.find(x => x.k === k); if (ex) { ex.until = Math.max(ex.until, ST.now + dur); if (extra) Object.assign(ex, extra); } else u.sx.push(Object.assign({ k, until: ST.now + dur }, extra || {})); ST.dirty(u); };
   ST.has = (u, k) => !!(u.sx && u.sx.some(x => x.k === k && x.until > ST.now));
   ST.statusOf = (u, k) => (u.sx || []).find(x => x.k === k && x.until > ST.now);
   ST.clearStatus = (u, filter) => { if (!u.sx) return; u.sx = u.sx.filter(x => !(filter(x))); ST.dirty(u); };
+
+  function passiveCacheKey(n) {
+    if (!n || !n.cult) return 0;
+    const hpfBand = (n._hpf == null || n._hpf > 0.8) ? 2 : (n._hpf <= 0.4 ? 0 : (n._hpf <= 0.45 ? 1 : (n._hpf <= 0.5 ? 3 : 4)));
+    return ((n._passVer || 0) * 16) + hpfBand;
+  }
 
   /* ---------- คำนวณ ---------- */
   function compute(n, wp) {
@@ -112,7 +118,7 @@
     add('pen', 'ฝีมือยุทธ์', 'f', martial * 0.05);
     add('cast', 'ปฏิกิริยา/สมาธิ/ความเข้าใจ', 'f', (E(n, 'physiology.reflex') - 50) * 0.4 + (E(n, 'intellect.focus') - 50) * 0.3 + (E(n, 'intellect.comprehension') - 50) * 0.2);
     if (c) {
-      add('cast', 'ขั้นบำเพ็ญ', 'f', 2 * (c.stage - 1)); add('move', 'ขั้นบำเพ็ญ', 'f', 4 * (c.stage - 1));
+      const ns = CULT.normalizedStage ? CULT.normalizedStage(n) : c.stage; add('cast', 'ขั้นบำเพ็ญ', 'f', 2 * (ns - 1)); add('move', 'ขั้นบำเพ็ญ', 'f', 4 * (ns - 1));
       const rawFx = SUBFX[c.sub] || (JD.EXPANSION.subStats || {})[c.sub], fx = rawFx && g.MARTIAL ? g.MARTIAL.subStats(n, rawFx) : rawFx; if (fx) { addAll('สาย' + (sub ? sub.nameTh : c.sub), fx.p || {}, 'p'); addAll('สาย' + (sub ? sub.nameTh : c.sub), fx.f || {}, 'f'); }
       const m = c.mantra ? CULT.tech(c.mantra) : null;
       if (m) {
@@ -122,9 +128,15 @@
         else if (c.path === 'DEMON') { add('atk', lab, 'p', 0.03 * m.tier); add('matk', lab, 'p', 0.03 * m.tier); add('crit', lab, 'f', 0.8 * m.tier); }
         else if (c.path === 'HEART_SOUL') { add('matk', lab, 'p', 0.04 * m.tier); add('mdef', lab, 'p', 0.03 * m.tier); add('cast', lab, 'f', 1.2 * m.tier); }
         else { add('mdef', lab, 'p', 0.04 * m.tier); add('hp', lab, 'p', 0.03 * m.tier); add('matk', lab, 'p', 0.02 * m.tier); }
+        if (m.mantraBonus) {
+          addAll(lab, m.mantraBonus.p || {}, 'p');
+          addAll(lab, m.mantraBonus.f || {}, 'f');
+          addAll(lab, m.mantraBonus.pp || {}, 'f');
+        }
       }
       let techT = 0;
       (g.MARTIAL ? g.MARTIAL.activeTechs(n) : c.techs).forEach(id => { const t = CULT.tech(id); if (!t) return; techT += t.cat === 'COMBAT_TECHNIQUE' ? t.tier : 0;
+        if (g.MARTIAL && !g.MARTIAL.conditionMatches(n, t)) return;
         if (t.cat === 'LIGHTNESS_ART') { add('move', 'วิชาเบาตัว「' + t.nameTh + '」', 'f', 3 + 2 * t.tier); add('eva', 'วิชาเบาตัว「' + t.nameTh + '」', 'p', 0.02 * t.tier); }
         else if (t.cat === 'AUXILIARY_ART' && t.role !== 'PROFESSION_LIFESTYLE') add('mdef', 'วิชาเสริม「' + t.nameTh + '」', 'p', 0.012 * t.tier); });
       const tf = Math.min(0.3, 0.03 * techT); add('atk', 'วิชาต่อสู้ที่เรียน (Σระดับ ' + techT + ')', 'p', tf); add('matk', 'วิชาต่อสู้ที่เรียน', 'p', tf);
@@ -154,7 +166,21 @@
         }
       }
     }
-    if (g.MARTIAL) { const skills = g.MARTIAL.skillEffects(n); addAll('ทักษะที่ฝึก (อาวุธตรงประเภท)', skills.p, 'p'); addAll('ทักษะที่ฝึก', skills.f, 'f'); const growth = g.MARTIAL.progression(n), passive = g.MARTIAL.passiveStats(n); addAll('พัฒนาวิถีตามขั้น (สรีระอยู่ในสูตรฐานแล้ว)', growth.p, 'p'); addAll('วิชาติดตัวตามอุปกรณ์', passive.p, 'p'); addAll('วิชาติดตัวตามอุปกรณ์', passive.f, 'f'); }
+    if (g.MARTIAL) {
+      const skills = g.MARTIAL.skillEffects(n);
+      addAll('ทักษะที่ฝึก (อาวุธตรงประเภท)', skills.p, 'p');
+      addAll('ทักษะที่ฝึก', skills.f, 'f');
+      const growth = g.MARTIAL.progression(n), passive = g.MARTIAL.passiveStats(n), innate = g.MARTIAL.innateStats ? g.MARTIAL.innateStats(n) : null;
+      addAll('พัฒนาวิถีตามขั้น (สรีระอยู่ในสูตรฐานแล้ว)', growth.p, 'p');
+      addAll('วิชาติดตัวตามอุปกรณ์', passive.p, 'p');
+      addAll('วิชาติดตัวตามอุปกรณ์', passive.f, 'f');
+      addAll('วิชาติดตัวตามอุปกรณ์ (แต้ม %)', passive.pp, 'f');
+      if (innate) {
+        addAll('วิชาเฉพาะสายย่อยติดตัว', innate.p, 'p');
+        addAll('วิชาเฉพาะสายย่อยติดตัว', innate.f, 'f');
+        addAll('วิชาเฉพาะสายย่อยติดตัว (แต้ม %)', innate.pp, 'f');
+      }
+    }
     // ใจสู้/พิเศษ
     const mind = 0.9 + E(n, 'personality.courage') / 100 * 0.12 + E(n, 'aptitudes.combat') / 100 * 0.18 - 1; add('atk', 'ใจสู้/พรสวรรค์', 'p', mind); add('matk', 'ใจสู้/พรสวรรค์', 'p', mind);
     const sp = HC.special(n, 'combat.powerMult') - 1; if (sp) { add('atk', 'คุณสมบัติพิเศษ', 'p', sp); add('matk', 'คุณสมบัติพิเศษ', 'p', sp); }
@@ -173,13 +199,14 @@
     const cPath = c ? c.path : '', cStage = c ? c.stage : 0, cSub = c ? c.sub : '', cMantra = c ? c.mantra : '', cTechLen = c && c.techs ? c.techs.length : 0;
     const cTechLast = cTechLen > 0 ? c.techs[cTechLen - 1] : '';
     const cTrack = c && c.track ? c.track.ordinal : 0;
+    const passKey = passiveCacheKey(n);
     const eqW = Eq.WEAPON || null, eqWdur = eqW ? eqW.dur : 0;
     const eqA = Eq.ARMOR || null, eqAdur = eqA ? eqA.dur : 0;
     const eqX = Eq.ACCESSORY || null, eqXdur = eqX ? eqX.dur : 0;
     const cb = n._csBase;
     if (cb && cb.day === HC.nowDay && cb.ver === n._ver &&
         cb.cPath === cPath && cb.cStage === cStage && cb.cSub === cSub && cb.cMantra === cMantra &&
-        cb.cTechLen === cTechLen && cb.cTechLast === cTechLast && cb.cTrack === cTrack &&
+        cb.cTechLen === cTechLen && cb.cTechLast === cTechLast && cb.cTrack === cTrack && cb.passKey === passKey &&
         cb.eqW === eqW && cb.eqWdur === eqWdur && cb.eqA === eqA && cb.eqAdur === eqAdur &&
         cb.eqX === eqX && cb.eqXdur === eqXdur) {
       return cb;
@@ -206,7 +233,7 @@
     addF('critDmg', (E(n, 'aptitudes.combat') - 50) * 0.3 + (E(n, 'personality.aggression') - 50) * 0.2);
     addF('cast', (E(n, 'physiology.reflex') - 50) * 0.4 + (E(n, 'intellect.focus') - 50) * 0.3 + (E(n, 'intellect.comprehension') - 50) * 0.2);
     if (c) {
-      addF('cast', 2 * (c.stage - 1)); addF('move', 4 * (c.stage - 1));
+      const ns = CULT.normalizedStage ? CULT.normalizedStage(n) : c.stage; addF('cast', 2 * (ns - 1)); addF('move', 4 * (ns - 1));
       const rawFx = SUBFX[c.sub] || (JD.EXPANSION.subStats || {})[c.sub], fx = rawFx && g.MARTIAL ? g.MARTIAL.subStats(n, rawFx) : rawFx; if (fx) { if (fx.p) addAll(fx.p, false); if (fx.f) addAll(fx.f, true); }
       const m = c.mantra ? CULT.tech(c.mantra) : null;
       if (m) {
@@ -215,12 +242,18 @@
         else if (c.path === 'DEMON') { addP('atk', 0.03 * m.tier); addP('matk', 0.03 * m.tier); addF('crit', 0.8 * m.tier); }
         else if (c.path === 'HEART_SOUL') { addP('matk', 0.04 * m.tier); addP('mdef', 0.03 * m.tier); addF('cast', 1.2 * m.tier); }
         else { addP('mdef', 0.04 * m.tier); addP('hp', 0.03 * m.tier); addP('matk', 0.02 * m.tier); }
+        if (m.mantraBonus) {
+          if (m.mantraBonus.p) addAll(m.mantraBonus.p, false);
+          if (m.mantraBonus.f) addAll(m.mantraBonus.f, true);
+          if (m.mantraBonus.pp) addAll(m.mantraBonus.pp, true);
+        }
       }
       let techT = 0;
       const techs = g.MARTIAL ? g.MARTIAL.activeTechs(n) : c.techs;
       for (let i = 0; i < techs.length; i++) {
         const t = CULT.tech(techs[i]); if (!t) continue;
         if (t.cat === 'COMBAT_TECHNIQUE') techT += t.tier;
+        else if (g.MARTIAL && !g.MARTIAL.conditionMatches(n, t)) continue;
         else if (t.cat === 'LIGHTNESS_ART') { addF('move', 3 + 2 * t.tier); addP('eva', 0.02 * t.tier); }
         else if (t.cat === 'AUXILIARY_ART' && t.role !== 'PROFESSION_LIFESTYLE') addP('mdef', 0.012 * t.tier);
       }
@@ -252,7 +285,21 @@
         }
       }
     }
-    if (g.MARTIAL) { const skills = g.MARTIAL.skillEffects(n); addAll(skills.p, false); addAll(skills.f, true); const growth = g.MARTIAL.progression(n), passive = g.MARTIAL.passiveStats(n); addAll(growth.p, false); addAll(passive.p, false); addAll(passive.f, true); }
+    if (g.MARTIAL) {
+      const skills = g.MARTIAL.skillEffects(n);
+      addAll(skills.p, false);
+      addAll(skills.f, true);
+      const growth = g.MARTIAL.progression(n), passive = g.MARTIAL.passiveStats(n), innate = g.MARTIAL.innateStats ? g.MARTIAL.innateStats(n) : null;
+      addAll(growth.p, false);
+      addAll(passive.p, false);
+      addAll(passive.f, true);
+      if (passive.pp) addAll(passive.pp, true);
+      if (innate) {
+        addAll(innate.p, false);
+        addAll(innate.f, true);
+        if (innate.pp) addAll(innate.pp, true);
+      }
+    }
     const mind = 0.9 + E(n, 'personality.courage') / 100 * 0.12 + E(n, 'aptitudes.combat') / 100 * 0.18 - 1; addP('atk', mind); addP('matk', mind);
     const sp = HC.special(n, 'combat.powerMult') - 1; if (sp) { addP('atk', sp); addP('matk', sp); }
     for (const k in Eq) { const it = Eq[k]; if (!it || (g.MARTIAL && !g.MARTIAL.gearUsable(n,it))) continue; const gs = ST.gearStats(it), df = it.dur == null ? 1 : clamp(it.dur / 100, 0.3, 1); for (const key in gs) if (key in b) addF(key, gs[key] * df); }
@@ -260,7 +307,7 @@
     const vMove0 = Math.round(clamp(Math.max(30, b.move * (1 + p.move) + f.move), 30, 320));
     const moveMult0 = clamp(vMove0 / b.move, 0.6, 2.2);
     const next = {
-      day: HC.nowDay, ver: n._ver, cPath, cStage, cSub, cMantra, cTechLen, cTechLast, cTrack,
+      day: HC.nowDay, ver: n._ver, cPath, cStage, cSub, cMantra, cTechLen, cTechLast, cTrack, passKey,
       eqW, eqWdur, eqA, eqAdur, eqX, eqXdur, b, p, f, hpVal, moveMult0
     };
     n._csBase = next;
@@ -345,16 +392,17 @@
     return { v, parts };
   }
   ST.get = n => {
-    const c = n._cs, eq = n.equip || {}; if (c && ST.now > 0 && ST.now - c.t < 3 && c.eqW === eq.WEAPON && c.eqA === eq.ARMOR && c.eqX === eq.ACCESSORY && c.ver === n._ver && c.sub === (n.cult && n.cult.sub) && c.stage === (n.cult && n.cult.stage)) return c.v;
+    const c = n._cs, eq = n.equip || {}, pk = n.foe ? '' : passiveCacheKey(n);
+    if (c && ST.now > 0 && ST.now - c.t < 3 && c.eqW === eq.WEAPON && c.eqA === eq.ARMOR && c.eqX === eq.ACCESSORY && c.ver === n._ver && c.sub === (n.cult && n.cult.sub) && c.stage === (n.cult && n.cult.stage) && c.passKey === pk) return c.v;
     if (n.foe) { const r = compute(n, false); n._cs = { t: ST.now, v: r.v }; return r.v; }
     n._hpf = clamp(n.h.state.hp / Math.max(1, hpMaxBase(n)), 0, 1);
-    const v = computeFast(n); n._cs = { t: ST.now, v, eqW: eq.WEAPON, eqA: eq.ARMOR, eqX: eq.ACCESSORY, ver: n._ver, sub: n.cult && n.cult.sub, stage: n.cult && n.cult.stage }; return v;
+    const v = computeFast(n); n._cs = { t: ST.now, v, eqW: eq.WEAPON, eqA: eq.ARMOR, eqX: eq.ACCESSORY, ver: n._ver, sub: n.cult && n.cult.sub, stage: n.cult && n.cult.stage, passKey: passiveCacheKey(n) }; return v;
   };
   function hpMaxBase(n) { const d = g.MARTIAL ? g.MARTIAL.derived(n) : HC.derived(n); return d.hpMax * CULT.hpMult(n); }
   ST.explain = n => { if (!n.foe) n._hpf = clamp(n.h.state.hp / Math.max(1, hpMaxBase(n)), 0, 1); return compute(n, true); };
   ST.hpMax = n => {
     if (n.foe) return n.hpMax;
-    const c = n._cs; if (c && ST.now > 0 && ST.now - c.t < 3) return c.v.hp;
+    const c = n._cs; if (c && ST.now > 0 && ST.now - c.t < 3 && c.passKey === passiveCacheKey(n)) return c.v.hp;
     if ((!n.buffs || !n.buffs.length) && (!n.sx || !n.sx.length)) return getBaseFast(n).hpVal;
     return ST.get(n).hp;
   };

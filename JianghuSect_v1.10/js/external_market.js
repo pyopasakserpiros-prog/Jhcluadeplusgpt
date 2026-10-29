@@ -255,7 +255,7 @@
 
         const buyReason = 'สั่งซื้อตามคำสั่งขาดแคลน: ' + need.reason;
         record(W, v, 'sect-buy', need.id, qty, unit, total, null, buyReason);
-        W.log('finance', 'หอคลังสั่งซื้อ ' + ECO.name(need.id) + ' ×' + qty + ' จาก' + v.nameTh + ' รวม ' + total + ' ศิลา (' + need.reason + ')', []);
+        W.log('finance', 'หอคลังสั่งซื้อ ' + ECO.name(need.id) + ' ×' + qty + ' จาก' + v.nameTh + ' รวม ' + total + ' ศิลา (' + need.reason + ')', [], { txKind: 'purchase', itemId: need.id, qty, reason: need.reason });
       }
       if (result.bought > 0) v.sectBuyDone = true;
     }
@@ -312,7 +312,7 @@
 
       const sellReason = 'ขายส่วนเกินตามการประเมินคลังสำนัก (คงเหลือ ' + ECO.count(W, id) + '/' + resFloor + ')';
       record(W, v, 'sect-sell', id, qty, unit, total, null, sellReason);
-      W.log('finance', 'สำนักขายส่วนเกิน ' + ECO.name(id) + ' ×' + qty + ' ให้' + v.nameTh + ' ได้รับ ' + total + ' ศิลา (คงคลังคงเหลือ ' + ECO.count(W, id) + ' เกณฑ์สำรอง ' + resFloor + ')', []);
+      W.log('finance', 'สำนักขายส่วนเกิน ' + ECO.name(id) + ' ×' + qty + ' ให้' + v.nameTh + ' ได้รับ ' + total + ' ศิลา (คงคลังคงเหลือ ' + ECO.count(W, id) + ' เกณฑ์สำรอง ' + resFloor + ')', [], { txKind: 'sale', itemId: id, qty, reason: sellReason });
     }
 
     return result;
@@ -394,7 +394,7 @@
       v.stones -= total; n.inv.stones = (n.inv.stones || 0) + total;
       record(W, v, 'member-sell', id, 1, fresh.price, total, n);
     } else return false;
-    if (total >= 10) W.log('finance', n.h.name.given + (fresh.side === 'buy' ? ' ซื้อ' : ' ขาย') + ECO.name(id) + (fresh.side === 'buy' ? ' จาก' : ' ให้') + v.nameTh + ' ' + total + ' ศิลา', [n.id]);
+    if (total >= 10) W.log('finance', n.h.name.given + (fresh.side === 'buy' ? ' ซื้อ' : ' ขาย') + ECO.name(id) + (fresh.side === 'buy' ? ' จาก' : ' ให้') + v.nameTh + ' ' + total + ' ศิลา', [n.id], { txKind: fresh.side === 'buy' ? 'purchase' : 'sale', itemId: id, qty: 1, actorId: n.id });
     return true;
   };
 

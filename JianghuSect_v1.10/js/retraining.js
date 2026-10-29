@@ -30,7 +30,9 @@ M.retrain=(W,n,key,opts)=>{
  const old=n.cult,from=old.path+'/'+old.sub,before=old.stage,k=quote.knowledge;
  n.cult={path:k.path,sub:k.id,stage:quote.newStage,prog:0,mantra:(CULT.bestMantra(k.path,quote.newStage,n)||{}).id||null,techs:Array.from(new Set(old.techs||[])),learning:null,toxic:old.toxic||0,lifeBonus:old.lifeBonus||0,since:W.day,attempts:0,secl:null,rate:0,pillT:0,tm:old.tm||{}};
  if(CULT.trackDef(k.id))n.cult.track=CULT.initTrack(k.id,1,W.day);
- n.buffs=[];n.sx=[];n.castFx=null;n._pickCache=null;
+ if(M.reconcileInnate)M.reconcileInnate(n,W);
+ if(M.reconcilePassives)M.reconcilePassives(n);
+ n.buffs=[];n.sx=[];n.castFx=null;n._pickCache=null;if(M.invalidateMartialCaches)M.invalidateMartialCaches(n);
  if(n.cognition){n.cognition.goal=null;n.cognition.goalCandidates=[];}
  n.retrainUntil=W.day+quote.cooldownDays;
  n.martialIntent={targetKey:key,action:'restabilize',day:W.day,until:n.retrainUntil,from,oldStage:before,newStage:quote.newStage,reasons:['ยอมลดขั้น '+before+' → '+quote.newStage,'พักปรับรากฐาน '+quote.cooldownDays+' วัน']};
@@ -47,7 +49,7 @@ M.evaluateRetraining=(W,n,key)=>{
  const k=structure.knowledge,profile=M.PROFILES[k.id],current=M.PROFILES[n.cult.sub],preferred=profile?profile[3]:M.PATHS[k.path].weapons,oldPreferred=current?current[3]:M.PATHS[n.cult.path].weapons;
  const targetSkill=Math.max(...preferred.map(type=>M.weaponSkill(n,type))),currentSkill=Math.max(...oldPreferred.map(type=>M.weaponSkill(n,type))),ambition=HC.eff(n,'personality.ambition'),caution=HC.eff(n,'personality.caution'),rational=HC.eff(n,'personality.rationality'),curiosity=HC.eff(n,'personality.curiosity');
  const oldActive=M.activeTechs(n).map(CULT.tech).filter(Boolean),lost=oldActive.filter(t=>t.path!=='ANY'&&t.path!==k.path||t.sub&&t.sub!==k.id),compatible=oldActive.filter(t=>(t.path==='ANY'||t.path===k.path)&&(!t.sub||t.sub===k.id));
- const sourcePool=JD.TECH.techniques.filter(t=>t.path===k.path&&t.sub===k.id&&(t.reqTier||t.tier)<=Math.max(k.tier,quote.newStage+1)&&((n.cult.techs||[]).includes(t.id)||W.sect.library.includes(t.id)||(n.inv.techs||[]).includes(t.id)||(n.inv.crystals[M.techKey(t.id)]||0)>0));
+ const sourcePool=JD.TECH.techniques.filter(t=>!t.innateOnly&&t.path===k.path&&t.sub===k.id&&(t.reqTier||t.tier)<=Math.max(k.tier,quote.newStage+1)&&((n.cult.techs||[]).includes(t.id)||W.sect.library.includes(t.id)||(n.inv.techs||[]).includes(t.id)||(n.inv.crystals[M.techKey(t.id)]||0)>0));
  const gearReady=preferred.includes(M.equippedType(n)),techReady=sourcePool.length>0;
  const rows=affinities(W,n),target=rows.find(x=>x.sub===k.id),currentAffinity=rows.find(x=>x.sub===n.cult.sub),affinityAdv=clamp((target?target.score:50)-(currentAffinity?currentAffinity.score:50),-25,25)*.4;
  const skillAdv=(targetSkill-currentSkill)*.35,investment=quote.lostStages*(5+caution*.20+rational*.07)+lost.reduce((s,t)=>s+t.tier,0)*(1+caution/70),prepared=(gearReady?11:0)+Math.min(18,sourcePool.length*9);

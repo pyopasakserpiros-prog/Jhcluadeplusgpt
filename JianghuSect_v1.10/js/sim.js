@@ -4,7 +4,7 @@
   'use strict';
   const U = g.U || require('./util.js'), HC = g.HC, MAP = g.MAP, CULT = g.CULT, ECO = g.ECO, SECT = g.SECT, AI = g.AI, COMBAT = g.COMBAT, EXPED = g.EXPED, JD = g.JD;
   const clamp = U.clamp;
-  const SIM = { VERSION: '1.10.11', MIN_PER_YEAR: 360 * 1440 };
+  const SIM = { VERSION: '1.10.11', PATCH_VERSION: '1.12.0', MIN_PER_YEAR: 360 * 1440 };
   const E = (n, p) => HC.eff(n, p);
 
   const SEASON_TH = ['ฤดูใบไม้ผลิ', 'ฤดูร้อน', 'ฤดูใบไม้ร่วง', 'ฤดูหนาว'];
@@ -29,10 +29,12 @@
     const c = npc.cult; if (typeof stage === 'function') stage = stage(c.path); c.stage = Math.min(stage, CULT.maxStage(npc));
     c.prog = Math.round(CULT.threshold(npc) * (0.1 + rng.next() * 0.6));
     const m = CULT.bestMantra(c.path, c.stage, npc); if (m) c.mantra = m.id;
-    const lib = JD.TECH.techniques.filter(t => !t.sourcePack && !t.martialRare).map(t => t.id);
+    const lib = JD.TECH.techniques.filter(t => !t.sourcePack && !t.martialRare && !t.overhaulPack && !t.innateOnly).map(t => t.id);
     const cand = CULT.learnable(npc, lib).map(CULT.tech).filter(t => t.tier <= c.stage);
     const want = Math.min(CULT.maxTechs(npc) - 1, c.stage);
     for (let i = 0; i < want && cand.length; i++) { const t = rng.weighted(cand, x => 1 + x.power / 60 + (x.sub === c.sub ? 2 : 0)); c.techs.push(t.id); cand.splice(cand.indexOf(t), 1); }
+    if (g.MARTIAL && g.MARTIAL.reconcileInnate) g.MARTIAL.reconcileInnate(npc, W);
+    if (g.MARTIAL && g.MARTIAL.reconcilePassives) g.MARTIAL.reconcilePassives(npc);
     CULT.refreshLifespan(npc);
   };
   SIM.placeNear = (W, n, cx, cy, r) => {
@@ -61,7 +63,7 @@
     const cal = SIM.calendar(W.t); W.day = cal.day; W.season = cal.season; HC.nowDay = W.day;
     W.map = MAP.create(W.seed);
     W.market = ECO.newMarket(rng);
-    W.log = (type, text, ids) => SIM.log(W, type, text, ids);
+    W.log = (type, text, ids, meta) => SIM.log(W, type, text, ids, meta);
     W.fame = v => { W.sect.fame = Math.max(0, (W.sect.fame || 0) + v); };
     W.makeNpc = o => SIM.addNpc(W, o);
     W.sect = { name: opts.sectName || 'สำนักเมฆาหยกสวรรค์', masterId: null, deputyId: null, posts: {}, policy: null, stock: {}, gear: [], stones: 1000, ledger: [], recipeTier: 2, library: [], fame: 12, cd: {}, lastDuty: {}, orders: {}, suspicion: 0, festival: null, tournament: null, guardRoster: [], buyList: [], efficiency: 0, produced: 0, fallen: [], research: null, stipendOk: true, policyShift: W.day, reserveDirectives: null, shortageDirectives: [], welfareHistory: [] };
@@ -71,21 +73,17 @@
     const mi = opts.masterIdx != null ? opts.masterIdx : 0; const mo = SIM.masterOpts(seed, mi);
     const master = SIM.buildNpc(W, mo.r, mo.o); SIM.register(W, master); W.sect.masterId = master.id;
     // ---- ศิษย์ตามลำดับ ----
-    // เริ่มเล็ก ๆ: เจ้าสำนัก + ศิษย์ 2 คน ที่เหลือรอผู้สมัครมาเอง
     for (let i = 0; i < 2; i++) { const n = SIM.buildNpc(W, rng, { sex: i === 0 ? (master.h.sex === 'M' ? 'F' : 'M') : rng.chance(0.5) ? 'M' : 'F', ageYears: rng.int(16, 23), quality: 0.5 + rng.gauss(0, 0.3), skillExp: 0.25, trainedness: 0.55, rank: 1, stage: 1, tenure: rng.int(200, 700), merit: 40 }); SIM.register(W, n); n.mentor = master.id; master.h.life.family.disciples.push(n.id); n.h.life.family.master = master.id; }
     // ---- ห้องสมุด/คลัง/ตำรับ ----
-    W.sect.library = JD.TECH.techniques.filter(t => !t.sourcePack && !t.martialRare && t.tier <= 2).map(t => t.id).concat(JD.TECH.techniques.filter(t => !t.sourcePack && !t.martialRare && t.tier === 3).slice(0, 12).map(t => t.id)).concat(JD.TECH.techniques.filter(t => !t.sourcePack && !t.martialRare && t.tier === 3 && (t.path === 'DEMON' || t.path === 'HEART_SOUL')).map(t => t.id));
+    W.sect.library = JD.TECH.techniques.filter(t => !t.sourcePack && !t.martialRare && !t.overhaulPack && !t.innateOnly && t.tier <= 2).map(t => t.id).concat(JD.TECH.techniques.filter(t => !t.sourcePack && !t.martialRare && !t.overhaulPack && !t.innateOnly && t.tier === 3).slice(0, 12).map(t => t.id)).concat(JD.TECH.techniques.filter(t => !t.sourcePack && !t.martialRare && !t.overhaulPack && !t.innateOnly && t.tier === 3 && (t.path === 'DEMON' || t.path === 'HEART_SOUL')).map(t => t.id)).concat(JD.TECH.techniques.filter(t => t.starterPassive && !t.innateOnly).map(t => t.id));
     W._founding = false;
     const S = W.sect; S.stock.grain = 150; S.stock.meal = 30;
     ECO.recipesFor(W, ['ALCHEMY', 'FORGING', 'ARRAY', 'TALISMAN']).forEach(r => r.inputs.forEach(i => { const m = ECO.matById[i.matId]; if (m && m.tier <= 2) S.stock[i.matId] = Math.max(S.stock[i.matId] || 0, 8 + (m.tier === 1 ? 6 : 0)); }));
-    // ไม่แจกโอสถจากอากาศเป็นสต็อกเริ่มต้น: ให้สมาชิกหลอมจากวัตถุดิบที่มี หรือหาได้จากภายนอก
     S.policy = SECT.initPolicy(W); if (SECT.ensureDirectives) { SECT.ensureDirectives(W); SECT.updateReserveDirectives(W); }
     if (g.ECO && g.ECO.ensureStockTracker) g.ECO.ensureStockTracker(W);
     if (g.SECT && g.SECT.ensureFacilityDemand) g.SECT.ensureFacilityDemand(W);
     g.CPE.init(W); if (g.SECT && g.SECT.ensureDirectives) g.SECT.ensureDirectives(W); g.CONTENT.ensure(W); g.MARTIAL.ensure(W);
     if (g.WILD_RES) g.WILD_RES.init(W);
-    // ตำแหน่งผู้อาวุโส: เลือกผู้เหมาะสมที่สุด
-    // วางตำแหน่งเริ่มต้น
     const pl = W.map.byId.plaza; W.npcs.forEach(n => SIM.placeNear(W, n, pl.x + pl.w / 2, pl.y + pl.h / 2, 12));
     W.logs.length = 0; W.logSeq = 0;
     W.log('system', 'ก่อตั้ง「' + S.name + '」 โดยเจ้าสำนัก ' + HC.fullName(master), [master.id]);
@@ -94,16 +92,66 @@
   };
   SIM.register = (W, n) => { n.n = ++W.seqN; W.npcs.push(n); W.byId[n.id] = n; return n; };
   SIM.addNpc = (W, o) => {
+    o = o || {};
     const id = 'n' + (W.seqN + 1) + '_' + W.rng.int(100, 999);
-    const awaken = o.fromExped || o.fromApplicant ? 0.7 + Math.max(0, o.quality || 0) * 0.1 : 0.5;
-    const n = SIM.buildNpc(W, W.rng, { id, sex: o.sex, ageYears: o.ageYears, quality: o.quality, skillExp: clamp((o.ageYears - 12) / 40, 0.03, 0.35), trainedness: 0.5, rank: o.rank || 0, stage: o.stage != null ? o.stage : (W.rng.chance(awaken) ? 1 : 0), awakenChance: null, merit: 0, traitCount: undefined, rootGrade: o.rootBias ? undefined : undefined });
-    n.joinDay = W.day; n.sat = 70; if (o.queue) { n.n = ++W.seqN; n.h.name.given = n.h.name.given; return n; } SIM.register(W, n); return n;
+    let tierRoll = null;
+    if ((o.fromApplicant || o.useTalentTier) && o.quality == null && SECT.rollApplicantTier) {
+      tierRoll = SECT.rollApplicantTier(W.rng, W.sect ? W.sect.fame : 12);
+    }
+    const effQuality = o.quality != null ? o.quality : (tierRoll ? tierRoll.quality : 0);
+    const effRoot = o.rootGrade || (tierRoll ? tierRoll.rootGrade : undefined);
+    const effTraits = o.traitCount != null ? o.traitCount : (tierRoll ? tierRoll.traitCount : undefined);
+    const awaken = o.fromExped || o.fromApplicant ? 0.65 + Math.max(0, effQuality) * 0.15 : 0.5;
+    const n = SIM.buildNpc(W, W.rng, {
+      id,
+      sex: o.sex,
+      ageYears: o.ageYears,
+      quality: effQuality,
+      skillExp: clamp(((o.ageYears || 18) - 12) / 40, 0.03, 0.35),
+      trainedness: 0.5,
+      rank: o.rank || 0,
+      stage: o.stage != null ? o.stage : (W.rng.chance(awaken) ? 1 : 0),
+      awakenChance: null,
+      merit: 0,
+      traitCount: effTraits,
+      rootGrade: effRoot
+    });
+    if (tierRoll) {
+      n.ext = n.ext || {};
+      n.ext.applicant = {
+        tier: tierRoll.tierId,
+        tierId: tierRoll.tierId,
+        nameTh: tierRoll.nameTh,
+        isGifted: tierRoll.isGifted,
+        isExceptional: tierRoll.isExceptional,
+        rolledAtDay: W.day
+      };
+    }
+    n.joinDay = W.day; n.sat = 70;
+    if (o.queue) { n.n = ++W.seqN; return n; }
+    SIM.register(W, n);
+    return n;
   };
-  SIM.log = (W, type, text, ids) => {
-    const e = { id: ++W.logSeq, t: W.t, type, text, ids: (ids || []).filter(Boolean) };
+
+  SIM.log = (W, type, text, ids, meta) => {
+    const cleanIds = (ids || []).filter(Boolean);
+    const e = { id: ++W.logSeq, t: W.t, type, text, ids: cleanIds };
+    if (meta && typeof meta === 'object') {
+      if (meta.txKind) e.txKind = meta.txKind;
+      e.meta = Object.assign({}, meta);
+    }
     W.logs.push(e); if (W.logs.length > 1500) W.logs.splice(0, 400);
     if (W.onLog) W.onLog(e);
-    if (e.ids.length && !['finance', 'event', 'system', 'raid'].includes(type)) { e.ids.forEach(id => { const n = W.byId[id]; if (n) { const b = n.h.life.bio; b.push({ d: W.day, text }); if (b.length > 70) b.splice(0, 20); } }); }
+    if (e.ids.length && !['finance', 'event', 'system', 'raid'].includes(type)) {
+      e.ids.forEach(id => {
+        const n = W.byId[id];
+        if (n) {
+          const b = n.h.life.bio;
+          b.push({ d: W.day, text });
+          if (b.length > 70) b.splice(0, 20);
+        }
+      });
+    }
     return e;
   };
 
@@ -134,6 +182,7 @@
     if (n.id === W.sect.deputyId) W.sect.deputyId = null;
     if (g.CPE && g.CPE.retireNpc) g.CPE.retireNpc(W, n, 'ออกจากสำนัก');
     for (const k of Object.keys(n.equip || {})) { if (n.equip[k]) W.sect.gear.push(n.equip[k]); } n.equip = {};
+    if (n.inv && Array.isArray(n.inv.gear)) { n.inv.gear.forEach(g2 => { if (g2) W.sect.gear.push(g2); }); delete n.inv.gear; }
     for (const k of Object.keys((n.inv && n.inv.pills) || {})) ECO.add(W, k, n.inv.pills[k]);
     g.MARTIAL.returnKnowledge(W, n);
     for (const k of Object.keys((n.inv && n.inv.mats) || {})) ECO.add(W, k, n.inv.mats[k]);
@@ -142,7 +191,7 @@
     if (n.inv) { n.inv.pills = {}; n.inv.mats = {}; n.inv.techs = []; n.inv.recipes = []; }
   };
   SIM.hourly = W => {
-    W.npcs.forEach(n => { if (!n.dead) { AI.healTick(W, n); g.STATS.recover(n); g.CPE.autoUse(W, n); if (n.equip) { /* ของสึกหรอ */ for (const k in n.equip) { const it = n.equip[k]; if (it && it.dur != null && n.act.id === 'fight') it.dur = Math.max(0, it.dur - 0.5); } } } });
+    W.npcs.forEach(n => { if (!n.dead) { AI.healTick(W, n); g.STATS.recover(n); g.CPE.autoUse(W, n); if (n.equip) { for (const k in n.equip) { const it = n.equip[k]; if (it && it.dur != null && n.act.id === 'fight') it.dur = Math.max(0, it.dur - 0.5); } } } });
     W.map.buildings.forEach(b => { if (b.building && W.t >= b.building.until) SIM.finishBuilding(W, b); });
     if (W.map && W.map.buildings && g.SECT && g.SECT.ensureFacilityDemand) {
       g.SECT.ensureFacilityDemand(W);
@@ -165,13 +214,13 @@
       });
     }
     EXPED.hourly(W);
-    // เอาอุปกรณ์จากคลังแจกจ่าย (ตามยศและความเหมาะสม) ทุกชั่วโมง
     if (W.sect.gear.length && W.t % 360 === 0) SIM.distributeGear(W);
-    // กินยาบำรุงเมื่อบาดเจ็บ
     W.npcs.forEach(n => { if (!n.dead && !n.away && n.inj && n.inj.length && n.h.state.hp < CULT.hpMax(n) * 0.5) { for (const k of Object.keys(W.sect.stock)) { const info = ECO.isPill(k) ? ECO.pillInfo(k) : null; if (info && k.startsWith('P:BASIC_') && (info.effect.healHealth || info.effect.healInjury) && W.sect.stock[k] > 0 && n.rank >= 1) { ECO.usePill(W, n, k); break; } } } });
   };
   SIM.finishBuilding = (W, b) => {
-    b.level = b.building.to; b.building = null; b.hp = 100;
+    const maxL = SECT.maxBuildingLevel ? SECT.maxBuildingLevel(b) : 3;
+    b.level = Math.min(maxL, b.building.to);
+    b.building = null; b.hp = 100;
     SIM.expandStations(W, b);
     const fd = W.sect.facilityDemand && W.sect.facilityDemand[b.id];
     if (fd) {
@@ -187,75 +236,78 @@
         }
       });
     }
-    W.log('build', b.nameTh + ' ขยายเป็นระดับ ' + b.level + ' เสร็จสมบูรณ์ (เพิ่มพื้นที่ใช้งานรองรับสมาชิก)', []); W.fame(1);
+    W.log('build', b.nameTh + ' ขยายเป็นระดับ ' + b.level + '/' + maxL + ' เสร็จสมบูรณ์ (เพิ่มพื้นที่ใช้งานรองรับสมาชิก)', [b.id]); W.fame(1);
   };
   SIM.expandStations = (W, b) => {
     const M = W.map; M.extraSt = M.extraSt || [];
+    const maxL = SECT.maxBuildingLevel ? SECT.maxBuildingLevel(b) : 3;
+    if (b.level > maxL) b.level = maxL;
+
+    // 1. Authoritative Dormitory Bed Progression (56 + 28 + 16 = 100 max)
+    if (SECT.HOUSING_IDS && SECT.HOUSING_IDS.includes(b.id)) {
+      const spec = SECT.FACILITY_SPECS && SECT.FACILITY_SPECS[b.id];
+      const targetBeds = (spec && spec.bedsByLevel && spec.bedsByLevel[b.level]) || b.stations.length;
+      const bedStations = b.stations.map(id => M.stations[id]).filter(s => s && s.kind === 'bed');
+      const add = Math.max(0, targetBeds - bedStations.length);
+      for (let i = 0; i < add; i++) {
+        const s0 = bedStations[i % bedStations.length] || { bid: b.n, bkey: b.id, x: b.door ? b.door.x : b.x, y: b.door ? b.door.y : b.y, inside: true };
+        const s = { id: M.stations.length, bid: s0.bid, bkey: s0.bkey, kind: 'bed', x: s0.x, y: s0.y, inside: true, occ: null, owner: null, n: b.stations.length };
+        M.stations.push(s);
+        b.stations.push(s.id);
+        M.extraSt.push({ bid: s.bid, kind: 'bed', x: s.x, y: s.y, inside: true });
+      }
+      return;
+    }
+
+    // 2. Non-housing facilities NEVER add bed stations
     const base = b.stations.slice();
-    const kinds = {}; base.forEach(id => { const s = M.stations[id]; (kinds[s.kind] = kinds[s.kind] || []).push(s); });
+    const kinds = {};
+    base.forEach(id => {
+      const s = M.stations[id];
+      if (!s || s.kind === 'bed') return;
+      (kinds[s.kind] = kinds[s.kind] || []).push(s);
+    });
     Object.keys(kinds).forEach(k => {
       if (['guard', 'cell', 'treat', 'board', 'browse', 'work'].includes(k) && b.level < 3) return;
-      const list = kinds[k]; const add = Math.max(1, Math.round(list.length * 0.4));
+      const list = kinds[k];
+      const add = Math.max(1, Math.round(list.length * 0.35));
       for (let i = 0; i < add; i++) {
-        const s0 = list[i % list.length]; let x = s0.x, y = s0.y;
-        if (!s0.inside) { const f = MAP.nearestFree(M, s0.x + 1 + (i % 3), s0.y + 1 + ((i >> 1) % 2)); if (f) { x = f.x; y = f.y; } }
+        const s0 = list[i % list.length];
+        let x = s0.x, y = s0.y;
+        if (!s0.inside) {
+          const f = MAP.nearestFree(M, s0.x + 1 + (i % 3), s0.y + 1 + ((i >> 1) % 2));
+          if (f && (!MAP.findPath || MAP.findPath(M, MAP.GATE_IN.x, MAP.GATE_IN.y, f.x, f.y))) {
+            x = f.x;
+            y = f.y;
+          }
+        }
         const s = { id: M.stations.length, bid: s0.bid, bkey: s0.bkey, kind: k, x, y, inside: s0.inside, occ: null, n: list.length + i };
-        M.stations.push(s); b.stations.push(s.id); M.extraSt.push({ bid: s.bid, kind: k, x, y, inside: s0.inside });
+        M.stations.push(s);
+        b.stations.push(s.id);
+        M.extraSt.push({ bid: s.bid, kind: k, x, y, inside: s0.inside });
       }
     });
   };
   SIM.distributeGear = W => {
-    const S = W.sect;
-    const m = W.byId[S.masterId];
-    const mer = (S.policy && S.policy.meritocracy != null ? S.policy.meritocracy : 50) / 100;
-    const need = W.npcs.filter(n => !n.dead && !n.away && n.cult && n.rank >= 1);
-    need.sort((a, b) => {
-      const meritA = a.rank * 20 + CULT.power(a) * 0.05 + (a.merit || 0) * 0.2;
-      const meritB = b.rank * 20 + CULT.power(b) * 0.05 + (b.merit || 0) * 0.2;
-      const relA = m ? SECT.relationScore(m, a) : 0;
-      const relB = m ? SECT.relationScore(m, b) : 0;
-      const scoreA = meritA * (0.35 + 0.65 * mer) + relA * (1 - mer) * 0.6;
-      const scoreB = meritB * (0.35 + 0.65 * mer) + relB * (1 - mer) * 0.6;
-      return scoreB - scoreA;
-    });
-    for (const n of need) {
-      ['WEAPON', 'ARMOR', 'ACCESSORY'].forEach(slot => {
-        const cur = n.equip[slot];
-        const cands = S.gear.filter(x => x.slot === slot && (x.minStage || 1) <= n.cult.stage + 1 && ((x.tier || 1) <= 1 || n.rank >= 4 || n.post));
-        if (!cands.length) return;
-        cands.sort((a, b) => g.MARTIAL.gearSuitability(n, b).score - g.MARTIAL.gearSuitability(n, a).score);
-        const best = cands[0];
-        if (!cur || g.MARTIAL.gearSuitability(n, best).score > g.MARTIAL.gearSuitability(n, cur).score * 1.15) {
-          S.gear.splice(S.gear.indexOf(best), 1);
-          if (cur) S.gear.push(cur);
-          n.equip[slot] = best;
-          const rel = m ? SECT.relationScore(m, n) : 0;
-          const whyTxt = (mer < 0.45 && rel > 30) ? 'ความเมตตาของเจ้าสำนัก' : 'ผลงานและพลังรบ';
-          W.log('gear', n.h.name.given + ' ได้รับ「' + best.nameTh + '」จากคลังสำนัก (' + whyTxt + ')', [n.id]);
-          HC.bump(n);
-        }
-      });
+    if (SECT.distributeSectStock) {
+      return SECT.distributeSectStock(W, { onlyGear: true });
     }
   };
 
   /* ---------- รายวัน ---------- */
   SIM.dailyUpdate = (W, silent) => {
     const rng = W.rng; const cal = SIM.calendar(W.t); W.season = cal.season; HC.nowDay = W.day;
-    // อากาศ
     const wr = rng.next(); const ss = cal.season;
     W.weather = { kind: ss === 3 ? (wr < 0.35 ? 'snow' : wr < 0.65 ? 'cloud' : 'clear') : ss === 0 ? (wr < 0.35 ? 'rain' : wr < 0.65 ? 'cloud' : 'clear') : ss === 1 ? (wr < 0.2 ? 'rain' : wr < 0.4 ? 'cloud' : 'clear') : (wr < 0.25 ? 'fog' : wr < 0.4 ? 'rain' : wr < 0.65 ? 'cloud' : 'clear'), t: W.t };
     W.avgMood = W.npcs.length ? W.npcs.reduce((s, n) => s + (n.dead ? 0 : n.h.state.mood), 0) / Math.max(1, W.npcs.filter(n => !n.dead).length) : 0;
     if (silent) return;
-    // เสียชีวิตจากอายุ/ชราภาพ
     W.npcs.forEach(n => { if (n.dead) return; const age = HC.ageYears(n), life = n.lifespanMax || CULT.lifespan(n); if (age > life * 0.92) { const p = clamp((age - life * 0.92) / (life * 0.08), 0, 1) * 0.06; if (rng.chance(p)) AI.kill(W, n, 'ชราภาพ'); } });
-    // ปลดศพ
     for (let i = W.npcs.length - 1; i >= 0; i--) { const n = W.npcs[i]; if (n.dead && W.day - n.deathDay > 4) { W.npcs.splice(i, 1); W.graveyard.push(n.id); } }
     if (!W.byId[W.sect.masterId] || W.byId[W.sect.masterId].dead) SECT.succession(W, 'เจ้าสำนักว่าง');
     SIM.guardRoster(W);
     SIM.assistants(W);
     SECT.daily(W);
     EXPED.daily(W); EXPLORE.daily(W); BN.daily(W); CPE.daily(W); g.CONTENT.daily(W); if (g.EXT) g.EXT.daily(W);
-    // สายเฉพาะทางอิสระ: ทะลวงขั้นประจำวันหากพร้อมและผ่านเงื่อนไขเกณฑ์
     W.npcs.forEach(n => {
       if (n.dead || n.away || !n.cult || !n.cult.track) return;
       if (CULT.trackReady(n)) {
@@ -264,18 +316,14 @@
       }
     });
     SIM.researchTick(W);
-    // เดือนใหม่
     if (cal.dom === 1) SIM.monthly(W);
-    // ผู้ที่ได้รับแต่งตั้งให้ครัว/เสบียงวิกฤต: ซื้อเสบียงฉุกเฉิน
     const pop = W.npcs.filter(n => !n.dead).length;
-    if (ECO.count(W, 'meal') + ECO.count(W, 'grain') * 3 < pop * 1.5 && W.sect.stones > 200 && !W.threat.roadBlocked) { const n = Math.round(pop * 4); const c = Math.round(ECO.price(W, 'grain') * 1.3 * n); if (W.sect.stones >= c) { ECO.pay(W, c, 'ซื้อข้าวฉุกเฉิน'); ECO.add(W, 'grain', n); W.log('finance', 'เสบียงใกล้หมด หอคลังซื้อข้าวฉุกเฉิน ' + n + ' หน่วย', []); } }
-    // กู้แรงใจ
+    if (ECO.count(W, 'meal') + ECO.count(W, 'grain') * 3 < pop * 1.5 && W.sect.stones > 200 && !W.threat.roadBlocked) { const n = Math.round(pop * 4); const c = Math.round(ECO.price(W, 'grain') * 1.3 * n); if (W.sect.stones >= c) { ECO.pay(W, c, 'ซื้อข้าวฉุกเฉิน'); ECO.add(W, 'grain', n); W.log('finance', 'เสบียงใกล้หมด หอคลังซื้อข้าวฉุกเฉิน ' + n + ' หน่วย', [], { txKind: 'purchase', itemId: 'grain', qty: n }); } }
     if (W.day % 30 === 15) W.npcs.forEach(n => { if (!n.dead) n.h.state.novelty = Math.max(0, n.h.state.novelty - 3); });
   };
   SIM.monthly = W => {
     SECT.monthly(W); EXPED.caravan(W);
-    // ปลุกตบะของผู้ฝึกหัดที่มีพรสวรรค์
-    W.npcs.forEach(n => { if (n.dead || n.cult || n.away) return; if (HC.ageYears(n) > 45) return; const tal = HC.derived(n).cultivationTalent; if (W.rng.chance(clamp((tal - 38) / 200, 0.02, 0.35))) { const ch = CULT.awaken(n, W.rng, null, W.day); n.h.state.qi = CULT.qiMax(n); W.log('awaken', n.h.name.given + ' ตื่นรู้ปราณและก้าวเข้าสู่วิถี' + (CULT.PATHS[ch.path].nameTh || ch.path), [n.id]); HC.experience(n, 'insight', 0.8); } });
+    W.npcs.forEach(n => { if (n.dead || n.cult || n.away) return; if (HC.ageYears(n) > 45) return; const tal = HC.derived(n).cultivationTalent; if (W.rng.chance(clamp((tal - 38) / 200, 0.02, 0.35))) { const ch = CULT.awaken(n, W.rng, null, W.day); if (g.MARTIAL && g.MARTIAL.reconcileInnate) g.MARTIAL.reconcileInnate(n, W); if (g.MARTIAL && g.MARTIAL.reconcilePassives) g.MARTIAL.reconcilePassives(n); n.h.state.qi = CULT.qiMax(n); W.log('awaken', n.h.name.given + ' ตื่นรู้ปราณและก้าวเข้าสู่วิถี' + (CULT.PATHS[ch.path].nameTh || ch.path), [n.id]); HC.experience(n, 'insight', 0.8); } });
   };
   SIM.guardRoster = W => {
     const pop = W.npcs.filter(n => !n.dead).length; const k = 2 + Math.floor(pop / 14);
@@ -309,7 +357,6 @@
     const s = JSON.parse(str);
     const object = v => v != null && typeof v === 'object' && !Array.isArray(v);
     const invalid = field => { throw new Error('ข้อมูลเซฟไม่ถูกต้อง: ' + field); };
-    // Reject damaged core state before creating a world or changing the shared clocks.
     if (!object(s)) invalid('save');
     if (s.hc && s.hc !== HC.FINGERPRINT) throw new Error('เซฟนี้สร้างจากแกนมนุษย์คนละเวอร์ชัน (' + s.hc + ' ≠ ' + HC.FINGERPRINT + ')');
     if (typeof s.seed !== 'string' && !Number.isFinite(s.seed)) invalid('seed');
@@ -330,25 +377,20 @@
     const stats = g.STATS, hadStatsTime = stats && Object.prototype.hasOwnProperty.call(stats, 'now'), statsTimeBefore = stats && stats.now;
     try {
       const W = SIM.create(s.seed, { masterIdx: 0 });
-      // เริ่มจากโลกเปล่า แล้วทับสถานะ
       W.rng.setState(s.rng); W.t = s.t; if (g.STATS) g.STATS.now = W.t; W.day = Math.floor(W.t / 1440); W.season = SIM.calendar(W.t).season; HC.nowDay = W.day; W.speed = s.speed == null ? 1 : s.speed; W.seqN = s.seqN; W.logSeq = s.logSeq; W.deaths = s.deaths; W.avgSat = s.avgSat; W.avgMood = s.avgMood; W.weather = s.weather; W.market = s.market; W.sect = s.sect; W.world = s.world; W.threat = s.threat; if (s.explore) W.explore = s.explore; W.graveyard = s.graveyard; W.gone = s.gone; W.logs = s.logs; W.duelQueue = s.duelQueue || []; W.fights = s.fights || []; W.foes = s.foes || []; W.foeSeq = s.foeSeq; W.fightSeq = s.fightSeq;
       W.foeById = {}; W.foes.forEach(u => W.foeById[u.id] = u);
-      W.wildlife = s.wildlife || {seq:0,beasts:[],kills:0};
+      W.wildlife = s.wildlife || { seq: 0, beasts: [], kills: 0 };
       W.wildlife.beasts = W.wildlife.beasts.map(b => W.foeById[b.id] || b);
       if (s.wildResources) W.wildResources = s.wildResources;
       W.npcs = s.npcs; W.byId = {}; W.npcs.forEach(n => { W.byId[n.id] = n; });
-      // แผนที่: ใส่ระดับอาคาร + สถานีที่ขยาย
       const M = W.map; M.extraSt = [];
       s.map.buildings.forEach(sb => { const b = M.byId[sb.id]; if (b) { b.level = sb.level; b.hp = sb.hp; b.building = sb.building; } });
       s.map.extra.forEach(e => { const b = M.buildings.find(x => x.n === e.bid); const st = { id: M.stations.length, bid: e.bid, bkey: b.id, kind: e.kind, x: e.x, y: e.y, inside: e.inside, occ: null, n: b.stations.length }; M.stations.push(st); b.stations.push(st.id); M.extraSt.push(e); });
-      // Discard temporary new-world reservations before restoring saved ownership.
-      M.stations.forEach(st => { st.occ=null; if (st.owner != null) st.owner=null; });
-      M.buildings.forEach(b => { b.inside=[]; });
-      // คืนการจองสถานี/เตียง
+      M.stations.forEach(st => { st.occ = null; if (st.owner != null) st.owner = null; });
+      M.buildings.forEach(b => { b.inside = []; });
       W.npcs.forEach(n => { n.px = n.x; n.py = n.y; if (n.bed != null && M.stations[n.bed]) M.stations[n.bed].owner = n.id; if (n.act && n.act.st != null && M.stations[n.act.st]) { M.stations[n.act.st].occ = n.id; if (M.stations[n.act.st].inside && n.hidden) { M.buildings[M.stations[n.act.st].bid].inside.push(n.id); } } });
-      W.log = (type, text, ids) => SIM.log(W, type, text, ids); W.fame = v => { W.sect.fame = Math.max(0, (W.sect.fame || 0) + v); }; W.makeNpc = o => SIM.addNpc(W, o);
-      // Preserve unknown top-level extension data; never silently discard future metadata.
-      const knownKeys = new Set(['v','hc','seed','t','speed','rng','seqN','logSeq','deaths','avgSat','avgMood','weather','market','sect','world','threat','explore','npcs','graveyard','gone','logs','duelQueue','fights','foes','foeSeq','fightSeq','map','runtimeTiming','wildlife','wildResources']);
+      W.log = (type, text, ids, meta) => SIM.log(W, type, text, ids, meta); W.fame = v => { W.sect.fame = Math.max(0, (W.sect.fame || 0) + v); }; W.makeNpc = o => SIM.addNpc(W, o);
+      const knownKeys = new Set(['v', 'hc', 'seed', 't', 'speed', 'rng', 'seqN', 'logSeq', 'deaths', 'avgSat', 'avgMood', 'weather', 'market', 'sect', 'world', 'threat', 'explore', 'npcs', 'graveyard', 'gone', 'logs', 'duelQueue', 'fights', 'foes', 'foeSeq', 'fightSeq', 'map', 'runtimeTiming', 'wildlife', 'wildResources']);
       W._saveExtras = Object.fromEntries(Object.entries(s).filter(([k]) => !knownKeys.has(k)));
       if (s.runtimeTiming) W.runtimeTiming = s.runtimeTiming;
       const legacyContent = !s.sect.contentVersion;
@@ -358,12 +400,14 @@
       if (g.CPE && g.CPE.S) g.CPE.S(W);
       g.CONTENT.ensure(W); W._founding = false; g.MARTIAL.restore(W);
       if (legacyContent) W.npcs.forEach(n => {
-        const a=n.act, ctx=a&&a.ctx;
-        if(a && ['brew','forge','brewBasic'].includes(a.id) && a.stage==='do' && a.started2 && ctx && !ctx.craftReceipt) {
-          const r=ECO.recipeById[ctx.rid]; if(r) ECO.adoptLegacyCraft(W,n,r,ctx);
+        const a = n.act, ctx = a && a.ctx;
+        if (a && ['brew', 'forge', 'brewBasic'].includes(a.id) && a.stage === 'do' && a.started2 && ctx && !ctx.craftReceipt) {
+          const r = ECO.recipeById[ctx.rid]; if (r) ECO.adoptLegacyCraft(W, n, r, ctx);
         }
       });
       ECO.pruneCraftTransactions(W);
+      if (W.sect && Array.isArray(W.sect.queue) && g.SECT && g.SECT.sanitizeQueue) g.SECT.sanitizeQueue(W);
+      if (W.sect && Array.isArray(W.sect.queue)) W.sect.queue.forEach(a => HC.touch && HC.touch(a));
       W.npcs.forEach(n => HC.touch && HC.touch(n));
       return W;
     } catch (error) {

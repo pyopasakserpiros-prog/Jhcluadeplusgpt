@@ -1,9 +1,6 @@
-/* skills.js — ระบบวิชาต่อสู้ (v1.4): วิชาแต่ละท่ามี "รูปแบบ" ต่างกันจริง ไม่ใช่แค่ชื่อ
- * โปรไฟล์ของแต่ละวิชาสร้างจากข้อมูลวิชา (สาย/ธาตุ/ระดับ/พลัง/รหัส) แบบกำหนดแน่นอน (deterministic):
- *   รูปแบบ (strike/flurry/sweep/pierce/burst/dot/control/drain/counter/guard/heal/evade/forbid)
- *   × ธาตุ (ผลแทรก: เผาไหม้ เยือกแข็ง ช็อก ผนึกวิชา ลดพลัง ฯลฯ) × ระดับ (แรง/คุ้มกว่า แต่ใช้ปราณมากขึ้น)
- * สมดุล: ยิ่งแรงต่อครั้งยิ่งคูลดาวน์/เวลาร่ายนาน ผลรวมต่อเวลาใกล้เคียงกัน เพิ่มตามระดับ +12%/ระดับ
- * ราคา: ปราณ = 4% × ตัวคูณรูปแบบ × (1 + 0.45×(ระดับ−1)) ของปราณสูงสุด ปราณฟื้นช้าระหว่างศึก */
+/* skills.js — ระบบวิชาต่อสู้และลำดับขั้นความเชี่ยวชาญ (v1.10 Overhaul):
+ * วิชาแต่ละท่ามี "รูปแบบ" ต่างกันจริง พร้อมรองรับวิชาหลายกระบวนท่า (1, 2, 3, 4, 6 กระบวนท่า)
+ * ที่ปลดล็อกตามความเชี่ยวชาญจริง (n.cult.tm[techId]) และขั้นบำเพ็ญ */
 (function (g) {
   'use strict';
   const U = g.U, HC = g.HC, CULT = g.CULT, JD = g.JD;
@@ -91,7 +88,69 @@
   };
   function hash(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0); }
   function rnd(h, k) { let x = (h ^ Math.imul(k + 1, 0x9e3779b1)) >>> 0; x = Math.imul(x ^ (x >>> 15), 2246822519) >>> 0; x = Math.imul(x ^ (x >>> 13), 3266489917) >>> 0; return ((x ^ (x >>> 16)) >>> 0) / 4294967296; }
-  const cache = {};
+  const cache = {}, moveCache = {};
+
+  SK.moveProfile = (t, m) => {
+    if (!t || !m) return null;
+    const key = t.id + '::' + m.id;
+    if (moveCache[key]) return moveCache[key];
+    const arch = m.arch && SK.ARCH[m.arch] ? m.arch : 'strike';
+    const A = SK.ARCH[arch], tier = t.tier || 1;
+    const el = SK.ELEM[t.element] || SK.ELEM.NEUTRAL;
+    const isPrimary = Array.isArray(t.moveDefs) && t.moveDefs[0] === m;
+    const prof = {
+      id: isPrimary ? t.id : m.id,
+      moveId: m.id,
+      tech: t.id,
+      parentNameTh: t.nameTh,
+      nameTh: m.nameTh,
+      stageReq: m.stageReq || 1,
+      reqMastery: m.reqMastery || 0,
+      reqCultStage: m.reqCultStage || t.reqTier || tier,
+      tier,
+      grade: t.grade || 'Common',
+      legendary: !!t.legendary,
+      arch,
+      archTh: A.nameTh,
+      icon: A.icon,
+      type: m.type || (t.path === 'BODY' ? 'p' : 'm'),
+      element: t.element || 'NEUTRAL',
+      elemTh: el.nameTh,
+      cd: m.cd || A.cd,
+      wind: m.wind || A.wind,
+      hits: m.hits != null ? m.hits : A.hits,
+      M: m.M != null ? m.M : 1.2,
+      costPct: m.costPct != null ? m.costPct : Math.round(4 * A.cost * (1 + 0.45 * (tier - 1)) * 10) / 10,
+      pen: m.pen != null ? m.pen : (A.penAdd || 0),
+      critAdd: m.critAdd || 0,
+      aoe: m.aoe != null ? !!m.aoe : !!A.aoe,
+      steal: m.steal != null ? m.steal : (A.steal || 0),
+      dot: m.dot || 0,
+      dotKind: m.dotKind || 'bleed',
+      recoil: m.recoil != null ? m.recoil : (A.recoil || 0),
+      self: !!(m.self || A.self),
+      team: !!(m.team || A.team),
+      channel: m.channel || null,
+      shield: m.shield || (arch === 'guard' ? Math.round((0.14 + 0.035 * (tier - 1)) * 100) / 100 : 0),
+      heal: m.heal || (arch === 'heal' ? Math.round((0.16 + 0.04 * (tier - 1)) * 100) / 100 : 0),
+      support: m.support || (arch === 'support' ? { kind: 'morale', dur: 12 + tier * 2 } : null),
+      summon: m.summon || null,
+      rider: m.rider !== undefined ? m.rider : (!A.self && !A.team && A.off && !A.ctrl ? el.st : null),
+      ctrl: m.ctrl !== undefined ? m.ctrl : (A.ctrl ? el.ctrl : null),
+      shatterShield: !!m.shatterShield,
+      qiRestorePct: m.qiRestorePct || 0,
+      drawback: m.drawback || null,
+      aiRole: m.aiRole || null,
+      fxKind: m.fxKind || t.fxKind || null,
+      weaponTypes: t.weaponTypes,
+      armorTypes: t.armorTypes,
+      requiresWeapon: t.requiresWeapon,
+      moves: [m.nameTh]
+    };
+    prof.summary = SK.summary(prof) + ((t.weaponTypes || t.armorTypes) ? ' · ' + g.JD.MARTIAL.types[(t.weaponTypes || t.armorTypes)[0]] + ' ' + (t.requiresWeapon ? 'จำเป็นต้องใช้อาวุธนี้' : 'ถนัด ×1.15 / อื่น ×0.72') + '' : '');
+    return (moveCache[key] = prof);
+  };
+
   SK.profile = t => {
     if (!t || t.passive || t.cat === 'PASSIVE') return null; if (cache[t.id]) return cache[t.id];
     const h = hash(t.id); let arch;
@@ -108,28 +167,30 @@
       if (t.tier < 2) { delete w.control; delete w.counter; delete w.channel; }
       const ks = Object.keys(w), tot = ks.reduce((s, k) => s + w[k], 0); let r = rnd(h, 1) * tot; arch = ks[ks.length - 1];
       for (const k of ks) { r -= w[k]; if (r <= 0) { arch = k; break; } }
+    } else if (Array.isArray(t.moveDefs) && t.moveDefs.length) {
+      const m0 = SK.moveProfile(t, t.moveDefs[0]);
+      const prof = Object.assign({}, m0, { id: t.id, tech: t.id, moveId: t.moveDefs[0].id, nameTh: t.nameTh, moves: t.moves || t.moveDefs.map(x => x.nameTh) });
+      return (cache[t.id] = prof);
     } else return (cache[t.id] = null); // วิชาอาชีพ/ไม่ใช่การรบ
     const A = SK.ARCH[arch], tier = t.tier, tierMult = 1 + 0.12 * (tier - 1) + 0.0006 * ((t.power || 40) - 40 * tier * 0.8 > 0 ? 0 : 0);
     const cd = Math.round(A.cd * (0.85 + 0.3 * rnd(h, 2)));
     const wind0 = Math.max(2, Math.round(A.wind * (0.9 + 0.2 * rnd(h, 4)))), hits = A.hits;
-    // ตัวคูณรวมต่อรอบคูลดาวน์ = e × (cd/4) × ระดับ − ช่วงที่ตีธรรมดาแทรก; ท่ายิ่งหนักยิ่งคูลดาวน์/ร่ายนาน
     const fill = (cd - wind0) / 4, tot = A.e * (cd / 4) * tierMult - fill;
     let M = hits ? Math.max(0.9, tot / hits) : 0, dotTot = 0;
     if (arch === 'dot') { M = 0.9; dotTot = Math.max(0.5, tot - 0.9); }
     if (arch === 'counter') M = Math.max(1.5, A.e * (cd / 4) * tierMult * 0.8);
     const el = SK.ELEM[t.element] || SK.ELEM.NEUTRAL;
-    // ชนิดความเสียหาย: กายภาพ (atk/def) หรือวิชา (matk/mdef)
     let type = 'm'; const P = t.path;
     if (P === 'BODY') type = 'p';
     else if (P === 'GOD') type = (t.sub === 'WAR_DEITY' || t.sub === 'TOTEM_BEAST_GOD') ? 'p' : 'm';
     else if (P === 'DEMON') type = (t.sub === 'SHADOW_ASSASSIN' ? (rnd(h, 3) < 0.85 ? 'p' : 'm') : t.sub === 'HEAVEN_DEVOURING_DEMON' ? (rnd(h, 3) < 0.5 ? 'p' : 'm') : 'm');
     else if (P === 'HEART_SOUL') type = (t.sub === 'MIND_SWORD_TELEKINESIS' && rnd(h, 3) < 0.35) ? 'p' : 'm';
     else type = (t.sub === 'SWORD_IMMORTAL' ? rnd(h, 3) < 0.7 : t.sub === 'BLOOD_DEMON' ? rnd(h, 3) < 0.4 : rnd(h, 3) < 0.12) ? 'p' : 'm';
-    const prof = { id: t.id, tech: t.id, nameTh: t.nameTh, tier, arch, archTh: A.nameTh, icon: A.icon, type, element: t.element, elemTh: el.nameTh, cd,
+    const prof = { id: t.id, tech: t.id, nameTh: t.nameTh, tier, grade: t.grade || 'Common', legendary: !!t.legendary, fxKind: t.fxKind || null, arch, archTh: A.nameTh, icon: A.icon, type, element: t.element, elemTh: el.nameTh, cd,
       hits, wind: wind0, M: Math.round(M * 100) / 100, costPct: Math.round(4 * A.cost * (1 + 0.45 * (tier - 1)) * 10) / 10, pen: A.penAdd || 0, aoe: !!A.aoe, steal: A.steal || 0, dot: Math.round(dotTot * 100) / 100,
       recoil: A.recoil || 0, self: !!A.self, team: !!A.team, channel: !!A.channel, rider: !A.self && !A.team && A.off && !A.ctrl ? el.st : null, ctrl: A.ctrl ? el.ctrl : null, moves: t.moves || [] };
     if (arch === 'dot') prof.dotKind = ({ FIRE: 'burn', BLOOD_DEMON: 'bleed', WOOD_LIFE: 'poison' })[t.element] || (rnd(h, 5) < 0.5 ? 'poison' : 'bleed');
-    if (arch === 'guard') prof.shield = Math.round((0.14 + 0.035 * (tier - 1)) * 100) / 100; // % ของพลังชีวิตสูงสุด
+    if (arch === 'guard') prof.shield = Math.round((0.14 + 0.035 * (tier - 1)) * 100) / 100;
     if (arch === 'heal') prof.heal = Math.round((0.16 + 0.04 * (tier - 1)) * 100) / 100;
     if (arch === 'support') {
       prof.support = {
@@ -156,28 +217,161 @@
       prof.ticks = ticks;
     }
     prof.weaponTypes = t.weaponTypes; prof.armorTypes = t.armorTypes; prof.requiresWeapon = t.requiresWeapon;
-    prof.summary = SK.summary(prof) + ((t.weaponTypes || t.armorTypes) ? ' · ' + g.JD.MARTIAL.types[(t.weaponTypes || t.armorTypes)[0]] + ' ตรง ×1.15 / อื่น ×0.65' : ''); return (cache[t.id] = prof);
+    prof.summary = SK.summary(prof) + ((t.weaponTypes || t.armorTypes) ? ' · ' + g.JD.MARTIAL.types[(t.weaponTypes || t.armorTypes)[0]] + ' ' + (t.requiresWeapon ? 'จำเป็นต้องใช้อาวุธนี้' : 'ถนัด ×1.15 / อื่น ×0.72') + '' : ''); return (cache[t.id] = prof);
   };
+
   SK.summary = p => {
-    const A = SK.ARCH[p.arch], bits = [];
+    const A = SK.ARCH[p.arch] || SK.ARCH.strike, bits = [];
     if (p.M && p.arch !== 'channel') bits.push('ดาเมจ ×' + p.M + (p.hits > 1 ? ' ×' + p.hits + ' ครั้ง' : p.aoe ? ' ต่อตัว' : ''));
     if (p.dot) bits.push('แผลต่อเนื่อง ×' + p.dot);
     if (p.shield) bits.push('โล่ ' + Math.round(p.shield * 100) + '% HP');
     if (p.heal) bits.push('ฟื้น ' + Math.round(p.heal * 100) + '% HP');
+    if (p.qiRestorePct) bits.push('ฟื้นปราณ ' + Math.round(p.qiRestorePct * 100) + '%');
+    if (p.shatterShield) bits.push('ทลายโล่ศัตรูทันที');
     if (p.support) bits.push('หนุนฝ่ายตน (' + (SK.STATUS[p.support.kind] ? SK.STATUS[p.support.kind].nameTh : p.support.kind) + ') ' + p.support.dur + ' นาที');
     if (p.summon) bits.push('อัญเชิญ' + p.summon.nameSuffix + ' (เลือด ' + Math.round(p.summon.hpPct * 100) + '%, ' + p.summon.dur + ' นาที)');
     if (p.channel) bits.push('ร่ายต่อเนื่อง ' + p.channel.ticks + ' รอบ (สะสม ×' + p.channel.tickM + ' / ทะลวงจบ ×' + p.channel.finishM + ')');
     if (p.pen) bits.push('เจาะเกราะ +' + p.pen + '%');
     if (p.steal) bits.push('ดูดชีวิต ' + Math.round(p.steal * 100) + '%');
     if (p.recoil) bits.push('เสียเลือดตน ' + Math.round(p.recoil * 100) + '%');
+    if (p.drawback) {
+      if (p.drawback.staminaCost) bits.push('ใช้แรงกาย ' + p.drawback.staminaCost);
+      if (p.drawback.exposeTicks) bits.push('เปิดช่องโหว่ ' + p.drawback.exposeTicks + ' นาที');
+      if (p.drawback.heartDemonAdd) bits.push('จิตมาร +' + p.drawback.heartDemonAdd);
+    }
     const st = p.ctrl || p.rider; if (st && SK.STATUS[st]) bits.push((p.ctrl ? 'ผล: ' : 'โอกาสแทรก: ') + SK.STATUS[st].nameTh);
     bits.push('คูลดาวน์ ' + p.cd + ' · ร่าย ' + p.wind + ' · ปราณ ' + p.costPct + '%');
     return A.icon + ' ' + A.nameTh + ' · ' + (p.type === 'p' ? 'กายภาพ' : 'วิชา') + ' · ธาตุ' + p.elemTh + ' — ' + bits.join(' · ');
   };
-  /* วิชาที่ตัวละครใช้ได้ในการรบ */
-  SK.list = n => { if (n.foe) return n.skl || []; if (!n.cult) return []; return (g.MARTIAL ? g.MARTIAL.activeTechs(n) : n.cult.techs).map(id => SK.profile(g.CULT.tech(id))).filter(Boolean); };
-  SK.qiCost = (n, p) => Math.round(g.CULT.qiMax(n) * p.costPct / 100);
-  SK.mastery = (n, p) => { const c = n.cult, base = c && c.tm ? 1 + Math.min(0.15, (c.tm[p.id] || 0) * 0.002) : 1; return base * (g.MARTIAL ? g.MARTIAL.skillEfficiency(n, p) : 1); };
+
+  /* ---------- Multi-Stage & Multi-Move Progression Authority ---------- */
+  SK.masteryPoints = (n, techId) => (n && n.cult && n.cult.tm && Number.isFinite(n.cult.tm[techId])) ? n.cult.tm[techId] : 0;
+
+  SK.unlockedStage = (n, tOrId) => {
+    const t = typeof tOrId === 'string' ? CULT.tech(tOrId) : tOrId;
+    if (!t) return 0;
+    if (!Array.isArray(t.stages) || !t.stages.length) return 1;
+    const pts = SK.masteryPoints(n, t.id);
+    const cStage = n && n.cult ? (CULT.effectiveTechStage ? CULT.effectiveTechStage(n) : n.cult.stage) : (n && n.tier ? n.tier : 1);
+    let best = 1;
+    for (const st of t.stages) {
+      const reqMas = st.reqMastery || 0;
+      const reqCult = st.reqCultStage || t.reqTier || t.tier || 1;
+      if (pts >= reqMas && cStage >= reqCult) {
+        best = Math.max(best, st.stage || 1);
+      }
+    }
+    return best;
+  };
+
+  SK.allMoves = tOrId => {
+    const t = typeof tOrId === 'string' ? CULT.tech(tOrId) : tOrId;
+    if (!t || t.passive || t.cat === 'PASSIVE') return [];
+    if (Array.isArray(t.moveDefs) && t.moveDefs.length) {
+      return t.moveDefs.map((m, idx) => Object.assign({ moveIndex: idx }, SK.moveProfile(t, m))).filter(Boolean);
+    }
+    const p = SK.profile(t);
+    return p ? [Object.assign({ moveIndex: 0 }, p)] : [];
+  };
+
+  SK.unlockedMoves = (n, tOrId) => {
+    const t = typeof tOrId === 'string' ? CULT.tech(tOrId) : tOrId;
+    if (!t || t.passive || t.cat === 'PASSIVE') return [];
+    if (Array.isArray(t.moveDefs) && t.moveDefs.length) {
+      const uStage = SK.unlockedStage(n, t);
+      const pts = SK.masteryPoints(n, t.id);
+      const cStage = n && n.cult ? (CULT.effectiveTechStage ? CULT.effectiveTechStage(n) : n.cult.stage) : (n && n.tier ? n.tier : 1);
+      return t.moveDefs
+        .map((m, idx) => ({ m, idx }))
+        .filter(({ m }) => (m.stageReq || 1) <= uStage && (m.reqMastery || 0) <= pts && (!m.reqCultStage || cStage >= m.reqCultStage))
+        .map(({ m, idx }) => Object.assign({ moveIndex: idx }, SK.moveProfile(t, m)))
+        .filter(Boolean);
+    }
+    const p = SK.profile(t);
+    return p ? [Object.assign({ moveIndex: 0 }, p)] : [];
+  };
+
+  SK.canSelectMove = (n, techOrId, moveIdOrIdx) => {
+    if (!n || !n.cult) return false;
+    const t = typeof techOrId === 'string' ? CULT.tech(techOrId) : techOrId;
+    if (!t || t.passive || t.cat === 'PASSIVE') return false;
+    if (t.innateOnly) {
+      if (!(g.MARTIAL && g.MARTIAL.isInnateActive && g.MARTIAL.isInnateActive(n, t))) return false;
+    } else {
+      const activeTechs = g.MARTIAL && g.MARTIAL.activeTechs ? g.MARTIAL.activeTechs(n) : n.cult.techs;
+      const owned = activeTechs.includes(t.id) || n.cult.mantra === t.id;
+      if (!owned) return false;
+    }
+    return SK.unlockedMoves(n, t).some(m => m.id === moveIdOrIdx || m.moveId === moveIdOrIdx || m.moveIndex === moveIdOrIdx);
+  };
+
+  SK.gainMastery = (W, n, techId, amt) => {
+    if (!n || !n.cult || !techId) return { gained: 0, unlockedNewStage: false };
+    const t = CULT.tech(techId);
+    const prevStage = t ? SK.unlockedStage(n, t) : 1;
+    n.cult.tm = n.cult.tm || {};
+    const add = Number.isFinite(amt) && amt > 0 ? amt : 1;
+    n.cult.tm[techId] = (n.cult.tm[techId] || 0) + add;
+    const newStage = t ? SK.unlockedStage(n, t) : 1;
+    if (newStage > prevStage) {
+      if (g.MARTIAL && g.MARTIAL.invalidateMartialCaches) g.MARTIAL.invalidateMartialCaches(n); else if (g.STATS) g.STATS.dirty(n);
+      if (W && W.log && t && Array.isArray(t.stages)) {
+        const stObj = t.stages.find(s => s.stage === newStage);
+        W.log('insight', n.h.name.given + ' บรรลุความเข้าใจวิชา「' + t.nameTh + '」สู่' + (stObj ? stObj.nameTh : ('ขั้นที่ ' + newStage)) + '!', [n.id]);
+      }
+      return { gained: add, unlockedNewStage: true, fromStage: prevStage, toStage: newStage };
+    }
+    return { gained: add, unlockedNewStage: false, fromStage: prevStage, toStage: newStage };
+  };
+
+  /* วิชาที่ตัวละครใช้ได้ในการรบ (รวมถึงกระบวนท่าที่ปลดล็อกแล้วจากวิชาหลายขั้นและคัมภีร์หลักระดับตำนาน) */
+  SK.list = n => {
+    if (n.foe) return n.skl || [];
+    if (!n.cult) return [];
+    const activeIds = (g.MARTIAL ? g.MARTIAL.activeTechs(n) : n.cult.techs).slice();
+    if (g.MARTIAL && g.MARTIAL.activeInnateTechs) {
+      for (const innId of g.MARTIAL.activeInnateTechs(n)) {
+        if (!activeIds.includes(innId)) activeIds.push(innId);
+      }
+    }
+    if (n.cult.mantra) {
+      const mTech = CULT.tech(n.cult.mantra);
+      if (mTech && Array.isArray(mTech.moveDefs) && mTech.moveDefs.length && !activeIds.includes(mTech.id)) {
+        activeIds.push(mTech.id);
+      }
+    }
+    const out = [];
+    for (const id of activeIds) {
+      const t = CULT.tech(id);
+      if (!t || t.passive || t.cat === 'PASSIVE') continue;
+      if (Array.isArray(t.moveDefs) && t.moveDefs.length) {
+        const moves = SK.unlockedMoves(n, t);
+        for (const mv of moves) out.push(mv);
+      } else {
+        const p = SK.profile(t);
+        if (p) out.push(p);
+      }
+    }
+    return out;
+  };
+
+  SK.qiCost = (n, p) => {
+    const passMult = (g.MARTIAL && g.MARTIAL.passiveStats ? g.MARTIAL.passiveStats(n).qiCostMult : 1) || 1;
+    const innMult = (g.MARTIAL && g.MARTIAL.innateStats ? g.MARTIAL.innateStats(n).qiCostMult : 1) || 1;
+    const synMult = (g.MARTIAL && g.MARTIAL.skillSynergy ? g.MARTIAL.skillSynergy(n, p).qiCostMult : 1) || 1;
+    return Math.max(0, Math.round(g.CULT.qiMax(n) * (p.costPct || 0) / 100 * clamp(passMult * innMult * synMult, 0.35, 1.5)));
+  };
+  SK.masteryBase = (n, p) => {
+    const c = n && n.cult, techId = p.tech || p.id;
+    const pts = c && c.tm ? (c.tm[techId] || c.tm[p.id] || 0) : 0;
+    return 1 + Math.min(0.18, pts * 0.002);
+  };
+  SK.mastery = (n, p) => {
+    const base = SK.masteryBase(n, p);
+    const eff = g.MARTIAL ? g.MARTIAL.skillEfficiency(n, p) : 1;
+    const syn = (g.MARTIAL && g.MARTIAL.skillSynergy) ? g.MARTIAL.skillSynergy(n, p).dmgMult : 1;
+    return base * eff * syn;
+  };
 
   /* ศัตรู: สร้างชุดวิชาแบบเรียบง่ายตามชนิด/ระดับ */
   SK.foeSkills = u => {

@@ -365,7 +365,7 @@
     if (sx === gx && sy === gy) return [[gx, gy]];
     const key = ((sx << 24) | (sy << 16) | (gx << 8) | gy) >>> 0;
     let pc = M._pc; if (!pc) pc = M._pc = new Map();
-    const hit = pc.get(key); if (hit) return hit;
+    if (pc.has(key)) return pc.get(key);
     if (!gScore) { gScore = new Float32Array(W * H); came = new Int32Array(W * H); stamp = new Uint32Array(W * H); closed = new Uint32Array(W * H); sharedHeap = new U.MinHeap(); }
     curStamp++;
     const heap = sharedHeap; heap.clear();
@@ -386,12 +386,20 @@
         const ng = gk0 + D8[d][2] * cost[nk];
         if (stamp[nk] !== curStamp || ng < gScore[nk]) {
           stamp[nk] = curStamp; gScore[nk] = ng; came[nk] = k;
-          const hx = Math.abs(nx - gx), hy = Math.abs(ny - gy);
-          heap.push(ng + 0.8 * ((hx + hy) - 0.5858 * Math.min(hx, hy)), nk);
+          let hDist;
+          if ((ny < 131 && gy >= 132 && nx > 22 && nx < 218) || (ny >= 132 && gy < 131 && gx > 22 && gx < 218)) {
+            const dx1 = Math.abs(nx - 118), dy1 = Math.abs(ny - 132);
+            const dx2 = Math.abs(118 - gx), dy2 = Math.abs(132 - gy);
+            hDist = ((dx1 + dy1) - 0.5858 * Math.min(dx1, dy1)) + ((dx2 + dy2) - 0.5858 * Math.min(dx2, dy2));
+          } else {
+            const hx = Math.abs(nx - gx), hy = Math.abs(ny - gy);
+            hDist = (hx + hy) - 0.5858 * Math.min(hx, hy);
+          }
+          heap.push(ng + 0.8 * hDist, nk);
         }
       }
     }
-    MAP._lastIt = it; if (!found) return null;
+    MAP._lastIt = it; if (!found) { if (pc.size >= 12000) { let ev = 0; for (const k of pc.keys()) { pc.delete(k); if (++ev >= 2000) break; } } pc.set(key, null); return null; }
     const path = []; let c = gk; while (c !== -1) { path.push([c % W, (c / W) | 0]); c = came[c]; }
     path.reverse();
     if (pc.size >= 12000) {

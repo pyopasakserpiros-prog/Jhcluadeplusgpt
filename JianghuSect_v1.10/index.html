@@ -19,14 +19,15 @@
   <div id="toasts"></div>
   <div id="fabs"><button id="fFollow" title="ติดตาม">🎯</button><button id="fZoomIn">＋</button><button id="fZoomOut">－</button><button id="fHome" title="กลับไปกลางสำนัก">🏯</button></div>
   <div id="selInfo"></div>
-  <div id="hudBottom">
-    <button data-nav="people"><span>👥</span>ผู้คน</button>
-    <button data-nav="sect"><span>🏯</span>สำนัก</button>
-    <button data-nav="log"><span>📜</span>บันทึก</button>
-    <button data-nav="world"><span>🧭</span>ยุทธภพ</button>
-    <button data-nav="menu"><span>⚙️</span>เมนู</button>
+  <div id="hudBottom" role="navigation" aria-label="เมนูหลัก">
+    <button data-nav="people" aria-label="ผู้คน"><span>👥</span>ผู้คน</button>
+    <button data-nav="sect" aria-label="สำนัก"><span>🏯</span>สำนัก</button>
+    <button data-nav="log" aria-label="บันทึก"><span>📜</span>บันทึก</button>
+    <button data-nav="world" aria-label="ยุทธภพ"><span>🧭</span>ยุทธภพ</button>
+    <button data-nav="edit" aria-label="ศูนย์แก้ไข"><span>✏️</span>แก้ไข</button>
+    <button data-nav="menu" aria-label="เมนู"><span>⚙️</span>เมนู</button>
   </div>
-  <div id="sheet"><div id="shHead"><div id="shTitle"></div><button id="shClose">✕</button></div><div id="shTabs"></div><div id="shBody"></div></div>
+  <div id="sheet"><div id="shHead"><div id="shTitle"></div><button id="shClose" aria-label="ปิดหน้าต่าง">✕</button></div><div id="shTabs"></div><div id="shBody"></div></div>
   <div id="start"></div>
 </div>
 <script src="data/data_core.js"></script>
