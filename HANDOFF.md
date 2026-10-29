@@ -1,3 +1,11 @@
+# CURRENT ASSIGNMENT — READ FIRST (2026-10-29)
+
+**Agy/Gemini: implement the active roadmap in [docs/AGY_NEXT_DEVELOPMENT_BRIEF.md](docs/AGY_NEXT_DEVELOPMENT_BRIEF.md).** This is the owner's instruction to begin, not a request for another prompt. Start with recruitment and facilities; follow the acceptance tests, branch rules, and staged delivery in that brief. The sections below are historical snapshots and do not override the current brief.
+
+Latest reviewed code before this handoff: `929894c75fb44d37653e7a4ca32c210db006e57b` (multiple applicant admissions); `afc4f7f` (medicine and realm reward corrections). Both `main` and `main-1` had `929894c` when this handoff was prepared. This documentation commit may advance `main-1`. Development is on `main-1`; preserve `main` for Codex review and integration. `human_core.js` is byte locked and must not be changed.
+
+---
+
 # JIANGHU SECT — AUTONOMOUS ECONOMY & FACILITY EXPANSION HANDOFF
 
 ## Current handoff — v1.10.14 Gameplay Findings, Personal Crafting, Subpools & CP Economy / main-1 (2026-10-29)
