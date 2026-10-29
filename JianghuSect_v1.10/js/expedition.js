@@ -79,14 +79,114 @@
     X.depart(W, party, pick);
   };
 
+  /* ---------- ทะเบียนจุดวาสนาตามระดับแรงค์ยุทธภพ 1..4 (Data-Driven Fortune Registry) ---------- */
+  X.FORTUNE_REGISTRY = {
+    1: [
+      {
+        id: 'f1_bamboo_grotto', nameTh: 'ถ้ำไผ่หมอกเขียว', biome: 'forest',
+        pools: [
+          { id: 'f1_bamboo_herbs', nameTh: 'ดงสมุนไพรรากหยก', skill: 'herbalism', diff: 20, herbs: ['MAT_HERB_DEW_GRASS_1', 'MAT_HERB_CINDER_LEAF_1'], stones: 30 },
+          { id: 'f1_bamboo_traps', nameTh: 'ค่ายกลไผ่โบราณ', skill: 'survival', diff: 22, stones: 45, pill: 'P:BASIC_HP', techTier: 2 }
+        ]
+      },
+      {
+        id: 'f1_river_pebble', nameTh: 'ตลิ่งหินประกายธาร', biome: 'plains',
+        pools: [
+          { id: 'f1_river_ore', nameTh: 'สายแร่ตื้นริมน้ำ', skill: 'mining', diff: 20, ore: ['MAT_ORE_BLACK_IRON_1'], stones: 35 },
+          { id: 'f1_river_hermit', nameTh: 'ศาลาชาวประมงชรา', skill: 'diplomacy', diff: 18, stones: 25, pill: 'P:BASIC_QI', insight: true }
+        ]
+      },
+      {
+        id: 'f1_old_shrine', nameTh: 'ศาลาร้างชายป่า', biome: 'mountain',
+        pools: [
+          { id: 'f1_shrine_inscription', nameTh: 'จารึกบทสวดโบราณ', skill: 'SCRIPTURE', diff: 22, techTier: 2, insight: true, stones: 30 },
+          { id: 'f1_shrine_cache', nameTh: 'ช่องลับใต้แท่นบูชา', skill: 'perceptiveness', diff: 20, gearTier: 1, stones: 40 }
+        ]
+      }
+    ],
+    2: [
+      {
+        id: 'f2_mist_valley', nameTh: 'หุบเขาเมฆาคราม', biome: 'mountain',
+        pools: [
+          { id: 'f2_mist_cliff_lotus', nameTh: 'หน้าผาดอกบัวหยก', skill: 'herbalism', diff: 40, herbs: ['MAT_HERB_JADE_LOTUS_2', 'MAT_HERB_MIST_ORCHID_2'], stones: 70 },
+          { id: 'f2_mist_wind_trap', nameTh: 'ช่องลมกระโชกสะบั้นปราณ', skill: 'survival', diff: 42, stones: 90, gearTier: 2, insight: true }
+        ]
+      },
+      {
+        id: 'f2_abandoned_mine', nameTh: 'เหมืองแร่ร้างใต้ผา', biome: 'mountain',
+        pools: [
+          { id: 'f2_mine_crystal_vein', nameTh: 'สายแร่ผลึกวิญญาณ', skill: 'mining', diff: 42, ore: ['MAT_ORE_COLD_STEEL_2', 'MAT_ORE_JADE_SLATE_2'], stones: 80 },
+          { id: 'f2_mine_poison_mist', nameTh: 'หมอกพิษในปล่องเหมือง', skill: 'alchemy', diff: 40, pill: 'P:BASIC_HP2', stones: 85 }
+        ]
+      },
+      {
+        id: 'f2_ancient_pavilion', nameTh: 'หอพักเซียนยอดเขา', biome: 'plains',
+        pools: [
+          { id: 'f2_pavilion_scrolls', nameTh: 'หีบม้วนตำราหยก', skill: 'SCRIPTURE', diff: 45, techTier: 3, stones: 75, insight: true },
+          { id: 'f2_pavilion_spring', nameTh: 'ตาน้ำปราณวารีทิพย์', skill: 'willpower', diff: 38, spring: true, stones: 60 }
+        ]
+      }
+    ],
+    3: [
+      {
+        id: 'f3_flame_crater', nameTh: 'ปล่องภูเขาไฟเพลิงอัสดง', biome: 'desert',
+        pools: [
+          { id: 'f3_crater_fire_essence', nameTh: 'ธารลาวาผลึกเพลิง', skill: 'mining', diff: 65, ore: ['MAT_ORE_STAR_COPPER_3'], stones: 160, gearTier: 3 },
+          { id: 'f3_crater_heat_endurance', nameTh: 'ลมปราณเพลิงแผดเผา', skill: 'survival', diff: 68, pill: 'P:BASIC_HP', stones: 200, insight: true }
+        ]
+      },
+      {
+        id: 'f3_sunken_dragon_lake', nameTh: 'วังบาดาลมังกรคราม', biome: 'water',
+        pools: [
+          { id: 'f3_lake_pearls', nameTh: 'ดงไข่มุกวิญญาณใต้บาดาล', skill: 'perceptiveness', diff: 65, herbs: ['MAT_HERB_BLOOD_GINSENG_3'], stones: 180 },
+          { id: 'f3_lake_pressure', nameTh: 'ม่านค่ายกลแรงดันน้ำลึก', skill: 'willpower', diff: 68, techTier: 4, stones: 190, spring: true }
+        ]
+      },
+      {
+        id: 'f3_ruined_sanctuary', nameTh: 'วิหารเก้าอักขระโบราณ', biome: 'ruins',
+        pools: [
+          { id: 'f3_sanctuary_seal', nameTh: 'ค่ายกลผนึกเก้าชั้น', skill: 'SCRIPTURE', diff: 70, techTier: 4, stones: 220, insight: true },
+          { id: 'f3_sanctuary_vault', nameTh: 'คลังศาสตราทหารเทพ', skill: 'courage', diff: 68, gearTier: 3, stones: 210 }
+        ]
+      }
+    ],
+    4: [
+      {
+        id: 'f4_void_rift', nameTh: 'รอยแยกห้วงมิติสุญญะ', biome: 'ruins',
+        pools: [
+          { id: 'f4_rift_anomaly', nameTh: 'กระแสปราณผันผวนไร้ระเบียบ', skill: 'willpower', diff: 85, techTier: 5, stones: 450, insight: true },
+          { id: 'f4_rift_astral_ore', nameTh: 'ผลึกดาวตกบรรพกาล', skill: 'mining', diff: 88, ore: ['MAT_ORE_MITHRIL_JADE_4'], stones: 500, gearTier: 4 }
+        ]
+      },
+      {
+        id: 'f4_celestial_tomb', nameTh: 'สุสานเซียนนิรันดร์', biome: 'mountain',
+        pools: [
+          { id: 'f4_tomb_scripture', nameTh: 'โลงหยกจารึกคัมภีร์เซียน', skill: 'SCRIPTURE', diff: 90, techTier: 5, stones: 480, insight: true },
+          { id: 'f4_tomb_guard_trial', nameTh: 'ด่านทดสอบจิตวิญญาณเซียน', skill: 'courage', diff: 88, spring: true, stones: 400, gearTier: 4 }
+        ]
+      },
+      {
+        id: 'f4_primordial_fountain', nameTh: 'ตาน้ำพุปฐมธาตุ', biome: 'water',
+        pools: [
+          { id: 'f4_fountain_essence', nameTh: 'หยาดน้ำอมฤตปฐมกาล', skill: 'herbalism', diff: 85, herbs: ['MAT_HERB_DRAGON_GRASS_4'], stones: 420, spring: true },
+          { id: 'f4_fountain_cleansing', nameTh: 'ชำระล้างเส้นลมปราณเก้าทิศ', skill: 'alchemy', diff: 88, spring: true, stones: 450, insight: true }
+        ]
+      }
+    ]
+  };
+  Object.entries(X.FORTUNE_REGISTRY).forEach(([r, sites]) => {
+    sites.forEach(s => { s.rank = Number(r); s.icon = s.icon || '✨'; s.desc = s.desc || s.nameTh; });
+  });
+
   X.depart = (W, party, kind, region) => {
     const rng = W.rng; const w = W.world;
     if (!party.length || party.some(n => n.dead || n.away || n.travel || n.expId)) return null;
     const lead = party[0];
-    const maxStage = Math.max(...party.map(x => x.cult ? x.cult.stage : 0));
-    const regs = X.REGIONS.filter(r => r.danger <= 1 + maxStage + (kind === 'fortune' ? 1 : 0) && (kind !== 'trade' && kind !== 'diplomacy' || r.danger <= 2));
+    // คำนวณ World Rank สูงสุดของสมาชิกในคณะ ณ เวลาออกเดินทาง (Snapshot)
+    const partyRank = Math.max(1, ...party.map(x => CULT.worldRank ? CULT.worldRank(x) : 1));
+    const regs = X.REGIONS.filter(r => (kind !== 'trade' && kind !== 'diplomacy' || r.danger <= 2));
     region = region || (g.CONTENT && g.CONTENT.chooseRegion(W, party, kind, regs)) || rng.weighted(regs, r => 1 + (kind === 'fortune' ? r.danger * 0.4 : 0) + (kind === 'gather' ? (E(lead, 'interests.herbs') > 55 ? (r.terrain === 'forest' || r.terrain === 'mountain' ? 1 : 0) : (r.terrain === 'mountain' ? 1 : 0)) : 0) + (kind === 'hunt' ? r.danger * 0.3 : 0));
-    if (!region || !X.REGIONS.includes(region) || (region.minPower && party.reduce((v,n)=>v+CULT.power(n),0)<region.minPower)) return null;
+    if (!region || !X.REGIONS.includes(region)) return null;
     const days = Math.max(2, Math.round(region.days * (0.7 + rng.next() * 0.6) * (kind === 'trade' ? 1.1 : kind === 'recruit' ? 1.4 : 1)));
     // เสบียง: เอาอาหารจากคลังโดยคำนึงถึงเกณฑ์สำรองฉุกเฉิน (v1.10.6)
     if (g.SECT && g.SECT.ensureDirectives) g.SECT.ensureDirectives(W);
@@ -104,7 +204,15 @@
     if (currentMeals - taken <= safetyReserve) {
       W.log('mission', 'คณะเดินทางเบิกเสบียง ' + taken + ' ชุด ทำให้เสบียงคลังเหลือ ' + (currentMeals - taken) + ' แตะเกณฑ์สำรองฉุกเฉิน (' + safetyReserve + ')', party.map(p => p.id));
     }
-    const ex = { id: ++w.seq, kind, region: region.id, party: party.map(p => p.id), t0: W.t, ret: W.t + days * 1440 + rng.int(-300, 300), days, journal: [], carry: [], supplies: taken, done: false, state: 'leaving', lost: false };
+    const ex = { id: ++w.seq, kind, region: region.id, party: party.map(p => p.id), partyRank, t0: W.t, ret: W.t + days * 1440 + rng.int(-300, 300), days, journal: [], carry: [], supplies: taken, done: false, state: 'leaving', lost: false };
+    if (kind === 'fortune') {
+      const sites = X.FORTUNE_REGISTRY[partyRank] || X.FORTUNE_REGISTRY[1];
+      const matchSite = sites.find(s => s.biome === region.terrain) || rng.pick(sites);
+      const chosenPool = rng.pick(matchSite.pools);
+      ex.siteId = matchSite.id;
+      ex.poolId = chosenPool.id;
+      ex.fortuneSite = matchSite;
+    }
     if (kind === 'trade') { // นำสินค้าไปขาย: ยาและอุปกรณ์ส่วนเกินในคลัง
       const sell = []; Object.keys(W.sect.stock).forEach(k => { if (ECO.isPill(k) && W.sect.stock[k] > 6 && ECO.pillInfo(k)) { const n = Math.floor((W.sect.stock[k] - 4) / 2); if (n > 0 && ECO.take(W, k, n)) sell.push({ id: k, n }); } });
       ex.carry = sell; if (!sell.length && (W.sect.stones < 1000)) { ex.kind = kind = 'gather'; }
@@ -232,8 +340,108 @@
     return parts.join(', ');
   };
   X.fortuneEvent = (W, ex, alive, out, reg) => {
+    const rng = W.rng;
+    const rank = ex.partyRank || (alive.length ? Math.max(1, ...alive.map(n => CULT.worldRank ? CULT.worldRank(n) : 1)) : 1);
+    const sites = X.FORTUNE_REGISTRY && X.FORTUNE_REGISTRY[rank];
+    let site = sites && (sites.find(s => s.id === ex.siteId) || sites.find(s => s.biome === reg.terrain) || sites[0]);
+    let pool = site && (site.pools.find(p => p.id === ex.poolId) || rng.pick(site.pools));
+    if (site && pool) {
+      ex.siteId = site.id;
+      ex.poolId = pool.id;
+      const lead = alive[0];
+      const skillName = pool.skill;
+      let skillVal = 0;
+      if (skillName) {
+        skillVal = Math.max(...alive.map(a => (a.h.skills && a.h.skills[skillName]) || (skillName === 'SCRIPTURE' ? (a.h.skills.SCRIPTURE || 0) : 0)));
+        if (skillVal === 0) {
+          skillVal = Math.max(...alive.map(a => {
+            if (skillName === 'herbalism') return E(a, 'interests.herbs') * 0.6;
+            if (skillName === 'mining') return E(a, 'interests.labor') * 0.6;
+            if (skillName === 'survival') return E(a, 'physiology.endurance') * 0.6;
+            if (skillName === 'SCRIPTURE') return E(a, 'intellect.comprehension') * 0.7;
+            if (skillName === 'perceptiveness') return E(a, 'intellect.perceptiveness') * 0.7;
+            if (skillName === 'willpower') return E(a, 'intellect.willpower') * 0.7;
+            if (skillName === 'courage') return E(a, 'personality.courage') * 0.7;
+            if (skillName === 'alchemy') return E(a, 'interests.alchemy') * 0.7;
+            if (skillName === 'diplomacy') return E(a, 'social.charisma') * 0.7;
+            return 25;
+          }));
+        }
+      }
+      const luck = alive.reduce((s, a) => s + E(a, 'destiny.luck'), 0) / alive.length;
+      const roll = skillVal + (luck - 50) * 0.2 + rng.gauss(0, 8);
+      const passed = roll >= pool.diff;
+      if (passed) {
+        ex.journal.push('ผ่านอุปสรรค ณ「' + site.nameTh + ' · ' + pool.nameTh + '」สำเร็จ');
+        out.notes.push(lead.h.name.given + ' ผ่านบททดสอบ「' + pool.nameTh + '」');
+        if (pool.herbs) {
+          pool.herbs.forEach(hId => {
+            const count = 1 + rng.int(1, 2);
+            out.mats[hId] = (out.mats[hId] || 0) + count;
+            ex.journal.push('เก็บสมุนไพรล้ำค่า「' + ECO.name(hId) + '」×' + count);
+          });
+        }
+        if (pool.ore) {
+          pool.ore.forEach(oId => {
+            const count = 1 + rng.int(1, 2);
+            out.mats[oId] = (out.mats[oId] || 0) + count;
+            ex.journal.push('ขุดพบแร่วิญญาณ「' + ECO.name(oId) + '」×' + count);
+          });
+        }
+        if (pool.stones) {
+          const lootStones = Math.round(pool.stones * (0.8 + rng.next() * 0.4));
+          out.stones += lootStones;
+          ex.journal.push('พบศิลาวิญญาณ ' + lootStones + ' ก้อน');
+        }
+        if (pool.pill) {
+          out.pills[pool.pill] = (out.pills[pool.pill] || 0) + 1 + rng.int(0, 1);
+          ex.journal.push('ค้นพบโอสถ「' + ECO.name(pool.pill) + '」');
+        }
+        if (pool.techTier && g.MARTIAL && g.MARTIAL.discover) {
+          const drop = g.MARTIAL.discover(W, out, { tier: pool.techTier, source: 'expedition' });
+          if (drop) {
+            ex.journal.push('พบองค์ความรู้หายากขั้น ' + pool.techTier);
+            out.notes.push('พบองค์ความรู้หายากใน' + site.nameTh);
+          }
+        }
+        if (pool.gearTier) {
+          const rs = ECO.recipesFor(W, ['FORGING']).filter(r => r.outType === 'EQUIPMENT' && r.tier <= pool.gearTier + 1);
+          if (rs.length) {
+            const r = rng.pick(rs);
+            const gear = ECO.mintGear(r, 1.1 + rng.next() * 0.3);
+            gear.nameTh = (gear.nameTh || 'ศาสตรา') + ' (วาสนาแดนลึก)';
+            gear.q = 1.25;
+            out.gear.push(gear);
+            ex.journal.push('ขุดพบ' + gear.nameTh);
+          }
+        }
+        if (pool.spring) {
+          const v = rng.pick(alive);
+          if (v && v.cult) CULT.gain(v, CULT.threshold(v) * 0.15);
+          v.h.state.hp = CULT.hpMax(v);
+          HC.experience(v, 'insight', 0.8);
+          ex.journal.push(v.h.name.given + ' ชำระกายที่ตาน้ำปราณ ตบะรุดหน้า');
+        }
+        if (pool.insight) {
+          const v = rng.pick(alive);
+          if (v && v.cult) CULT.gain(v, CULT.threshold(v) * 0.1);
+          if (skillName) (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(v, skillName, 4, 1.5);
+          HC.experience(v, 'insight', 0.7);
+        }
+      } else {
+        ex.journal.push('เผชิญอุปสรรค ณ「' + site.nameTh + ' · ' + pool.nameTh + '」แต่ทักษะยังไม่เพียงพอ');
+        const victim = rng.pick(alive);
+        HC.feel(victim, { stress: 8, mood: -4 });
+        if (rng.chance(0.35)) {
+          AI.injure(W, victim, 1, 'บาดเจ็บจากอุปสรรควาสนา (' + pool.nameTh + ')');
+          ex.journal.push(victim.h.name.given + ' บาดเจ็บเล็กน้อยจากกับดัก/ไอพิษ');
+        }
+      }
+      out.rep += 0.4;
+      return;
+    }
     if (g.CONTENT.fortune(W, ex, alive, out, reg)) return;
-    const rng = W.rng; const v = rng.weighted(alive, a => 1 + E(a, 'destiny.luck') / 40 + E(a, 'intellect.perceptiveness') / 80);
+    const v = rng.weighted(alive, a => 1 + E(a, 'destiny.luck') / 40 + E(a, 'intellect.perceptiveness') / 80);
     const luck = E(v, 'destiny.luck'); const kind = rng.weighted([
       { k: 'herb', w: 3 }, { k: 'pill', w: 1.5 + luck / 60 }, { k: 'gear', w: 1.0 + luck / 80 + reg.danger * 0.2 }, { k: 'scroll', w: 0.8 + E(v, 'intellect.comprehension') / 120 + reg.danger * 0.2 },
       { k: 'master', w: 0.4 + luck / 120 }, { k: 'spring', w: 0.8 + luck / 150 }, { k: 'curse', w: 0.6 + (50 - luck) / 100 }

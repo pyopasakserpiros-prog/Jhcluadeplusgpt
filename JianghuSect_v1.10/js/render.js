@@ -266,6 +266,12 @@
       for (const n of W.npcs) { if (n.dead || n.away || n.hidden && !n.travel) continue; const p = this.npcPos(n); const d = (p.x - tx) ** 2 + (p.y - 0.6 - ty) ** 2; if (d < bd) { bd = d; best = { kind: 'npc', id: n.id }; } }
       for (const f of W.foes || []) { if (f.dead || f.gone) continue; const d = (f.x - tx) ** 2 + (f.y - 0.5 - ty) ** 2; if (d < bd) { bd = d; best = { kind: 'foe', id: f.id }; } }
       if (best) return best;
+      for (const rn of (W.wildResources?.nodes || [])) {
+        if (rn.remaining <= 0) continue;
+        const d = (rn.x - tx) ** 2 + (rn.y - ty) ** 2;
+        if (d < bd) { bd = d; best = { kind: 'resource', id: rn.id, res: rn }; }
+      }
+      if (best) return best;
       for (const b of W.map.buildings) { if (b.type === 'plaza') continue; if (tx >= b.x - 1 && tx <= b.x + b.w + 1 && ty >= b.y - 0.6 && ty <= b.y + b.h + 0.2 && !MAP.BTYPES[b.type].open) return { kind: 'building', id: b.id }; if (MAP.BTYPES[b.type].open && tx >= b.x && tx < b.x + b.w && ty >= b.y && ty < b.y + b.h) return { kind: 'building', id: b.id }; }
       return null;
     },
@@ -314,10 +320,11 @@
       W.npcs.forEach(n => { if (n.dead || n.away || (n.hidden && !n.travel)) return; const p = this.npcPos(n); if (p.x * TS < c.x - hw - 40 || p.x * TS > c.x + hw + 40 || p.y * TS < c.y - hh - 60 || p.y * TS > c.y + hh + 40) return; items.push({ y: p.y, n, p, k: 'n' }); });
       (W.foes || []).forEach(f => { if (!f.gone && !f.dead) items.push({ y: f.y, f, k: 'f' }); });
       (W.wildlife?.beasts || []).forEach(b => { if (!b.fighting && !b.dead && !b.gone && Math.abs(b.x * TS - c.x) < hw + 50 && Math.abs(b.y * TS - c.y) < hh + 50) items.push({y:b.y,w:b,k:'w'}); });
+      (W.wildResources?.nodes || []).forEach(rn => { if (rn.remaining > 0 && Math.abs(rn.x * TS - c.x) < hw + 40 && Math.abs(rn.y * TS - c.y) < hh + 40) items.push({ y: rn.y, res: rn, k: 'res' }); });
       W.map.decor.forEach(d => { if (d.kind === 'lantern' || d.kind === 'banner' || d.kind === 'fountain') { if (Math.abs(d.x * TS - c.x) < hw + 40 && Math.abs(d.y * TS - c.y) < hh + 40) items.push({ y: d.y + 0.5, d, k: 'd' }); } });
       items.sort((a, b) => a.y - b.y);
       const night = this.nightFactor(hour);
-      for (const it of items) { if (it.k === 'b') this.drawBuilding(ctx, it.b, hour, night); else if (it.k === 'n') this.drawNpc(ctx, it.n, it.p, hour); else if (it.k === 'f') { if (it.f.wild) this.drawWild(ctx, it.f); else this.drawFoe(ctx, it.f); } else if (it.k === 'w') this.drawWild(ctx, it.w); else this.drawDeco(ctx, it.d, night); }
+      for (const it of items) { if (it.k === 'b') this.drawBuilding(ctx, it.b, hour, night); else if (it.k === 'n') this.drawNpc(ctx, it.n, it.p, hour); else if (it.k === 'f') { if (it.f.wild) this.drawWild(ctx, it.f); else this.drawFoe(ctx, it.f); } else if (it.k === 'w') this.drawWild(ctx, it.w); else if (it.k === 'res') this.drawWildResource(ctx, it.res); else this.drawDeco(ctx, it.d, night); }
       this.drawCastEffects(ctx);
       this.drawMarkers(ctx);
       // กลางคืน
@@ -668,6 +675,61 @@
         ctx.font = '9px ' + FONT;
         ctx.textAlign = 'center';
         ctx.fillText(b.name + ' · ' + b.tier, 0, -24);
+      }
+      ctx.restore();
+    },
+    drawWildResource(ctx, rn) {
+      const x = rn.x * TS, y = rn.y * TS, z = this.cam.z;
+      ctx.save();
+      ctx.translate(x + 8, y + 8);
+      ctx.fillStyle = 'rgba(0,0,0,0.18)';
+      ctx.beginPath();
+      ctx.ellipse(0, 4, 7, 2.8, 0, 0, 7);
+      ctx.fill();
+
+      if (rn.category === 'HERB') {
+        ctx.fillStyle = '#3e8e41';
+        ctx.beginPath();
+        ctx.ellipse(-3, 1, 4, 2.2, -0.4, 0, 7);
+        ctx.ellipse(3, 1, 4, 2.2, 0.4, 0, 7);
+        ctx.ellipse(0, -2, 2.5, 3.8, 0, 0, 7);
+        ctx.fill();
+        let petalCol = '#a8e6cf';
+        if (rn.materialId === 'MAT_HERB_CINDER_LEAF_1') petalCol = '#ff7043';
+        else if (rn.materialId === 'MAT_HERB_JADE_LOTUS_2') petalCol = '#81c784';
+        else if (rn.materialId === 'MAT_HERB_MIST_ORCHID_2') petalCol = '#ba68c8';
+        else if (rn.materialId.includes('FLAME') || rn.materialId.includes('FIRE')) petalCol = '#f44336';
+        else if (rn.materialId.includes('ICE') || rn.materialId.includes('SNOW')) petalCol = '#80deea';
+        ctx.fillStyle = petalCol;
+        ctx.beginPath();
+        ctx.arc(0, -3.5, 2.4, 0, 7);
+        ctx.fill();
+      } else if (rn.category === 'ORE') {
+        ctx.fillStyle = '#607d8b';
+        ctx.beginPath();
+        ctx.moveTo(-5, 4);
+        ctx.lineTo(-6, -2);
+        ctx.lineTo(-1, -6);
+        ctx.lineTo(5, -3);
+        ctx.lineTo(6, 4);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = rn.materialId.includes('GOLD') ? '#ffd54f' : rn.materialId.includes('IRON') ? '#cfd8dc' : '#80cbc4';
+        ctx.fillRect(-2, -3, 3, 3);
+      } else {
+        ctx.fillStyle = '#8d6e63';
+        ctx.beginPath();
+        ctx.arc(0, 0, 4, 0, 7);
+        ctx.fill();
+        ctx.fillStyle = '#d7ccc8';
+        ctx.fillRect(-1, -4, 2, 3);
+      }
+
+      if (z > 0.85) {
+        ctx.font = '8px ' + FONT;
+        ctx.textAlign = 'center';
+        ctx.fillStyle = 'rgba(255,255,255,0.9)';
+        ctx.fillText(rn.remaining + '', 0, -8);
       }
       ctx.restore();
     },

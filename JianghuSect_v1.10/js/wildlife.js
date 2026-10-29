@@ -162,6 +162,15 @@
     if (isLegend && active.some(b => b.legendary)) return null;
     const isAggressive = (z.peaceful || species.tier <= 2) ? false : ((species.aggro || 60) >= 70);
 
+    // ป้องกันสัตว์ดุร้าย/ระดับสูงเกิดในแนวเก็บสมุนไพรปลอดภัยหน้าประตูสำนัก
+    if ((isAggressive || species.tier >= 3) && MAP.isInSafeBelt && MAP.isInSafeBelt(x, y)) {
+      if (zoneId === 'meadow') {
+        x = W.rng.int(z.x0, Math.min(z.x1, MAP.SAFE_BELT.x0 - 2));
+      } else if (zoneId === 'ridge') {
+        x = W.rng.int(Math.max(z.x0, MAP.SAFE_BELT.x1 + 2), z.x1);
+      }
+    }
+
     const b = {
       id,
       foe: true,
@@ -198,6 +207,8 @@
   WILD.startFight = (W, n, b) => {
     if (!n || n.dead || n.away || n.travel || !b || b.dead || b.gone || b.fighting || n.act.id === 'fight') return false;
     if (!isOutsideWall(W.map, n.x, n.y) || !isOutsideWall(W.map, b.x, b.y) || Math.hypot(n.x - b.x, n.y - b.y) > 3) return false;
+    // สัตว์ดุร้ายห้ามเริ่มต่อสู้หรือโจมตีข้ามแนวเก็บสมุนไพรปลอดภัย
+    if (b.aggressive && MAP.isInSafeBelt && (MAP.isInSafeBelt(n.x, n.y) || MAP.isInSafeBelt(b.x, b.y))) return false;
 
     W.foes.push(b);
     W.foeById[b.id] = b;
@@ -288,15 +299,30 @@
     const state = W.wildlife;
 
     if (W.t % 60 === 0) {
-      const active = state.beasts.filter(b => !b.gone && !b.dead);
+      let active = state.beasts.filter(b => !b.gone && !b.dead);
+      // เติมอสูรธรรมดาเป็นชุด (1..3 ตัว) เมื่อต่ำกว่าเป้าหมาย 10 ตัว ภายใต้เพดานรวม 12 ตัว
       if (active.length < 10) {
-        for (const zone of ['meadow', 'ridge', 'west_grove', 'east_crag', 'north_peak']) {
-          if (state.beasts.filter(b => b.zone === zone && !b.gone && !b.dead).length < 2) {
-            WILD.spawn(W, zone, null, { ordinary: true });
-            break;
+        const batchWanted = Math.min(W.rng.int(1, 3), 10 - active.length);
+        const zoneKeys = ['meadow', 'ridge', 'west_grove', 'east_crag', 'north_peak'];
+        for (let i = 0; i < batchWanted; i++) {
+          active = state.beasts.filter(b => !b.gone && !b.dead);
+          if (active.length >= 10) break;
+          // เรียงโซนตามจำนวนสัตว์ที่มีอยู่น้อยที่สุดเพื่อกระจายทั่วทุกทิศ
+          const candidates = zoneKeys
+            .map(z => ({ zone: z, count: active.filter(b => b.zone === z).length }))
+            .filter(item => item.count < 3)
+            .sort((a, b) => a.count - b.count);
+          if (!candidates.length) break;
+          const spawned = WILD.spawn(W, candidates[0].zone, null, { ordinary: true });
+          if (!spawned) {
+            // หากโซนแรกวางไม่ได้ ลองโซนถัดไป
+            for (let j = 1; j < candidates.length; j++) {
+              if (WILD.spawn(W, candidates[j].zone, null, { ordinary: true })) break;
+            }
           }
         }
       }
+      // โอกาสสุ่มอสูรตำนาน: 1 ครั้งต่อชั่วโมงเกม (โอกาส 0.002) และมีได้ไม่เกิน 1 ตัวพร้อมกันทั่วโลก
       if (!state.beasts.some(b => b.legendary && !b.gone && !b.dead) && W.rng.chance(0.002)) {
         const rareZones = Object.keys(zones).filter(id => zones[id].legendary || zones[id].pools.some(p => p.legendary));
         WILD.spawn(W, W.rng.pick(rareZones), null, { legendary: true });
@@ -322,7 +348,8 @@
         continue;
       }
       if (b.aggressive && W.t % 15 === 0) {
-        const n = W.npcs.find(n => !n.dead && !n.away && !n.hidden && !n.travel && isOutsideWall(W.map, n.x, n.y) && n.act.id !== 'fight' && Math.hypot(n.x - b.x, n.y - b.y) < 2.5);
+        // อสูรก้าวร้าวไม่โจมตีผู้คนที่อยู่ในแนวเก็บสมุนไพรปลอดภัยหน้าประตูสำนัก
+        const n = W.npcs.find(n => !n.dead && !n.away && !n.hidden && !n.travel && isOutsideWall(W.map, n.x, n.y) && !(MAP.isInSafeBelt && MAP.isInSafeBelt(n.x, n.y)) && n.act.id !== 'fight' && Math.hypot(n.x - b.x, n.y - b.y) < 2.5);
         if (n) WILD.startFight(W, n, b);
       }
       if (!b.fighting && W.t % 90 === 0) {
@@ -332,7 +359,10 @@
           const nx = U.clamp(b.x + W.rng.int(-2, 2), z.x0, z.x1);
           const ny = U.clamp(b.y + W.rng.int(-1, 1), z.y0, z.y1);
           if (isOutsideWall(W.map, nx, ny)) {
-            b.x = nx; b.y = ny;
+            // สัตว์ดุร้ายหรือระดับ 3 ขึ้นไป ห้ามเดินเพ่นพ่านเข้าไปในแนวปลอดภัย
+            if (!((b.aggressive || b.tier >= 3) && MAP.isInSafeBelt && MAP.isInSafeBelt(nx, ny))) {
+              b.x = nx; b.y = ny;
+            }
           }
         }
       }

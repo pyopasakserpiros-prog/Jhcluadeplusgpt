@@ -404,6 +404,16 @@
   MAP.speedAt = (M, x, y) => { x = Math.floor(x); y = Math.floor(y); if (!M.inb(x, y)) return 1; return SPEED[M.terrain[y * W + x]] || 1; };
   MAP.blocked = (M, x, y) => { x = Math.floor(x); y = Math.floor(y); return !M.inb(x, y) || M.block[y * W + x] !== 0; };
   MAP.stationsOf = (M, b) => b.stations.map(i => M.stations[i]);
+  MAP.isOutsideWall = (M, x, y) => {
+    if (!M || !M.wall) return true;
+    const w = M.wall;
+    return x < w.x0 || x > w.x1 || y < w.y0 || y > w.y1;
+  };
+  MAP.SAFE_BELT = Object.freeze({ x0: 80, x1: 156, y0: 134, y1: 156 });
+  MAP.isInSafeBelt = (x, y) => {
+    const sb = MAP.SAFE_BELT;
+    return x >= sb.x0 && x <= sb.x1 && y >= sb.y0 && y <= sb.y1;
+  };
 
   g.MAP = MAP;
   if (typeof module === 'object' && module.exports) module.exports = MAP;

@@ -169,7 +169,86 @@
       enc: [['trial', 4.5, 'เผชิญสิ่งที่กลัวที่สุด'], ['fight', 2.5, 'ปีศาจแห่งความกลัว'], ['hazard', 2, 'ทางเดินที่เปลี่ยนรูปทุกก้าว'], ['rest', 0.8, 'เกาะแสงสว่างกลางความมืด'], ['lore', 1, 'บันทึกของผู้ที่ไม่ได้ออกไป']],
       loot: [['boon', 3, 'ความกล้าหาญที่แท้จริง', 'mind', 0, 3], ['stones', 2, 'ผลึกความฝัน', 120, 300, 1], ['pill', 1.5, 'โอสถสงบจิต', 4, 0, 3], ['curse', 1.5, 'เงาความกลัวติดตัว', 0, 0, 1], ['relicmat', 0.5, 'เศษความฝันบรรพกาล', 0, 0, 4], ['relic', 0.35, 'ตะเกียงฝ่าฝันร้าย', 'lamp', 0, 4]] }
   ];
-  EX.WORLD_BY_ID = {}; EX.WORLDS.forEach(w => { EX.WORLD_BY_ID[w.id] = w; w.loot.forEach((l, i) => { l.id = w.id + ':' + i; }); });
+  /* Calibrated static foe reference power per rank (not scaled to entrant's current power/gear) */
+  EX.RANK_FOE_POWER = Object.freeze({
+    1: 95,
+    2: 480,
+    3: 2800,
+    4: 18500
+  });
+
+  const AREA_NAMES = {
+    swordyard: ['ชานเนินกระบี่หัก', 'ทุ่งกระบี่เรียงราย', 'ใจกลางพายุกระบี่', 'ห้วงลึกสุสานกระบี่โบราณ'],
+    snow: ['ทุ่งหิมะชั้นนอก', 'ป่าสนเหมันต์', 'ยอดเขาเยือกแข็ง', 'ถ้ำแกนเหมันต์นิรันดร์'],
+    fungi: ['ชายป่าสปอร์คราม', 'ดงเห็ดยักษ์สลัว', 'ป่าลึกเห็ดหมื่นปี', 'ใจกลางสปอร์ปฐมกาล'],
+    upside: ['ชานเพดานตึกร้าง', 'ย่านการค้าเพดานฟ้า', 'หอจดหมายเหตุลอยฟ้า', 'ยอดปราสาทดิ่งสู่เวหา'],
+    hourglass: ['เนินทรายย้อนเวลา', 'หุบเขาทรายไหลวน', 'นครทรายหยุดเวลา', 'ใจกลางนาฬิกาทรายยักษ์'],
+    eden: ['ชานสวนพฤกษาทิพย์', 'สวนโอสถเก้าชั้น', 'วิหารสวนสวรรค์', 'ตาน้ำอมฤตปฐมกาล'],
+    prison: ['เชิงกำแพงคุกศิลา', 'อุโมงค์คุกใต้ดิน', 'โถงโซ่ตรวนสะกดวิญญาณ', 'ห้วงลึกใต้บัลลังก์มาร'],
+    mirror: ['ชายแดนกระจกขุ่น', 'เขาวงกตกระจกใส', 'โถงกระจกเก้าบาน', 'กระจกปฐมกาลไร้ขอบ'],
+    skysea: ['ชายฝั่งเมฆขาว', 'น่านน้ำลอยเวหา', 'ห้วงลึกใต้ก้อนเมฆ', 'ร่องน้ำลึกไร้ก้นบนฟ้า'],
+    godwar: ['ชายขอบสนามรบร้าง', 'ค่ายบัญชาการเทพ', 'สมรภูมิสายฟ้าทัณฑ์', 'ใจกลางมหาหลุมอุกกาบาต'],
+    clock: ['ชานโรงงานเฟืองหยก', 'ห้องเครื่องจักรไอน้ำปราณ', 'หอคอยสมองกลวิญญาณ', 'แกนขับเคลื่อนโลกจักรกล'],
+    nightmare: ['หมอกควันฝันร้ายตื้น', 'หุบเขาแห่งความหวาดกลัว', 'นครร้างในฝันร้าย', 'ห้วงอเวจีฝันร้ายนิรันดร์']
+  };
+
+  EX.WORLD_BY_ID = {};
+  EX.WORLDS.forEach(w => {
+    const areaNames = AREA_NAMES[w.id] || ['ชานแดน', 'แดนชั้นใน', 'แกนกลางพิภพ', 'ห้วงลึกต้องห้าม'];
+    w.areas = {
+      1: {
+        nameTh: areaNames[0], rank: 1, foePower: EX.RANK_FOE_POWER[1],
+        enc: [
+          ['fight', 2.5, 'เงาอสูรลาดตระเวน'], ['hazard', 2.5, 'ภูมิประเทศแปรปรวน'],
+          ['gather', 3.0, 'แหล่งวัตถุดิบชั้นนอก'], ['treasure', 2.0, 'หีบสำรวจตกค้าง'], ['rest', 1.5, 'เพิงพักชั่วคราว']
+        ],
+        loot: [
+          ['stones', 3, 'ศิลาชั้นนอก', 30, 80, 1], ['herb', 3, 'สมุนไพรพื้นฐาน', 2, 0, 1],
+          ['ore', 2, 'แร่ธาตุชั้นนอก', 2, 0, 1], ['pill', 1.5, 'โอสถตกค้าง', 1, 0, 1]
+        ]
+      },
+      2: {
+        nameTh: areaNames[1], rank: 2, foePower: EX.RANK_FOE_POWER[2],
+        enc: [
+          ['fight', 3.0, 'อสูรผู้เฝ้าแดนชั้นใน'], ['hazard', 2.5, 'ค่ายกลธรรมชาติ'],
+          ['treasure', 2.5, 'ซากวิหารชั้นใน'], ['trial', 2.0, 'บททดสอบจิตสำรวจ'], ['lore', 1.5, 'จารึกเรื่องราวโบราณ']
+        ],
+        loot: [
+          ['stones', 3, 'ศิลาชั้นใน', 80, 200, 2], ['ore', 2.5, 'แร่หลอมปราณ', 3, 0, 2],
+          ['herb', 2.5, 'สมุนไพรล้ำค่า', 3, 0, 2], ['gear', 2, 'ศาสตราตกค้าง', 2, 0, 2], ['pill', 1.5, 'โอสถชั้นดี', 2, 0, 2]
+        ]
+      },
+      3: {
+        nameTh: areaNames[2], rank: 3, foePower: EX.RANK_FOE_POWER[3],
+        enc: [
+          ['fight', 3.5, 'อสูรพิทักษ์แกนกลาง'], ['hazard', 3.0, 'คลื่นมรสุมปราณฟ้าดิน'],
+          ['trial', 2.5, 'ประตูด่านทดสอบเซียน'], ['treasure', 2.5, 'ห้องสมบัติแกนพิภพ'], ['lore', 2.0, 'เสาศิลาจารึกมหายุทธ์']
+        ],
+        loot: [
+          ['stones', 3, 'ศิลาวิญญาณบริสุทธิ์', 200, 500, 3], ['gear', 2.5, 'ศาสตราโบราณ', 4, 0, 3],
+          ['tech', 2.0, 'คัมภีร์วิชาหายาก', 4, 0, 3], ['boon', 1.5, 'พรแห่งแกนพิภพ', 'qi', 0, 3],
+          ['relic', 0.35, 'ของวิเศษประจำถิ่น', w.loot.find(l => l[0] === 'relic')?.[3] || 'bell', 0, 4]
+        ]
+      },
+      4: {
+        nameTh: areaNames[3], rank: 4, foePower: EX.RANK_FOE_POWER[4],
+        enc: [
+          ['fight', 4.0, 'ราชันอสูรบรรพกาลเฝ้าห้วงลึก'], ['hazard', 3.5, 'พายุทำลายล้างกฎฟ้าดิน'],
+          ['trial', 3.0, 'บททดสอบเจตจำนงแห่งเต๋า'], ['treasure', 3.0, 'มหาสมบัติมรดกบรรพกาล'], ['npc', 1.5, 'จิตวิญญาณเซียนโบราณผู้หลับใหล']
+        ],
+        loot: [
+          ['stones', 3, 'ศิลาบรรพกาลเก้าชั้น', 500, 1400, 4], ['relicmat', 2.0, 'แก่นมรดกบรรพกาล', 0, 0, 4],
+          ['gear', 2.5, 'ศาสตราเซียนไร้พ่าย', 6, 0, 4], ['tech', 2.0, 'คัมภีร์เต๋าไร้ลักษณ์', 5, 0, 4],
+          ['boon', 2.0, 'การตื่นรู้แห่งมรรคา', 'body', 0, 4], ['relic', 0.5, 'ของวิเศษระดับสูงสุด', w.loot.find(l => l[0] === 'relic')?.[3] || 'qistone', 0, 4]
+        ]
+      }
+    };
+    EX.WORLD_BY_ID[w.id] = w;
+    w.loot.forEach((l, i) => { l.id = w.id + ':' + i; });
+    Object.values(w.areas).forEach((ar, aIdx) => {
+      ar.loot.forEach((l, i) => { l.id = w.id + ':r' + (aIdx + 1) + ':' + i; });
+    });
+  });
   CAVE_BANDS.forEach(b => b.loot.forEach((l, i) => { l.id = b.id + ':' + i; }));
   EX.CAVE_BANDS = CAVE_BANDS; EX.CAVE_GUARD = CAVE_GUARD;
   const TIDES = [
@@ -273,7 +352,8 @@
     const surv = best(m => m.h.skills.survival || 0), luck = avg(m => E(m, 'destiny.luck'));
     d *= site.tide ? site.tide.danger : 1;
     if (k === 'fight') {
-      const bp = foePower(d) * (0.75 + rng.next() * 0.6); const p = pw / (pw + bp);
+      const bp = (site.rank && EX.RANK_FOE_POWER[site.rank]) ? (EX.RANK_FOE_POWER[site.rank] * (site.tide ? site.tide.danger : 1) * (0.85 + rng.next() * 0.3)) : (foePower(d) * (0.75 + rng.next() * 0.6));
+      const p = pw / (pw + bp);
       if (p < 0.4 && rng.chance(0.45 + surv / 220 + avg(m => E(m, 'personality.caution')) / 400)) { ex.journal.push('พบ' + text + ' แต่ถอยหลบได้'); return; }
       if (rng.next() < clamp((p - 0.22) * 1.7, 0.03, 0.97)) { ex.journal.push('สยบ' + text + ' ได้'); const v = dmgOne(W, alive, clamp((1 - p) * 0.5 + rng.next() * 0.08, 0.02, 0.55), 'ถูก' + text + 'ทำร้าย'); alive.forEach(m => HC.experience(m, 'victory', 0.2)); v.stats = v.stats || {}; v.stats.kills = (v.stats.kills || 0) + 1; lootRoll(W, ex, alive, out, site, d); if (rng.chance(0.35)) lootRoll(W, ex, alive, out, site, d); }
       else { const v = rng.pick(alive); ex.journal.push('พ่ายต่อ' + text); if (rng.chance(clamp((bp / (pw + bp) - 0.5) * 0.5, 0.01, 0.3) * (1 - E(v, 'destiny.luck') / 300) * (1 - surv / 250))) { out.notes.push(v.h.name.given + ' เสียชีวิตที่' + site.nameTh); ex.deaths = (ex.deaths || 0) + 1; AI.kill(W, v, 'เสียชีวิตขณะสำรวจ' + site.nameTh); alive.splice(alive.indexOf(v), 1); } else { AI.injure(W, v, 2, 'ถูก' + text + 'ทำร้ายสาหัส'); v.h.state.hp = Math.max(1, CULT.hpMax(v) * 0.15); ex.fail = true; } }
@@ -311,11 +391,18 @@
   EX.depart = (W, party, kind) => {
     const rng = W.rng, w = W.world, e = dex(W); const lead = party[0];
     const totalP = party.reduce((s, m) => s + PW(m), 0), bold = party.reduce((s, m) => s + E(m, 'personality.courage'), 0) / party.length;
-    let target = 0, days, placeTh, world = null, site;
+    let target = 0, days, placeTh, world = null, site, partyRank = 1;
     if (kind === 'delve') { target = clamp(Math.floor(1 + Math.sqrt(totalP / 28) + (bold > 62 ? 1 : 0) - (bold < 35 ? 1 : 0)), 1, e.cave.cap); days = clamp(0.4 + 0.17 * target, 0.5, 2.3); placeTh = EX.SPOTS.cave.nameTh + ' (ตั้งใจลงถึงชั้น ' + target + ')'; site = 'cave'; }
-    else { world = EX.WORLD_BY_ID[e.gate.world]; days = clamp(1.4 + rng.next() * 2.2, 1.2, Math.max(1.2, e.gate.until - W.day - 0.8)); placeTh = 'แดน「' + world.nameTh + '」'; site = 'gate'; }
+    else {
+      world = EX.WORLD_BY_ID[e.gate.world];
+      days = clamp(1.4 + rng.next() * 2.2, 1.2, Math.max(1.2, e.gate.until - W.day - 0.8));
+      partyRank = Math.max(1, ...party.map(x => CULT.worldRank ? CULT.worldRank(x) : 1));
+      const area = (world && world.areas && world.areas[partyRank]) || { nameTh: 'ชานแดน' };
+      placeTh = 'แดน「' + (world ? world.nameTh : 'หมื่นพิภพ') + ' — ' + area.nameTh + ' (Rank ' + partyRank + ')」';
+      site = 'gate';
+    }
     const b = W.map.byId[site === 'gate' ? 'gate_zone' : 'cave']; const food = party.length * Math.min(Math.ceil(days) + 1, 5); const taken = Math.min(food, ECO.count(W, 'meal')); ECO.take(W, 'meal', taken);
-    const ex = { id: ++w.seq, kind, region: kind, placeTh, party: party.map(p => p.id), t0: W.t, ret: W.t + Math.round(days * 1440) + 40, days: Math.round(days * 10) / 10, journal: [], carry: [], supplies: taken, done: false, state: 'leaving', lost: false, target, world: world && world.id, px: b.door.x, py: b.door.y, tide: e.gate.tide };
+    const ex = { id: ++w.seq, kind, region: kind, placeTh, party: party.map(p => p.id), partyRank, rankArea: partyRank, t0: W.t, ret: W.t + Math.round(days * 1440) + 40, days: Math.round(days * 10) / 10, journal: [], carry: [], supplies: taken, done: false, state: 'leaving', lost: false, target, world: world && world.id, px: b.door.x, py: b.door.y, tide: e.gate.tide };
     w.expeds.push(ex);
     party.forEach(p => { AI.interruptFor(W, p); p.expId = ex.id; p.lastTrip = W.day; p.act = { id: 'idle', stage: 'do', left: 0, total: 0, ctx: {}, why: [] }; p.travel = { to: 'spot', ex: ex.id, x: b.door.x, y: b.door.y + 1 }; p.path = null; p.run = false; });
     W.log('explore', party.map(p => p.h.name.given).join('、') + (kind === 'delve' ? ' ลงสำรวจ' : ' ก้าวเข้าประตูมิติสู่') + placeTh, party.map(p => p.id));
@@ -369,16 +456,28 @@
       if (reached > cv.maxDepth) { cv.maxDepth = reached; note(W, 'ลงถ้ำลึกสุดถึงชั้น ' + reached); if (reached >= 3) out.rep += 0.5; }
       cv.fresh = Math.max(0, (cv.fresh == null ? 1 : cv.fresh) - 0.3); headline = 'ลงถึงชั้น ' + reached + ' ของถ้ำ';
     } else {
-      const world = EX.WORLD_BY_ID[ex.world]; const site = { id: world.id, nameTh: world.nameTh, short: world.nameTh, enc: world.enc, loot: world.loot, tide: TIDES[ex.tide || 0] }; const wd = cdx.worlds[world.id] = cdx.worlds[world.id] || { visits: 1, lore: 0 };
-      ex.journal.push('ก้าวเข้าสู่' + world.nameTh + ' (' + site.tide.nameTh + ')');
+      const world = EX.WORLD_BY_ID[ex.world];
+      const rank = ex.partyRank || ex.rankArea || 1;
+      const rankArea = (world && world.areas && world.areas[rank]) || (world && world.areas && world.areas[1]) || { nameTh: 'ชานแดน', enc: world.enc, loot: world.loot };
+      const site = {
+        id: world.id,
+        nameTh: world.nameTh + ' — ' + rankArea.nameTh,
+        short: world.nameTh,
+        enc: rankArea.enc || world.enc,
+        loot: rankArea.loot || world.loot,
+        rank: rank,
+        tide: TIDES[ex.tide || 0]
+      };
+      const wd = cdx.worlds[world.id] = cdx.worlds[world.id] || { visits: 1, lore: 0 };
+      ex.journal.push('ก้าวเข้าสู่' + site.nameTh + ' (' + site.tide.nameTh + ')');
       if (rng.chance(0.05)) { ex.journal.push('ประตูสั่นไหวระหว่างเดินทางกลับ ใช้เวลานานกว่าที่คิด'); ex.stranded = true; }
       const nEnc = 3 + Math.round(ex.days * 1.4);
       for (let i = 0; i < nEnc && alive.length; i++) {
         const hpf = alive.reduce((s, m) => s + m.h.state.hp / CULT.hpMax(m), 0) / alive.length; if (hpf < 0.3) { ex.journal.push('พลังหมด ตัดสินใจกลับ'); break; }
-        runEnc(W, ex, alive, out, site, world.d + (rng.next() - 0.5) * 0.5, rng.weighted(world.enc, x => x[1]));
+        runEnc(W, ex, alive, out, site, world.d + (rng.next() - 0.5) * 0.5, rng.weighted(site.enc, x => x[1]));
       }
       if (wd.lore >= 5 && !wd.boss && alive.length) { wd.boss = 1; ex.journal.push('รู้ตำแหน่งสมบัติใหญ่ของโลกนี้ ได้ของเพิ่ม'); lootRoll(W, ex, alive, out, site, world.d + 1); lootRoll(W, ex, alive, out, site, world.d + 1); }
-      out.rep += 1 + world.d * 0.3; headline = 'กลับจาก' + world.nameTh;
+      out.rep += 1 + world.d * 0.3; headline = 'กลับจาก' + site.nameTh;
     }
     ex.done = true; ex.out = out;
     const ppl = members.map(m => m.h.name.given).join('、');

@@ -900,6 +900,7 @@
     W.npcs.forEach(o => { if (o.dead || o === n) return; const r = o.h.mind.relations[n.id]; if (r && (r.a > 40 || r.bond === 'สหาย' || r.bond === 'คนรัก' || r.bond === 'คู่ครอง' || r.bond === 'อาจารย์' || r.bond === 'ศิษย์')) { HC.experience(o, 'lost_loved', clamp(r.a / 70, 0.3, 1.5)); AI.mem(W, o, n.h.name.given + ' เสียชีวิต (' + why + ')', 1, n.id); o.grief = (o.grief || 0) + 4; } else if (o.rank >= 1) HC.experience(o, 'saw_death', 0.2); });
     if (n.id === W.sect.masterId) { SECT.succession(W, 'เจ้าสำนักเสียชีวิต'); }
     if (n.id === W.sect.deputyId) W.sect.deputyId = null;
+    if (g.WILD_RES) g.WILD_RES.releaseClaim(W, n);
     if (g.CPE && g.CPE.retireNpc) g.CPE.retireNpc(W, n, 'เสียชีวิต');
     // ทรัพย์สินกลับสำนัก
     ECO.earn(W, Math.round((n.inv.stones || 0) * 0.5), 'มรดกของ ' + n.h.name.given); n.inv.stones = 0;
@@ -914,8 +915,8 @@
   };
 
   /* ---------- วงจรกิจกรรม ---------- */
-  AI.cancelAct = (W, n) => { AI.release(W, n); n.act = { id: 'idle', stage: 'do', left: 0, total: 0, ctx: {}, why: [] }; n.path = null; };
-  AI.interruptFor = (W, n) => { if (n.act && n.act.id !== 'idle') { const a = A[n.act.id]; if (a && a.cleanup) a.cleanup(n, W); AI.release(W, n); } n.path = null; };
+  AI.cancelAct = (W, n) => { AI.release(W, n); if (g.WILD_RES) g.WILD_RES.releaseClaim(W, n); n.act = { id: 'idle', stage: 'do', left: 0, total: 0, ctx: {}, why: [] }; n.path = null; };
+  AI.interruptFor = (W, n) => { if (g.WILD_RES) g.WILD_RES.releaseClaim(W, n); if (n.act && n.act.id !== 'idle') { const a = A[n.act.id]; if (a && a.cleanup) a.cleanup(n, W); AI.release(W, n); } n.path = null; };
 
   AI.begin = (W, n, id, w, why) => {
     const a = A[id];

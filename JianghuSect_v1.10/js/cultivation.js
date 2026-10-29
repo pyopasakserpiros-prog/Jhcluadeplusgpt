@@ -96,6 +96,29 @@
   };
   CULT.stageName = npc => npc.cult ? CULT.PATHS[npc.cult.path].shortTh + ' · ' + CULT.PATHS[npc.cult.path].stages[npc.cult.stage - 1].nameTh.replace(/^ขั้นที่ \d+ • /, '') + ' (' + npc.cult.stage + ')' : 'ปุถุชน';
   CULT.maxStage = npc => npc.cult ? CULT.PATHS[npc.cult.path].maxStage : 0;
+  /* ----- ระดับแรงค์กลางยุทธภพ (World Rank 1..4 สำหรับผู้บำเพ็ญ, 0 สำหรับปุถุชน) -----
+   * กำหนดจากขั้นบ่มเพาะหลัก (cult.stage) เท่านั้น ห้ามนำพลังรบ อุปกรณ์ ความคืบหน้า หรือบัฟมาเปลี่ยนแรงค์ */
+  CULT.worldRankFromRaw = raw => {
+    if (!Number.isFinite(raw) || raw <= 0) return 0;
+    const floor = Math.floor(raw);
+    const frac = raw - floor;
+    const roundUp = (frac > 0.75) ? 1 : 0;
+    return Math.max(1, Math.min(4, floor + roundUp));
+  };
+  CULT.worldRank = npc => {
+    if (!npc || !npc.cult || !npc.cult.path || npc.cult.path === 'NONE') return 0;
+    const pathDef = CULT.PATHS[npc.cult.path];
+    if (!pathDef || !pathDef.stages || !pathDef.stages.length) return 0;
+    const S = pathDef.stages.length;
+    const s = Math.max(1, Math.min(S, Math.floor(npc.cult.stage || 1)));
+    if (S <= 1) return 1;
+    const num = (S - 1) + 3 * (s - 1);
+    const den = S - 1;
+    const quotient = Math.floor(num / den);
+    const rem = num % den;
+    const roundUp = (rem * 4 > den * 3) ? 1 : 0;
+    return Math.max(1, Math.min(4, quotient + roundUp));
+  };
   CULT.threshold = npc => { const c = npc.cult; if (!c) return 0; const t = CULT.THRESH[c.path][c.stage - 1]; return t == null ? Infinity : t; };
   CULT.lifespan = npc => {
     const c = npc.cult; if (!c) return Math.round(HC.mortalLifespan(npc));

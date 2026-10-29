@@ -91,7 +91,21 @@
     });
     const up = e => {
       if (!ptrs.has(e.pointerId)) return; ptrs.delete(e.pointerId); if (ptrs.size < 2) pinch = null;
-      if (e.type === 'pointerup' && ptrs.size === 0 && moved <= 6 && performance.now() - startT < 500 && G.R && G.W) { const r = cv.getBoundingClientRect(); const hit = G.R.pickAt(e.clientX - r.left, e.clientY - r.top); if (hit) { if (hit.kind === 'npc') { G.R.selected = hit.id; UI.updateHud(true); } else if (hit.kind === 'building') UI.openBuilding(hit.id); else if (hit.kind === 'foe') { const f = G.W.foeById[hit.id]; if (f) UI.toast('ศัตรู: ' + (f.nameTh || f.name || 'ผู้บุกรุก')); } } else { G.R.selected = null; G.R.follow = false; UI.updateHud(true); } }
+      if (e.type === 'pointerup' && ptrs.size === 0 && moved <= 6 && performance.now() - startT < 500 && G.R && G.W) {
+        const r = cv.getBoundingClientRect(); const hit = G.R.pickAt(e.clientX - r.left, e.clientY - r.top);
+        if (hit) {
+          if (hit.kind === 'npc') { G.R.selected = hit.id; UI.updateHud(true); }
+          else if (hit.kind === 'building') UI.openBuilding(hit.id);
+          else if (hit.kind === 'foe') { const f = G.W.foeById[hit.id]; if (f) UI.toast('ศัตรู: ' + (f.nameTh || f.name || 'ผู้บุกรุก')); }
+          else if (hit.kind === 'resource') {
+            const rn = hit.res || (G.W.wildResources?.nodes || []).find(n => n.id === hit.id);
+            if (rn) {
+              const matName = (g.ECO && g.ECO.name ? g.ECO.name(rn.materialId) : rn.materialId);
+              UI.toast('🌱 แหล่งทรัพยากร: ' + matName + ' (เหลือ ' + rn.remaining + '/' + rn.initial + ' หน่วย)');
+            }
+          }
+        } else { G.R.selected = null; G.R.follow = false; UI.updateHud(true); }
+      }
     };
     cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
     cv.addEventListener('wheel', e => { e.preventDefault(); const r = cv.getBoundingClientRect(); G.R.zoomAt(e.clientX - r.left, e.clientY - r.top, e.deltaY < 0 ? 1.15 : 1 / 1.15); }, { passive: false });

@@ -922,6 +922,33 @@
     return Math.max(1, Math.round(base - sec * (n.rank < 4 ? 1.6 : 0.5) + (n.mentor ? 1 : 0)));
   };
 
+  /* ----- บริจาควัตถุดิบส่วนตัวเข้าคลังสำนัก (รับแต้มคุณูปการอย่างถูกต้องครั้งเดียว) ----- */
+  SECT.donateMat = (W, npc, matId, qty) => {
+    if (!W || !npc || npc.dead || !matId) return { ok: false, reward: 0, reason: 'invalid' };
+    qty = Math.floor(qty || 1);
+    if (qty <= 0) return { ok: false, reward: 0, reason: 'invalid_qty' };
+    npc.inv = npc.inv || {};
+    npc.inv.mats = npc.inv.mats || {};
+    const owned = npc.inv.mats[matId] || 0;
+    if (owned < qty) return { ok: false, reward: 0, reason: 'insufficient_mats', owned };
+
+    npc.inv.mats[matId] -= qty;
+    if (npc.inv.mats[matId] <= 0) delete npc.inv.mats[matId];
+
+    ECO.add(W, matId, qty);
+
+    const reward = (g.CPE && g.CPE.reward) ? g.CPE.reward(W, matId, qty) : (ECO.base(matId) * 0.22 * qty);
+    const minted = (g.CPE && g.CPE.mint) ? g.CPE.mint(W, npc, reward, 'บริจาควัตถุดิบ「' + ECO.name(matId) + '」', true) : reward;
+    if (g.CPE && g.CPE.S) {
+      g.CPE.S(W).donated = (g.CPE.S(W).donated || 0) + minted;
+    }
+    npc.merit = (npc.merit || 0) + Math.max(1, Math.round(qty * 0.5));
+    if (minted >= 15 && W.log) {
+      W.log('finance', npc.h.name.given + ' บริจาค ' + ECO.name(matId) + ' ×' + qty + ' เข้าคลัง ได้ ' + Math.round(minted) + ' คป.', [npc.id]);
+    }
+    return { ok: true, reward: minted, qty, matId };
+  };
+
   g.SECT = SECT;
   if (typeof module === 'object' && module.exports) module.exports = SECT;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

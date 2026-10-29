@@ -246,7 +246,7 @@
       "test": "standalone",
       "status": "PASS",
       "exitCode": 0,
-      "output": "PASS standalone:37 actual inline scripts, no external runtime files, initialized globals,external market,24-hour native simulation and save/load"
+      "output": "PASS standalone:38 actual inline scripts, no external runtime files, initialized globals,external market,wild resources,24-hour native simulation and save/load"
     },
     {
       "test": "recipe_coverage",
@@ -267,9 +267,27 @@
       "output": "Testing Living Beast & Craft Ecology Expansion (v1.10.12)...\n  Testing Catalog Integrity & Manifest Counts...\n    PASS: 80 species, 160 materials, 80 recipes (48 pills + 32 equipment) verified unique with zero dangling IDs\n  Testing Wildlife Spawning, Legendary Cap & Ordinary Isolation...\n    PASS: Wildlife spawning, ordinary isolation, and global legendary cap 1 verified\n  Testing Combat Victory, Drops, Merit & Idempotency...\n    PASS: Real combat victory awards drops & merit idempotently with no double-loot\n  Testing Material Donation, CP Minting & Anti-Arbitrage...\n    PASS: Personal beast material donation converts to sect stock and CP correctly\n  Testing Crafting Lifecycle for ECO2_ Pills and Equipment...\n    PASS: Real crafting lifecycle for pills and equipment functions accurately\n  Testing NPC Purchase of ECO2_ Combat Pills & preFight Consumption...\n    PASS: Member purchases and consumes ECO2_ combat buff pills before battle\n  Testing Save/Load Round-Trip Continuity & Determinism...\n    PASS: Save/load serialization and deterministic seed execution verified\n  Testing Autonomous & In-Fight Usage of ECO2_ Healing Pills...\n    PASS: NPC healing pill selection, consumption decrement, threshold gating, and fightUse verified\n  Testing Combat Poison (clearPoison) vs Cultivation Toxic (clearToxic)...\n    PASS: clearPoison clears combat status from npc.sx without confusing with cult.toxic\n  Testing Terrestrial vs Aquatic Habitat Isolation & Full 80 Species Encounter Coverage...\n    PASS: 0 aquatic beasts on land map; water expedition encounters verified; 100% of 80 species reachable\n  Testing External Market High-Tier Materials, ECO2_ Pills & Arbitrage Protection...\n    PASS: External market high-tier material & pill trading, stone exchange, and reserve floor verified\nALL ECOLOGY EXPANSION TESTS PASSED."
     },
     {
+      "test": "world_rank",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "--- Testing World Rank & Rank-Based Pools ---\nPASS monotonic mapping across all 5 paths and all stages\nPASS rational arithmetic boundary rounding (> 0.75 remainder)\nPASS gear/buff/HP/mental invariance of world rank\nPASS retraining stage reset updates world rank\nPASS party departure snapshots partyRank and commits site/pool\nPASS Fortune registry data-driven 4 ranks x 3 themes x 2 pools\nPASS Myriad Worlds 12 worlds x 4 ranked areas with static calibrated reference foe power\nPASS Myriad Worlds departure records partyRank and rankArea\nALL World Rank & Rank-Based Pools tests PASSED."
+    },
+    {
+      "test": "wild_resources",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "--- Testing Finite Outdoor Resource Gathering & Medicine Economy ---\nPASS active node cap 48 respected\nPASS nodes placed strictly outside wall and herbs in safe belt vicinity\nDistribution over 1500 nodes: BasicHerb=70.4%, Ore=11.7%\nPASS resource categories and basic herb weights verified\nPASS claim leasing, mutual exclusion, and robust release on interruption\nPASS finite harvesting directly into n.inv.mats with 0 CP minted\nPASS node exhaustion removal\nPASS SECT.donateMat material deduction, sect stock addition, and CP reward\nPASS medicine production and welfare economy integration\nPASS save/load serialization preserves wildResources\nALL Finite Outdoor Resource Gathering & Medicine Economy tests PASSED."
+    },
+    {
+      "test": "wildlife_batches",
+      "status": "PASS",
+      "exitCode": 0,
+      "output": "--- Testing Bounded Wildlife Batches & Safe Belt Isolation ---\nPASS initial batch refill spawned 1 beasts (within 1..3 bounds)\nPASS hard cap 12 respected over multiple ticks (count: 10)\nPASS refills distributed across least-populated exterior zones\nPASS aggressive and tier >= 3 beasts excluded from spawning in safe belt\nPASS aggressive beasts blocked from initiating combat inside safe belt\nPASS aggressive beasts wander and aggro boundary excludes safe belt\nPASS legendary cap <= 1 strictly preserved\nALL Bounded Wildlife Batches & Safe Belt Isolation tests PASSED."
+    },
+    {
       "test": "syntax",
       "status": "PASS",
-      "files": 119,
+      "files": 109,
       "failures": []
     }
   ]

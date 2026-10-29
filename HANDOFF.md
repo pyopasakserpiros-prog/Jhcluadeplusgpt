@@ -1,6 +1,41 @@
 # JIANGHU SECT — AUTONOMOUS ECONOMY & FACILITY EXPANSION HANDOFF
 
-## Current handoff — v1.10.12 Living Beast & Craft Ecology Expansion / main-1 (2026-10-29)
+## Current handoff — v1.10.13 Outside Rank, Resources & Wildlife Refill / main-1 (2026-10-29)
+
+Read [`JianghuSect_v1.10/docs/OUTSIDE_RANK_RESOURCES.md`](JianghuSect_v1.10/docs/OUTSIDE_RANK_RESOURCES.md) for complete architecture, formulas, algorithms, test results, and 90-day simulation metrics. Preserve `main` and the byte-locked HC source (`155:2f9c9dd7`).
+
+### Summary of Additions & Verifications:
+- **World Ranks & Rank-Based Pools**:
+  - Authoritative `CULT.worldRank(npc)` (1..4 for cultivators, 0 for mortals) based strictly on stage of current major path via rational arithmetic with $> 0.75$ remainder rounding. Independent of combat power, gear, buffs, or mental state.
+  - Retraining stage reset/reduction updates world rank immediately.
+  - Departure snapshot (`Math.max(1, ...party.map(CULT.worldRank))`) committed to `ex.partyRank`, `ex.siteId`, `ex.poolId`, `ex.rankArea`.
+  - Fortune registry: 4 ranks $\times$ 3 site themes $\times$ 2 selectable pools with skill checks, diff, and authentic wuxia loot/lore.
+  - Myriad Worlds (12 worlds $\times$ 4 ranked areas) with static calibrated reference foe powers (95, 480, 2,800, 18,500), static encounter pools, not downgrading or scaling to entrant power.
+- **Finite Outdoor Resource Gathering & Medicine Economy**:
+  - Finite physical resource nodes outside sect walls (`W.wildResources`, cap 48, batch spawn 1..3 every 120m).
+  - Category distribution: 70% basic recovery herbs, 15% other herbs, 12% ores, 3% natural materials.
+  - Basic herbs: `MAT_HERB_DEW_GRASS_1` (50), `MAT_HERB_CINDER_LEAF_1` (40), `MAT_HERB_JADE_LOTUS_2` (7), `MAT_HERB_MIST_ORCHID_2` (3).
+  - Safe collection belt (`MAP.SAFE_BELT`: $x \in [80, 156], y \in [134, 156]$) south of the sect wall outside the main south gate.
+  - Safety rules: aggressive and tier $\ge 3$ beasts excluded from spawning, entering, or chasing into safe belt.
+  - Basic gathering is safe, easy, low-CP with 0 battle/injury rolls.
+  - Harvesting adds directly to personal `n.inv.mats` with 0 direct CP minted.
+  - Members decide whether to donate via `SECT.donateMat` for CP (funding medicine production/welfare) or retain for `A.personalBrew`.
+- **Bounded Multi-Beast Spawn Batches**:
+  - `WILD.tick` spawns ordinary wildlife refills in batches of 1..3 when active beasts $< 10$, capping at 12 (soft target 10), distributed across least-populated zones.
+  - Preserves 1 hourly 0.002 roll for legendary beast (cap $\le 1$).
+  - Aggressive/high-tier beasts excluded from spawning, wandering into, or chasing inside the safe collection belt.
+- **Verified Results**:
+  - `node test/run_all.js`: 44/44 Node.js test groups + 109 syntax files PASS (100% of Node suites pass; 4 Playwright browser suites skipped due to Android Termux seccomp sandbox).
+  - `node test/world_rank.js`: ALL TESTS PASSED.
+  - `node test/wild_resources.js`: ALL TESTS PASSED.
+  - `node test/wildlife_batches.js`: ALL TESTS PASSED.
+  - `node test/standalone.js`: ALL TESTS PASSED (38 inline scripts, 1,595 KB).
+  - `node test/core_lock.js`: ALL TESTS PASSED (`155:2f9c9dd7 == 155:2f9c9dd7`, byte-lock intact).
+  - `node test/long_ecology_rank_simulation.js`: 90-day simulation passed (129,600 ticks, 812 nodes spawned [70.9% basic herbs], 1,540 donated units, 2,368.9 CP minted, peak wildlife 11/12, 1 legendary beast, Day 45 save/load round-trip verified, 6,442 ticks/sec).
+- **Remaining Limitations**:
+  - Playwright browser testing requires a full desktop Linux/macOS/Windows environment with Chromium/Firefox installed; Android Termux does not support Playwright browser binary execution.
+
+## Previous handoff — v1.10.12 Living Beast & Craft Ecology Expansion / main-1 (2026-10-29)
 
 Read [`JianghuSect_v1.10/docs/ECOLOGY_EXPANSION.md`](JianghuSect_v1.10/docs/ECOLOGY_EXPANSION.md) for complete catalog architecture, beast tiers, drop mechanics, crafting recipes, habitats, combat integration, and verification evidence. Preserve `main` and the byte-locked HC source (`155:2f9c9dd7`).
 

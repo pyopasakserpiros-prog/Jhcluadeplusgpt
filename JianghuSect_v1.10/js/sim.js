@@ -83,6 +83,7 @@
     if (g.ECO && g.ECO.ensureStockTracker) g.ECO.ensureStockTracker(W);
     if (g.SECT && g.SECT.ensureFacilityDemand) g.SECT.ensureFacilityDemand(W);
     g.CPE.init(W); if (g.SECT && g.SECT.ensureDirectives) g.SECT.ensureDirectives(W); g.CONTENT.ensure(W); g.MARTIAL.ensure(W);
+    if (g.WILD_RES) g.WILD_RES.init(W);
     // ตำแหน่งผู้อาวุโส: เลือกผู้เหมาะสมที่สุด
     // วางตำแหน่งเริ่มต้น
     const pl = W.map.byId.plaza; W.npcs.forEach(n => SIM.placeNear(W, n, pl.x + pl.w / 2, pl.y + pl.h / 2, 12));
@@ -120,6 +121,7 @@
       AI.step(W, n);
     }
     if (g.WILD) g.WILD.tick(W);
+    if (g.WILD_RES) g.WILD_RES.tick(W);
     if (W.foes.length) EXPED.raidTick(W);
     if (g.WILD) g.WILD.clampCombat(W);
     COMBAT.tick(W);
@@ -127,6 +129,7 @@
   };
   SIM.retire = (W, n) => {
     AI.cancelAct(W, n); AI.freeBed(W, n); if (n.post) { W.sect.posts[n.post] = null; n.post = null; }
+    if (g.WILD_RES) g.WILD_RES.releaseClaim(W, n);
     const i = W.npcs.indexOf(n); if (i >= 0) W.npcs.splice(i, 1); W.gone.push(n.id);
     if (n.id === W.sect.deputyId) W.sect.deputyId = null;
     if (g.CPE && g.CPE.retireNpc) g.CPE.retireNpc(W, n, 'ออกจากสำนัก');
@@ -298,7 +301,7 @@
   /* ---------- บันทึก/โหลด ---------- */
   SIM.serialize = W => {
     const M = W.map;
-    const snap = { ...(W._saveExtras || {}), wildlife: W.wildlife, v: SIM.VERSION, runtimeTiming: W.runtimeTiming, hc: HC.FINGERPRINT, seed: W.seed, t: W.t, speed: W.speed, rng: W.rng.getState(), seqN: W.seqN, logSeq: W.logSeq, deaths: W.deaths, avgSat: W.avgSat, avgMood: W.avgMood, weather: W.weather, market: W.market, sect: W.sect, world: W.world, threat: W.threat, explore: W.explore, npcs: W.npcs, graveyard: W.graveyard, gone: W.gone, logs: W.logs.slice(-600), duelQueue: W.duelQueue, fights: W.fights, foes: W.foes, foeSeq: W.foeSeq, fightSeq: W.fightSeq,
+    const snap = { ...(W._saveExtras || {}), wildlife: W.wildlife, wildResources: W.wildResources, v: SIM.VERSION, runtimeTiming: W.runtimeTiming, hc: HC.FINGERPRINT, seed: W.seed, t: W.t, speed: W.speed, rng: W.rng.getState(), seqN: W.seqN, logSeq: W.logSeq, deaths: W.deaths, avgSat: W.avgSat, avgMood: W.avgMood, weather: W.weather, market: W.market, sect: W.sect, world: W.world, threat: W.threat, explore: W.explore, npcs: W.npcs, graveyard: W.graveyard, gone: W.gone, logs: W.logs.slice(-600), duelQueue: W.duelQueue, fights: W.fights, foes: W.foes, foeSeq: W.foeSeq, fightSeq: W.fightSeq,
       map: { extra: M.extraSt || [], buildings: M.buildings.map(b => ({ id: b.id, level: b.level, hp: b.hp, building: b.building || null })) } };
     return JSON.stringify(snap, (k, v) => (k[0] === '_' && k !== '_ver') ? undefined : v);
   };
@@ -332,6 +335,7 @@
       W.foeById = {}; W.foes.forEach(u => W.foeById[u.id] = u);
       W.wildlife = s.wildlife || {seq:0,beasts:[],kills:0};
       W.wildlife.beasts = W.wildlife.beasts.map(b => W.foeById[b.id] || b);
+      if (s.wildResources) W.wildResources = s.wildResources;
       W.npcs = s.npcs; W.byId = {}; W.npcs.forEach(n => { W.byId[n.id] = n; });
       // แผนที่: ใส่ระดับอาคาร + สถานีที่ขยาย
       const M = W.map; M.extraSt = [];
@@ -344,7 +348,7 @@
       W.npcs.forEach(n => { n.px = n.x; n.py = n.y; if (n.bed != null && M.stations[n.bed]) M.stations[n.bed].owner = n.id; if (n.act && n.act.st != null && M.stations[n.act.st]) { M.stations[n.act.st].occ = n.id; if (M.stations[n.act.st].inside && n.hidden) { M.buildings[M.stations[n.act.st].bid].inside.push(n.id); } } });
       W.log = (type, text, ids) => SIM.log(W, type, text, ids); W.fame = v => { W.sect.fame = Math.max(0, (W.sect.fame || 0) + v); }; W.makeNpc = o => SIM.addNpc(W, o);
       // Preserve unknown top-level extension data; never silently discard future metadata.
-      const knownKeys = new Set(['v','hc','seed','t','speed','rng','seqN','logSeq','deaths','avgSat','avgMood','weather','market','sect','world','threat','explore','npcs','graveyard','gone','logs','duelQueue','fights','foes','foeSeq','fightSeq','map','runtimeTiming','wildlife']);
+      const knownKeys = new Set(['v','hc','seed','t','speed','rng','seqN','logSeq','deaths','avgSat','avgMood','weather','market','sect','world','threat','explore','npcs','graveyard','gone','logs','duelQueue','fights','foes','foeSeq','fightSeq','map','runtimeTiming','wildlife','wildResources']);
       W._saveExtras = Object.fromEntries(Object.entries(s).filter(([k]) => !knownKeys.has(k)));
       if (s.runtimeTiming) W.runtimeTiming = s.runtimeTiming;
       const legacyContent = !s.sect.contentVersion;

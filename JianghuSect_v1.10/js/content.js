@@ -803,7 +803,7 @@
   X.REGIONS.push(...D.regions);
   C.chooseRegion=(W,party,kind,regs)=>{
     const lead=party[0], power=party.reduce((v,n)=>v+CULT.power(n),0), caution=HC.eff(lead,'personality.caution');
-    const eligible=regs.filter(r=>(!r.minPower || power>=r.minPower) && (!regionById[r.id] || !['hunt','gather'].includes(kind) || r.resources.some(e=>e.kind===(kind==='hunt'?'hunt':'gather'))));
+    const eligible=regs.filter(r=> (!regionById[r.id] || !['hunt','gather'].includes(kind) || r.resources.some(e=>e.kind===(kind==='hunt'?'hunt':'gather'))));
     if(!eligible.length) return null;
     return W.rng.weighted(eligible,r=>{
       if(!regionById[r.id]) return 1;
