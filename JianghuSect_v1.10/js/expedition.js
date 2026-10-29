@@ -207,7 +207,8 @@
     const ex = { id: ++w.seq, kind, region: region.id, party: party.map(p => p.id), partyRank, t0: W.t, ret: W.t + days * 1440 + rng.int(-300, 300), days, journal: [], carry: [], supplies: taken, done: false, state: 'leaving', lost: false };
     if (kind === 'fortune') {
       const sites = X.FORTUNE_REGISTRY[partyRank] || X.FORTUNE_REGISTRY[1];
-      const matchSite = sites.find(s => s.biome === region.terrain) || rng.pick(sites);
+      const matching = sites.filter(s => s.biome === region.terrain || (s.biome === 'ruins' && region.terrain === 'mountain'));
+      const matchSite = rng.pick(matching.length ? matching : sites);
       const chosenPool = rng.pick(matchSite.pools);
       ex.siteId = matchSite.id;
       ex.poolId = chosenPool.id;
@@ -352,21 +353,24 @@
       const skillName = pool.skill;
       let skillVal = 0;
       if (skillName) {
-        skillVal = Math.max(...alive.map(a => (a.h.skills && a.h.skills[skillName]) || (skillName === 'SCRIPTURE' ? (a.h.skills.SCRIPTURE || 0) : 0)));
-        if (skillVal === 0) {
-          skillVal = Math.max(...alive.map(a => {
-            if (skillName === 'herbalism') return E(a, 'interests.herbs') * 0.6;
-            if (skillName === 'mining') return E(a, 'interests.labor') * 0.6;
-            if (skillName === 'survival') return E(a, 'physiology.endurance') * 0.6;
-            if (skillName === 'SCRIPTURE') return E(a, 'intellect.comprehension') * 0.7;
-            if (skillName === 'perceptiveness') return E(a, 'intellect.perceptiveness') * 0.7;
-            if (skillName === 'willpower') return E(a, 'intellect.willpower') * 0.7;
-            if (skillName === 'courage') return E(a, 'personality.courage') * 0.7;
-            if (skillName === 'alchemy') return E(a, 'interests.alchemy') * 0.7;
-            if (skillName === 'diplomacy') return E(a, 'social.charisma') * 0.7;
-            return 25;
-          }));
-        }
+        // Monotonic proficiency formula: learned skill strictly contributes (+0.75 per point),
+        // supplemented by underlying aptitude/attribute and cultivation stage empowerment.
+        skillVal = Math.max(...alive.map(a => {
+          const s = (a.h.skills && a.h.skills[skillName]) || (skillName === 'SCRIPTURE' ? (a.h.skills.SCRIPTURE || 0) : (skillName === 'ALCHEMY' ? (a.h.skills.ALCHEMY || 0) : 0)) || 0;
+          let attr = 50;
+          if (skillName === 'herbalism') attr = E(a, 'interests.herbs');
+          else if (skillName === 'mining') attr = E(a, 'interests.labor');
+          else if (skillName === 'survival') attr = E(a, 'physiology.endurance');
+          else if (skillName === 'SCRIPTURE') attr = E(a, 'intellect.comprehension');
+          else if (skillName === 'perceptiveness') attr = E(a, 'intellect.perceptiveness');
+          else if (skillName === 'willpower') attr = E(a, 'intellect.willpower');
+          else if (skillName === 'courage') attr = E(a, 'personality.courage');
+          else if (skillName === 'alchemy' || skillName === 'ALCHEMY') attr = E(a, 'interests.alchemy') || E(a, 'aptitudes.crafting') || 50;
+          else if (skillName === 'diplomacy') attr = E(a, 'social.charisma');
+
+          const stageBonus = a.cult ? (a.cult.stage || 1) * 3.5 : 0;
+          return (s * 0.75) + (attr * 0.25) + stageBonus;
+        }));
       }
       const luck = alive.reduce((s, a) => s + E(a, 'destiny.luck'), 0) / alive.length;
       const roll = skillVal + (luck - 50) * 0.2 + rng.gauss(0, 8);

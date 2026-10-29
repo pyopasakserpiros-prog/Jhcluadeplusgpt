@@ -1,6 +1,6 @@
 {
   "date": "2026-10-29",
-  "node": "v24.19.0",
+  "node": "v26.3.1",
   "results": [
     {
       "test": "martial_retraining",
@@ -166,9 +166,9 @@
     },
     {
       "test": "skill_visual_browser",
-      "status": "PASS",
-      "exitCode": 0,
-      "output": "PASS browser skill visuals: two shared styles, pause, expiry, no replay, load baseline and 24-effect cap"
+      "status": "FAIL",
+      "exitCode": 1,
+      "output": "node:internal/modules/cjs/loader:1522\n  throw err;\n  ^\n\nError: Cannot find module 'playwright'\nRequire stack:\n- /data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/skill_visual_browser.js\n    at Module._resolveFilename (node:internal/modules/cjs/loader:1519:15)\n    at wrapResolveFilename (node:internal/modules/cjs/loader:1073:27)\n    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1097:10)\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1124:12)\n    at Module._load (node:internal/modules/cjs/loader:1296:5)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.require (node:internal/modules/cjs/loader:1619:12)\n    at require (node:internal/modules/helpers:191:16)\n    at Object.<anonymous> (/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/skill_visual_browser.js:3:18)\n    at Module._compile (node:internal/modules/cjs/loader:1873:14) {\n  code: 'MODULE_NOT_FOUND',\n  requireStack: [\n    '/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/skill_visual_browser.js'\n  ]\n}\n\nNode.js v26.3.1"
     },
     {
       "test": "cave_pools",
@@ -214,21 +214,21 @@
     },
     {
       "test": "browser_mobile_perf",
-      "status": "PASS",
-      "exitCode": 0,
-      "output": "PASS browser_mobile_perf: 360px/412px/1280px viewports, gestures, 24 panel tabs, save/load, 0x-48x speeds, 80-NPC stress (1.057 ms/tick, 236.6x cap)"
+      "status": "FAIL",
+      "exitCode": 1,
+      "output": "node:internal/modules/cjs/loader:1522\n  throw err;\n  ^\n\nError: Cannot find module 'playwright'\nRequire stack:\n- /data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/browser_mobile_perf.js\n    at Module._resolveFilename (node:internal/modules/cjs/loader:1519:15)\n    at wrapResolveFilename (node:internal/modules/cjs/loader:1073:27)\n    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1097:10)\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1124:12)\n    at Module._load (node:internal/modules/cjs/loader:1296:5)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.require (node:internal/modules/cjs/loader:1619:12)\n    at require (node:internal/modules/helpers:191:16)\n    at Object.<anonymous> (/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/browser_mobile_perf.js:22:22)\n    at Module._compile (node:internal/modules/cjs/loader:1873:14) {\n  code: 'MODULE_NOT_FOUND',\n  requireStack: [\n    '/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/browser_mobile_perf.js'\n  ]\n}\n\nNode.js v26.3.1"
     },
     {
       "test": "input_cancellation",
-      "status": "PASS",
-      "exitCode": 0,
-      "output": "PASS input cancellation: selection/follow preserved, ordinary tap works, minimap drag stops"
+      "status": "FAIL",
+      "exitCode": 1,
+      "output": "node:internal/modules/cjs/loader:1522\n  throw err;\n  ^\n\nError: Cannot find module 'playwright'\nRequire stack:\n- /data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/input_cancellation.js\n    at Module._resolveFilename (node:internal/modules/cjs/loader:1519:15)\n    at wrapResolveFilename (node:internal/modules/cjs/loader:1073:27)\n    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1097:10)\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1124:12)\n    at Module._load (node:internal/modules/cjs/loader:1296:5)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.require (node:internal/modules/cjs/loader:1619:12)\n    at require (node:internal/modules/helpers:191:16)\n    at Object.<anonymous> (/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/input_cancellation.js:5:22)\n    at Module._compile (node:internal/modules/cjs/loader:1873:14) {\n  code: 'MODULE_NOT_FOUND',\n  requireStack: [\n    '/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/input_cancellation.js'\n  ]\n}\n\nNode.js v26.3.1"
     },
     {
       "test": "startup_ui",
-      "status": "PASS",
-      "exitCode": 0,
-      "output": "PASS startup load menu exposes only actions available without a world\nPASS cancelling startup load restores the same selectable candidates\nPASS gameplay navigation before loading returns safely to startup\nPASS loading a saved slot enters the world and retains the normal game menu\nPASS a corrupt saved slot remains recoverable\nPASS a failed file import can be retried with a valid save\nPASS a successful import dismisses an open startup overlay"
+      "status": "FAIL",
+      "exitCode": 1,
+      "output": "node:internal/modules/cjs/loader:1522\n  throw err;\n  ^\n\nError: Cannot find module 'playwright'\nRequire stack:\n- /data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/startup_ui.js\n    at Module._resolveFilename (node:internal/modules/cjs/loader:1519:15)\n    at wrapResolveFilename (node:internal/modules/cjs/loader:1073:27)\n    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1097:10)\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1124:12)\n    at Module._load (node:internal/modules/cjs/loader:1296:5)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.require (node:internal/modules/cjs/loader:1619:12)\n    at require (node:internal/modules/helpers:191:16)\n    at Object.<anonymous> (/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/startup_ui.js:5:22)\n    at Module._compile (node:internal/modules/cjs/loader:1873:14) {\n  code: 'MODULE_NOT_FOUND',\n  requireStack: [\n    '/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/startup_ui.js'\n  ]\n}\n\nNode.js v26.3.1"
     },
     {
       "test": "demon_heartsoul_paths",
@@ -286,20 +286,26 @@
     },
     {
       "test": "outside_audit",
-      "status": "PASS",
-      "exitCode": 0,
-      "output": "PASS safe gathering remains reachable through the two tiles just outside the gate\nPASS basic herb job refuses an unsafe destination even when it is the only node\nPASS legendary spawn cannot bypass safe-belt exclusion\nPASS resource placement rejects isolated passable islands\nPASS learned recipes outside the scroll bag can motivate retaining gathered herbs\nPASS alchemy fortune trial uses learned ALCHEMY proficiency\nPASS invalid donation quantities cannot consume stock or mint contribution points\nPASS failed movement releases the resource lease immediately\nPASS beginner gathering preference uses cultivation rank rather than sect office rank\nPASS uncollected dangerous nodes cannot fill the slots needed for safe basic herb supply\nPASS a real gathering action settles exactly once across a mid-action save/load"
+      "status": "FAIL",
+      "exitCode": 1,
+      "output": "PASS safe gathering remains reachable through the two tiles just outside the gate\nPASS basic herb job refuses an unsafe destination even when it is the only node\nPASS legendary spawn cannot bypass safe-belt exclusion\nPASS resource placement rejects isolated passable islands\nPASS learned recipes outside the scroll bag can motivate retaining gathered herbs\nPASS alchemy fortune trial uses learned ALCHEMY proficiency\nPASS invalid donation quantities cannot consume stock or mint contribution points\nPASS failed movement releases the resource lease immediately\nPASS beginner gathering preference uses cultivation rank rather than sect office rank\nPASS uncollected dangerous nodes cannot fill the slots needed for safe basic herb supply\nFAIL a real gathering action settles exactly once across a mid-action save/load: Expected values to be strictly equal:\n\n14 !== 15"
     },
     {
       "test": "outside_visual_browser",
+      "status": "FAIL",
+      "exitCode": 1,
+      "output": "node:internal/modules/cjs/loader:1522\n  throw err;\n  ^\n\nError: Cannot find module 'playwright'\nRequire stack:\n- /data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/outside_visual_browser.js\n    at Module._resolveFilename (node:internal/modules/cjs/loader:1519:15)\n    at wrapResolveFilename (node:internal/modules/cjs/loader:1073:27)\n    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1097:10)\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1124:12)\n    at Module._load (node:internal/modules/cjs/loader:1296:5)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.require (node:internal/modules/cjs/loader:1619:12)\n    at require (node:internal/modules/helpers:191:16)\n    at Object.<anonymous> (/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/outside_visual_browser.js:3:22)\n    at Module._compile (node:internal/modules/cjs/loader:1873:14) {\n  code: 'MODULE_NOT_FOUND',\n  requireStack: [\n    '/data/data/com.termux/files/home/agy-dev/JianghuSect_v1.10/test/outside_visual_browser.js'\n  ]\n}\n\nNode.js v26.3.1"
+    },
+    {
+      "test": "gameplay_findings_patch",
       "status": "PASS",
       "exitCode": 0,
-      "output": "PASS real Canvas resource rendering: both herb categories have leaves and material-specific petals"
+      "output": "--- Testing Gameplay Findings Patch (v1.10.14) ---\nPASS natural outdoor resource pool excludes manufactured formation flags\nPASS gathering duration and extraction efficiency scale gradually with skill\nPASS fortune proficiency check is strictly monotonic with no zero-skill discontinuity\nPASS expedition depart fairly distributes site selection among all matching biome sites\nPASS all 12 worlds have 2 distinct subpools per rank with calibrated non-combat DC\nPASS injured member with craft aptitude retains gathered herb, brews personal pill, and consumes for healing\nPASS broke disciple donates gathered herb for CP to survive\n\nALL GAMEPLAY FINDINGS PATCH TESTS PASSED (7/7)."
     },
     {
       "test": "syntax",
       "status": "PASS",
-      "files": 112,
+      "files": 113,
       "failures": []
     }
   ]

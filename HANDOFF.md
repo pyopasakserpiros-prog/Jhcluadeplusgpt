@@ -1,6 +1,39 @@
 # JIANGHU SECT — AUTONOMOUS ECONOMY & FACILITY EXPANSION HANDOFF
 
-## Current handoff — Codex bug audit of v1.10.13 / main-1 (2026-10-29)
+## Current handoff — v1.10.14 Gameplay Findings, Personal Crafting, Subpools & CP Economy / main-1 (2026-10-29)
+
+Read [`JianghuSect_v1.10/docs/GAMEPLAY_FINDINGS_PATCH.md`](JianghuSect_v1.10/docs/GAMEPLAY_FINDINGS_PATCH.md) for complete architecture, formulas, algorithms, test results, and 90-day simulation metrics. Preserve `main` and the byte-locked HC source (`155:2f9c9dd7`).
+
+### Summary of Additions & Verifications:
+- **Believable Keep vs. Donate Decisions (`gatherWildResource.done`)**:
+  - Disciples evaluate personal medical needs, missing recipe components, current CP balance, sect shortage, and personality traits.
+  - Injured disciples with craft aptitude retain gathered herbs in `n.inv.mats` for personal healing; broke disciples (< 50 CP) donate to survive.
+  - In 90-day simulation (`findings-seed-1`), 159 material units (14.8%) were retained for personal use and 916 units (85.2%) donated to the sect.
+- **Personal Basic Crafting Loop (`CPE.personalCraftChoice` & `AI.ACTS.personalBrew`)**:
+  - Qualified members autonomously craft basic recovery pills (`BASIC_HP`, `BASIC_QI`, etc.) into `n.inv.craftedPills` with genuine quality ratings.
+  - Self-crafted pills are consumed during combat or recovery via `CPE.autoUse` and `AI.ACTS.personalPillUse`.
+- **CP Economy Evaluation & Non-Crowding Safeguards**:
+  - Tracked `meanHoldings` (268.2 CP at day 90), `medianHoldings` (252.8 CP), `priceIndex` (0.89 -> 0.91), `totalMinted` (7,605.5 CP), `totalBurned` (2,023 CP), and `circulation` (3,989.6 CP).
+  - Bounded gathering score prevents crowding out cultivation when sect basic herb stocks exceed 80 units.
+- **Thematic Myriad Worlds 96 Subpools & Calibrated Non-Combat DCs**:
+  - All 12 worlds feature 2 distinct subpools per rank (96 subpools total) in `js/explore.js` (`EX.WORLD_SUBPOOLS`).
+  - Calibrated non-combat DC scales smoothly by world rank, while combat foe powers remain strictly fixed to static references (95, 480, 2,800, 18,500).
+- **Monotonic Fortune Proficiency & Fair Site Distribution**:
+  - Proficiency checks calculate monotonically: `(s * 0.75) + (attr * 0.25) + stageBonus`, eliminating zero-skill discontinuities.
+  - High-rank cultivators receive stage bonuses to pass Rank 4 trials.
+  - Biome site selection uniformly distributes across all matching candidates.
+- **Natural Material Outdoor Purity & Smooth Duration**:
+  - Excluded manufactured formation flags from outdoor spawns.
+  - Gathering duration scales smoothly from 60 minutes (novice) to 42 minutes (master).
+
+### Verification Evidence:
+- `test/gameplay_findings_patch.js`: 7/7 PASSED.
+- `test/outside_audit.js`: 11/11 PASSED (including mid-action save/load invariant).
+- `test/standalone.js`: 38 inline scripts, 0 external runtime dependencies, 24h simulation PASSED.
+- `test/run_all.js`: 46 Node.js test groups + syntax check (113 files) PASSED.
+- 90-day native simulation (`test/results/findings_sim_90d.json`): 1,037 harvests, 159 personal retains, 142 basic pills crafted, 37 purchased, 53 consumed, stable price index 0.91.
+
+## Previous handoff — Codex bug audit of v1.10.13 / main-1 (2026-10-29)
 
 The outside-rank/resources implementation task is complete. Read [the audit report](JianghuSect_v1.10/docs/BUG_AUDIT_2026_10_29.md) for fixed defects, verification and limitations. Targeted regressions are in `test/outside_audit.js` and `test/outside_visual_browser.js`; the native observer accepts `days seed output.json` in `test/long_ecology_rank_simulation.js`.
 

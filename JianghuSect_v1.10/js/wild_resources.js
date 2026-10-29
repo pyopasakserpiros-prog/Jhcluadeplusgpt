@@ -63,8 +63,8 @@
       if (allOres.length) return rng.weighted(allOres, m => 1 / (m.tier * m.tier)).id;
       return 'MAT_ORE_COPPER_1';
     }
-    // OTHER natural gatherable materials
-    const allOthers = (JD.ITEMS.materials || []).filter(m => !m.sourcePack && (m.category === 'WOOD' || m.category === 'STONE' || m.category === 'FORMATION_PART') && m.tier <= 2);
+    // OTHER natural gatherable materials (excluding manufactured goods such as formation flags)
+    const allOthers = (JD.ITEMS.materials || []).filter(m => !m.sourcePack && (m.category === 'WOOD' || m.category === 'STONE' || m.category === 'FORMATION_PART') && !m.id.includes('FLAG') && m.tier <= 2);
     if (allOthers.length) return rng.pick(allOthers).id;
     return 'MAT_HERB_DEW_GRASS_1';
   }
@@ -213,12 +213,18 @@
       return { ok: false, reason: 'out_of_range', dist };
     }
 
-    // Units awarded: skill may improve units per action, but strictly deducted from node
+    // Units awarded: smooth gradual extraction scaling with skill and life-path
     const isOre = node.category === 'ORE';
+    const lifePath = isOre ? 'mining' : 'herbalism';
     const skillVal = isOre ? (npc.h.skills.mining || 0) : (npc.h.skills.herbalism || 0);
+    const lifeMult = (g.MARTIAL && g.MARTIAL.lifeMult) ? g.MARTIAL.lifeMult(npc, lifePath) : 1.0;
     let requestedUnits = 1;
-    if (skillVal >= 45 && node.remaining >= 2 && W.rng.chance(0.35)) {
-      requestedUnits = 2;
+    if (node.remaining >= 2) {
+      // Smooth gradual bonus chance from 5% at skill 0 to 45% at skill 100
+      const extraChance = clamp(0.05 + (skillVal / 100) * 0.35 + (lifeMult > 1 ? 0.08 : 0), 0.05, 0.48);
+      if (W.rng.chance(extraChance)) {
+        requestedUnits = 2;
+      }
     }
     const awarded = Math.min(requestedUnits, node.remaining);
     node.remaining -= awarded;
@@ -336,11 +342,27 @@
       const herbInt = e('interests.herbs') + e('interests.labor');
       const isLowRank = CULT.worldRank(n) <= 1;
       S.add('ชอบงานเก็บของป่าและสมุนไพร', (herbInt - 80) / 60);
-      S.add('ต้องการสะสมแต้มคุณูปการ', 0.6);
-      if (isLowRank) S.add('งานปลอดภัยสำหรับศิษย์ใหม่', 1.4);
-      // Extra weight if sect has shortages of basic medicine ingredients
-      const dewGrassScarcity = g.CPE ? g.CPE.scarcity(W, 'MAT_HERB_DEW_GRASS_1') : 1;
-      if (dewGrassScarcity > 1.2) S.add('สำนักขาดแคลนสมุนไพรพื้นฐาน', 0.8 * (dewGrassScarcity - 1));
+
+      // Supply and demand modulation: avoid crowding out cultivation when sect reserves are full
+      const totalBasicStock = BASIC_HERB_WEIGHTS.reduce((sum, b) => sum + (W.sect.stock[b.id] || 0), 0);
+      if (totalBasicStock > 80) {
+        S.add('คลังสมุนไพรมีสำรองเหลือเฟือ', -0.6);
+      } else if (totalBasicStock < 25) {
+        S.add('คลังสมุนไพรขาดแคลน', 0.8);
+      }
+
+      // Member CP poverty vs wealth
+      if (n.cp < 50) {
+        S.add('ขาดแคลนแต้มผลงาน ต้องการงานพื้นฐาน', 0.7);
+      } else if (n.cp > 300) {
+        S.add('มีแต้มผลงานเพียงพอ มุ่งเน้นฝึกฝน', -0.5);
+      } else {
+        S.add('ต้องการสะสมแต้มคุณูปการ', 0.4);
+      }
+
+      if (isLowRank) S.add('งานปลอดภัยสำหรับศิษย์ใหม่', 1.0);
+      const p = n.post;
+      if (p === 'medicine' || p === 'apothecary' || p === 'herbs') S.add('หน้าที่เก็บสมุนไพร', 1.5);
     },
     where(W, n) {
       const node = pickBestResourceNode(W, n);
@@ -358,7 +380,11 @@
       if (!node || node.remaining <= 0) return false;
       return WILD_RES.claimNode(W, n, node, 90);
     },
-    dur: () => 60, // 60 game minutes gathering action
+    dur: n => {
+      const maxSkill = Math.max(n.h.skills?.herbalism || 0, n.h.skills?.mining || 0);
+      const lifeBonus = (g.MARTIAL && g.MARTIAL.lifeMult ? g.MARTIAL.lifeMult(n, 'herbalism') : 1) > 1 ? 5 : 0;
+      return Math.round(clamp(60 - (maxSkill / 100) * 18 - lifeBonus, 40, 60));
+    },
     tick(n) {
       n.h.state.energy = Math.max(5, n.h.state.energy - 0.04);
     },
@@ -377,22 +403,65 @@
       W.log('harvest', n.h.name.given + ' เดินทางไปเก็บ ' + matName + ' ×' + res.qty + ' นอกกำแพงสำนัก', [n.id]);
 
       // Post-harvest choice: Retain for personal crafting or Donate to sect
-      // Members who have alchemy recipes and need medicine keep ingredients in personal bag
+      // Members evaluate medical need, recipe completion, CP balance, sect shortage, and personality
       let shouldKeep = false;
-      const knownPersonalRecipes = Array.from(new Set([...(n.inv?.recipes || []), ...(n.recipes || [])]));
-      if (knownPersonalRecipes.length > 0 && n.h.skills.ALCHEMY >= 20) {
-        // Check if any personal recipe uses this material
-        for (const rid of knownPersonalRecipes) {
-          const r = ECO.recipeById[rid];
-          if (r && r.inputs.some(inp => inp.matId === res.materialId)) {
-            // Keep if personality or personal plan favors self-sufficiency
-            const wealthVal = HC.eff(n, 'values.wealthResource');
-            const loyalty = HC.eff(n, 'personality.loyalty');
-            if (wealthVal > loyalty && W.rng.chance(0.55)) {
-              shouldKeep = true;
-              break;
-            }
-          }
+      const knownPersonal = Array.from(new Set([...(n.inv?.recipes || []), ...(n.recipes || [])]));
+      const canPersonalBrew = (n.h.skills.ALCHEMY || 0) >= 10 || HC.eff(n, 'interests.herbs') >= 30 || n.post === 'alchemy' || (n.inj && n.inj.length > 0) || (n.h.state.hp < CULT.hpMax(n) * 0.75);
+      const candidateRecipeIds = Array.from(new Set([
+        ...knownPersonal,
+        ...(canPersonalBrew ? ['BASIC_HP', 'BASIC_QI', 'BASIC_VIGOR', 'BASIC_WOUND', ...((n.h.skills.ALCHEMY || 0) >= 30 ? ['BASIC_HP2', 'BASIC_QI2'] : [])] : [])
+      ]));
+
+      // Check if any candidate recipe uses this material
+      const matchingRecipes = candidateRecipeIds.map(rid => ECO.recipeById[rid]).filter(r => r && r.inputs.some(inp => inp.matId === res.materialId));
+
+      if (matchingRecipes.length > 0) {
+        let keepScore = 0;
+        let donateScore = 1.0; // Baseline inclination to donate to sect for community standing
+
+        // 1. Immediate medical need: Injured or low HP without sufficient healing pills
+        const hpFrac = n.h.state.hp / CULT.hpMax(n);
+        const isHurt = (n.inj && n.inj.length > 0) || hpFrac < 0.75;
+        const ownedHealPills = (n.inv?.pills?.['P:BASIC_HP'] || 0) + (n.inv?.craftedPills || []).filter(p => p.qty > 0 && p.key && ECO.pillInfo(p.key)?.effect?.healHealth).length;
+        const healsNeed = matchingRecipes.some(r => {
+          const key = r.outItemId || 'P:' + r.id;
+          return ECO.pillInfo(key)?.effect?.healHealth;
+        });
+
+        if (isHurt && healsNeed) {
+          if (ownedHealPills < 2) keepScore += 2.5;
+          else if (ownedHealPills >= 3) donateScore += 1.5;
+        }
+
+        // 2. Recipe readiness: Already holding other inputs in personal inventory
+        const hasOtherInputs = matchingRecipes.some(r => {
+          const otherInputs = r.inputs.filter(inp => inp.matId !== res.materialId);
+          return otherInputs.length > 0 && otherInputs.some(inp => (n.inv?.mats?.[inp.matId] || 0) > 0);
+        });
+        if (hasOtherInputs) keepScore += 1.8;
+
+        // 3. Contribution point situation: Broke members donate for points, wealthy members retain
+        if (n.cp < 40) donateScore += 2.2;
+        else if (n.cp > 180) keepScore += 1.2;
+
+        // 4. Sect shortage vs loyalty
+        const scarcity = (g.CPE && g.CPE.scarcity) ? g.CPE.scarcity(W, res.materialId) : 1.0;
+        const loyalty = HC.eff(n, 'personality.loyalty');
+        const wealthVal = HC.eff(n, 'values.wealthResource');
+        if (scarcity > 1.25) {
+          if (loyalty >= 45) donateScore += 1.8;
+          else if (wealthVal > 60) keepScore += 1.0;
+        }
+
+        // 5. Crafting enthusiasm, skill and prudence
+        const craftSkill = n.h.skills.ALCHEMY || 0;
+        keepScore += (craftSkill / 50);
+        keepScore += (HC.eff(n, 'interests.herbs') - 50) / 80;
+        keepScore += (wealthVal - 50) / 100;
+        keepScore += (HC.eff(n, 'personality.prudence') - 50) / 100;
+
+        if (keepScore > donateScore && W.rng.chance(0.85)) {
+          shouldKeep = true;
         }
       }
 

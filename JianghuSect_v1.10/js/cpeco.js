@@ -701,20 +701,24 @@
   // Individual artisans use their own ingredients first and pay for any missing stock.
   function personalCraftChoice(W, n) {
     if (!n.inv || !n.cult || n.dead || n.away || n.h.state.energy < 20) return null;
-    if ((n.inv.craftedPills || []).length >= 3 || (!(n.inv.recipes && n.inv.recipes.length) && !(n.recipes && n.recipes.length))) return null;
-    const ids = Array.from(new Set([...(n.inv.recipes || []), ...(n.recipes || [])]));
+    if ((n.inv.craftedPills || []).length >= 3) return null;
+    const known = [...(n.inv.recipes || []), ...(n.recipes || [])];
+    const canBasicBrew = (n.h.skills.ALCHEMY || 0) >= 10 || HC.eff(n, 'interests.herbs') >= 35 || n.post === 'alchemy' || (n.inj && n.inj.length > 0) || n.h.state.hp < CULT.hpMax(n) * 0.75;
+    const basicIds = canBasicBrew ? ['BASIC_HP', 'BASIC_QI', 'BASIC_VIGOR', 'BASIC_WOUND', ...((n.h.skills.ALCHEMY || 0) >= 30 ? ['BASIC_HP2', 'BASIC_QI2'] : [])] : [];
+    const ids = Array.from(new Set([...known, ...basicIds]));
+    if (!ids.length) return null;
     let best = null;
     for (const id of ids) {
       const r = ECO.recipeById[id]; if (!r || r.craft !== 'ALCHEMY' || r.outType !== 'PILL') continue;
       const quote = ECO.personalCraftQuote(W, n, r); if (!quote || !quote.owned.length) continue;
       const key = r.outItemId || 'P:' + r.id, info = ECO.pillInfo(key); if (!info) continue;
-      const need = n.h.state.hp < CULT.hpMax(n) * 0.75 && info.effect.healHealth || n.cult.toxic > 25 && info.effect.clearToxic || n.h.state.heartDemon > 30 && info.effect.clearHeartDemon;
+      const need = (n.h.state.hp < CULT.hpMax(n) * 0.75 && info.effect.healHealth) || ((n.inj && n.inj.length > 0) && (info.effect.healHealth || info.effect.healWound)) || (n.cult.toxic > 25 && info.effect.clearToxic) || (n.h.state.heartDemon > 30 && info.effect.clearHeartDemon);
       const intent = need ? 'keep' : 'donate';
       const value = Math.min(CPE.reward(W, key, r.yield || 1), quote.cost + quote.ownValue * 1.2);
       if (!need && value <= quote.cost) continue;
-      const score = need ? 1.8 : 0.8 + Math.min(0.9, (value - quote.cost) / 40);
-      const preference=n.cognition?.goal?.id==='craft'&&n.cognition.goal.targetId===r.id?.toString()?0.6:0;
-      if (!best || score+preference > best.score) best = { r, intent, score:score+preference };
+      const score = need ? 2.0 : 0.8 + Math.min(0.9, (value - quote.cost) / 40);
+      const preference = n.cognition?.goal?.id === 'craft' && n.cognition.goal.targetId === r.id?.toString() ? 0.6 : 0;
+      if (!best || score + preference > best.score) best = { r, intent, score: score + preference };
     }
     return best;
   }
@@ -753,6 +757,7 @@
       if (k) consume(W, n, k);
     }
   };
+  CPE.personalCraftChoice = personalCraftChoice;
   g.CPE = CPE;
   if (typeof module === 'object' && module.exports) module.exports = CPE;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

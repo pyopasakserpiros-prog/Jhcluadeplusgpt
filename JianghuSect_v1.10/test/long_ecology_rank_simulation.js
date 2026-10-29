@@ -60,11 +60,20 @@ for (let i = 0; i < days * 1440; i++) {
       for (const qty of Object.values(n.inv.mats || {})) assert(Number.isSafeInteger(qty) && qty >= 0);
     }
     for (const qty of Object.values(W.sect.stock)) assert(Number.isFinite(qty) && qty >= 0);
-    const snapshot = { day: (i + 1) / 1440, population: living.length, stones: W.sect.stones,
+    const cps = living.map(n => n.cp || 0).sort((a, b) => a - b);
+    const meanCp = cps.length ? Math.round((cps.reduce((s, v) => s + v, 0) / cps.length) * 10) / 10 : 0;
+    const medianCp = cps.length ? (cps.length % 2 === 1 ? cps[Math.floor(cps.length / 2)] : Math.round(((cps[cps.length / 2 - 1] + cps[cps.length / 2]) / 2) * 10) / 10) : 0;
+    const cpS = CPE.S(W);
+    const snapshot = {
+      day: (i + 1) / 1440, population: living.length, stones: W.sect.stones,
       meals: ECO.count(W, 'meal'), cp: living.reduce((s, n) => s + n.cp, 0),
-      minted: CPE.S(W).minted, burned: CPE.S(W).burned,
+      meanHoldings: meanCp, medianHoldings: medianCp, priceIndex: Math.round((cpS.price || 1) * 100) / 100,
+      totalMinted: Math.round(cpS.minted * 10) / 10, totalBurned: Math.round(cpS.burned * 10) / 10,
+      circulation: cpS.circulation,
       nodes: W.wildResources.nodes.length, harvestActions: metrics.harvestActions,
-      privateRetains: metrics.privateRetains, basicPillsCrafted: metrics.basicPillsCrafted };
+      privateRetains: metrics.privateRetains, basicPillsCrafted: metrics.basicPillsCrafted,
+      pillsPurchased: metrics.pillsPurchased, pillsConsumed: metrics.pillsConsumed
+    };
     metrics.snapshots.push(snapshot); console.log(JSON.stringify(snapshot));
   }
 }
