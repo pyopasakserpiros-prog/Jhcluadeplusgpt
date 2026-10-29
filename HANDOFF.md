@@ -247,6 +247,10 @@ Key areas covered in the blueprint:
 6. **Environmental & Weather Sensitivity**: Element-aligned cultivation bonuses during snow/storms (`FROST`/`THUNDER`) and risk-aware outer zone selection.
 7. **Inner Monologue UI (`UI.rNpc`)**: Displaying active personal goals and thoughts while strictly preserving the `js/human_core.js` byte-lock (`155:2f9c9dd7`), `W.rng` determinism, save/load compatibility, and 32×/48× mobile speed budget.
 
-## Next assigned patch — Gemini 3.8 ecology/content expansion
+## Completed assignment — ecology/content expansion
 
-The user requests the next agent to begin without another prompt. Open [GEMINI_NEXT_TASK.md](GEMINI_NEXT_TASK.md), then execute [docs/GEMINI_ECOLOGY_CONTENT_PROMPT.md](docs/GEMINI_ECOLOGY_CONTENT_PROMPT.md). This is an authorized future task, not a claim that80 new beasts already ship in the current martial patch. Target80 species/160 materials/80 recipes with real spawn/drop/crafting/NPC/economy links, preserve current martial knowledge/retraining rules and main branch. Exact schema examples, phases, acceptance tests and creative discretion are in the prompt. Read actual final APIs before editing; extend long simulation observational reporting for ECO2_ IDs.
+The80species/160materials/80recipes assignment and its reviewed fixes have shipped. Its historical specification remains in docs/GEMINI_ECOLOGY_CONTENT_PROMPT.md. Do not repeat it. The current task starts at GEMINI_NEXT_TASK.md and is detailed below.
+
+## Current assigned next task — Gemini 2.8 (2026-10-29)
+
+Start with [GEMINI_NEXT_TASK.md](GEMINI_NEXT_TASK.md), then execute the English [world-rank/outdoor-resource/wildlife-batch specification](docs/GEMINI_OUTSIDE_RANK_RESOURCES_PROMPT.md). Supersedes the previous ecology-expansion assignment (already completed/fixed). This commit is documentation only: do not assume these future systems are implemented. Three deliverables: stage-only integer world ranks for fortune/Myriad World pools, finite safe exterior herb/ore collection linked to real donations/basic medicine, and bounded multi-beast refill. Basic herbs must be the easy safe low-CP job; retention/private crafting remains an NPC choice. Codex-selected defaults: ranks1–4 via endpoint-normalized attained stage, strict fractional>.75 upward threshold, no in-stage progress/power inputs;48resource nodes;ordinary1–3batch with cap12 and one hourly legendary roll. All assumptions, tables, APIs-to-create, invariants, test cases and creative discretion are explicit in the prompt.
