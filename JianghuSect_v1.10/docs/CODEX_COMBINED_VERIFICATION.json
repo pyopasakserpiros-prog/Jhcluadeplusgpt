@@ -1,0 +1,176 @@
+{
+  "uploadBranch": "New-gemini",
+  "uploadCommit": "9406b4ca20a72186410ba887ec08219268eacecf",
+  "baseline": "509b817d041a83ac91cd50bb7b8fcdeb95f8a3b8",
+  "dateUTC": "2026-10-30",
+  "originalSuite": "61/61 groups PASS",
+  "finalSuite": "62/62 groups PASS",
+  "finalCommand": "NODE_OPTIONS=--require=/workspace/cloud-setup/playwright-system.cjs node test/run_all.js",
+  "newRegressionCases": 6,
+  "naturalCommand": "node tools/run_visitors_clues_sim.js",
+  "naturalRuns": [
+    {
+      "seed": "vc-180d-seed1",
+      "daysSimulated": 180,
+      "elapsedMs": 28879,
+      "finalPopulation": 26,
+      "housingCapacity": 46,
+      "peakActiveGuests": 5,
+      "totalRegisteredGuests": 62,
+      "visitorHistoryEntries": 48,
+      "traderVisits": 25,
+      "funnel": {
+        "visits": 65,
+        "admitted": 57,
+        "rejected": 8,
+        "infoEncounters": 31,
+        "cluesByTier": {
+          "1": 3,
+          "2": 5,
+          "5": 8,
+          "6": 7,
+          "7": 8
+        },
+        "cluesByRarity": {
+          "Common": 7,
+          "Rare": 8,
+          "Legendary": 13,
+          "Exceptional": 3
+        },
+        "investigationsStarted": 6,
+        "nodesPassed": 7,
+        "nodesFailed": 57,
+        "terminalsReached": 4,
+        "grantsSucceeded": 4,
+        "grantsBlockedDuplicate": 0,
+        "equippedOrLearned": 0,
+        "rumorsSpawned": 31,
+        "cluesShared": 18,
+        "rewardsClaimed": 4
+      },
+      "activeCluesCount": 31,
+      "claimedReceiptsCount": 4,
+      "uniqueArtifactsClaimed": [],
+      "invariants": {
+        "guestInNpcsViolations": 0,
+        "memberCapViolations": 0
+      }
+    },
+    {
+      "seed": "vc-180d-seed2",
+      "daysSimulated": 180,
+      "elapsedMs": 29965,
+      "finalPopulation": 26,
+      "housingCapacity": 46,
+      "peakActiveGuests": 4,
+      "totalRegisteredGuests": 56,
+      "visitorHistoryEntries": 40,
+      "traderVisits": 32,
+      "funnel": {
+        "visits": 42,
+        "admitted": 33,
+        "rejected": 9,
+        "infoEncounters": 19,
+        "cluesByTier": {
+          "1": 2,
+          "2": 3,
+          "5": 5,
+          "6": 3,
+          "7": 6
+        },
+        "cluesByRarity": {
+          "Common": 5,
+          "Legendary": 8,
+          "Rare": 4,
+          "Exceptional": 2
+        },
+        "investigationsStarted": 3,
+        "nodesPassed": 7,
+        "nodesFailed": 31,
+        "terminalsReached": 3,
+        "grantsSucceeded": 3,
+        "grantsBlockedDuplicate": 0,
+        "equippedOrLearned": 0,
+        "rumorsSpawned": 19,
+        "cluesShared": 35,
+        "rewardsClaimed": 3
+      },
+      "activeCluesCount": 19,
+      "claimedReceiptsCount": 3,
+      "uniqueArtifactsClaimed": [],
+      "invariants": {
+        "guestInNpcsViolations": 0,
+        "memberCapViolations": 0
+      }
+    },
+    {
+      "seed": "vc-180d-seed3",
+      "daysSimulated": 180,
+      "elapsedMs": 66036,
+      "finalPopulation": 52,
+      "housingCapacity": 62,
+      "peakActiveGuests": 5,
+      "totalRegisteredGuests": 54,
+      "visitorHistoryEntries": 80,
+      "traderVisits": 34,
+      "funnel": {
+        "visits": 68,
+        "admitted": 57,
+        "rejected": 11,
+        "infoEncounters": 25,
+        "cluesByTier": {
+          "1": 5,
+          "2": 4,
+          "5": 7,
+          "6": 4,
+          "7": 5
+        },
+        "cluesByRarity": {
+          "Common": 8,
+          "Exceptional": 2,
+          "Rare": 7,
+          "Legendary": 8
+        },
+        "investigationsStarted": 2,
+        "nodesPassed": 9,
+        "nodesFailed": 49,
+        "terminalsReached": 6,
+        "grantsSucceeded": 6,
+        "grantsBlockedDuplicate": 0,
+        "equippedOrLearned": 0,
+        "rumorsSpawned": 25,
+        "cluesShared": 56,
+        "rewardsClaimed": 6
+      },
+      "activeCluesCount": 25,
+      "claimedReceiptsCount": 6,
+      "uniqueArtifactsClaimed": [],
+      "invariants": {
+        "guestInNpcsViolations": 0,
+        "memberCapViolations": 0
+      }
+    }
+  ],
+  "short100MemberWorkload": {
+    "ticks": 1440,
+    "ms": 1333.7328,
+    "msPerTick": 0.9262033333333334,
+    "members": 100,
+    "guests": 6,
+    "saveLoad": true
+  },
+  "limits": [
+    "100-member workload is short and preceded final protected-work fix; final full browser workload covers 80 NPCs.",
+    "Original 41-route reachability uses forcePass; this does not prove natural eligibility or difficulty.",
+    "No physical-phone testing, full literary fact-check, or all natural AI/weapon/site branches verified."
+  ],
+  "browserHelper": "Local tool adapter selects /usr/bin/chromium and maps file URLs to loopback HTTP; game logic/assertions are unchanged.",
+  "packaging": {
+    "status": "PASS",
+    "command": "NODE_OPTIONS=--require=/workspace/cloud-setup/playwright-system.cjs python tools/package_release.py /workspace/JianghuSect_codex_combined_review.zip",
+    "entries": 322,
+    "requiredFiles": 116,
+    "selectedOriginalsVerified": 52,
+    "historicalEvidence": "Imported original Gemini screenshots/manifests and NPC 360-day report to retain packaging inputs; not independently rerun."
+  }
+}

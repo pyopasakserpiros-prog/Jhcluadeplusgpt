@@ -1,6 +1,6 @@
 'use strict';
 const assert = require('assert'), path = require('path');
-const { chromium } = require('playwright');
+const { chromium } = (() => { try { return require('playwright'); } catch (_) { return require('../tools/cdp_playwright.js'); } })();
 (async () => {
   const browser = await chromium.launch();
   try {

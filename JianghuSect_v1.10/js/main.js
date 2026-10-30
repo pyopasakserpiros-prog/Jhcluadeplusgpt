@@ -4,7 +4,7 @@
   const U = g.U, SIM = g.SIM, HC = g.HC, MAP = g.MAP, Render = g.Render, UI = g.UI;
   const $ = id => document.getElementById(id);
   const TS = 16, TICKS_PER_SEC = 4, SIM_BUDGET_MS = 12;
-  const G = { W: null, R: null, speed: 1, acc: 0, opts: { names: true, bubbles: true, weather: true, night: true, toast: true, autosave: true }, muted: false, lastAuto: 0, lastRender: 0, err: null };
+  const G = { W: null, R: null, speed: 1, acc: 0, opts: { names: true, bubbles: true, weather: true, night: true, toast: true, autosave: true, quality: 'auto', reducedMotion: false }, muted: false, lastAuto: 0, lastRender: 0, err: null };
   let last = null;
   g.G = G;
   try { const o = JSON.parse(localStorage.getItem('jhs_opts') || 'null'); if (o) Object.assign(G.opts, o); } catch (e) { }
@@ -57,8 +57,8 @@
         } else R.alpha = 1;
         syncRuntimeTiming();
         if (G.opts.autosave && ts - G.lastAuto > 180000) { G.lastAuto = ts; G.autosave(); }
-        // ที่ 16×/32× ลดอัตราวาดภาพเพื่อคืนเวลาประมวลผลให้ NPC; ไม่ลดจำนวน tick จำลอง
-        const renderEvery = G.speed >= 32 ? 1000 / 30 : G.speed >= 16 ? 1000 / 40 : 0;
+        // ที่ 16×/32× ลดอัตราวาดภาพเพื่อคืนเวลาประมวลผลให้ NPC; เมื่อหยุดเวลา (0×) วาดเฉพาะเมื่อสถานะ/กล้องเปลี่ยนหรือทุก 120ms
+        const renderEvery = G.speed === 0 ? 120 : G.speed >= 32 ? 1000 / 30 : G.speed >= 16 ? 1000 / 40 : 0;
         if (!renderEvery || !G.lastRender || ts - G.lastRender >= renderEvery) {
           R.draw(ts); drawMini(); G.lastRender = ts;
         }
@@ -70,7 +70,7 @@
 
   /* ---------- มินิแมป ---------- */
   function drawMini() {
-    const cv = $('minimap'), R = G.R, W = G.W; if (!W) return; const dpr = 1;
+    const cv = $('minimap'), R = G.R, W = G.W; if (!W) return;
     if (cv.width !== 184) { cv.width = 184; cv.height = 123; }
     const c = cv.getContext('2d'); c.imageSmoothingEnabled = false; c.drawImage(R.getMini(), 0, 0, 184, 123);
     const sx = 184 / MAP.W, sy = 123 / MAP.H;
@@ -95,6 +95,7 @@
         const r = cv.getBoundingClientRect(); const hit = G.R.pickAt(e.clientX - r.left, e.clientY - r.top);
         if (hit) {
           if (hit.kind === 'npc') { G.R.selected = hit.id; UI.updateHud(true); }
+          else if (hit.kind === 'visitor' && UI.openVisitor) { UI.openVisitor(hit.id); }
           else if (hit.kind === 'building') UI.openBuilding(hit.id);
           else if (hit.kind === 'foe') { const f = G.W.foeById[hit.id]; if (f) UI.toast('ศัตรู: ' + (f.nameTh || f.name || 'ผู้บุกรุก')); }
           else if (hit.kind === 'resource') {

@@ -68,10 +68,19 @@
     const party = [n];
     const want = pick === 'hunt' || pick === 'bounty' ? 2 + (pw < 200 ? 1 : 0) : pick === 'trade' ? 1 : pick === 'fortune' ? (E(n, 'personality.caution') > 55 ? 1 : 0) : (E(n, 'temperament.sociability') > 55 ? 1 : 0);
     if (want > 0) {
-      const cands = W.npcs.filter(x => x !== n && !x.dead && !x.away && !x.exiled && x.rank >= 1 && x.rank <= 4 && !(x.act && ['sleep', 'breakthrough', 'fight', 'sentence'].includes(x.act.id)) && !x.sealed && !(x.jail > W.t) && !(x.inj && x.inj.length) && !(x.post && x.rank >= 4));
-      cands.forEach(c => { const r = n.h.mind.relations[c.id]; c._s = AI.compat(n, c) + (r ? r.a / 100 : 0) + (pick === 'hunt' ? CULT.power(c) / 400 : 0) + W.rng.next() * 0.3; });
+      const cands = W.npcs.filter(x => x !== n && !x.dead && !x.away && !x.exiled && x.rank >= 1 && x.rank <= 4 && !(AI.isProtectedAction ? AI.isProtectedAction(W, x, 'expedition') : (x.act && ['sleep', 'breakthrough', 'fight', 'sentence'].includes(x.act.id))) && !x.sealed && !(x.jail > W.t) && !(x.inj && x.inj.length) && !(x.post && x.rank >= 4));
+      cands.forEach(c => {
+        const ri = (g.COG && g.COG.relInfo) ? g.COG.relInfo(W, n, c) : { affection: (n.h.mind.relations[c.id]?.a || 0), trust: 40, gratitude: 0, respect: 30, bond: '' };
+        const rivalCoop = (ri.bond === 'คู่แข่ง' && (pick === 'hunt' || pick === 'bounty') && ri.respect >= 38) ? 0.25 : 0;
+        c._s = AI.compat(n, c) + ri.affection / 100 + (ri.trust - 40) / 160 + ri.gratitude / 150 + rivalCoop + (pick === 'hunt' ? CULT.power(c) / 400 : 0) + W.rng.next() * 0.3;
+      });
       cands.sort((a, b) => b._s - a._s);
-      for (const c of cands) { if (party.length > want) break; const acc = clamp(0.35 + c._s * 0.4 + (E(c, 'personality.courage') - 50) / 200 - (c.h.state.energy < 40 ? .3 : 0), 0.05, 0.9); if (c._s > 0.1 && W.rng.next() < acc) party.push(c); }
+      for (const c of cands) {
+        if (party.length > want) break;
+        const riB = (g.COG && g.COG.relInfo) ? g.COG.relInfo(W, c, n) : { gratitude: 0, trust: 40 };
+        const acc = clamp(0.35 + c._s * 0.4 + riB.gratitude / 200 + (riB.trust - 40) / 220 + (E(c, 'personality.courage') - 50) / 200 - (c.h.state.energy < 40 ? 0.3 : 0), 0.05, 0.92);
+        if (c._s > 0.1 && W.rng.next() < acc) party.push(c);
+      }
     }
     X.depart(W, party, pick);
   };
@@ -317,6 +326,21 @@
     if (ex.kind === 'bounty') { const fee = Math.round((60 + P * 0.05) * (0.8 + rng.next() * 0.5) * (1 + (E(alive[0] || members[0], 'aptitudes.socialCommerce') - 50) / 200)); out.stones += fee; ex.journal.push('รับค่าจ้างคุ้มกัน ' + fee + ' ศิลา'); }
     g.CONTENT.complete(W, ex, alive, out, reg);
     ex.done = true; ex.out = out;
+    if (alive.length > 1 && reg && reg.danger >= 2) {
+      for (let i = 0; i < alive.length; i++) {
+        for (let j = i + 1; j < alive.length; j++) {
+          const a = alive[i], b = alive[j];
+          const ra = SECT.rel(a, b.id), rb = SECT.rel(b, a.id);
+          ra.t = clamp((ra.t ?? 40) + 2.5, 0, 100); rb.t = clamp((rb.t ?? 40) + 2.5, 0, 100);
+          ra.r = clamp((ra.r ?? 30) + 2, 0, 100); rb.r = clamp((rb.r ?? 30) + 2, 0, 100);
+          ra.a = clamp((ra.a || 0) + 1.5, -100, 100); rb.a = clamp((rb.a || 0) + 1.5, -100, 100);
+          if (g.COG && g.COG.remember) {
+            g.COG.remember(W, a, { kind: 'shared_danger', subjectId: b.id, severity: 0.5 });
+            g.COG.remember(W, b, { kind: 'shared_danger', subjectId: a.id, severity: 0.5 });
+          }
+        }
+      }
+    }
     if (alive.length) X.handover(W, ex, alive, out);
     alive.forEach(m => { m.away = false; m.hidden = false; m.x = MAP.EXIT.x + .5 + rng.gauss(0, 0.8); m.y = MAP.EXIT.y + .5; m.travel = { to: 'home' }; m.expId = null; m.path = null; m.run = false; m.h.state.satiety = Math.max(30, m.h.state.satiety); HC.experience(m, 'adventure', 0.6); m.merit += 8 + reg.danger * 3; AI.mem(W, m, 'กลับจากภารกิจ「' + X.MISSIONS[ex.kind].nameTh + '」 ณ ' + reg.nameTh + ' ' + (ex.journal.slice(-2).join(', ') || ''), 0.8); });
     const ppl = members.map(m => m.h.name.given).join('、');
@@ -693,11 +717,21 @@
     }
     W.world.sects.forEach(s => { s.attitude = clamp(s.attitude + (s.attitude > 0 ? -0.15 : 0.15) + (s.style === 'ก้าวร้าว' ? -0.1 : 0) + rng.gauss(0, 0.8), -100, 100); });
     if (rng.chance(0.025)) {
-      const gain = Math.round(40 + rng.next() * 100); W.log('event', 'พ่อค้าเร่แวะสำนัก ซื้อโอสถและของเหลือใช้ ได้ ' + gain + ' ศิลา', []); ECO.earn(W, gain, 'พ่อค้าเร่');
+      if (g.VC && g.EXT && typeof g.EXT.openVisit === 'function') {
+        if ((g.EXT.activeVisitors(W) || []).length < 2) g.EXT.openVisit(W);
+      } else {
+        const gain = Math.round(40 + rng.next() * 100); W.log('event', 'พ่อค้าเร่แวะสำนัก ซื้อโอสถและของเหลือใช้ ได้ ' + gain + ' ศิลา', []); ECO.earn(W, gain, 'พ่อค้าเร่');
+      }
     }
     if (rng.chance(0.012) && W.season !== 3) {
-      const t = SECT.holder(W, 'scripture') || W.byId[W.sect.masterId];
-      if (t) { const drop = g.MARTIAL.personalDiscovery(W, t, { tier: 4, source: 'visitor' }); if (drop) { W.log('event', 'ยอดฝีมือเร่ร่อนมอบองค์ความรู้หายากให้ ' + t.h.name.given, [t.id]); W.fame(1); } }
+      if (g.VC && typeof g.VC.spawnGuest === 'function') {
+        if ((g.VC.activeGuests(W) || []).length < 4) {
+          g.VC.spawnGuest(W, { role: 'scholar', notable: true, withClue: true });
+        }
+      } else {
+        const t = SECT.holder(W, 'scripture') || W.byId[W.sect.masterId];
+        if (t) { const drop = g.MARTIAL.personalDiscovery(W, t, { tier: 4, source: 'visitor' }); if (drop) { W.log('event', 'ยอดฝีมือเร่ร่อนมอบองค์ความรู้หายากให้ ' + t.h.name.given, [t.id]); W.fame(1); } }
+      }
     }
     if (rng.chance(0.014)) {
       const hit = W.npcs.filter(n => !n.dead && !n.away && rng.chance(0.18 * (1 - E(n, 'physiology.immunity') / 130)));

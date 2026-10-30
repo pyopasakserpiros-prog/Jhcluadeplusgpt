@@ -666,24 +666,81 @@ M.conditionText=t=>{
 };
 M.gearSuitability=(n,it,price)=>{
  if(!it||!n.cult||(it.minStage||1)>n.cult.stage+1)return {score:-Infinity,reasons:['ขั้นบำเพ็ญไม่ถึง']};
- const c=n.cult,path=paths[c.path]||paths.XIAN,sub=profiles[c.sub],type=M.gearType(it),weapons=sub?sub[3]:path.weapons,armor=sub?sub[4]:path.armor,reasons=[],s=it.st||ST.gearStats(Object.assign({},it));
- let fit=1;if(it.slot==='WEAPON'){fit=weapons.includes(type)?1.45:.68;reasons.push(weapons.includes(type)?'ตรงแนวสายบำเพ็ญ':'อาวุธไม่ถนัด');}
+ const c=n.cult;
+ if(it.compatiblePath){const cp=Array.isArray(it.compatiblePath)?it.compatiblePath:[it.compatiblePath];if(!cp.includes('ANY')&&!cp.includes(c.path))return {score:-Infinity,reasons:['ต่างวิถีหลัก']};}
+ const path=paths[c.path]||paths.XIAN,sub=profiles[c.sub],type=M.gearType(it),weapons=sub?sub[3]:path.weapons,armor=sub?sub[4]:path.armor,reasons=[],s=it.st||ST.gearStats(Object.assign({},it));
+ let fit=1;
+ if(it.slot==='WEAPON'){
+  fit=weapons.includes(type)?1.45:.68;
+  reasons.push(weapons.includes(type)?'ตรงแนวสายบำเพ็ญ':'อาวุธไม่ถนัด');
+  if(M.weaponSkill){const wsk=M.weaponSkill(n,type);if(wsk>=45){fit+=Math.min(.22,(wsk-40)*.0035);reasons.push('ชำนาญอาวุธ ('+Math.round(wsk)+')');}else if(wsk<20&&!weapons.includes(type)){fit-=.08;}}
+ }
  if(it.slot==='ARMOR'){fit=armor.includes(type)?1.25:.85;reasons.push(armor.includes(type)?'เกราะตรงวิถี':'เกราะต่างแนว');}
  const role=c.path==='BODY'?{atk:1.35,matk:.45,def:1.2,mdef:1.1}:c.path==='HEART_SOUL'||c.path==='XIAN'?{atk:.65,matk:1.35,def:1.1,mdef:1}:c.path==='DEMON'?{atk:1.15,matk:1.15,def:.85,mdef:.9}:{atk:1,matk:1.1,def:1,mdef:1.2};
  let power=(s.atk||0)*role.atk+(s.matk||0)*role.matk+(s.def||0)*role.def+(s.mdef||0)*role.mdef+(s.hp||0)*.5+(s.crit||0)*8+(s.critDmg||0)*1.5+(s.pen||0)*6+(s.cast||0)*3+(s.eva||0)*.6+(s.acc||0)*2;
- let moves=0;
+ if(it.combatMult||it.defMult){
+  const stageScale=22+c.stage*16;
+  power+=(it.combatMult||0)*stageScale*(role.atk+role.matk)*.55+(it.defMult||0)*stageScale*(role.def+role.mdef)*.55;
+ }
+ let moves=0,reqWeap=0;
  const checkList=c.techs.concat(M.activeInnateTechs(n));
- for(const id of checkList){const t=CULT.tech(id);if(t&&((it.slot==='WEAPON'&&t.weaponTypes&&t.weaponTypes.includes(type))||(it.slot==='ARMOR'&&t.armorTypes&&t.armorTypes.includes(type))))moves++;}
+ for(const id of checkList){
+  const t=CULT.tech(id);
+  if(t&&((it.slot==='WEAPON'&&t.weaponTypes&&t.weaponTypes.includes(type))||(it.slot==='ARMOR'&&t.armorTypes&&t.armorTypes.includes(type)))){
+   moves++;
+   if(it.slot==='WEAPON'&&t.requiresWeapon)reqWeap++;
+  }
+ }
  if(moves){fit+=Math.min(.55,moves*.12);reasons.push('หนุนวิชาที่เรียน '+moves+' วิชา');}
+ if(reqWeap){fit+=Math.min(.30,reqWeap*.18);reasons.push('ปลดล็อกวิชาที่บังคับใช้อาวุธนี้');}
  // Bonus if equipment triggers a subpath synergy
  const synMatch=M.SYNERGIES.some(syn=>syn.subpath===c.sub&&((it.slot==='WEAPON'&&syn.weaponTypes&&syn.weaponTypes.includes(type))||(it.slot==='ARMOR'&&syn.armorTypes&&syn.armorTypes.includes(type))));
  if(synMatch){fit+=0.18;reasons.push('ปลดล็อกการประสานสายย่อย');}
  const caution=HC.eff(n,'personality.caution')/100,aggression=HC.eff(n,'personality.aggression')/100;
  power+=(s.def||0)*caution*.35+(s.hp||0)*caution*.18+(s.atk||0)*aggression*.2;
+ if(["guard","commander","wildwarden"].includes(n.post)){power+=(s.def||0)*.25+(s.hp||0)*.15;}
  if(n.h.state.hp<CULT.hpMax(n)*.6){power+=(s.def||0)*.45+(s.hp||0)*.4;reasons.push('ต้องการเอาตัวรอด');}
  if(it.fx)for(const fx of it.fx){const skill=(fx.params||{}).craftBonusPath;if(skill&&M.lifeMult(n,skill)>1.05){power+=30*M.lifeMult(n,skill);reasons.push('หนุนงาน '+skill);}}
+ const durK=clamp((it.dur==null?100:it.dur)/100,.35,1);
+ if(durK<.85)reasons.push('สภาพ '+Math.round(durK*100)+'%');
+ power*=durK;
  const cost=Number.isFinite(price)?price:0,thrift=.08+HC.eff(n,'values.wealthResource')/350;
- return {score:power*fit-cost*thrift,reasons,type};
+ return {score:power*fit-cost*thrift,rawPower:power*fit,reasons,type,fit,durK};
+};
+M.classifyGearForNpc=(W,n,it,price)=>{
+ if(!it||!n||!n.cult)return {category:'surplus',deltaScore:-Infinity,suit:{score:-Infinity,reasons:['ไม่พร้อมใช้งาน']},reasonTh:'ไม่เหมาะกับผู้ไร้ตบะ'};
+ const suit=M.gearSuitability(n,it,price);
+ const cur=n.equip&&n.equip[it.slot];
+ const curSuit=cur?M.gearSuitability(n,cur,0):{score:0,rawPower:0,reasons:[]};
+ const curScore=Number.isFinite(curSuit.score)?curSuit.score:0;
+ const newScore=suit.score;
+ const usableNow=(it.minStage||1)<=n.cult.stage&&Number.isFinite(newScore);
+ const hysteresis=cur?Math.max(8,Math.abs(curScore)*0.16):4;
+ if(usableNow&&newScore>curScore+hysteresis){
+  return {category:'useful-now',deltaScore:newScore-curScore,suit,curSuit,reasonTh:cur?'ดีกว่าของเดิมชัดเจน (+'+Math.round(newScore-curScore)+')':'ยังไม่มีอุปกรณ์ในช่องนี้'};
+ }
+ const futureStageOk=(it.minStage||1)===n.cult.stage+1&&Number.isFinite(newScore)&&newScore>curScore*1.22+12;
+ const retrainPrep=n.martialIntent&&n.martialIntent.action==='prepare'&&suit.reasons.some(r=>r.includes('เตรียมอาวุธ'));
+ if(futureStageOk||retrainPrep){
+  return {category:'valuable-to-own',deltaScore:newScore-curScore,suit,curSuit,reasonTh:retrainPrep?'เก็บไว้เตรียมเปลี่ยนสายย่อย':'เก็บไว้ใช้เมื่อทะลวงขั้นถัดไป'};
+ }
+ if(W&&Array.isArray(W.npcs)){
+  const rels=n.h&&n.h.mind&&n.h.mind.relations||{};
+  for(const o of W.npcs){
+   if(!o||o.id===n.id||o.dead||o.away||o.exiled||!o.cult)continue;
+   const r=rels[o.id];
+   const isClose=o.mentor===n.id||n.mentor===o.id||(n.h.life.family.spouse===o.id)||(r&&(r.a>=42||(r.g||0)>=30||r.bond==='สหาย'||r.bond==='คนรัก'||r.bond==='คู่ครอง'||r.bond==='ศิษย์'));
+   if(!isClose)continue;
+   if((it.minStage||1)>o.cult.stage)continue;
+   const oSuit=M.gearSuitability(o,it,0);
+   const oCur=o.equip&&o.equip[it.slot];
+   const oCurScore=oCur?M.gearSuitability(o,oCur,0).score:0;
+   if(Number.isFinite(oSuit.score)&&oSuit.score>oCurScore+Math.max(8,Math.abs(oCurScore)*0.16)){
+    return {category:'gift-worthy',targetNpcId:o.id,deltaScore:oSuit.score-oCurScore,suit,curSuit,reasonTh:'เหมาะมอบให้ '+o.h.name.given+' (+'+Math.round(oSuit.score-oCurScore)+')'};
+   }
+  }
+ }
+ return {category:'surplus',deltaScore:newScore-curScore,suit,curSuit,reasonTh:cur?'ไม่ดีกว่า「'+cur.nameTh+'」ที่สวมใส่อยู่':'ไม่เหมาะกับแนวทางปัจจุบัน'};
 };
 M.describe=(W,n)=>{const now=M.progression(n),next=n.cult&&n.cult.stage<CULT.maxStage(n)?M.progression(n,n.cult.stage+1):now,raw=n.cult&&(ST.SUBFX[n.cult.sub]||(JD.EXPANSION.subStats||{})[n.cult.sub])||{p:{},f:{}};return {now,next,subNow:M.subStats(n,raw),subNext:n.cult?M.subStats(n,raw,n.cult.stage+1):{p:{},f:{}},desires:n.cult?((profiles[n.cult.sub]||[null,null,null,paths[n.cult.path].weapons])[3]).map(x=>D.types[x]):[],crystals:Object.entries(n.inv&&n.inv.crystals||{}).filter(x=>x[1]>0),passiveSlots:M.passiveSlotInfo(n),activePassives:M.activePassives(n),inactivePassives:M.inactivePassives(n),innateTechs:M.activeInnateTechs(n),dormantInnate:M.dormantInnateTechs(n),activeSynergies:M.evaluateSynergies(n)};};
 // Mint/catalog boundary types also cover historical recipe-only equipment.

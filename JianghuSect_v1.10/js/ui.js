@@ -40,6 +40,14 @@
   function portraitHtml(n, size) { return '<canvas class="pt" data-pid="' + n.id + '" data-size="' + (size || 40) + '" style="border-radius:10px;flex:0 0 auto"></canvas>'; }
   function drawPortraits(root) { root.querySelectorAll('canvas.pt').forEach(cv => { const n = UI.G.W.byId[cv.dataset.pid]; if (n) Render.portrait(cv, n, +cv.dataset.size); }); }
   function nameLink(n) { return '<a class="link-ref" data-npc="' + n.id + '" style="color:var(--blue);text-decoration:none">' + esc(n.h.name.given) + '</a>'; }
+  const SVG_ICONS = {
+    stones: "<svg class=\"svg-ic\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><polygon points=\"12,2 21,9 17,21 7,21 3,9\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linejoin=\"round\"/><polyline points=\"3,9 12,13 21,9\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\"/><line x1=\"12\" y1=\"13\" x2=\"12\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"1.6\"/></svg>",
+    food: "<svg class=\"svg-ic\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4 12h16a8 8 0 0 1-16 0z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/><path d=\"M8 19h8M7 9c0-1.5 1-2.5 1-4M12 9c0-1.5 1-2.5 1-4M17 9c0-1.5 1-2.5 1-4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\"/></svg>",
+    people: "<svg class=\"svg-ic\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"9\" cy=\"8\" r=\"3.2\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/><path d=\"M3.5 19c0-3 2.5-5.2 5.5-5.2s5.5 2.2 5.5 5.2\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"/><circle cx=\"17\" cy=\"9\" r=\"2.3\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"/><path d=\"M15.5 14.2c2.3.3 4.3 2 4.3 4.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\"/></svg>",
+    fame: "<svg class=\"svg-ic\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"9\" r=\"5.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/><path d=\"M9 14l-2 7 5-2.5L17 21l-2-7\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linejoin=\"round\"/></svg>"
+  };
+  UI.icon = name => SVG_ICONS[name] || "";
+
   function gradeChip(t) {
     if (!t) return '';
     const gKey = t.grade || (t.legendary ? 'Legendary' : 'Common');
@@ -100,16 +108,42 @@
           exists: true
         });
       } else {
-        out.push({
-          kind: 'npc',
-          id,
-          label: id,
-          currentLabel: null,
-          fullName: id,
-          surname: '',
-          role: 'ไม่อยู่ในสำนักแล้ว',
-          exists: false
-        });
+        const vis = (g.VC && g.VC.findVisitor) ? g.VC.findVisitor(W, id) : null;
+        const clue = (W.world && W.world.clues && W.world.clues.active && W.world.clues.active[id]) || null;
+        if (vis) {
+          out.push({
+            kind: 'visitor',
+            id,
+            label: vis.nameTh || id,
+            currentLabel: vis.nameTh || id,
+            fullName: (vis.nameTh || id) + (vis.titleTh ? ' · ' + vis.titleTh : ''),
+            surname: '',
+            role: vis.state === 'offsite' ? 'ผู้มาเยือน (เดินทางกลับแล้ว)' : 'ผู้มาเยือนจากยุทธภพ',
+            exists: vis.state === 'admitted' || vis.state === 'restricted'
+          });
+        } else if (clue) {
+          out.push({
+            kind: 'clue',
+            id,
+            label: clue.titleTh || id,
+            currentLabel: clue.titleTh || id,
+            fullName: clue.titleTh || id,
+            surname: '',
+            role: 'เบาะแสยุทธภพ',
+            exists: true
+          });
+        } else {
+          out.push({
+            kind: 'npc',
+            id,
+            label: id,
+            currentLabel: null,
+            fullName: id,
+            surname: '',
+            role: 'ไม่อยู่ในสำนักแล้ว',
+            exists: false
+          });
+        }
       }
     });
     if (W && W.map && Array.isArray(W.map.buildings) && typeof text === 'string') {
@@ -137,6 +171,12 @@
     const title = ref.fullName + (ref.role ? ' · ' + ref.role : '');
     if (ref.kind === 'bld') {
       return '<a class="link-ref bld" data-bld="' + esc(ref.id) + '" title="' + esc(title) + '" style="color:#f2c96d;text-decoration:none;font-weight:600">' + esc(displayTxt) + '</a>';
+    }
+    if (ref.kind === 'visitor') {
+      return '<a class="link-ref visitor" data-visitor="' + esc(ref.id) + '" title="' + esc(title) + '" style="color:#ffcb77;text-decoration:none;font-weight:600">🎐 ' + esc(displayTxt) + '</a>';
+    }
+    if (ref.kind === 'clue') {
+      return '<a class="link-ref clue" data-clue="' + esc(ref.id) + '" title="' + esc(title) + '" style="color:#a8dadc;text-decoration:none;font-weight:600">🗺️ ' + esc(displayTxt) + '</a>';
     }
     if (!ref.exists) {
       return '<span class="link-ref gone" data-npc="' + esc(ref.id) + '" title="' + esc(title) + '" style="color:var(--muted);text-decoration:underline dotted;cursor:pointer">' + esc(displayTxt) + '</span>';
@@ -254,6 +294,8 @@
       const f = e.target.closest('[data-do]'); if (f) { UI.doAction(f.dataset.do, f.dataset.arg); return; }
       const a = e.target.closest('[data-npc]'); if (a) { UI.openNpc(a.dataset.npc); return; }
       const b = e.target.closest('[data-bld]'); if (b) { UI.openBuilding(b.dataset.bld); return; }
+      const v = e.target.closest('[data-visitor]'); if (v) { UI.openVisitor(v.dataset.visitor); return; }
+      const cl = e.target.closest('[data-clue]'); if (cl) { UI.openClue(cl.dataset.clue); return; }
     });
     $('toasts').addEventListener('click', e => { const t = e.target.closest('.toast'); if (t && t.dataset.npc) UI.focusNpc(t.dataset.npc); });
   };
@@ -266,7 +308,7 @@
     const pop = SECT.memberOccupancy ? SECT.memberOccupancy(W) : alive.length;
     const cap = SECT.housingCapacity ? SECT.housingCapacity(W) : 46;
     const raid = W.threat && W.threat.raid ? '<span class="pill" style="border-color:#ff8a3a;color:#ffb27a">⚠ ศัตรูบุก!</span>' : '';
-    $('resRow').innerHTML = '<span class="pill">💎 <b>' + U.fmtNum(S.stones) + '</b></span><span class="pill">🍚 <b>' + U.fmtNum(ECO.count(W, 'meal') + ECO.count(W, 'grain') * 3) + '</b></span><span class="pill" title="สมาชิกปัจจุบัน / ความจุเตียงพัก">👥 <b>' + pop + '/' + cap + '</b>' + (away ? ' (นอก ' + away + ')' : '') + '</span><span class="pill">🏅 <b>' + U.fmtNum(S.fame) + '</b></span>' + raid + (G.acc >= 1 ? '<span class="pill" title="งานจำลองที่รอประมวลผลยังถูกเก็บไว้">⏳ รอ ' + Math.floor(G.acc) + ' นาทีเกม</span>' : '');
+    $('resRow').innerHTML = '<span class="pill" title="ศิลาวิญญาณ">💎 ' + UI.icon('stones') + '<b>' + U.fmtNum(S.stones) + '</b></span><span class="pill" title="เสบียงรวม">🍚 ' + UI.icon('food') + '<b>' + U.fmtNum(ECO.count(W, 'meal') + ECO.count(W, 'grain') * 3) + '</b></span><span class="pill" title="สมาชิกปัจจุบัน / ความจุเตียงพัก">👥 ' + UI.icon('people') + '<b>' + pop + '/' + cap + '</b>' + (away ? ' (นอก ' + away + ')' : '') + '</span><span class="pill" title="ชื่อเสียงสำนัก">🏅 ' + UI.icon('fame') + '<b>' + U.fmtNum(S.fame) + '</b></span>' + raid + (G.acc >= 1 ? '<span class="pill" title="งานจำลองที่รอประมวลผลยังถูกเก็บไว้">⏳ รอ ' + Math.floor(G.acc) + ' นาทีเกม</span>' : '');
     const R = G.R, sel = R.selected && W.byId[R.selected]; const si = $('selInfo');
     if (sel && !UI.sheet) {
       si.classList.add('show'); const key = sel.id + ':' + sel.act.id + ':' + sel.rank + ':' + (sel.dead ? 1 : 0);
@@ -302,7 +344,7 @@
     if (kind === 'people') show('people', '👥 ผู้คนในสำนัก', [['rank', 'ตามระดับ'], ['act', 'กำลังทำอะไร'], ['cult', 'ตบะ'], ['mood', 'อารมณ์']], 'rank');
     else if (kind === 'sect') show('sect', '🏯 สำนัก', [['over', 'ภาพรวม'], ['policy', 'นโยบาย/นิสัยผู้นำ'], ['posts', 'ตำแหน่ง'], ['stock', 'คลัง'], ['shop', '🛒 ร้าน/คุณูปการ'], ['bld', 'อาคาร']], arg || 'over');
     else if (kind === 'log') show('log', '📜 บันทึกเหตุการณ์', Object.keys(LOG_GROUPS).map(k => [k, LOG_GROUPS[k][0]]), 'all');
-    else if (kind === 'world') show('world', '🧭 ยุทธภพนอกสำนัก', [['exp', 'คณะเดินทาง'], ['content', '🌿 พื้นที่/ตำรับ'], ['ecology', '🐾 อสูรและนิเวศ'], ['disc', '🔭 ค้นพบ'], ['sects', 'สำนักอื่น'], ['hist', 'ประวัติ']], 'exp');
+    else if (kind === 'world') show('world', '🧭 ยุทธภพนอกสำนัก', [['exp', 'คณะเดินทาง'], ['visitors', '🎐 ผู้มาเยือน'], ['clues', '🗺️ เบาะแส/มรดก'], ['content', '🌿 พื้นที่/ตำรับ'], ['ecology', '🐾 อสูรและนิเวศ'], ['disc', '🔭 ค้นพบ'], ['sects', 'สำนักอื่น'], ['hist', 'ประวัติ']], arg || 'exp', true);
     else if (kind === 'edit') {
       const W = UI.G.W;
       if (!UI.editNpcId || !W.byId[UI.editNpcId] || W.byId[UI.editNpcId].dead) {
@@ -339,6 +381,23 @@
     show('building', esc(b.nameTh), [], null);
     UI.render();
   };
+  UI.openVisitor = id => {
+    const W = UI.G && UI.G.W;
+    const v = (W && g.VC && g.VC.findVisitor) ? g.VC.findVisitor(W, id) : null;
+    if (!v) { UI.toast('ไม่พบข้อมูลผู้มาเยือนนี้'); return; }
+    UI.visitorId = id;
+    show('visitor', '🎐 ' + esc(v.nameTh) + ' <span class="muted" style="font-weight:400">' + esc(v.titleTh || 'ผู้มาเยือน') + '</span>', [], null, true);
+    UI.render();
+  };
+  UI.openClue = id => {
+    const W = UI.G && UI.G.W;
+    const cs = W && W.world && W.world.clues;
+    const inst = cs && (cs.active[id] || (cs.history || []).find(x => x.instanceId === id));
+    if (!inst) { UI.toast('ไม่พบข้อมูลเบาะแสนี้'); return; }
+    UI.clueId = id;
+    show('clue', '🗺️ ' + esc(inst.titleTh), [], null, true);
+    UI.render();
+  };
   UI.focusNpc = id => { const n = UI.G.W.byId[id]; if (!n) return; UI.G.R.selected = id; if (!n.away && !n.dead) { UI.G.R.focus(n.x, n.y, Math.max(UI.G.R.cam.z, 2)); } UI.updateHud(true); };
 
   UI.doAction = (a, arg) => {
@@ -351,6 +410,10 @@
     else if (a === 'locate') { UI.close(); UI.focusNpc(arg); }
     else if (a === 'follow') { UI.close(); UI.focusNpc(arg); G.R.follow = true; G.R.cam.z = Math.max(G.R.cam.z, 2.2); $('fFollow').style.background = 'var(--gold)'; }
     else if (a === 'locb') { const b = W.map.byId[arg]; if (b) { UI.close(); G.R.follow = false; G.R.focus(b.x + b.w / 2, b.y + b.h / 2, 1.3); } }
+    else if (a === 'locv') { const v = g.VC && g.VC.findVisitor ? g.VC.findVisitor(W, arg) : null; if (v && Number.isFinite(v.x) && Number.isFinite(v.y)) { UI.close(); G.R.follow = false; G.R.focus(v.x, v.y, Math.max(G.R.cam.z, 1.8)); } else UI.toast('ผู้มาเยือนนี้ไม่ได้อยู่ในเขตสำนักแล้ว'); }
+    else if (a === 'toggle-clue-debug') { UI.showClueDebug = !UI.showClueDebug; UI.render(); }
+    else if (a === 'open-visitor') { UI.openVisitor(arg); }
+    else if (a === 'open-clue') { UI.openClue(arg); }
     else if (a === 'save') UI.saveSlot(arg);
     else if (a === 'load') UI.loadSlot(arg);
     else if (a === 'export') UI.exportFile();
@@ -399,6 +462,7 @@
     else if (a === 'equip-personal') {
       const [npcId, uid] = String(arg || '').split('|');
       const res = SECT.EDITOR.equipPersonalGear(W, npcId, uid);
+      if (G.R && G.R.invalidate) G.R.invalidate();
       UI.toast(res.ok ? ('สวมใส่ ' + res.equipped.nameTh + ' แล้ว') : res.reason);
       UI.render();
     }
@@ -492,9 +556,13 @@
       case 'menu': html = UI.rMenu(); break;
       case 'npc': html = UI.rNpc(); break;
       case 'building': html = UI.rBuilding(); break;
+      case 'visitor': html = UI.rVisitor(); break;
+      case 'clue': html = UI.rClueDetail(); break;
     }
     body.innerHTML = html; drawPortraits(body); body.scrollTop = keepScroll;
-    body.querySelectorAll('[data-set]').forEach(el => el.onchange = () => { G.opts[el.dataset.set] = el.checked; UI.applyOpts(); });
+    body.querySelectorAll('[data-set]').forEach(el => el.onchange = () => { G.opts[el.dataset.set] = el.checked; UI.applyOpts(); if (UI.sheet === 'menu' && UI.tab === 'set') UI.render(); });
+    const qSel = body.querySelector('#gfxQualitySel');
+    if (qSel) qSel.onchange = () => { G.opts.quality = qSel.value; if (G.R) G.R._autoDowngraded = false; UI.applyOpts(); UI.render(); };
     const sf = body.querySelector('#npcSel'); if (sf) sf.onchange = () => { UI.cmpId = sf.value; UI.render(); };
     const q = body.querySelector('#pq'); if (q) { q.oninput = () => { UI.pq = q.value; UI.render(); const q2 = $('shBody').querySelector('#pq'); if (q2) { q2.focus(); q2.setSelectionRange(q2.value.length, q2.value.length); } }; }
     UI.bindDynamicFilters(body);
@@ -592,7 +660,8 @@
     // Equipment
     (S.gear || []).forEach(eq => {
       if (!eq) return;
-      rows.push({ kind: 'EQUIPMENT', kindTh: 'อุปกรณ์', id: eq.uid || eq.id, nameTh: eq.nameTh, tier: eq.tier || 1, qty: 1, resFloor: 1, statusTh: 'ช่อง ' + (eq.slot || '-') + ' · คุณภาพ ' + Math.round((eq.quality || 1) * 100) + '%' });
+      const qVal = (g.VC && g.VC.gearQuality) ? g.VC.gearQuality(eq) : (eq.q || eq.quality || 1);
+      rows.push({ kind: 'EQUIPMENT', kindTh: eq.legendary ? 'ศาสตราตำนาน' : 'อุปกรณ์', id: eq.uid || eq.id, nameTh: (eq.legendary ? '★ ' : '') + eq.nameTh, tier: eq.tier || 1, qty: 1, resFloor: 1, statusTh: 'ช่อง ' + (eq.slot || '-') + ' · คุณภาพ ' + Math.round(qVal * 100) + '%' });
     });
     // Crystals
     Object.keys(S.crystals || {}).forEach(subId => {
@@ -847,6 +916,10 @@
       h += '<div class="muted" style="margin-bottom:6px">นอกสำนักไม่มีฉากให้เล่น ผลการเดินทางถูกคำนวณจากกำลัง โชค การรับรู้ และนิสัยของผู้เดินทางจริง</div>';
       h += '<h3>กำลังเดินทาง (' + act.length + ')</h3>' + (act.length ? act.map(e => { const ms = e.party.map(i => W.byId[i]).filter(Boolean); const reg = EXPED.REGIONS.find(r => r.id === e.region) || { nameTh: e.placeTh || '?' }; return '<div class="card"><b>' + EXPED.MISSIONS[e.kind].icon + ' ' + EXPED.MISSIONS[e.kind].nameTh + '</b> → ' + esc(reg.nameTh) + '<div>' + ms.map(nameLink).join('、') + '</div><div class="muted">กลับในอีก ~' + Math.max(0, Math.round((e.ret - W.t) / 1440 * 10) / 10) + ' วัน</div></div>'; }).join('') : '<div class="muted">ไม่มี</div>');
       const done = W.world.expeds.filter(e => e.done && e.out).slice(-5).reverse(); if (done.length) h += '<h3>เพิ่งกลับ</h3>' + done.map(e => { const ms = e.party.map(i => W.byId[i]).filter(Boolean); return '<div class="card"><b>' + EXPED.MISSIONS[e.kind].icon + ' ' + EXPED.MISSIONS[e.kind].nameTh + '</b> ' + ms.map(nameLink).join('、') + '<div class="muted">' + esc(e.journal.slice(-4).join(' → ')) + '</div><div>' + esc(EXPED.summarize(e.out)) + '</div></div>'; }).join('');
+    } else if (tab === 'visitors') {
+      h += UI.rVisitors();
+    } else if (tab === 'clues') {
+      h += UI.rClues();
     } else if (tab === 'content') {
       h += UI.rContent();
     } else if (tab === 'ecology') {
@@ -873,6 +946,159 @@
       h += '<div class="muted">ท่าทีต่ำมาก → เสี่ยงถูกคว่ำบาตร/บุกโจมตี · ท่าทีสูง → ลงนามสัญญาการค้า/พันธมิตรยุทธภพ ส่งขบวนทรัพยากรและช่วยป้องกันสำนัก</div>';
     } else {
       const l = W.logs.filter(x => ['mission', 'raid', 'event', 'tournament'].includes(x.type)).slice(-60).reverse(); h += l.length ? l.map(x => '<div class="logrow"><span class="tm">' + dayStamp(x.t) + '</span>' + linkify(W, x.text, x.ids, x.refs) + '</div>').join('') : '<div class="muted">ยังไม่มีเหตุการณ์นอกสำนัก</div>';
+    }
+    return h;
+  };
+
+
+  UI.rVisitors = () => {
+    const W = UI.G.W;
+    if (!g.VC) return '<div class="muted">ไม่พบโมดูลผู้มาเยือน</div>';
+    g.VC.ensure(W);
+    const guests = g.VC.activeGuests(W);
+    const traders = g.EXT ? g.EXT.activeVisitors(W) : [];
+    const regList = Object.values(W.world.guestRegistry || {}).slice(-16).reverse();
+    const hist = (W.world.visitorHistory || []).slice(-15).reverse();
+    let h = '<div class="card"><b>🎐 ผู้มาเยือนและคนนอกสำนัก (Outsiders & Visitors)</b><div class="muted">ผู้มาเยือนเป็นคนนอกที่เดินทางมาค้าขาย สนทนา แลกเปลี่ยนคัมภีร์ หรือบอกเล่าเบาะแสในยุทธภพ โดยไม่นับรวมในโควตาเตียงพัก 100 คนของศิษย์ในสำนัก</div>';
+    h += '<div class="grid2" style="margin-top:6px"><div>🎐 แขกในสำนักขณะนี้ <b>' + guests.length + ' คน</b></div><div>🪙 พ่อค้าเร่ในตลาด <b>' + traders.length + ' คน</b></div><div>📖 แขกขาจรที่คุ้นเคย <b>' + Object.keys(W.world.guestRegistry || {}).length + ' คน</b></div><div>門 นโยบายเปิดรับสำนัก <b>' + Math.round((W.sect.policy && W.sect.policy.openness) || 50) + '%</b></div></div></div>';
+
+    h += '<h3>🎐 แขกยุทธภพที่กำลังพำนักในสำนัก (' + guests.length + ')</h3>';
+    if (guests.length) {
+      h += guests.map(v => {
+        const stChip = v.state === 'admitted' ? '<span class="chip ok">รับรองเข้าสำนัก</span>' : '<span class="chip g">จำกัดพื้นที่หน้าด่าน/ลาน</span>';
+        const bld = (W.map.byId && W.map.byId[v.targetBkey]) ? W.map.byId[v.targetBkey].nameTh : 'ลานสำนัก';
+        return '<div class="card" style="cursor:pointer" data-visitor="' + esc(v.id) + '"><div style="display:flex;justify-content:space-between;align-items:center"><b>🎐 ' + esc(v.nameTh) + (v.chineseName ? ' (' + esc(v.chineseName) + ')' : '') + '</b>' + stChip + '</div><div class="sub">' + esc(v.titleTh || '') + ' · พักถึงวันที่ ' + v.untilDay + ' · บริเวณ: ' + esc(bld) + '</div><div class="muted" style="font-size:11.5px;margin-top:3px">จุดประสงค์: ' + esc(v.purposeTh || '-') + ' · อนุญาตโดย: ' + esc(v.admissionBy || 'เวรยามประตู') + ' (' + esc(v.admissionReasonTh || '') + ')</div></div>';
+      }).join('');
+    } else {
+      h += '<div class="card muted">ขณะนี้ไม่มีแขกยุทธภพพำนักในสำนัก</div>';
+    }
+
+    if (traders.length) {
+      h += '<h3>🪙 พ่อค้าเร่ที่ตลาดสำนัก (' + traders.length + ')</h3>';
+      h += traders.map(v => '<div class="card" style="cursor:pointer" data-visitor="' + esc(v.id) + '"><b>🪙 ' + esc(v.nameTh) + '</b> <span class="chip">อยู่ถึงวันที่ ' + v.untilDay + '</span><div class="sub">เงินทุน ' + U.fmtNum(v.stones || 0) + ' ศิลา · แตะเพื่อดูรายละเอียด</div></div>').join('');
+    }
+
+    if (regList.length) {
+      h += '<h3>🤝 บันทึกผู้มาเยือนขาประจำและคนรู้จักนอกสำนัก (' + regList.length + ')</h3><div class="card">';
+      h += regList.map(v => '<div class="logrow" style="cursor:pointer" data-visitor="' + esc(v.id) + '"><span><b>' + esc(v.nameTh) + '</b> <span class="muted">(' + esc(v.titleTh || v.role) + ')</span></span><span class="muted">มาเยือน ' + (v.visits || 1) + ' ครั้ง · ไมตรี ' + Math.round(v.affinityToSect || 50) + '</span></div>').join('');
+      h += '</div>';
+    }
+
+    if (hist.length) {
+      h += '<h3>📜 ประวัติการมาเยือนล่าสุด</h3><div class="card">' + hist.map(x => '<div class="logrow"><span class="tm">วันที่ ' + x.day + '</span><span><a class="link-ref visitor" data-visitor="' + esc(x.visitorId) + '" style="color:#ffcb77;text-decoration:none;font-weight:600">🎐 ' + esc(x.nameTh) + '</a> — ' + esc(x.summaryTh || x.outcome || '') + '</span></div>').join('') + '</div>';
+    }
+    return h;
+  };
+
+  UI.rVisitor = () => {
+    const W = UI.G.W;
+    const v = (g.VC && g.VC.findVisitor) ? g.VC.findVisitor(W, UI.visitorId) : null;
+    if (!v) return '<div class="muted">ไม่พบข้อมูลผู้มาเยือน</div>';
+    const onMap = (v.state === 'admitted' || v.state === 'restricted') && v.untilDay >= W.day && Number.isFinite(v.x);
+    let h = '<div class="card"><div style="font-size:16px;font-weight:700">🎐 ' + esc(v.nameTh) + (v.chineseName ? ' <span class="muted">(' + esc(v.chineseName) + ')</span>' : '') + '</div>';
+    h += '<div class="sub">' + esc(v.titleTh || v.role || 'ผู้มาเยือน') + ' · สถานะ: <b>' + (onMap ? 'กำลังพำนักในสำนัก' : 'เดินทางออกจากสำนักแล้ว (Offsite Registry)') + '</b></div>';
+    if (v.purposeTh) h += '<div style="margin-top:6px">🎯 <b>จุดประสงค์การมาเยือน:</b> ' + esc(v.purposeTh) + '</div>';
+    if (v.admissionReasonTh) h += '<div class="muted" style="margin-top:4px">🚪 <b>การคัดกรองที่ประตูสำนัก:</b> ' + esc(v.admissionReasonTh) + (v.admissionBy ? ' (ผู้พิจารณา: ' + esc(v.admissionBy) + ')' : '') + '</div>';
+    h += '<div class="grid2" style="margin-top:6px"><div>ไมตรีต่อสำนัก <b>' + Math.round(v.affinityToSect == null ? 50 : v.affinityToSect) + '/100</b></div><div>ความน่าเชื่อถือ <b>' + Math.round(v.credibility == null ? 65 : v.credibility) + '%</b></div><div>จำนวนครั้งที่มาเยือน <b>' + (v.visits || 1) + ' ครั้ง</b></div><div>ศิลาพกพา <b>' + U.fmtNum(Math.round(v.stones || 0)) + '</b></div></div>';
+    if (onMap) {
+      h += '<div style="margin-top:8px"><button class="btn pri" data-do="locv" data-arg="' + esc(v.id) + '">📍 ดูตำแหน่งบนแผนที่สำนัก</button></div>';
+    }
+    h += '</div>';
+    if (Array.isArray(v.interactions) && v.interactions.length) {
+      h += '<h3>💬 บันทึกการสนทนาและแลกเปลี่ยนกับคนในสำนัก</h3><div class="card">' + v.interactions.slice(-12).reverse().map(it => '<div class="logrow"><span class="tm">วันที่ ' + it.day + '</span><span>' + linkify(W, it.textTh, it.npcId ? [it.npcId] : []) + '</span></div>').join('') + '</div>';
+    }
+    return h;
+  };
+
+  UI.rClues = () => {
+    const W = UI.G.W;
+    if (!g.VC) return '<div class="muted">ไม่พบโมดูลเบาะแส</div>';
+    const cs = g.VC.ensure(W);
+    const activeList = Object.values(cs.active || {}).sort((a, b) => (b.rarity === 'Legendary' ? 1 : 0) - (a.rarity === 'Legendary' ? 1 : 0) || b.createdDay - a.createdDay);
+    const claimedReceipts = Object.values(W.world.claimReceipts || {});
+    const uniqueArts = Object.values(W.world.uniqueArtifacts || {});
+
+    let h = '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px"><b>🗺️ เบาะแส ข่าวลือ และมรดกยุทธภพ (Living Clues & Inheritance)</b><button class="btn" style="padding:3px 8px;font-size:11px" data-do="toggle-clue-debug">' + (UI.showClueDebug ? '🙈 ซ่อนโหมดผู้สังเกตการณ์ (Debug)' : '👁️ เปิดโหมดผู้สังเกตการณ์ (Debug)') + '</button></div>';
+    h += '<div class="muted" style="margin-top:4px">ศิษย์ตัดสินใจสืบเบาะแสจากความเชื่อมั่น การยืนยันจากหลายแหล่ง และความพร้อมของตนเอง (ไม่ล่วงรู้ความจริงของโลกจนกว่าจะพิสูจน์)</div>';
+    const fn = cs.funnel || {};
+    h += '<div class="grid2" style="margin-top:6px"><div>ข่าวลือที่ได้รับ <b>' + (fn.rumorsSpawned || 0) + '</b></div><div>แบ่งปันในสำนัก <b>' + (fn.cluesShared || 0) + '</b></div><div>ออกสืบเบาะแส <b>' + (fn.investigationsStarted || 0) + '</b></div><div>ผ่านด่านทดสอบ <b>' + (fn.nodesPassed || 0) + '</b></div><div>คว้ามรดกสำเร็จ <b>' + (fn.rewardsClaimed || 0) + '</b></div><div>ข่าวลือเท็จที่พิสูจน์แล้ว <b>' + (fn.falseRumorsDisproven || 0) + '</b></div></div></div>';
+
+    if (uniqueArts.length) {
+      h += '<h3>🗡️ ศาสตราวุธระดับตำนานที่ปรากฏในโลกแล้ว (' + uniqueArts.length + '/11)</h3><div class="card">';
+      h += uniqueArts.map(ua => {
+        const wDef = g.VC.LEGENDARY_WEAPON_BY_ID && g.VC.LEGENDARY_WEAPON_BY_ID[ua.itemId];
+        return '<div class="logrow"><span><span class="chip g">★ ตำนาน T7</span> <b>' + esc(wDef ? wDef.nameTh : ua.itemId) + '</b>' + (wDef && wDef.chineseName ? ' <span class="muted">(' + esc(wDef.chineseName) + ')</span>' : '') + '</span><span class="muted">ผู้ถือครอง: <b>' + esc(ua.ownerNameTh || ua.ownerKind) + '</b></span></div>';
+      }).join('');
+      h += '</div>';
+    }
+
+    h += '<h3>🧭 เบาะแสและสายสืบค้นทั้งหมด (' + activeList.length + ')</h3>';
+    if (!activeList.length) {
+      h += '<div class="card muted">ยังไม่มีเบาะแสที่รับรู้ในสำนัก — ผู้มาเยือน การพูดคุยกับสำนักพันธมิตร และการออกสำรวจจะค่อย ๆ นำข่าวลือเข้ามา</div>';
+    } else {
+      h += activeList.map(inst => {
+        const tpl = g.VC.TEMPLATE_BY_ID[inst.templateId] || {};
+        const step = (tpl.steps || [])[inst.currentNodeIdx || 0];
+        const knowers = Object.keys(inst.knownBy || {}).map(id => W.byId[id]).filter(Boolean);
+        const avgConf = knowers.length ? Math.round(knowers.reduce((s, n) => s + ((inst.knownBy[n.id] && inst.knownBy[n.id].confidence) || 55), 0) / knowers.length) : 55;
+        const stCol = inst.status === 'claimed' ? 'ok' : inst.status === 'disproven' ? 'r' : inst.status === 'in_progress' ? 'b' : 'g';
+        const stTh = { active: 'กำลังเปิดสืบค้น', in_progress: 'กำลังส่งคนไปสืบ', claimed: 'ได้รับมรดกแล้ว', disproven: 'พิสูจน์แล้วว่าเป็นข่าวลือเท็จ', expired: 'พ้นกำหนดเวลา' }[inst.status] || inst.status;
+        let card = '<div class="card" style="cursor:pointer" data-clue="' + esc(inst.instanceId) + '">';
+        card += '<div style="display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap"><b>' + (tpl.rarity === 'Legendary' ? '★ ' : '🗺️ ') + esc(inst.titleTh) + '</b><span class="chip ' + stCol + '">' + esc(stTh) + '</span></div>';
+        card += '<div class="sub" style="margin-top:3px">' + esc(inst.rumorTextTh || '') + '</div>';
+        card += '<div class="muted" style="font-size:11.5px;margin-top:4px">ผู้รับรู้ในสำนัก (' + knowers.length + '): ' + (knowers.length ? knowers.slice(0, 5).map(n => esc(n.h.name.given)).join('、') : 'คลังข่าวสารสำนัก') + ' · ความเชื่อมั่นเฉลี่ย <b>' + avgConf + '%</b> · แหล่งข่าวอิสระ <b>' + ((inst.corroboratingRoots || []).length) + ' แหล่ง</b></div>';
+        if (step && inst.status !== 'claimed' && inst.status !== 'disproven') {
+          const scopeTh = step.scope === 'personal' ? '👤 ทดสอบเฉพาะตัวผู้สืบทอด' : step.scope === 'party_all' ? '👥 ทดสอบร่วมกันทั้งคณะ' : '🤝 สมาชิกในคณะช่วยกันได้';
+          card += '<div style="margin-top:4px;font-size:12px">↳ <b>ขั้นที่ ' + ((inst.currentNodeIdx || 0) + 1) + '/' + (tpl.steps ? tpl.steps.length : 1) + ':</b> ' + esc(step.titleTh) + ' <span class="chip">' + scopeTh + '</span></div>';
+        }
+        if (inst.lastActionReasonTh) {
+          card += '<div class="muted" style="font-size:11.5px;margin-top:3px;color:var(--gold)">📌 สถานะล่าสุด: ' + esc(inst.lastActionReasonTh) + '</div>';
+        }
+        if (UI.showClueDebug) {
+          card += '<div style="margin-top:5px;padding:4px 6px;background:rgba(255,215,100,0.08);border:1px dashed var(--gold);font-size:11px">🔍 <b>[Debug World Truth]</b> template=<code>' + esc(inst.templateId) + '</code> · truth=<b>' + esc(inst.truthState) + '</b> · target=<code>' + esc(tpl.targetKind + ':' + tpl.targetId) + '</code> · rootRumorId=<code>' + esc(inst.rootRumorId) + '</code></div>';
+        }
+        card += '</div>';
+        return card;
+      }).join('');
+    }
+    return h;
+  };
+
+  UI.rClueDetail = () => {
+    const W = UI.G.W;
+    const cs = g.VC && g.VC.ensure ? g.VC.ensure(W) : null;
+    const inst = cs && (cs.active[UI.clueId] || (cs.history || []).find(x => x.instanceId === UI.clueId));
+    if (!inst) return '<div class="muted">ไม่พบข้อมูลเบาะแส</div>';
+    const tpl = (g.VC && g.VC.TEMPLATE_BY_ID && g.VC.TEMPLATE_BY_ID[inst.templateId]) || {};
+    const knowers = Object.entries(inst.knownBy || {});
+    let h = '<div class="card"><div style="font-size:16px;font-weight:700">' + (tpl.rarity === 'Legendary' ? '★ ' : '🗺️ ') + esc(inst.titleTh) + '</div>';
+    h += '<div class="sub" style="margin-top:4px">' + esc(inst.rumorTextTh || '') + '</div>';
+    h += '<div class="muted" style="margin-top:4px">สถานะ: <b>' + esc(inst.status) + '</b> · บันทึกเข้าหอคัมภีร์สำนัก: <b>' + (inst.reportedToSect ? 'บันทึกแล้ว' : 'รู้เฉพาะตัว') + '</b> · แหล่งข่าวต้นตออิสระ: <b>' + ((inst.corroboratingRoots || []).length) + ' แหล่ง</b></div>';
+    if (inst.lastActionReasonTh) h += '<div style="margin-top:6px;color:var(--gold)">📌 <b>ความคืบหน้าล่าสุด:</b> ' + esc(inst.lastActionReasonTh) + '</div>';
+    h += '</div>';
+
+    if (tpl.steps && tpl.steps.length) {
+      h += '<h3>🪜 ลำดับขั้นการสืบค้นและบททดสอบ (' + tpl.steps.length + ' ขั้น)</h3><div class="card">';
+      h += tpl.steps.map((st, idx) => {
+        const done = idx < (inst.currentNodeIdx || 0) || inst.status === 'claimed';
+        const cur = idx === (inst.currentNodeIdx || 0) && inst.status !== 'claimed' && inst.status !== 'disproven';
+        const scopeTh = st.scope === 'personal' ? 'ทดสอบเฉพาะบุคคล (เพื่อนร่วมทีมแบกแทนไม่ได้)' : st.scope === 'party_all' ? 'ทดสอบทั้งคณะ' : 'สมาชิกในทีมช่วยตรวจได้';
+        return '<div style="padding:4px 0;border-bottom:1px solid var(--line,#3a3f4a)"><b>' + (done ? '✅ ' : cur ? '👉 ' : '🔒 ') + 'ขั้นที่ ' + (idx + 1) + ': ' + esc(st.titleTh) + '</b> <span class="chip">' + esc(st.type) + '</span><div class="muted" style="font-size:11.5px">' + esc(st.hintTh || '') + ' · ขอบเขต: ' + scopeTh + '</div></div>';
+      }).join('');
+      h += '</div>';
+    }
+
+    if (knowers.length) {
+      h += '<h3>👥 ศิษย์ที่รับรู้เบาะแสนี้ (' + knowers.length + ' คน)</h3><div class="card">';
+      h += knowers.map(([nid, info]) => {
+        const npc = W.byId[nid];
+        return '<div class="logrow"><span>' + (npc ? nameLink(npc) : esc(nid)) + ' <span class="muted">(รับรู้วันที่ ' + info.learnedDay + ' · แหล่งต้นตอ ' + esc(info.rootRumorId || '-') + ')</span></span><b>เชื่อมั่น ' + Math.round(info.confidence || 55) + '%</b></div>';
+      }).join('');
+      h += '</div>';
+    }
+
+    if (Array.isArray(inst.history) && inst.history.length) {
+      h += '<h3>📜 บันทึกการสืบค้นเบาะแส</h3><div class="card">' + inst.history.slice().reverse().map(ev => '<div class="logrow"><span class="tm">วันที่ ' + ev.day + '</span><span>' + esc(ev.text) + '</span></div>').join('') + '</div>';
     }
     return h;
   };
@@ -1264,8 +1490,26 @@
       h += '</div>';
       if (g.COG) {
         const mind = g.COG.explain(W, n);
-        h += '<h3>หน้าที่และความตั้งใจ</h3><div class="card"><b>' + esc(mind.role) + '</b><div class="muted">' + esc(mind.responsibility) + '</div><div style="margin-top:6px">🎯 ' + esc(n.dead ? 'สิ้นสุดการตัดสินใจแล้ว' : mind.goal?.title || 'ยังไม่มีเป้าหมายระยะยาว เลือกตามความต้องการและความชอบ') + '</div>';
-        if (!n.dead && mind.goal?.blocked) h += '<div class="muted">' + esc(mind.goal.blocked) + '</div>';
+        h += '<h3>หน้าที่และความตั้งใจ</h3><div class="card"><b>' + esc(mind.role) + '</b>' + (mind.delegated ? ' <span class="chip g">รักษาการแทน</span>' : mind.acting ? ' <span class="chip">ผู้ช่วยงาน</span>' : '') + '<div class="muted">' + esc(mind.responsibility) + '</div>';
+        if (!n.dead && mind.aspiration) {
+          h += '<div style="margin-top:6px">🌟 <b>ปณิธานระยะยาว:</b> ' + esc(mind.aspiration.title) + (mind.aspiration.progress > 0 ? ' <span class="chip ok">สำเร็จ ' + mind.aspiration.progress + ' ขั้น</span>' : '') + '<div class="muted" style="font-size:11.5px">' + esc(mind.aspiration.descTh || '') + (mind.aspiration.reasonTh ? ' (' + esc(mind.aspiration.reasonTh) + ')' : '') + '</div></div>';
+        }
+        h += '<div style="margin-top:6px">🎯 <b>เป้าหมายปัจจุบัน:</b> ' + esc(n.dead ? 'สิ้นสุดการตัดสินใจแล้ว' : mind.goal?.title || 'ยังไม่มีเป้าหมายระยะกลาง เลือกตามความต้องการและความชอบ') + '</div>';
+        if (!n.dead && mind.goal?.stepTitle && mind.goal.stepTitle !== mind.goal.title) {
+          h += '<div class="muted" style="font-size:11.5px">↳ ขั้นตอนย่อย: ' + esc(mind.goal.stepTitle) + '</div>';
+        }
+        if (!n.dead && mind.goal?.blocked) h += '<div class="muted" style="color:var(--gold)">⚠ เงื่อนไขที่ติดขัด: ' + esc(mind.goal.blocked) + '</div>';
+        if (!n.dead && mind.suspendedGoal) h += '<div class="muted" style="font-size:11.5px">⏸ แผนที่พักไว้ชั่วคราว: ' + esc(mind.suspendedGoal.title) + ' (' + esc(mind.suspendedGoal.reason) + ')</div>';
+        if (!n.dead && mind.commitment) {
+          const partner = W.byId[mind.commitment.partnerId];
+          h += '<div class="muted" style="font-size:11.5px">🤝 พันธะสัญญา: นัดหมายกับ ' + esc(partner ? partner.h.name.given : mind.commitment.partnerId) + '</div>';
+        }
+        if (!n.dead && mind.estimates && mind.estimates.length) {
+          h += '<div class="muted" style="margin-top:4px;font-size:11.5px">📐 <b>การคาดการณ์ของเจ้าตัว:</b> ' + mind.estimates.map(esc).join(' · ') + '</div>';
+        }
+        if (!n.dead && mind.deferenceToMaster) {
+          h += '<div class="muted" style="margin-top:4px;font-size:11.5px">🙇 <b>ท่าทีต่อผู้นำสำนัก:</b> ' + esc(mind.deferenceToMaster.summaryTh) + '</div>';
+        }
         if (mind.officeDecision) h += '<div class="muted" style="margin-top:6px">พิจารณางานล่าสุด: ' + esc(mind.officeDecision.action) + ' · ' + dayStamp(mind.officeDecision.at) + '</div>';
         h += '</div>';
       }
@@ -1330,7 +1574,10 @@
       h += '<div class="muted">ค่าทักษะคือฝีมือที่ฝึกไว้ถาวร · ผลเสริมจากวิถีแสดงแยกและหายเมื่อเปลี่ยนสาย</div>' + UI.martialSkills(W, n);
     } else if (tab === 'rel') {
       const rs = Object.keys(n.h.mind.relations).map(id => ({ id, r: n.h.mind.relations[id], o: W.byId[id] })).filter(x => x.o).sort((a, b) => Math.abs(b.r.a) + b.r.l * .3 - Math.abs(a.r.a) - a.r.l * .3);
-      h += rs.length ? rs.slice(0, 40).map(x => '<div class="prow" data-npc="' + x.id + '">' + portraitHtml(x.o, 36) + '<div class="pi"><div class="nm">' + esc(HC.fullName(x.o)) + (x.r.bond ? ' <span class="chip ' + (x.r.bond === 'ศัตรู' ? 'r' : 'g') + '">' + esc(x.r.bond) + '</span>' : '') + (x.o.dead ? ' ☠' : '') + '</div><div class="sub">ถูกชะตา ' + Math.round(x.r.a) + ' · นับถือ ' + Math.round(x.r.r) + (x.r.l > 5 ? ' · รัก ' + Math.round(x.r.l) : '') + (x.r.v > 10 ? ' · ขัดแย้ง ' + Math.round(x.r.v) : '') + ' · พบกัน ' + x.r.n + ' ครั้ง</div></div></div>').join('') : '<div class="muted">ยังไม่คุ้นเคยกับใครเป็นพิเศษ</div>';
+      h += rs.length ? rs.slice(0, 40).map(x => {
+        const ri = (g.COG && g.COG.relInfo) ? g.COG.relInfo(n, x.id) : null;
+        return '<div class="prow" data-npc="' + x.id + '">' + portraitHtml(x.o, 36) + '<div class="pi"><div class="nm">' + esc(HC.fullName(x.o)) + (x.r.bond ? ' <span class="chip ' + (x.r.bond === 'ศัตรู' ? 'r' : 'g') + '">' + esc(x.r.bond) + '</span>' : '') + (x.o.dead ? ' ☠' : '') + '</div><div class="sub">ถูกชะตา ' + Math.round(x.r.a) + ' · นับถือ ' + Math.round(x.r.r) + (ri && ri.trust !== 40 ? ' · ไว้ใจ ' + Math.round(ri.trust) : '') + (ri && ri.gratitude > 2 ? ' · กตัญญู ' + Math.round(ri.gratitude) : '') + (ri && ri.fear > 5 ? ' · ยำเกรง ' + Math.round(ri.fear) : '') + (x.r.l > 5 ? ' · รัก ' + Math.round(x.r.l) : '') + (x.r.v > 10 ? ' · ขัดแย้ง ' + Math.round(x.r.v) : '') + ' · พบกัน ' + x.r.n + ' ครั้ง</div></div></div>';
+      }).join('') : '<div class="muted">ยังไม่คุ้นเคยกับใครเป็นพิเศษ</div>';
     } else if (tab === 'life') {
       h += '<h3>ความทรงจำสำคัญ</h3><div class="card">' + (n.h.mind.memories.slice().sort((a, b) => b.w - a.w).slice(0, 10).map(m => '<div class="logrow"><span class="tm">' + dayStamp(m.t) + '</span>' + esc(m.text) + '</div>').join('') || '<span class="muted">—</span>') + '</div>';
       h += '<h3>ประวัติ</h3><div class="card">' + (n.h.life.bio.slice().reverse().slice(0, 50).map(b => '<div class="logrow"><span class="tm">ปี' + (Math.floor(b.d / 360) + 1) + ' ด.' + (Math.floor(b.d % 360 / 30) + 1) + '</span>' + linkify(W, b.text, [n.id]) + '</div>').join('') || '<span class="muted">ยังไม่มีเหตุการณ์สำคัญ</span>') + '</div>';
@@ -1407,6 +1654,7 @@
       UI.toast('แก้ไขไม่สำเร็จ: ' + res.reason);
       return;
     }
+    if (UI.G && UI.G.R && UI.G.R.invalidate) UI.G.R.invalidate();
     UI.toast('บันทึกการแก้ไขของ ' + W.byId[UI.editNpcId].h.name.given + ' สำเร็จ');
     UI.editDraft = null;
     UI.render();
@@ -1524,7 +1772,11 @@
       h += '<div class="card"><b>ไฟล์สำรอง</b><div class="muted">' + (G.W ? 'ส่งออกเป็นไฟล์ เก็บไว้ในเครื่อง หรือนำเข้ามาเล่นต่อ' : 'นำเข้าไฟล์สำรองเพื่อเล่นต่อ') + '</div>' + (G.W ? '<button class="btn" data-do="export">⬇ ส่งออกไฟล์</button>' : '') + '<button class="btn" data-do="import">⬆ นำเข้าไฟล์</button></div>';
       h += '<div class="card"><button class="btn dan" data-do="new">🔄 เริ่มเกมใหม่ (เลือกเจ้าสำนักใหม่)</button></div>';
     } else if (tab === 'set') {
-      const o = G.opts; h += [['names', 'แสดงชื่อตัวละคร (ขยายภาพ)'], ['bubbles', 'แสดงไอคอนกิจกรรมเหนือหัว'], ['weather', 'เอฟเฟกต์อากาศ/ใบไม้ร่วง'], ['night', 'กลางคืนมืดลง'], ['toast', 'แจ้งเตือนเหตุการณ์สำคัญ'], ['autosave', 'บันทึกอัตโนมัติ (ทุก 3 นาที)']].map(s => '<label class="sw"><span>' + s[1] + '</span><input type="checkbox" data-set="' + s[0] + '" ' + (o[s[0]] ? 'checked' : '') + '></label>').join('');
+      const o = G.opts, effQ = (G.R && G.R.resolveQuality) ? G.R.resolveQuality() : (o.quality || 'standard');
+      const qNames = { low: 'ประหยัดพลังงาน', standard: 'มาตรฐาน', high: 'คมชัดสูง' };
+      h += '<div class="card"><b>คุณภาพกราฟิกและการเคลื่อนไหว</b><div class="edit-field" style="margin-top:6px"><label>ระดับความละเอียดภาพ (ใช้งานจริง: ' + esc(qNames[effQ] || effQ) + ')</label><select id="gfxQualitySel">' + [['auto', 'อัตโนมัติ (ปรับตามขนาดจอและเฟรมเรต)'], ['low', 'ประหยัดพลังงาน (Low — ลดเงาและละออง)'], ['standard', 'มาตรฐาน (Standard — สมดุลคมชัด)'], ['high', 'คมชัดสูง (High — เต็มพิกัด DPR 2×)']].map(([k, v]) => '<option value="' + k + '"' + ((o.quality || 'auto') === k ? ' selected' : '') + '>' + v + '</option>').join('') + '</select></div>';
+      h += '<label class="sw" style="border-bottom:0;padding-bottom:2px"><span>ลดการเคลื่อนไหว (หยุดอนิเมชันน้ำ/ควัน/ประกาย)</span><input type="checkbox" data-set="reducedMotion" ' + (o.reducedMotion ? 'checked' : '') + '></label></div>';
+      h += [['names', 'แสดงชื่อตัวละคร (ขยายภาพ)'], ['bubbles', 'แสดงไอคอนกิจกรรมเหนือหัว'], ['weather', 'เอฟเฟกต์อากาศ/ใบไม้ร่วง'], ['night', 'กลางคืนมืดลง'], ['toast', 'แจ้งเตือนเหตุการณ์สำคัญ'], ['autosave', 'บันทึกอัตโนมัติ (ทุก 3 นาที)']].map(s => '<label class="sw"><span>' + s[1] + '</span><input type="checkbox" data-set="' + s[0] + '" ' + (o[s[0]] ? 'checked' : '') + '></label>').join('');
       h += '<div class="muted" style="margin-top:10px">การลากนิ้ว = เลื่อนแผนที่ · บีบนิ้ว = ซูม · แตะตัวละคร/อาคาร = ดูข้อมูล</div>';
     } else if (tab === 'tools') {
       h += '<div class="muted" style="margin-bottom:8px">เครื่องมือทดลองสำหรับผู้สังเกตการณ์ — ไม่ใช่ส่วนหนึ่งของระบบสำนักตามปกติ ใช้ดูว่า NPC ตัดสินใจอย่างไรเมื่อเกิดเหตุ</div>';
@@ -1534,7 +1786,7 @@
     }
     return h;
   };
-  UI.applyOpts = () => { const o = UI.G.opts, R = UI.G.R; R.opts.names = o.names; R.opts.bubbles = o.bubbles; R.opts.weather = o.weather; R.opts.night = o.night; try { localStorage.setItem('jhs_opts', JSON.stringify(o)); } catch (e) { } };
+  UI.applyOpts = () => { const o = UI.G.opts, R = UI.G.R; R.opts.names = o.names; R.opts.bubbles = o.bubbles; R.opts.weather = o.weather; R.opts.night = o.night; R.opts.quality = o.quality || 'auto'; R.opts.reducedMotion = !!o.reducedMotion; if (R.resize) R.resize(); try { localStorage.setItem('jhs_opts', JSON.stringify(o)); } catch (e) { } };
   UI.tool = a => {
     const G = UI.G, W = G.W, S = W.sect, m = W.byId[S.masterId];
     if (a === 'stones') { ECO.earn(W, 1000, 'ของขวัญจากผู้สังเกตการณ์'); UI.toast('มอบศิลา 1,000'); }

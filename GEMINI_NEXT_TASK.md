@@ -1,5 +1,3 @@
-# Active assignment
+# Current development state
 
-Read [HANDOFF.md](HANDOFF.md), then execute [the complete English NPC development prompt](docs/NEXT_NPC_DEVELOPMENT_PROMPT.md).
-
-Do not repeat completed Phase 1–3 or technique-expansion assignments. Audit existing behavior and preserve the integrated baseline. Previous instructions are archived under docs/history/.
+The NPC, graphics and visitor/clue/legendary weapon updates have been delivered and reviewed with fixes. Read HANDOFF.md and JianghuSect_v1.10/ROADMAP/COMBINED_REVIEW_FOLLOWUPS_TH.md. Future work is not yet assigned; previous prompts are historical.

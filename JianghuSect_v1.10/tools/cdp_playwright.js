@@ -336,8 +336,66 @@ class Page {
           const r = el.getBoundingClientRect();
           return { x: r.x, y: r.y, width: r.width, height: r.height };
         }, selector);
+      },
+      count: async () => {
+        return this.evaluate(sel => document.querySelectorAll(sel).length, selector);
+      },
+      textContent: async () => {
+        return this.evaluate(sel => {
+          const el = document.querySelector(sel);
+          return el ? el.textContent : null;
+        }, selector);
+      },
+      isVisible: async () => {
+        return this.evaluate(sel => {
+          const el = document.querySelector(sel);
+          if (!el) return false;
+          const st = window.getComputedStyle(el);
+          if (st.display === "none" || st.visibility === "hidden" || parseFloat(st.opacity) === 0 || el.classList.contains("hidden")) return false;
+          const r = el.getBoundingClientRect();
+          return r.width > 0 && r.height > 0;
+        }, selector);
       }
     };
+  }
+
+  async waitForFunction(fn, arg, options = {}) {
+    const timeout = options.timeout || 10000;
+    const deadline = Date.now() + timeout;
+    while (Date.now() < deadline) {
+      try {
+        const ok = await this.evaluate(fn, ...(arg !== undefined ? [arg] : []));
+        if (ok) return ok;
+      } catch (e) {}
+      await this.waitForTimeout(35);
+    }
+    throw new Error("Timeout waiting for function");
+  }
+
+  async setInputFiles(selector, fileSpec) {
+    const spec = Array.isArray(fileSpec) ? fileSpec[0] : fileSpec;
+    const content = spec && spec.buffer ? Buffer.from(spec.buffer).toString("utf8") : "";
+    const name = (spec && spec.name) || "file.json";
+    const mimeType = (spec && spec.mimeType) || "application/json";
+    await this.evaluate((sel, text, fName, fMime) => {
+      const el = document.querySelector(sel);
+      if (!el) throw new Error("Input element not found: " + sel);
+      const dt = new DataTransfer();
+      dt.items.add(new File([text], fName, { type: fMime }));
+      el.files = dt.files;
+      el.dispatchEvent(new Event("change", { bubbles: true }));
+    }, selector, content, name, mimeType);
+  }
+
+  async waitForEvent(event) {
+    if (event === "filechooser") {
+      return {
+        setFiles: async (fileSpec) => {
+          await this.setInputFiles("#impFile", fileSpec);
+        }
+      };
+    }
+    throw new Error("Unsupported event: " + event);
   }
 
   async goto(url) {

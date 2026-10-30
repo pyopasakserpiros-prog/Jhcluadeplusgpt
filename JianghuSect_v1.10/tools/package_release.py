@@ -22,17 +22,62 @@ required=['README.md','index.html','JianghuSect_single.html','data/data_expansio
 required += ['js/cognition.js','docs/NPC_HUMANLIKE_AI.md','test/npc_cognition.js','test/npc_offices.js','test/npc_command.js','test/npc_social_help.js','test/legendary_spawn_gate.js','test/results/long_npc_humanlike_360d.json']
 required += ['data/data_martial.js','js/martial.js','js/knowledge.js','js/proficiency.js','js/retraining.js','test/martial_paths.js','test/martial_retraining.js','docs/MARTIAL_PATHS.md','docs/SKILL_EFFECTS.md']
 required += ['data/data_ecology.js','test/ecology_expansion.js','docs/ECOLOGY_EXPANSION.md']
+required += ['test/npc_life_authority_overhaul.js','test/results/npc_overhaul_360d.json','tools/run_npc_overhaul_360d.js','docs/NPC_ARCHITECTURE_AND_CODE_MAP.md','docs/NPC_BUG_FIX_AND_DESIGN_REPORT.md','docs/NPC_TEST_AND_SIMULATION_RESULTS.md']
+
+required += [
+    "test/graphics_overhaul_suite.js",
+    "tools/capture_graphics_suite.js",
+    "test/results/graphics_before_manifest.json",
+    "test/results/graphics_after_manifest.json",
+    "docs/GRAPHICS_IMPLEMENTATION_REPORT.md",
+    "docs/GRAPHICS_CODE_MAP.md",
+    "docs/CODEX_GRAPHICS_REVIEW_HANDOFF.md",
+    "docs/graphics_update.patch",
+    "HANDOFF.md",
+    "test/results/screenshots/before/01_mobile_360x800_overview.png",
+    "test/results/screenshots/before/02_mobile_412x860_overview.png",
+    "test/results/screenshots/before/03_mobile_412x860_detail_activity.png",
+    "test/results/screenshots/before/04_mobile_412x860_character_sheet.png",
+    "test/results/screenshots/before/05_mobile_412x860_sect_stock.png",
+    "test/results/screenshots/before/06_mobile_412x860_log_longname.png",
+    "test/results/screenshots/before/07_desktop_1280x800_day_overview.png",
+    "test/results/screenshots/before/08_desktop_1280x800_night_rain.png",
+    "test/results/screenshots/before/09_landscape_860x412_legendary_fx.png",
+    "test/results/screenshots/after/01_mobile_360x800_overview.png",
+    "test/results/screenshots/after/02_mobile_412x860_overview.png",
+    "test/results/screenshots/after/03_mobile_412x860_detail_activity.png",
+    "test/results/screenshots/after/04_mobile_412x860_character_sheet.png",
+    "test/results/screenshots/after/05_mobile_412x860_sect_stock.png",
+    "test/results/screenshots/after/06_mobile_412x860_log_longname.png",
+    "test/results/screenshots/after/07_desktop_1280x800_day_overview.png",
+    "test/results/screenshots/after/08_desktop_1280x800_night_rain.png",
+    "test/results/screenshots/after/09_landscape_860x412_legendary_fx.png",
+]
+
+required += [
+    "js/visitors_clues.js",
+    "test/visitors_clues_weapons_suite.js",
+    "tools/run_visitors_clues_sim.js",
+    "test/results/visitors_clues_180d.json",
+    "docs/VISITORS_CLUES_IMPLEMENTATION_REPORT.md",
+    "docs/LEGENDARY_WEAPON_RESEARCH.md",
+    "docs/CLUE_SOURCE_CATALOG.json",
+    "docs/VISITORS_CLUES_CODE_MAP.md",
+    "docs/CODEX_VISITORS_CLUES_HANDOFF.md",
+    "docs/visitors_clues_weapons.patch",
+]
+
 for p in required: assert (ROOT/p).is_file(),f'Missing required deliverable {p}'
 report=ROOT/'test/results/package_validation.json'
 excluded={'node_modules','__pycache__','.git','.cache'}
-def files():return sorted(p for p in ROOT.rglob('*') if p.is_file() and not excluded.intersection(p.relative_to(ROOT).parts))
+def files():return sorted({p for p in ROOT.rglob('*') if p.is_file() and not excluded.intersection(p.relative_to(ROOT).parts)} | {(ROOT/p).resolve() for p in required if (ROOT/p).is_file()})
 source_files=list((ROOT/'SOURCE_REFERENCE/extracted').rglob('*'));source_files=[p for p in source_files if p.is_file()]
 assert len(source_files)==52
 for p in source_files:assert p.suffix.lower() not in ['.webp','.png','.woff2','.zip'],str(p)
 assert not list(ROOT.rglob('*RECOVERED*'))
 original_hc='a0d393284fb4b136848e5b80e12f3edd2c4f9437c419c793c2a7e75d881c0542'
 assert hashlib.sha256((ROOT/'js/human_core.js').read_bytes()).hexdigest()==original_hc
-report.write_text(json.dumps({'status':'PASS','version':'1.10.12','checks':['required-files','all-entrypoint-dependencies','offline-standalone-execution','source-originals52','no-source-player-save-or-art','human-core-byte-lock','zip-crc-and-content-verified-after-build'],'selectedOriginalFiles':len(source_files),'entrypointScripts':37,'originalArchiveEmbedded':False,'sourceContinuationAvailable':True},indent=2)+'\n')
+report.write_text(json.dumps({'status':'PASS','version':'1.10.12','checks':['required-files','all-entrypoint-dependencies','offline-standalone-execution','source-originals52','no-source-player-save-or-art','human-core-byte-lock','zip-crc-and-content-verified-after-build'],'selectedOriginalFiles':len(source_files),'entrypointScripts':38,'originalArchiveEmbedded':False,'sourceContinuationAvailable':True},indent=2)+'\n')
 allfiles=files();assert not any(p.suffix=='.zip' for p in allfiles),'unexpected nested archive'
 with zipfile.ZipFile(OUT,'w',zipfile.ZIP_DEFLATED,compresslevel=9) as z:
     for p in allfiles:z.write(p,'JianghuSect_v1.10/'+p.relative_to(ROOT).as_posix())

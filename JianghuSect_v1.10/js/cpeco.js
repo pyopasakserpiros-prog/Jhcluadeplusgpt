@@ -285,7 +285,25 @@
       }
       if (e.cultivationProgress && info.tier <= c.stage + 1 && c.prog < CULT.threshold(n) * 0.85 && (c.toxic || 0) < (c.path === 'DEMON' ? 50 : 35)) consider(it, 0.5 + e.cultivationProgress / 160 + (E(n, 'personality.ambition') - 50) / 250, 'เร่งตบะ');
     });
-    if (c) { ['WEAPON', 'ARMOR', 'ACCESSORY'].forEach(slot => { const cur = n.equip && n.equip[slot], cs = cur ? g.MARTIAL.gearSuitability(n, cur).score : 0; W.sect.gear.forEach(gr => { if (gr.slot !== slot || (gr.minStage || 1) > c.stage + 1) return; const gs = g.MARTIAL.gearSuitability(n, gr, CPE.gearPrice(W, gr)).score; if (gs > cs * 1.2 + 8) consider({ kind: 'gear', gear: gr, price: CPE.gearPrice(W, gr) }, 0.6 + Math.min(1.2, (gs - cs) / Math.max(40, cs)) * 0.5, g.MARTIAL.gearSuitability(n, gr).reasons.join(' · ')); }); }); }
+    const savingForTech = n.cognition?.goal?.id === "scripture" && n.cognition.goal.targetId ? CULT.tech(n.cognition.goal.targetId) : null;
+    const reserveTechCp = savingForTech ? CPE.techPrice(W, savingForTech) : 0;
+    if (c && (!savingForTech || cp > reserveTechCp * 1.15)) {
+      const inHysteresis = n._lastGearSwapAt != null && (W.t - n._lastGearSwapAt) < 1440;
+      const multReq = inHysteresis ? 1.38 : 1.2, flatReq = inHysteresis ? 16 : 8;
+      ["WEAPON", "ARMOR", "ACCESSORY"].forEach(slot => {
+        const cur = n.equip && n.equip[slot], cs = cur ? g.MARTIAL.gearSuitability(n, cur).score : 0;
+        W.sect.gear.forEach(gr => {
+          if (gr.slot !== slot || (gr.minStage || 1) > c.stage + 1) return;
+          const price = CPE.gearPrice(W, gr);
+          const fit = g.MARTIAL.gearSuitability(n, gr, price), gs = fit.score;
+          const isGoalTarget = n.cognition?.goal?.id === "gear_upgrade" && n.cognition.goal.targetId === (gr.uid || gr.id);
+          if (gs > cs * multReq + flatReq || (isGoalTarget && gs > cs + 6)) {
+            const goalBonus = isGoalTarget ? 0.65 : 0;
+            consider({ kind: "gear", gear: gr, price }, 0.6 + goalBonus + Math.min(1.2, (gs - cs) / Math.max(40, cs)) * 0.5, fit.reasons.join(" · "));
+          }
+        });
+      });
+    }
     if (W.t > 0) n._pickCache = { t: W.t, cp, hp: n.h.state.hp, gearLen: W.sect.gear.length, val: best };
     return best;
   };
@@ -309,8 +327,9 @@
       W.sect.gear.splice(i, 1);
       const oldHp = n.h && n.h.state ? n.h.state.hp : null, oldQi = n.h && n.h.state ? n.h.state.qi : null;
       const cur = n.equip[p.gear.slot]; if (cur) W.sect.gear.push(cur);
-      n.equip[p.gear.slot] = p.gear; ST.dirty(n);
-      if (g.MARTIAL && g.MARTIAL.reconcilePassives) g.MARTIAL.reconcilePassives(n);
+      n.equip[p.gear.slot] = p.gear; n._lastGearSwapAt = W.t; ST.dirty(n);
+      if (g.COG && g.COG.reconcileLoadout) g.COG.reconcileLoadout(W, n);
+      else if (g.MARTIAL && g.MARTIAL.reconcilePassives) g.MARTIAL.reconcilePassives(n);
       if (g.MARTIAL && g.MARTIAL.syncResourceCaps) g.MARTIAL.syncResourceCaps(n, oldHp, oldQi);
       if (g.SECT && g.SECT.notifyStockChanged) g.SECT.notifyStockChanged(W, p.gear.id);
       W.log('gear', '[ซื้อสินค้า] ' + n.h.name.given + ' แลกคุณูปการ ' + p.price + ' คป. ซื้อ「' + p.gear.nameTh + '」จากร้านสำนัก', [n.id], { txKind: 'purchase', itemId: p.gear.id, qty: 1, recipientId: n.id });
@@ -635,7 +654,8 @@
         needScore += Math.max(0, 30 - s.energy) * 0.4;
       }
       const meritBonus = n.rank * 4 + Math.min(20, (n.merit || 0) * 0.15);
-      const relScore = SECT.relationScore(tr, n);
+      const flatBonus = (g.COG && g.COG.flatteryBonus) ? g.COG.flatteryBonus(tr, n) : 0;
+      const relScore = SECT.relationScore(tr, n) + flatBonus * 1.4;
       const effectiveMerit = clamp(mer * (0.55 + trIntegrity / 220), 0.05, 0.95);
       const decisionScore = (needScore + meritBonus) * effectiveMerit + (relScore * 1.2) * (1 - effectiveMerit);
       return { n, needs, needScore, relScore, decisionScore, meritBonus };
@@ -672,7 +692,10 @@
           HC.feel(p.n, { mood: -2 });
           const rel = SECT.rel(p.n, tr.id);
           rel.a = Math.max(-100, rel.a - 4);
+          rel.t = Math.max(0, (rel.t ?? 40) - 6);
           HC.experience(p.n, 'unfair_treatment', 0.4);
+          if (g.COG && g.COG.remember) g.COG.remember(W, p.n, { kind: "unfair_allocation", subjectId: tr.id, severity: 0.6 });
+          if (g.COG && g.COG.submitPetition) g.COG.submitPetition(W, p.n, "complaint", { accusedId: tr.id, reason: "ไม่ได้รับโอสถสวัสดิการทั้งที่บาดเจ็บ" });
           if (W.rng.chance(0.35)) {
             W.log('finance', p.n.h.name.given + ' มีอาการบาดเจ็บหนักแต่ไม่ได้รับโอสถสวัสดิการ ขณะที่คนสนิทของผู้ดูแลคลังได้รับแทน เกิดความไม่พอใจ', [p.n.id, tr.id]);
           }

@@ -383,9 +383,10 @@
 
   SECT.appointScore = (W, post, n, by) => {
     const pol = W.sect.policy, rel = by ? SECT.relationScore(by, n) : 0;
+    const flat = (by && g.COG && g.COG.flatteryBonus) ? g.COG.flatteryBonus(by, n) : 0;
     const merit = SECT.relevance(post, n) + (n.rank >= 3 ? 8 : 0) + (n.merit || 0) * 0.03;
     const meritK = 0.35 + pol.meritocracy / 100 * 0.65;
-    return merit * meritK + rel * (1 - meritK) * 0.55 + (n.cult ? n.cult.stage * 2 : 0) - (n.h.state.heartDemon > 40 ? 6 : 0);
+    return merit * meritK + (rel + flat * 1.2) * (1 - meritK) * 0.55 + (n.cult ? n.cult.stage * 2 : 0) - (n.h.state.heartDemon > 40 ? 6 : 0);
   };
   SECT.relationScore = (a, b) => { const r = a.h.mind.relations[b.id]; return r ? r.a * 0.6 + r.t * 0.2 + r.r * 0.2 : 0; };
   SECT.eligible = (W, post, n) => { if (!SECT.officeState(W, post).enabled) return false; const small = W.npcs.length < 14; return !n.dead && !n.away && !n.sealed && !n.sealedBt && !(n.jail > W.t) && n.rank >= (small ? 1 : 2) && n.id !== W.sect.masterId && n.id !== W.sect.deputyId && !n.post && (n.cult ? n.cult.stage >= (small ? 1 : 2) : n.rank >= 3) && !n.exiled; };
@@ -1311,15 +1312,17 @@
 
   function recipientScoreForItem(W, evaluator, n, itemSpec, roleBoosts) {
     const pol = W.sect.policy || { meritocracy: 50, generosity: 50 };
-    const merK = clamp((pol.meritocracy || 50) / 100, 0.15, 0.9);
+    const evalIntegrity = evaluator ? HC.eff(evaluator, 'personality.integrity') : 50;
+    const merK = clamp(((pol.meritocracy || 50) * 0.65 + evalIntegrity * 0.35) / 100, 0.10, 0.92);
     const rel = evaluator ? SECT.relationScore(evaluator, n) : 0;
+    const flat = (evaluator && g.COG && g.COG.flatteryBonus) ? g.COG.flatteryBonus(evaluator, n) : 0;
     const eye = evaluator ? (HC.eff(evaluator, 'intellect.judgement') * 0.55 + HC.eff(evaluator, 'intellect.readPeople') * 0.45) : 55;
     const noise = (W.rng && W.rng.gauss) ? W.rng.gauss(0, Math.max(1.2, (100 - eye) / 14)) : 0;
     const stage = n.cult ? (n.cult.stage || 0) : 0;
     const roleBonus = (n.post && roleBoosts[n.post]) ? roleBoosts[n.post] : 0;
     const rankBonus = n.rank * 4;
     const meritScore = Math.min(30, (n.merit || 0) * 0.12);
-    return (stage * 7 + rankBonus + meritScore + roleBonus) * merK + (rel * 0.45) * (1 - merK) + noise;
+    return (stage * 7 + rankBonus + meritScore + roleBonus) * merK + ((rel + flat * 1.4) * 0.55) * (1 - merK) + noise;
   }
 
   SECT.distributeSectStock = (W, opts) => {

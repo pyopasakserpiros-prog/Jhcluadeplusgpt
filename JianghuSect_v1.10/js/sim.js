@@ -307,6 +307,8 @@
     SIM.guardRoster(W);
     SIM.assistants(W);
     SECT.daily(W);
+    if (g.COG && g.COG.syncOfficeAuthority) g.COG.syncOfficeAuthority(W);
+    W.npcs.forEach(n => { if (!n.dead && !n.away && g.COG && g.COG.reconcileLoadout) g.COG.reconcileLoadout(W, n); });
     EXPED.daily(W); EXPLORE.daily(W); BN.daily(W); CPE.daily(W); g.CONTENT.daily(W); if (g.EXT) g.EXT.daily(W);
     W.npcs.forEach(n => {
       if (n.dead || n.away || !n.cult || !n.cult.track) return;
@@ -406,6 +408,22 @@
         }
       });
       ECO.pruneCraftTransactions(W);
+      if (W.sect && W.sect.delegations && typeof W.sect.delegations === "object") {
+        for (const p of Object.keys(W.sect.delegations)) {
+          const d = W.sect.delegations[p];
+          if (!d || !W.byId[d.delegateId] || W.byId[d.delegateId].dead) delete W.sect.delegations[p];
+        }
+      }
+      if (W.sect && Array.isArray(W.sect.petitions)) {
+        W.sect.petitions = W.sect.petitions.filter(p => p && W.byId[p.npcId] && !W.byId[p.npcId].dead);
+      }
+      W.npcs.forEach(n => {
+        if (n.cognition && typeof n.cognition === "object") {
+          if (n.cognition.memory != null && !Array.isArray(n.cognition.memory)) n.cognition.memory = [];
+          if (n.cognition.trace != null && !Array.isArray(n.cognition.trace)) n.cognition.trace = [];
+          if (n.cognition.commitment && (!W.byId[n.cognition.commitment.partnerId] || W.byId[n.cognition.commitment.partnerId].dead)) n.cognition.commitment = null;
+        }
+      });
       if (W.sect && Array.isArray(W.sect.queue) && g.SECT && g.SECT.sanitizeQueue) g.SECT.sanitizeQueue(W);
       if (W.sect && Array.isArray(W.sect.queue)) W.sect.queue.forEach(a => HC.touch && HC.touch(a));
       W.npcs.forEach(n => HC.touch && HC.touch(n));

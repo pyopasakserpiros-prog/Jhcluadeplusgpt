@@ -1,3 +1,7 @@
+## Latest combined-patch review
+
+See [review follow-ups](COMBINED_REVIEW_FOLLOWUPS_TH.md) and [Codex review](../docs/CODEX_COMBINED_PATCH_REVIEW_TH.md) before selecting further development work.
+
 # เริ่มพัฒนาต่อจากแพ็กเดียว
 
 1. อ่าน `CURRENT_STATUS.md` เพื่อรู้ว่าอะไรทำแล้ว/ยังไม่ทำ

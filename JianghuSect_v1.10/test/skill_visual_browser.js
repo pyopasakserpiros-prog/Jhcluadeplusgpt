@@ -1,6 +1,6 @@
 'use strict';
 const assert=require('assert'),path=require('path');
-const {chromium}=require('playwright');
+const { chromium } = (() => { try { return require('playwright'); } catch (_) { return require('../tools/cdp_playwright.js'); } })();
 (async()=>{const browser=await chromium.launch();try{
  const c=await browser.newContext({viewport:{width:412,height:860},isMobile:true,hasTouch:true});const page=await c.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('file://'+path.resolve(__dirname,'../index.html'));await page.click('[data-pick="0"]');

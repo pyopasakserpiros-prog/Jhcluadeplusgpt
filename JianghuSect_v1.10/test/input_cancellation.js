@@ -2,7 +2,7 @@
 // Cancellation must end a gesture without activating a map target or continuing a drag.
 const assert = require('assert');
 const path = require('path');
-const { chromium } = require('playwright');
+const { chromium } = (() => { try { return require('playwright'); } catch (_) { return require('../tools/cdp_playwright.js'); } })();
 (async () => {
   const browser = await chromium.launch();
   try {

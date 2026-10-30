@@ -19,7 +19,7 @@
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
-const { chromium } = require('playwright');
+const { chromium } = (() => { try { return require('playwright'); } catch (_) { return require('../tools/cdp_playwright.js'); } })();
 
 (async () => {
   const root = path.resolve(__dirname, '..');

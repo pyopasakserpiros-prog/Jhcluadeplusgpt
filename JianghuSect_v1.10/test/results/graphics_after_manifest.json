@@ -1,0 +1,132 @@
+{
+  "mode": "after",
+  "capturedAt": "2026-10-30T03:36:02.436Z",
+  "pageErrors": [],
+  "screenshots": [
+    {
+      "id": "01_mobile_360x800_overview",
+      "mode": "after",
+      "file": "test/results/screenshots/after/01_mobile_360x800_overview.png",
+      "viewport": "360x800",
+      "dpr": 2,
+      "isMobile": true,
+      "seed": "graphics-audit-20261030",
+      "tick": 600,
+      "camera": "118,70,z=0.72",
+      "weather": "clear",
+      "fixture": "natural_day_overview"
+    },
+    {
+      "id": "02_mobile_412x860_overview",
+      "mode": "after",
+      "file": "test/results/screenshots/after/02_mobile_412x860_overview.png",
+      "viewport": "412x860",
+      "dpr": 2,
+      "isMobile": true,
+      "seed": "graphics-audit-20261030",
+      "tick": 600,
+      "camera": "118,70,z=0.72",
+      "weather": "clear",
+      "fixture": "natural_day_overview"
+    },
+    {
+      "id": "03_mobile_412x860_detail_activity",
+      "mode": "after",
+      "file": "test/results/screenshots/after/03_mobile_412x860_detail_activity.png",
+      "viewport": "412x860",
+      "dpr": 2,
+      "isMobile": true,
+      "seed": "graphics-audit-20261030",
+      "tick": 600,
+      "camera": "118,56,z=1.8",
+      "weather": "clear",
+      "fixture": "forced_npc_activity_teach_and_sword_practice"
+    },
+    {
+      "id": "04_mobile_412x860_character_sheet",
+      "mode": "after",
+      "file": "test/results/screenshots/after/04_mobile_412x860_character_sheet.png",
+      "viewport": "412x860",
+      "dpr": 2,
+      "isMobile": true,
+      "seed": "graphics-audit-20261030",
+      "tick": 600,
+      "sheet": "npc:ov",
+      "fixture": "character_sheet_with_cognition"
+    },
+    {
+      "id": "05_mobile_412x860_sect_stock",
+      "mode": "after",
+      "file": "test/results/screenshots/after/05_mobile_412x860_sect_stock.png",
+      "viewport": "412x860",
+      "dpr": 2,
+      "isMobile": true,
+      "seed": "graphics-audit-20261030",
+      "tick": 600,
+      "sheet": "sect:stock",
+      "fixture": "sect_storehouse_panel"
+    },
+    {
+      "id": "06_mobile_412x860_log_longname",
+      "mode": "after",
+      "file": "test/results/screenshots/after/06_mobile_412x860_log_longname.png",
+      "viewport": "412x860",
+      "dpr": 2,
+      "isMobile": true,
+      "seed": "graphics-audit-20261030",
+      "tick": 600,
+      "sheet": "log:all",
+      "fixture": "thai_combining_marks_and_entity_links"
+    },
+    {
+      "id": "07_desktop_1280x800_day_overview",
+      "mode": "after",
+      "file": "test/results/screenshots/after/07_desktop_1280x800_day_overview.png",
+      "viewport": "1280x800",
+      "dpr": 2,
+      "isMobile": false,
+      "seed": "graphics-audit-20261030",
+      "tick": 600,
+      "camera": "118,70,z=0.85",
+      "weather": "clear",
+      "fixture": "desktop_day_overview"
+    },
+    {
+      "id": "08_desktop_1280x800_night_rain",
+      "mode": "after",
+      "file": "test/results/screenshots/after/08_desktop_1280x800_night_rain.png",
+      "viewport": "1280x800",
+      "dpr": 2,
+      "isMobile": false,
+      "seed": "graphics-audit-20261030",
+      "tick": 1320,
+      "camera": "118,70,z=0.85",
+      "weather": "rain",
+      "fixture": "forced_night_and_rain"
+    },
+    {
+      "id": "09_landscape_860x412_legendary_fx",
+      "mode": "after",
+      "file": "test/results/screenshots/after/09_landscape_860x412_legendary_fx.png",
+      "viewport": "860x412",
+      "dpr": 2,
+      "isMobile": true,
+      "seed": "graphics-audit-20261030",
+      "tick": 660,
+      "camera": "118,68,z=1.55",
+      "weather": "clear",
+      "fixture": "forced_legendary_motifs_showcase"
+    }
+  ],
+  "perf100Npc": {
+    "population": 100,
+    "simMsMedian": 3,
+    "simMsP95": 28.4,
+    "drawDayMsMedian": 6.7,
+    "drawDayMsP95": 14.8,
+    "drawNightRainMsMedian": 7.2,
+    "drawNightRainMsP95": 13.2,
+    "chunkCacheSize": 35,
+    "buildingSpriteCacheSize": 15
+  }
+}

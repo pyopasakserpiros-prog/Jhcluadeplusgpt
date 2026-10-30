@@ -323,6 +323,11 @@
       const s = n.h.state; const head = SECT.holder(W, 'martial'); const q = 1 + (head && !head.dead ? 0.25 + E(head, 'social.teaching') / 300 : 0) + 0.1 * (W.map.byId.training_ground.level - 1);
       (g.MARTIAL && g.MARTIAL.skillPractice ? g.MARTIAL.skillPractice : HC.practice)(n, ctx.skill, 1 / 60, q);
       if (W.t % 25 === 0) { HC.trainBody(n, 'strength', 1); HC.trainBody(n, 'reflex', 1); HC.trainBody(n, 'agility', 1); HC.trainBody(n, 'explosiveness', 0.8); }
+      if (W.t % 45 === 0 && n.cult && Array.isArray(n.cult.techs) && n.cult.techs.length && g.SK && g.SK.gainMastery) {
+        const activeIds = (g.MARTIAL && g.MARTIAL.activeTechs) ? g.MARTIAL.activeTechs(n) : n.cult.techs;
+        const multiTech = activeIds.map(id => CULT.tech(id)).find(t => t && !t.passive && t.cat !== 'PASSIVE' && ((Array.isArray(t.moveDefs) && t.moveDefs.length > 1) || (Array.isArray(t.stages) && t.stages.length > 1)));
+        if (multiTech) g.SK.gainMastery(W, n, multiTech.id, 0.5);
+      }
       s.energy = Math.max(0, s.energy - 0.1); s.rest -= 0.02; s.stress = Math.max(0, s.stress - 0.01);
       AI.vf(n, { martialPeak: 0.05 });
       if (s.energy < 14) return 'done';
@@ -768,46 +773,63 @@
   };
   AI.vf = (n, d) => { const f = n.h.fulfil; for (const k in d) f[k] = Math.min(100, f[k] + d[k]); };
 
+  /* การปกป้องงานสำคัญจากการถูกรบกวนโดยคำชวนทั่วไป */
+  AI.PROTECTED_ACTS = new Set(['sleep', 'eat', 'heal', 'breakthrough', 'fight', 'sentence', 'hide', 'pair', 'brew', 'forge', 'brewBasic', 'personalBrew', 'paidTraining', 'guidedStudy', 'retrain', 'specialize', 'wildHunt', 'guard']);
+  AI.isProtectedAction = (W, n, inviteType) => {
+    if (!n || !n.act || !n.act.id || n.act.id === 'idle') return false;
+    const id = n.act.id;
+    if (AI.PROTECTED_ACTS.has(id)) return true;
+    if (id === 'duty' && inviteType !== 'official_order') return true;
+    if (id === 'study' && n.cult && n.cult.learning && (n.cult.learning.got / Math.max(1, n.cult.learning.need)) >= 0.65) return true;
+    return false;
+  };
+
   /* เลือกคู่สนทนา/ประลอง/สอน/เดท */
   AI.socialStart = (W, n) => {
     if (n.act && n.act.id === 'pair') return false;
     const cands = [];
     const rel = n.h.mind.relations;
+    const goal = n.cognition?.goal;
     for (const o of W.npcs) {
       if (o === n || o.dead || o.away || o.exiled || o.sealed || o.jail > W.t) continue;
-      if (!o.act || !['idle', 'leisure', 'practice', 'study', 'farm', 'mine', 'cook', 'duty'].includes(o.act.id) && !(o.act.id === 'pair' && false)) { if (!o.act || o.act.id === 'sleep' || o.act.id === 'eat' || o.act.id === 'breakthrough' || o.act.id === 'fight' || o.act.id === 'pair' || o.act.id === 'hide' || o.act.id === 'sentence' || o.act.id === 'heal') continue; }
+      if (AI.isProtectedAction(W, o, 'pair')) continue;
       const r = rel[o.id]; const c = AI.compat(n, o);
-      let w = 0.3 + (r ? Math.max(0, r.a) / 60 + r.n / 40 : 0) + c * 0.7;
+      let w = 0.3 + (r ? Math.max(0, r.a) / 60 + r.n / 40 + (r.g || 0) / 80 : 0) + c * 0.7;
+      if (goal && goal.targetId === o.id && ['mentor_disciple', 'social_bond', 'rival'].includes(goal.id)) w += 1.6;
       const d = Math.abs(o.x - n.x) + Math.abs(o.y - n.y); w *= 1 / (1 + d / 90);
-      if (Math.abs(o.rank - n.rank) > 2) w *= 0.35;
-      if (r && r.bond === '') w *= 1;
+      if (Math.abs(o.rank - n.rank) > 2 && !(goal && goal.targetId === o.id)) w *= 0.35;
       cands.push({ o, w: Math.max(0.02, w), c, r });
     }
     if (!cands.length) return false;
     const pick = W.rng.weighted(cands, x => x.w);
     const o = pick.o, r = pick.r || {};
-    // เลือกชนิดการพบปะตามตัวตน
+    // เลือกชนิดการพบปะตามตัวตนและเป้าหมาย
     let type = 'chat'; const opts = [];
-    opts.push({ t: 'chat', w: 1.2 });
-    if (E(n, 'interests.combat') > 52 && o.rank >= 1 && n.rank >= 1 && !(n.inj && n.inj.length)) opts.push({ t: 'spar', w: (E(n, 'interests.combat') - 40) / 25 * (1 + (r.v || 0) / 40) + (E(n, 'personality.aggression') - 40) / 50 });
-    if (n.rank >= 3 && o.rank < n.rank && E(n, 'social.teaching') > 40 && n.cult && o.cult && o.cult.path === n.cult.path) opts.push({ t: 'teach', w: (E(n, 'interests.teaching') - 30) / 25 + (o.id === (n.h.life.family.disciples || [])[0] ? 1.5 : 0) });
+    opts.push({ t: 'chat', w: 1.2 + (goal && goal.id === 'social_bond' && goal.targetId === o.id ? 1.2 : 0) });
+    if (E(n, 'interests.combat') > 52 && o.rank >= 1 && n.rank >= 1 && !(n.inj && n.inj.length)) opts.push({ t: 'spar', w: (E(n, 'interests.combat') - 40) / 25 * (1 + (r.v || 0) / 40) + (E(n, 'personality.aggression') - 40) / 50 + (goal && goal.id === 'rival' && goal.targetId === o.id ? 1.5 : 0) });
+    if (n.rank >= 3 && o.rank < n.rank && E(n, 'social.teaching') > 40 && n.cult && o.cult && o.cult.path === n.cult.path) opts.push({ t: 'teach', w: (E(n, 'interests.teaching') - 30) / 25 + (o.id === (n.h.life.family.disciples || [])[0] ? 1.5 : 0) + (goal && goal.id === 'mentor_disciple' && goal.targetId === o.id ? 1.8 : 0) });
     if ((r.l || 0) > 25 && E(n, 'interests.romance') > 45 || ((r.a || 0) > 45 && E(n, 'interests.romance') > 60 && E(o, 'interests.romance') > 45 && Math.abs(n.h.birthDay - o.h.birthDay) < 360 * 14)) opts.push({ t: 'date', w: 0.8 + (r.l || 0) / 40 });
-    if ((r.v || 0) > 35 && (r.a || 0) < -10 && E(n, 'personality.aggression') > 45) opts.push({ t: 'argue', w: 0.5 + (r.v - 30) / 30 + (E(n, 'personality.aggression') - 45) / 40 });
+    const defToO = g.COG && g.COG.deferenceToward ? g.COG.deferenceToward(W, n, o) : { fear: 0, deference: 0 };
+    if ((r.v || 0) > 35 && (r.a || 0) < -10 && E(n, 'personality.aggression') > 45 && defToO.fear < 45) opts.push({ t: 'argue', w: 0.5 + (r.v - 30) / 30 + (E(n, 'personality.aggression') - 45) / 40 });
     type = W.rng.weighted(opts, x => x.w).t;
     return AI.proposePair(W, n, o, type);
   };
   AI.acceptProb = (W, b, a, type) => {
-    const r = b.h.mind.relations[a.id], c = AI.compat(b, a); let p = 0.55 + c * 0.35 + (r ? r.a / 200 : 0);
-    if (type === 'spar') p = 0.3 + (E(b, 'interests.combat') - 40) / 100 + (E(b, 'personality.aggression') - 40) / 160 + (E(b, 'personality.pride') - 50) / 220 - (b.inj && b.inj.length ? 0.6 : 0) - (b.h.state.hp < CULT.hpMax(b) * 0.7 ? 0.4 : 0);
-    if (type === 'teach') p = 0.6 + (E(b, 'personality.curiosity') - 40) / 150 + (E(b, 'personality.respect' in {} ? '' : 'personality.loyalty') - 50) / 250 + (b.mentor === a.id ? 0.3 : 0);
-    if (type === 'date') p = 0.1 + (r ? r.l / 60 + r.a / 150 : 0) + (E(b, 'interests.romance') - 40) / 120;
-    if (type === 'argue') p = 0.85;
+    if (AI.isProtectedAction(W, b, type)) return 0;
+    const r = b.h.mind.relations[a.id], c = AI.compat(b, a);
+    const ri = (g.COG && g.COG.relInfo) ? g.COG.relInfo(W, b, a) : { affection: r ? r.a : 0, trust: r ? (r.t ?? 40) : 40, gratitude: r ? (r.g || 0) : 0, respect: r ? (r.r ?? 30) : 30 };
+    const def = (g.COG && g.COG.deferenceToward) ? g.COG.deferenceToward(W, b, a) : { deference: 0, fear: 0, resentment: 0 };
+    let p = 0.52 + c * 0.32 + ri.affection / 200 + (ri.trust - 40) / 220 + ri.gratitude / 190 + def.deference / 260 - def.resentment / 280;
+    if (type === 'spar') p = 0.3 + (E(b, 'interests.combat') - 40) / 100 + (E(b, 'personality.aggression') - 40) / 160 + (E(b, 'personality.pride') - 50) / 220 + (ri.trust - 40) / 250 - (b.inj && b.inj.length ? 0.6 : 0) - (b.h.state.hp < CULT.hpMax(b) * 0.7 ? 0.4 : 0);
+    if (type === 'teach') p = 0.6 + (E(b, 'personality.curiosity') - 40) / 150 + (E(b, 'personality.loyalty') - 50) / 250 + def.deference / 220 + (b.mentor === a.id ? 0.3 : 0);
+    if (type === 'date') p = 0.1 + (r ? r.l / 60 + r.a / 150 : 0) + ri.gratitude / 220 + (E(b, 'interests.romance') - 40) / 120;
+    if (type === 'argue') p = def.fear >= 50 ? 0.25 : 0.85;
     if (type === 'chat') p -= (E(b, 'interests.solitude') - 55) / 250 + ((b.h.state.stress > 60) ? 0.2 : 0);
     if (b.act && b.act.id === 'duty') p -= 0.35 * dutyWeight(b); if (b.act && b.act.id === 'cultivate') p -= 0.35;
     return clamp(p, 0.02, 0.97);
   };
   AI.proposePair = (W, a, b, type) => {
-    if (W.rng.next() > AI.acceptProb(W, b, a, type)) {
+    if (AI.isProtectedAction(W, b, type) || W.rng.next() > AI.acceptProb(W, b, a, type)) {
       // ถูกปฏิเสธ
       const r = SECT.rel(a, b.id); if (type === 'date') { r.l = Math.max(0, r.l - 3); HC.feel(a, { mood: -6 }); AI.mem(W, a, b.h.name.given + ' ปฏิเสธคำชวน', 0.35, b.id); } else if (type === 'spar') { r.a -= 0.5; }
       a.cool.pair = W.t + 40; return false;
@@ -822,6 +844,7 @@
     if (!s1 || !s2 || s1.id === s2.id) { a.cool.pair = W.t + 30; return false; }
     const dur = type === 'spar' ? 26 : type === 'teach' ? 100 : type === 'date' ? 70 : type === 'argue' ? 14 : 30 + Math.round(W.rng.next() * 30);
     const data = { type, partner: b.id, role: 'a', ready: false, left: dur, rounds: 0 };
+    if (g.COG && g.COG.startCommitment) g.COG.startCommitment(W, a, b, type, dur);
     AI.interruptFor(W, b);
     AI.begin(W, a, 'pair', { st: s1, pair: data });
     AI.begin(W, b, 'pair', { st: s2, pair: { type, partner: a.id, role: 'b', ready: false, left: dur, rounds: 0 } });
@@ -829,9 +852,19 @@
   };
   AI.pairTick = (W, n) => {
     const d = n.act.ctx.pair; const o = W.byId[d.partner];
-    if (!o || o.dead || !o.act || o.act.id !== 'pair' || o.act.ctx.pair.partner !== n.id) return 'done';
+    if (!o || o.dead || !o.act || o.act.id !== 'pair' || o.act.ctx.pair.partner !== n.id) {
+      if (g.COG && g.COG.resolveCommitment) g.COG.resolveCommitment(W, n, o, 'aborted', d);
+      return 'done';
+    }
     const od = o.act.ctx.pair;
-    if (n.act.stage !== 'do' || o.act.stage !== 'do') { n.act.waited = (n.act.waited || 0) + 1; if (n.act.waited > 120) return 'abort'; return; }
+    if (n.act.stage !== 'do' || o.act.stage !== 'do') {
+      n.act.waited = (n.act.waited || 0) + 1;
+      if (n.act.waited > 120) {
+        if (g.COG && g.COG.resolveCommitment) g.COG.resolveCommitment(W, n, o, 'aborted', d);
+        return 'abort';
+      }
+      return;
+    }
     d.ready = true;
     const type = d.type;
     // หันหน้าเข้าหากัน
@@ -853,6 +886,7 @@
   };
   AI.pickTeachSkill = (t, s) => { const ids = ['SWORD', 'BLADE', 'SPEAR', 'FIST_PALM', 'MOVEMENT', 'BODY_REFINING', 'SOUL_DIVINE', 'POISON', 'ALCHEMY', 'FORGING', 'SCRIPTURE', 'MEDICINE']; ids.sort((a, b) => ((t.h.skills[b] || 0) - (s.h.skills[b] || 0) + (E(s, 'affinities.' + b) || 0) * .3) - ((t.h.skills[a] || 0) - (s.h.skills[a] || 0) + (E(s, 'affinities.' + a) || 0) * .3)); return ids[0]; };
   AI.pairEnd = (W, a, b, d) => {
+    if (g.COG && g.COG.resolveCommitment) g.COG.resolveCommitment(W, a, b, 'completed', d);
     if (d.type === 'spar') { g.COMBAT.sparEnd(W, a, b, d); }
     if (d.type === 'argue') { if (W.rng.chance(0.25 + (E(a, 'personality.aggression') + E(b, 'personality.aggression') - 90) / 300)) { W.duelQueue = W.duelQueue || []; W.duelQueue.push({ a: a.id, b: b.id, kind: 'grudge', serious: false }); W.log('conflict', a.h.name.given + ' กับ ' + b.h.name.given + ' ทะเลาะกันรุนแรงจนต้องดวลกัน', [a.id, b.id]); } else AI.mem(W, a, 'ทะเลาะกับ ' + b.h.name.given, 0.4, b.id); }
     if (d.type === 'date') { AI.mem(W, a, 'ใช้เวลาอันอบอุ่นกับ ' + b.h.name.given, 0.5, b.id); AI.mem(W, b, 'ใช้เวลาอันอบอุ่นกับ ' + a.h.name.given, 0.5, a.id); }
@@ -961,9 +995,15 @@
     // ผู้ตัดสินเลือก: softmax ตามนิสัย
     const temp = g.COG ? g.COG.choiceTemperature(n) : clamp(0.12 + E(n, 'temperament.sensationSeeking') / 600 + E(n, 'personality.creativity') / 900 - E(n, 'personality.discipline') / 700 + E(n, 'temperament.emotionalReactivity') / 1000, 0.05, 0.4);
     cands.sort((x, y) => y.S.u - x.S.u);
-    const top = cands.slice(0, 6); const mx = top[0].S.u;
+    const top = cands.slice(0, 6);
+    const mx = top[0].S.u;
     const order = []; const pool = top.slice();
     while (pool.length) { const pick = W.rng.weighted(pool, c => Math.exp((c.S.u - mx) / temp)); order.push(pick); pool.splice(pool.indexOf(pick), 1); }
+    // Defect #2 Fix: If all top-6 stations are occupied, allow up to 2 valid fallbacks from remaining candidates
+    if (cands.length > 6) {
+      const rest = cands.slice(6).filter(c => c.S.u > -0.5);
+      for (let i = 0; i < Math.min(2, rest.length); i++) order.push(rest[i]);
+    }
     for (const c of order) {
       const why = c.S.why.slice().sort((p, q) => Math.abs(q[1]) - Math.abs(p[1])).slice(0, 4);
       n.lastScores = cands.slice(0, 7).map(x => ({ id: x.id, u: Math.round(x.S.u * 100) / 100 }));
@@ -1035,7 +1075,7 @@
     const s = n.h.state, id = n.act.id;
     if (n.jail && n.jail > W.t && id !== 'sentence') { AI.interruptFor(W, n); n.act = { id: 'idle', stage: 'do', left: 0, total: 0, ctx: {}, why: [['ถูกคุมขัง', 9]] }; return true; }
     if (id === 'breakthrough' || id === 'fight' || id === 'sentence') return false;
-    const hm = CULT.hpMax(n);
+    const hm = n._nd ? n._nd.hpMax : CULT.hpMax(n);
     if (s.satiety < (id === 'sleep' ? 8 : 24) && id !== 'eat' && ECO.count(W, 'meal') > 0) return true;
     if (id === 'sleep' && s.rest < 70 && isNight(hourOf(W))) return false;
     if (s.hp < hm * 0.35 && id !== 'heal' && id !== 'sleep' && id !== 'eat') return true;

@@ -1,0 +1,2742 @@
+{
+  "schemaVersion": "1.0.0",
+  "patchVersion": "1.12.1",
+  "generatedAt": "2026-10-30T06:33:53.396Z",
+  "counts": {
+    "totalClueTemplates": 41,
+    "ordinaryMaterialLeads": 5,
+    "ordinaryEquipmentLeads": 1,
+    "ordinaryTechniqueLeads": 2,
+    "legendaryArtLeads": 22,
+    "legendaryWeaponLeads": 11,
+    "legendaryWeapons": 11
+  },
+  "legendaryWeapons": [
+    {
+      "id": "LEG_WPN_YITIAN_SWORD",
+      "nameTh": "กระบี่อิงฟ้าพิฆาตมาร",
+      "chineseName": "倚天剑",
+      "provenanceType": "ADAPTATION_FROM_CANON",
+      "literarySource": "Jin Yong — The Heaven Sword and Dragon Saber (《倚天屠龙记》)",
+      "gearType": "SWORD",
+      "visualSubtype": "SWORD",
+      "visualKey": "vis_yitian_sword",
+      "presentationMode": "held_and_orbit",
+      "tier": 7,
+      "minStage": 5,
+      "reqStrength": 0,
+      "compatiblePath": [
+        "XIAN",
+        "HEART_SOUL",
+        "ANY"
+      ],
+      "preferredSubs": [
+        "SWORD_IMMORTAL",
+        "MIND_SWORD_TELEKINESIS"
+      ],
+      "fixedStats": {
+        "atk": 680,
+        "matk": 640,
+        "acc": 195,
+        "crit": 10,
+        "critDmg": 24,
+        "pen": 18,
+        "cast": 12,
+        "eva": 65
+      },
+      "effects": [
+        {
+          "effectId": "EFX_LEG_YITIAN_SEVER",
+          "nameTh": "คมกระบี่อิงฟ้าผ่าม่านปราณ",
+          "descTh": "เมื่อโจมตีเป้าหมายที่มีโล่หรือตั้งรับ จะทำลายโล่ 35% ทันทีและติดสถานะเกราะร้าว (ลดป้องกัน/ป้องกันวิชา 8 นาที · คูลดาวน์ 8 นาที)",
+          "params": {
+            "shieldBreakRatio": 0.35,
+            "armorReductionRatio": 0.25,
+            "status": "armorbreak",
+            "dur": 8,
+            "icdTicks": 8
+          }
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "id": "LEG_WPN_XUANTIE_HEAVY_SWORD",
+      "nameTh": "กระบี่เหล็กนิลไร้คม",
+      "chineseName": "玄铁重剑",
+      "provenanceType": "ADAPTATION_FROM_CANON",
+      "literarySource": "Jin Yong — The Return of the Condor Heroes (《神雕侠侣》)",
+      "gearType": "SWORD",
+      "visualSubtype": "HEAVY_SWORD",
+      "visualKey": "vis_xuantie_heavy_sword",
+      "presentationMode": "held",
+      "tier": 7,
+      "minStage": 5,
+      "reqStrength": 58,
+      "compatiblePath": [
+        "XIAN",
+        "BODY",
+        "ANY"
+      ],
+      "preferredSubs": [
+        "SWORD_IMMORTAL",
+        "SOLAR_FORGE",
+        "TITAN_MOUNTAIN_BODY"
+      ],
+      "fixedStats": {
+        "atk": 920,
+        "matk": 340,
+        "def": 260,
+        "pen": 24,
+        "critDmg": 28,
+        "move": -8,
+        "cast": -6,
+        "acc": 140
+      },
+      "effects": [
+        {
+          "effectId": "EFX_LEG_XUANTIE_CRUSH",
+          "nameTh": "กระบี่หนักไร้คมถล่มขุนเขา",
+          "descTh": "ยิ่งพละกำลังสูงยิ่งรุนแรง (เมื่อพละกำลัง ≥ 60 เพิ่มความเสียหาย +16%) และทุกครั้งที่ฟาดโดนจะสั่นสะเทือนทำให้อีกฝ่ายเชื่องช้า (คูลดาวน์ 9 นาที)",
+          "params": {
+            "minStrength": 60,
+            "bonusDmgMult": 0.16,
+            "armorReductionRatio": 0.3,
+            "status": "slow",
+            "dur": 6,
+            "icdTicks": 9
+          }
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "id": "LEG_WPN_TULONG_SABER",
+      "nameTh": "ดาบฆ่ามังกรบัญชาหล้า",
+      "chineseName": "屠龙刀",
+      "provenanceType": "ADAPTATION_FROM_CANON",
+      "literarySource": "Jin Yong — The Heaven Sword and Dragon Saber (《倚天屠龙记》)",
+      "gearType": "BLADE",
+      "visualSubtype": "HEAVY_BLADE",
+      "visualKey": "vis_tulong_saber",
+      "presentationMode": "held",
+      "tier": 7,
+      "minStage": 5,
+      "reqStrength": 0,
+      "compatiblePath": [
+        "BODY",
+        "DEMON",
+        "GOD",
+        "ANY"
+      ],
+      "preferredSubs": [
+        "WAR_DEITY",
+        "BLOOD_DEMON",
+        "HEAVEN_DEVOURING_DEMON",
+        "BLOOD_DRAGON"
+      ],
+      "fixedStats": {
+        "atk": 940,
+        "matk": 280,
+        "hp": 520,
+        "def": 240,
+        "crit": 8,
+        "critDmg": 30,
+        "pen": 16,
+        "acc": 155
+      },
+      "effects": [
+        {
+          "effectId": "EFX_LEG_TULONG_DECREE",
+          "nameTh": "ราชันศาสตราข่มขวัญยุทธภพ",
+          "descTh": "เมื่อโจมตีจะแผ่ปราณมังกรข่มขวัญศัตรูให้ติดสถานะอ่อนแอ และปลุกขวัญกำลังใจผู้ถือครอง (คูลดาวน์ 10 นาที)",
+          "params": {
+            "targetStatus": "weaken",
+            "selfStatus": "morale",
+            "bonusDmgMult": 0.14,
+            "dur": 8,
+            "icdTicks": 10
+          }
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "id": "LEG_WPN_FULL_MOON_SCIMITAR",
+      "nameTh": "ดาบโค้งจันทร์เพ็ญสะท้อนเงา",
+      "chineseName": "圆月弯刀",
+      "provenanceType": "ADAPTATION_FROM_CANON",
+      "literarySource": "Gu Long — Full Moon Scimitar (《圆月弯刀》)",
+      "gearType": "BLADE",
+      "visualSubtype": "BLADE",
+      "visualKey": "vis_full_moon_scimitar",
+      "presentationMode": "held",
+      "tier": 6,
+      "minStage": 4,
+      "reqStrength": 0,
+      "compatiblePath": [
+        "DEMON",
+        "XIAN",
+        "ANY"
+      ],
+      "preferredSubs": [
+        "SHADOW_ASSASSIN",
+        "PHANTOM_SOUL",
+        "BLOOD_DEMON"
+      ],
+      "fixedStats": {
+        "atk": 590,
+        "matk": 360,
+        "eva": 180,
+        "acc": 175,
+        "crit": 12,
+        "critDmg": 26,
+        "move": 8,
+        "cast": 8
+      },
+      "effects": [
+        {
+          "effectId": "EFX_LEG_MOON_ARC",
+          "nameTh": "จันทร์เสี้ยวฟังพิรุณยามวิกาล",
+          "descTh": "เมื่อโจมตีติดคริติคอลหรือสู้ในยามค่ำคืน จะฟาดประกายดาบจันทร์เสี้ยวซ้ำ สร้างแผลเลือดไหลและเพิ่มความแรง +18% (คูลดาวน์ 7 นาที)",
+          "params": {
+            "critOrNightBonusMult": 0.18,
+            "status": "bleed",
+            "dur": 6,
+            "icdTicks": 7
+          }
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "id": "LEG_WPN_XIAOLI_HEART_DAGGER",
+      "nameTh": "มีดสั้นเสี่ยวหลี่สะท้านภพ",
+      "chineseName": "小李飞刀",
+      "provenanceType": "ADAPTATION_FROM_CANON",
+      "literarySource": "Gu Long — Sentimental Swordsman, Ruthless Sword (《多情剑客无情剑》)",
+      "gearType": "BLADE",
+      "visualSubtype": "DAGGER",
+      "visualKey": "vis_xiaoli_dagger",
+      "presentationMode": "held_and_orbit",
+      "tier": 7,
+      "minStage": 5,
+      "reqStrength": 0,
+      "compatiblePath": [
+        "HEART_SOUL",
+        "XIAN",
+        "ANY"
+      ],
+      "preferredSubs": [
+        "MIND_SWORD_TELEKINESIS",
+        "ZEN_VOID_MIND",
+        "SHADOW_ASSASSIN"
+      ],
+      "fixedStats": {
+        "atk": 540,
+        "matk": 720,
+        "acc": 260,
+        "crit": 14,
+        "critDmg": 34,
+        "pen": 22,
+        "cast": 14,
+        "move": 6
+      },
+      "effects": [
+        {
+          "effectId": "EFX_LEG_XIAOLI_TRUE_STRIKE",
+          "nameTh": "มีดบินไม่เคยพลาดเป้า",
+          "descTh": "ใช้ปราณ 4% เพื่อซัดมีดบินที่ไม่อาจหลบหลีกได้ ทะลวงเกราะ +22% และเปิดช่องโหว่เป้าหมาย (คูลดาวน์ 9 นาที)",
+          "params": {
+            "qiCostPct": 0.04,
+            "bonusPen": 22,
+            "bonusDmgMult": 0.2,
+            "status": "exposed",
+            "dur": 6,
+            "icdTicks": 9
+          }
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "id": "LEG_WPN_DAGOU_JADE_STAFF",
+      "nameTh": "พลองหยกเขียวตีสุนัข",
+      "chineseName": "打狗棒",
+      "provenanceType": "ADAPTATION_FROM_CANON",
+      "literarySource": "Jin Yong — The Legend of the Condor Heroes / Demi-Gods and Semi-Devils (《射雕英雄传》/《天龙八部》)",
+      "gearType": "STAFF",
+      "visualSubtype": "STAFF",
+      "visualKey": "vis_dagou_jade_staff",
+      "presentationMode": "held",
+      "tier": 6,
+      "minStage": 4,
+      "reqStrength": 0,
+      "compatiblePath": [
+        "BODY",
+        "XIAN",
+        "HEART_SOUL",
+        "ANY"
+      ],
+      "preferredSubs": [
+        "STAFF_GUARD",
+        "VAJRA_BODHI",
+        "YIN_YANG_HARMONY"
+      ],
+      "fixedStats": {
+        "atk": 560,
+        "matk": 320,
+        "def": 280,
+        "mdef": 210,
+        "eva": 170,
+        "acc": 180,
+        "move": 10,
+        "cast": 8
+      },
+      "effects": [
+        {
+          "effectId": "EFX_LEG_DAGOU_REDIRECTION",
+          "nameTh": "พลองหยกแปดเคล็ดพันสกัด",
+          "descTh": "เมื่อถูกโจมตีหรือปะทะ จะใช้ความยืดหยุ่นของพลองหยกเกี่ยวสกัดขาอีกฝ่ายให้ช้าลงและตั้งท่าปัดสวน (คูลดาวน์ 8 นาที)",
+          "params": {
+            "targetStatus": "slow",
+            "selfStatus": "evadeUp",
+            "dur": 7,
+            "icdTicks": 8
+          }
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "id": "LEG_WPN_OVERLORD_SPEAR",
+      "nameTh": "ทวนราชันย์พิชิตพยัคฆ์",
+      "chineseName": "霸王枪",
+      "provenanceType": "ADAPTATION_FROM_CANON",
+      "literarySource": "Gu Long — The Overlord Spear, Seven Weapons #5 (《七种武器·霸王枪》)",
+      "gearType": "SPEAR",
+      "visualSubtype": "SPEAR",
+      "visualKey": "vis_overlord_spear",
+      "presentationMode": "held",
+      "tier": 6,
+      "minStage": 4,
+      "reqStrength": 0,
+      "compatiblePath": [
+        "BODY",
+        "GOD",
+        "ANY"
+      ],
+      "preferredSubs": [
+        "WAR_DEITY",
+        "THUNDER_BODY",
+        "BLOOD_DRAGON"
+      ],
+      "fixedStats": {
+        "atk": 640,
+        "matk": 260,
+        "def": 180,
+        "acc": 175,
+        "crit": 9,
+        "critDmg": 22,
+        "pen": 20
+      },
+      "effects": [
+        {
+          "effectId": "EFX_LEG_OVERLORD_COURAGE",
+          "nameTh": "ทวนราชันย์คือความกล้าหาญ",
+          "descTh": "ยิ่งผู้ถือมีความกล้าหาญสูงหรือสู้กับศัตรูที่แข็งแกร่งกว่า จะเพิ่มความแรง +15% และฟื้นฟูแรงกาย/ปราณ 4% (คูลดาวน์ 8 นาที)",
+          "params": {
+            "courageBonusMult": 0.15,
+            "qiRestorePct": 0.04,
+            "armorReductionRatio": 0.22,
+            "icdTicks": 8
+          }
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "id": "LEG_WPN_OATHBREAKER_DRAGON_LANCE",
+      "nameTh": "ทวนเกล็ดมังกรครามสัตย์สาบาน",
+      "chineseName": "苍龙誓约枪",
+      "provenanceType": "ORIGINAL",
+      "literarySource": "Original JianghuSect Design (Divine/Body Spear Archetype)",
+      "gearType": "SPEAR",
+      "visualSubtype": "SPEAR",
+      "visualKey": "vis_azure_dragon_lance",
+      "presentationMode": "held",
+      "tier": 7,
+      "minStage": 5,
+      "reqStrength": 0,
+      "compatiblePath": [
+        "GOD",
+        "BODY",
+        "XIAN",
+        "ANY"
+      ],
+      "preferredSubs": [
+        "WAR_DEITY",
+        "OCEAN_SOVEREIGN",
+        "BLOOD_DRAGON",
+        "THUNDER_BODY"
+      ],
+      "fixedStats": {
+        "atk": 790,
+        "matk": 520,
+        "def": 250,
+        "mdef": 240,
+        "hp": 420,
+        "pen": 18,
+        "acc": 185
+      },
+      "effects": [
+        {
+          "effectId": "EFX_LEG_DRAGON_LANCE_WARD",
+          "nameTh": "คมทวนมังกรครามพิทักษ์สัตย์",
+          "descTh": "เมื่อใช้กระบวนท่าหรือปะทะ จะสร้างเกราะเกล็ดมังกรรับความเสียหาย 12% ของเลือดสูงสุด และแทงทะลุเกราะศัตรู (คูลดาวน์ 9 นาที)",
+          "params": {
+            "shieldHpPct": 0.12,
+            "bonusDmgMult": 0.14,
+            "dur": 8,
+            "icdTicks": 9
+          }
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "id": "LEG_WPN_WRATHFUL_TIGER_GAUNTLETS",
+      "nameTh": "สนับหมัดพยัคฆ์พิโรธสะท้านผา",
+      "chineseName": "愤怒铁拳套",
+      "provenanceType": "ADAPTATION_FROM_CANON",
+      "literarySource": "Gu Long — Fist / The Angry Little Horse (《拳头》/《愤怒的小马》 adaptation)",
+      "gearType": "FIST",
+      "visualSubtype": "FIST",
+      "visualKey": "vis_wrathful_tiger_gauntlets",
+      "presentationMode": "held",
+      "tier": 6,
+      "minStage": 4,
+      "reqStrength": 0,
+      "compatiblePath": [
+        "BODY",
+        "DEMON",
+        "ANY"
+      ],
+      "preferredSubs": [
+        "TIGER_SOVEREIGN",
+        "BLOOD_DRAGON",
+        "VAJRA_BODHI",
+        "DEVOURING_FIEND"
+      ],
+      "fixedStats": {
+        "atk": 620,
+        "matk": 210,
+        "hp": 460,
+        "def": 220,
+        "crit": 9,
+        "critDmg": 22,
+        "cast": 14,
+        "pen": 14
+      },
+      "effects": [
+        {
+          "effectId": "EFX_LEG_TIGER_FIST_RESOLVE",
+          "nameTh": "หมัดเหล็กพิทักษ์สหาย",
+          "descTh": "เมื่อเลือดต่ำกว่า 75% หรือสู้เคียงข้างสหาย จะระเบิดพลังหมัดเพิ่มความเสียหาย +16% และฟื้นฟูเลือด 5% (คูลดาวน์ 8 นาที)",
+          "params": {
+            "bonusDmgMult": 0.16,
+            "hpRestorePct": 0.05,
+            "icdTicks": 8
+          }
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "id": "LEG_WPN_CONDOR_METEOR_BOW",
+      "nameTh": "ธนูเหล็กไหลยิงอินทรีคู่",
+      "chineseName": "射雕陨铁神弓",
+      "provenanceType": "ADAPTATION_FROM_CANON",
+      "literarySource": "Jin Yong — The Legend of the Condor Heroes (《射雕英雄传》 adaptation)",
+      "gearType": "BOW",
+      "visualSubtype": "BOW",
+      "visualKey": "vis_condor_meteor_bow",
+      "presentationMode": "held",
+      "tier": 6,
+      "minStage": 4,
+      "reqStrength": 0,
+      "compatiblePath": [
+        "XIAN",
+        "BODY",
+        "GOD",
+        "ANY"
+      ],
+      "preferredSubs": [
+        "STAR_ARCHER",
+        "TOTEM_BEAST_GOD",
+        "WAR_DEITY"
+      ],
+      "fixedStats": {
+        "atk": 610,
+        "matk": 380,
+        "acc": 250,
+        "crit": 11,
+        "critDmg": 24,
+        "pen": 16,
+        "move": 6
+      },
+      "effects": [
+        {
+          "effectId": "EFX_LEG_TWIN_CONDOR_SHOT",
+          "nameTh": "ศรเดียวทะลวงอินทรีคู่",
+          "descTh": "เมื่อยิงโจมตี จะปล่อยศรวายุลูกที่สองทะลวงเกราะเป้าหมาย (+18% ความเสียหาย และลดเกราะป้องกัน · คูลดาวน์ 8 นาที)",
+          "params": {
+            "bonusDmgMult": 0.18,
+            "armorReductionRatio": 0.2,
+            "status": "armorbreak",
+            "dur": 7,
+            "icdTicks": 8
+          }
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "id": "LEG_WPN_PEACOCK_PLUME_FOCUS",
+      "nameTh": "ขนนกยูงทองคำกลไกสวรรค์",
+      "chineseName": "孔雀翎",
+      "provenanceType": "ADAPTATION_FROM_CANON",
+      "literarySource": "Gu Long — The Peacock Plume, Seven Weapons #2 (《七种武器·孔雀翎》)",
+      "gearType": "FOCUS",
+      "visualSubtype": "FOCUS",
+      "visualKey": "vis_peacock_plume_focus",
+      "presentationMode": "held_and_orbit",
+      "tier": 7,
+      "minStage": 5,
+      "reqStrength": 0,
+      "compatiblePath": [
+        "XIAN",
+        "HEART_SOUL",
+        "GOD",
+        "DEMON",
+        "ANY"
+      ],
+      "preferredSubs": [
+        "ASTRAL_ARRAY",
+        "FIVE_ELEMENTS",
+        "CALLIGRAPHY_PAINTING_SAGE",
+        "FATE_ORACLE",
+        "VENOM_GU_SOVEREIGN"
+      ],
+      "fixedStats": {
+        "atk": 320,
+        "matk": 890,
+        "mdef": 260,
+        "acc": 245,
+        "crit": 12,
+        "critDmg": 28,
+        "cast": 16,
+        "pen": 16
+      },
+      "effects": [
+        {
+          "effectId": "EFX_LEG_PEACOCK_RADIANCE",
+          "nameTh": "ขนนกยูงรำแพนคือความเชื่อมั่น",
+          "descTh": "เสริมความเชื่อมั่นและสมาธิ (ลดจิตมาร/ความกลัว) และเมื่อร่ายวิชาจะแผ่รัศมีขนนกยูงพร่าตาเป้าหมายและสร้างความเสียหายวิชา +18% (คูลดาวน์ 9 นาที)",
+          "params": {
+            "bonusDmgMult": 0.18,
+            "targetStatus": "blind",
+            "selfStatus": "morale",
+            "cleanseHeartDemon": 4,
+            "dur": 7,
+            "icdTicks": 9
+          }
+        }
+      ],
+      "status": "implemented"
+    }
+  ],
+  "clueTemplates": [
+    {
+      "templateId": "CLUE_ORD_JADE_LOTUS_2",
+      "titleTh": "เบาะแสดอกบัวหยกริมตลิ่งหมอก",
+      "category": "ORDINARY_MATERIAL",
+      "targetKind": "MATERIAL",
+      "targetId": "MAT_HERB_JADE_LOTUS_2",
+      "tier": 2,
+      "rarity": "Common",
+      "unique": false,
+      "cooldownDays": 14,
+      "expiresAfterDays": null,
+      "regionId": "plains",
+      "visitorRoles": [
+        "wanderer",
+        "merchant",
+        "herbalist"
+      ],
+      "stepCount": 1,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "search_patch",
+          "type": "search_site",
+          "titleTh": "สำรวจตลิ่งน้ำทุ่งราบเมฆา",
+          "locationId": "plains",
+          "scope": "party_any",
+          "skill": "herbalism",
+          "statPath": null,
+          "minVal": 12,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_ORD_XIAN_SWORD_T1",
+      "titleTh": "คำชี้แนะเพลงกระบี่พิรุณหยกจากอดีตองครักษ์",
+      "category": "ORDINARY_TECHNIQUE",
+      "targetKind": "TECH_MANUAL",
+      "targetId": "ART190_XIAN_001",
+      "tier": 1,
+      "rarity": "Common",
+      "unique": false,
+      "cooldownDays": 20,
+      "expiresAfterDays": null,
+      "regionId": "sect",
+      "visitorRoles": [
+        "wanderer",
+        "scholar",
+        "envoy"
+      ],
+      "stepCount": 1,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "demonstrate_courtesy",
+          "type": "speak_contact",
+          "titleTh": "สนทนาและแลกเปลี่ยนท่วงท่าพื้นฐานกับแขกผู้มาเยือน",
+          "locationId": "sect",
+          "scope": "personal",
+          "skill": null,
+          "statPath": "personality.discipline",
+          "minVal": 35,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_ORD_YINYANG_SWORD_T2",
+      "titleTh": "จารึกเพลงกระบี่คู่หยินหยางในศาลาร้าง",
+      "category": "ORDINARY_TECHNIQUE",
+      "targetKind": "TECH_MANUAL",
+      "targetId": "ART190_XIAN_013",
+      "tier": 2,
+      "rarity": "Rare",
+      "unique": false,
+      "cooldownDays": 25,
+      "expiresAfterDays": null,
+      "regionId": "forest",
+      "visitorRoles": [
+        "scholar",
+        "wanderer"
+      ],
+      "stepCount": 1,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "inspect_shrine_wood",
+          "type": "inspect_inscription",
+          "titleTh": "ถอดความจารึกไม้ในศาลาร้างป่าหมอกเขียว",
+          "locationId": "forest",
+          "scope": "party_any",
+          "skill": "SCRIPTURE",
+          "statPath": "intellect.comprehension",
+          "minVal": 25,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_ORD_METEOR_SWORD_5",
+      "titleTh": "ข่าวคราวกระบี่อุกกาบาตของตระกูลช่างหลอมเก่า",
+      "category": "ORDINARY_EQUIPMENT",
+      "targetKind": "EQUIPMENT",
+      "targetId": "MP_SWORD_5",
+      "tier": 5,
+      "rarity": "Rare",
+      "unique": false,
+      "cooldownDays": 35,
+      "expiresAfterDays": null,
+      "regionId": "mountain",
+      "visitorRoles": [
+        "merchant",
+        "artisan"
+      ],
+      "stepCount": 2,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "verify_furnace_map",
+          "type": "inspect_inscription",
+          "titleTh": "ตรวจสอบแผนผังเตาหลอมเก่า",
+          "locationId": "sect",
+          "scope": "party_any",
+          "skill": "FORGING",
+          "statPath": null,
+          "minVal": 20,
+          "stoneCost": 60,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "unseal_armory",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "unseal_armory",
+          "type": "skill_trial",
+          "titleTh": "เปิดผนึกห้องเก็บศาสตราทิวเขาศิลาคราม",
+          "locationId": "mountain",
+          "scope": "party_any",
+          "skill": "FORGING",
+          "statPath": "physiology.strength",
+          "minVal": 45,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_ORD_SNOW_LOTUS_5",
+      "titleTh": "ร่องรอยบัวหิมะสวรรค์หมื่นปีบนยอดผาเหมันต์",
+      "category": "ORDINARY_MATERIAL",
+      "targetKind": "MATERIAL",
+      "targetId": "MAT_HERB_SNOW_LOTUS_5",
+      "tier": 5,
+      "rarity": "Rare",
+      "unique": false,
+      "cooldownDays": 30,
+      "expiresAfterDays": null,
+      "regionId": "SRC110_MW_ENV_03_FROZEN_HIGHLANDS",
+      "visitorRoles": [
+        "herbalist",
+        "wanderer"
+      ],
+      "stepCount": 2,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "endure_blizzard",
+          "type": "body_trial",
+          "titleTh": "ฝ่าพายุหิมะขึ้นสู่ชะง่อนผาเหมันต์",
+          "locationId": "SRC110_MW_ENV_03_FROZEN_HIGHLANDS",
+          "scope": "party_all",
+          "skill": null,
+          "statPath": "physiology.endurance",
+          "minVal": 44,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "harvest_snow_lotus",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "harvest_snow_lotus",
+          "type": "skill_trial",
+          "titleTh": "เก็บเกี่ยวบัวหิมะโดยไม่ให้กลีบปราณช้ำ",
+          "locationId": "SRC110_MW_ENV_03_FROZEN_HIGHLANDS",
+          "scope": "party_any",
+          "skill": "herbalism",
+          "statPath": null,
+          "minVal": 42,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_ORD_METEOR_IRON_5",
+      "titleTh": "หลุมดาวตกและแร่เหล็กไหลในทะเลทรายเพลิงอัสดง",
+      "category": "ORDINARY_MATERIAL",
+      "targetKind": "MATERIAL",
+      "targetId": "MAT_ORE_METEOR_IRON_5",
+      "tier": 5,
+      "rarity": "Rare",
+      "unique": false,
+      "cooldownDays": 30,
+      "expiresAfterDays": null,
+      "regionId": "desert",
+      "visitorRoles": [
+        "merchant",
+        "artisan",
+        "wanderer"
+      ],
+      "stepCount": 2,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "locate_crater",
+          "type": "search_site",
+          "titleTh": "ค้นหาตำแหน่งหลุมอุกกาบาตกลางพายุทราย",
+          "locationId": "desert",
+          "scope": "party_any",
+          "skill": "survival",
+          "statPath": "intellect.perceptiveness",
+          "minVal": 45,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "mine_meteor_core",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "mine_meteor_core",
+          "type": "skill_trial",
+          "titleTh": "สกัดแร่เหล็กไหลอุกกาบาตจากแกนหินหลอมเหลว",
+          "locationId": "desert",
+          "scope": "party_any",
+          "skill": "mining",
+          "statPath": "physiology.strength",
+          "minVal": 48,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_ORD_DRAGON_PEARL_7",
+      "titleTh": "เบาะแสมุกมังกรบรรพกาลในกรุสมบัติโบราณ",
+      "category": "ORDINARY_MATERIAL",
+      "targetKind": "MATERIAL",
+      "targetId": "MAT_BP_DRAGON_PEARL_7",
+      "tier": 7,
+      "rarity": "Exceptional",
+      "unique": false,
+      "cooldownDays": 55,
+      "expiresAfterDays": null,
+      "regionId": "ruins",
+      "visitorRoles": [
+        "merchant",
+        "scholar",
+        "envoy"
+      ],
+      "stepCount": 2,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "buy_rubbing",
+          "type": "speak_contact",
+          "titleTh": "เจรจาซื้อสำเนาแผนผังกรุสมบัติจากผู้รู้เบาะแส",
+          "locationId": "sect",
+          "scope": "personal",
+          "skill": "trading",
+          "statPath": null,
+          "minVal": 25,
+          "stoneCost": 140,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "unlock_pearl_vault",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "unlock_pearl_vault",
+          "type": "skill_trial",
+          "titleTh": "คลายค่ายกลผนึกกรุสมบัติซากนครโบราณ",
+          "locationId": "ruins",
+          "scope": "party_any",
+          "skill": "ARRAY",
+          "statPath": "intellect.comprehension",
+          "minVal": 58,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_ORD_WORLD_FORGE_SHARD_7",
+      "titleTh": "จารึกเศษศิลาสร้างพิภพบรรพกาลในแท่นหลอมเทพ",
+      "category": "HERITAGE_MATERIAL",
+      "targetKind": "MATERIAL",
+      "targetId": "MAT_TR_WORLD_FORGE_SHARD",
+      "tier": 7,
+      "rarity": "Legendary",
+      "unique": false,
+      "cooldownDays": 70,
+      "expiresAfterDays": null,
+      "regionId": "ruins",
+      "visitorRoles": [
+        "artisan",
+        "scholar"
+      ],
+      "stepCount": 3,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "decipher_forge_stele",
+          "type": "inspect_inscription",
+          "titleTh": "ถอดรหัสอักขระช่างหลอมโบราณ",
+          "locationId": "sect",
+          "scope": "party_any",
+          "skill": "SCRIPTURE",
+          "statPath": null,
+          "minVal": 45,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "guardian_forge_construct",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "guardian_forge_construct",
+          "type": "guardian_combat",
+          "titleTh": "ปราบหุ่นศิลาเฝ้าแท่นหลอมบรรพกาล",
+          "locationId": "ruins",
+          "scope": "party_all",
+          "skill": null,
+          "statPath": null,
+          "minVal": null,
+          "stoneCost": 0,
+          "guardianNameTh": "หุ่นศิลาเพลิงบรรพกาล",
+          "guardianPower": 2200,
+          "onPass": "extract_world_shard",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 3,
+          "nodeId": "extract_world_shard",
+          "type": "skill_trial",
+          "titleTh": "สกัดเศษศิลาสร้างพิภพตามจังหวะไฟปราณ",
+          "locationId": "ruins",
+          "scope": "party_any",
+          "skill": "FORGING",
+          "statPath": null,
+          "minVal": 60,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_ART_DUGU_NINE_SWORDS",
+      "titleTh": "ร่องรอยเก้ากระบี่เดียวดายบนผาฝึกกระบี่ร้าง",
+      "category": "LEGENDARY_ART",
+      "targetKind": "TECH_MANUAL",
+      "targetId": "LEG_COMBAT_DUGU_NINE_SWORDS",
+      "tier": 6,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "mountain",
+      "visitorRoles": [
+        "wanderer",
+        "scholar"
+      ],
+      "stepCount": 2,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "compare_sword_scars",
+          "type": "inspect_inscription",
+          "titleTh": "เปรียบเทียบรอยกระบี่ทั้งเก้าสายบนผาศิลา",
+          "locationId": "mountain",
+          "scope": "party_any",
+          "skill": "SWORD",
+          "statPath": "intellect.perceptiveness",
+          "minVal": 55,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "comprehend_flawless_intent",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "comprehend_flawless_intent",
+          "type": "spirit_judgment",
+          "titleTh": "เข้าถึงเจตจำนง「ไร้กระบวนท่าชนะมีกระบวนท่า」เฉพาะตน",
+          "locationId": "mountain",
+          "scope": "personal",
+          "skill": "SWORD",
+          "statPath": "intellect.comprehension",
+          "minVal": 62,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_ART_DRAGON_SUBDUING_PALMS",
+      "titleTh": "บันทึกฝ่ามือพิชิตมังกรของผู้คุ้มกันด่านเก่า",
+      "category": "LEGENDARY_ART",
+      "targetKind": "TECH_MANUAL",
+      "targetId": "LEG_COMBAT_DRAGON_SUBDUING_PALMS",
+      "tier": 6,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "plains",
+      "visitorRoles": [
+        "wanderer",
+        "envoy"
+      ],
+      "stepCount": 2,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "rescue_stranded_escort",
+          "type": "guardian_combat",
+          "titleTh": "เข้าช่วยเหลือขบวนชาวบ้านที่ถูกโจรและอสูรล้อม",
+          "locationId": "plains",
+          "scope": "party_all",
+          "skill": null,
+          "statPath": null,
+          "minVal": null,
+          "stoneCost": 0,
+          "guardianNameTh": "หัวหน้าโจรทมิฬและอสูรเกราะเหล็ก",
+          "guardianPower": 1650,
+          "onPass": "controlled_palm_trial",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "controlled_palm_trial",
+          "type": "spirit_judgment",
+          "titleTh": "บททดสอบควบคุมแรงฝ่ามือโดยไม่ทำลายศิลาคุ้มภัย",
+          "locationId": "plains",
+          "scope": "personal",
+          "skill": "FIST_PALM",
+          "statPath": "personality.courage",
+          "minVal": 58,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_ART_FEIXIAN_ONE_SWORD",
+      "titleTh": "ลำแสงหนึ่งกระบี่เซียนเหินเหนือยอดเมฆา",
+      "category": "LEGENDARY_ART",
+      "targetKind": "TECH_MANUAL",
+      "targetId": "LEG_COMBAT_FEIXIAN_ONE_SWORD",
+      "tier": 7,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "SRC110_MW_ENV_11_CELESTIAL_GARDEN_RUINS",
+      "visitorRoles": [
+        "scholar",
+        "envoy"
+      ],
+      "stepCount": 1,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "feixian_personal_epiphany",
+          "type": "spirit_judgment",
+          "titleTh": "เพ่งจิตจับประกายหนึ่งกระบี่เซียนเหินด้วยตนเอง",
+          "locationId": "SRC110_MW_ENV_11_CELESTIAL_GARDEN_RUINS",
+          "scope": "personal",
+          "skill": "SWORD",
+          "statPath": "intellect.intuition",
+          "minVal": 66,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_ART_QIANKUN_SHIFT",
+      "titleTh": "แผนผังค่ายกลเคลื่อนย้ายจักรวาลในโถงถล่ม",
+      "category": "LEGENDARY_ART",
+      "targetKind": "TECH_MANUAL",
+      "targetId": "LEG_AUX_QIANKUN_SHIFT",
+      "tier": 6,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "ruins",
+      "visitorRoles": [
+        "artisan",
+        "scholar"
+      ],
+      "stepCount": 2,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "reconstruct_pressure_diagram",
+          "type": "inspect_inscription",
+          "titleTh": "ต่อเติมแผนผังแรงดันปราณครึ่งแผ่น",
+          "locationId": "sect",
+          "scope": "party_any",
+          "skill": "ARRAY",
+          "statPath": null,
+          "minVal": 50,
+          "stoneCost": 120,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "balance_yin_yang_pillars",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "balance_yin_yang_pillars",
+          "type": "skill_trial",
+          "titleTh": "ผันแปรแรงปะทะของเสาค่ายกลหยินหยางโดยไม่ทำลายโครงสร้าง",
+          "locationId": "ruins",
+          "scope": "personal",
+          "skill": "ARRAY",
+          "statPath": "intellect.comprehension",
+          "minVal": 60,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_ART_LINGXI_ONE_FINGER",
+      "titleTh": "การชี้แนะดัชนีใจสื่อใจจากผู้เร้นกายในศาลาชา",
+      "category": "LEGENDARY_ART",
+      "targetKind": "TECH_MANUAL",
+      "targetId": "LEG_AUX_LINGXI_ONE_FINGER",
+      "tier": 5,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "sect",
+      "visitorRoles": [
+        "scholar",
+        "wanderer"
+      ],
+      "stepCount": 1,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "peaceful_intent_test",
+          "type": "spirit_judgment",
+          "titleTh": "รับการทดสอบอ่านใจและคีบสกัดคมกระบี่ด้วยความสงบ",
+          "locationId": "sect",
+          "scope": "personal",
+          "skill": "FIST_PALM",
+          "statPath": "intellect.readPeople",
+          "minVal": 56,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_ART_LINGBO_STEP",
+      "titleTh": "รอยเท้าย่างก้าวเหยียบคลื่นในศาลาจมน้ำ",
+      "category": "LEGENDARY_ART",
+      "targetKind": "TECH_MANUAL",
+      "targetId": "LEG_LIGHT_LINGBO_STEP",
+      "tier": 5,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "water",
+      "visitorRoles": [
+        "wanderer",
+        "merchant"
+      ],
+      "stepCount": 2,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "chart_tide_ timing",
+          "type": "search_site",
+          "titleTh": "สังเกตจังหวะน้ำขึ้นน้ำลงของลุ่มน้ำสาบมังกรคราม",
+          "locationId": "water",
+          "scope": "party_any",
+          "skill": "survival",
+          "statPath": "intellect.perceptiveness",
+          "minVal": 48,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "step_eight_trigrams",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "step_eight_trigrams",
+          "type": "skill_trial",
+          "titleTh": "ก้าวเดินตามผังแปดทิศหกสิบสี่ขานเหนือผิวน้ำ",
+          "locationId": "water",
+          "scope": "personal",
+          "skill": "MOVEMENT",
+          "statPath": "physiology.agility",
+          "minVal": 56,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_ART_MOON_BAT_SHADOW",
+      "titleTh": "บันทึกท่าร่างปีกจันทราในหอคอยไร้แสง",
+      "category": "LEGENDARY_ART",
+      "targetKind": "TECH_MANUAL",
+      "targetId": "LEG_LIGHT_MOON_BAT_SHADOW",
+      "tier": 6,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "SRC110_MW_ENV_02_MIASMA_MANGROVE",
+      "visitorRoles": [
+        "wanderer",
+        "envoy"
+      ],
+      "stepCount": 2,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "verify_conflicting_testimony",
+          "type": "inspect_inscription",
+          "titleTh": "แยกแยะคำบอกเล่าจริงเท็จเกี่ยวกับเส้นทางเงาจันทร์",
+          "locationId": "sect",
+          "scope": "party_any",
+          "skill": "stealth",
+          "statPath": "intellect.judgement",
+          "minVal": 50,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "traverse_shadow_corridor",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "traverse_shadow_corridor",
+          "type": "skill_trial",
+          "titleTh": "เคลื่อนกายผ่านระเบียงกระดิ่งลมในความมืดโดยไร้เสียง",
+          "locationId": "SRC110_MW_ENV_02_MIASMA_MANGROVE",
+          "scope": "personal",
+          "skill": "MOVEMENT",
+          "statPath": "physiology.reflex",
+          "minVal": 60,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_ART_STAR_ABSORBING_VORTEX",
+      "titleTh": "ห้องศิลาปิดผนึกของจอมมารดูดดาว",
+      "category": "LEGENDARY_ART",
+      "targetKind": "TECH_MANUAL",
+      "targetId": "LEG_FORB_STAR_ABSORBING_VORTEX",
+      "tier": 6,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "ruins",
+      "visitorRoles": [
+        "wanderer",
+        "scholar"
+      ],
+      "stepCount": 2,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "unseal_vortex_chamber",
+          "type": "skill_trial",
+          "titleTh": "คลายโซ่ผนึกห้องศิลาใต้ซากนครโบราณ",
+          "locationId": "ruins",
+          "scope": "party_any",
+          "skill": "ARRAY",
+          "statPath": null,
+          "minVal": 52,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "withstand_vortex_pull",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "withstand_vortex_pull",
+          "type": "body_trial",
+          "titleTh": "ต้านทานแรงดูดปราณตกค้างและเก็บจารึกต้องห้าม",
+          "locationId": "ruins",
+          "scope": "personal",
+          "skill": null,
+          "statPath": "physiology.meridianIntegrity",
+          "minVal": 58,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_ART_BLOOD_LOTUS_SACRIFICE",
+      "titleTh": "แท่นบูชาบงกชโลหิตในหุบเขาอัคคี",
+      "category": "LEGENDARY_ART",
+      "targetKind": "TECH_MANUAL",
+      "targetId": "LEG_FORB_BLOOD_LOTUS_SACRIFICE",
+      "tier": 7,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "SRC110_MW_ENV_04_VOLCANIC_CALDERA",
+      "visitorRoles": [
+        "wanderer",
+        "envoy"
+      ],
+      "stepCount": 1,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "approach_blood_altar",
+          "type": "spirit_judgment",
+          "titleTh": "เผชิญแรงกดดันจิตมารหน้าแท่นบูชาบงกชโลหิต",
+          "locationId": "SRC110_MW_ENV_04_VOLCANIC_CALDERA",
+          "scope": "personal",
+          "skill": null,
+          "statPath": "intellect.willpower",
+          "minVal": 64,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_ART_MINGYU_IMMORTAL_QI",
+      "titleTh": "ห้องหยกเร้นลับของวังบุปผาโบราณ",
+      "category": "LEGENDARY_ART",
+      "targetKind": "TECH_MANUAL",
+      "targetId": "LEG_PASS_MINGYU_IMMORTAL_QI",
+      "tier": 6,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "SRC110_MW_ENV_11_CELESTIAL_GARDEN_RUINS",
+      "visitorRoles": [
+        "healer",
+        "scholar"
+      ],
+      "stepCount": 2,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "reconstruct_jade_breath",
+          "type": "inspect_inscription",
+          "titleTh": "ประกอบแผนภาพลมหายใจเก้าวัฏจักรบนผนังหยก",
+          "locationId": "SRC110_MW_ENV_11_CELESTIAL_GARDEN_RUINS",
+          "scope": "party_any",
+          "skill": "MEDICINE",
+          "statPath": "intellect.comprehension",
+          "minVal": 55,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "jade_circulation_test",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "jade_circulation_test",
+          "type": "spirit_judgment",
+          "titleTh": "เดินปราณสงบนิ่งดั่งหยกใสไร้สิ่งเจือปน",
+          "locationId": "SRC110_MW_ENV_11_CELESTIAL_GARDEN_RUINS",
+          "scope": "personal",
+          "skill": null,
+          "statPath": "personality.composure",
+          "minVal": 58,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_ART_NINE_YANG_MERIDIAN",
+      "titleTh": "คัมภีร์เก้าสุริยันในหุบเขาอบอุ่นกลางเทือกเขาหิมะ",
+      "category": "LEGENDARY_ART",
+      "targetKind": "TECH_MANUAL",
+      "targetId": "LEG_PASS_NINE_YANG_MERIDIAN",
+      "tier": 6,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "mountain",
+      "visitorRoles": [
+        "herbalist",
+        "wanderer"
+      ],
+      "stepCount": 2,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "locate_warm_valley",
+          "type": "search_site",
+          "titleTh": "สำรวจหาโพรงหินตาน้ำอุ่นในทิวเขาศิลาคราม",
+          "locationId": "mountain",
+          "scope": "party_any",
+          "skill": "survival",
+          "statPath": null,
+          "minVal": 50,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "endure_yang_meridian_heat",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "endure_yang_meridian_heat",
+          "type": "body_trial",
+          "titleTh": "รองรับไอปราณเก้าสุริยันเพื่อเปิดผนึกคัมภีร์",
+          "locationId": "mountain",
+          "scope": "personal",
+          "skill": null,
+          "statPath": "physiology.vitality",
+          "minVal": 58,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_ART_DUGU_SWORD_HEART",
+      "titleTh": "สุสานกระบี่และเจตจำนงกระบี่ไร้พ่าย",
+      "category": "LEGENDARY_ART",
+      "targetKind": "TECH_MANUAL",
+      "targetId": "LEG_PASS_DUGU_SWORD_HEART",
+      "tier": 7,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "mountain",
+      "visitorRoles": [
+        "scholar",
+        "wanderer"
+      ],
+      "stepCount": 2,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "study_four_epitaphs",
+          "type": "inspect_inscription",
+          "titleTh": "ศึกษาคำจารึกสี่ช่วงชีวิตของจอมกระบี่",
+          "locationId": "mountain",
+          "scope": "party_any",
+          "skill": "SCRIPTURE",
+          "statPath": null,
+          "minVal": 55,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "sword_heart_awakening",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "sword_heart_awakening",
+          "type": "spirit_judgment",
+          "titleTh": "พิสูจน์เจตจำนงกระบี่ที่มองเห็นช่องโหว่ก่อนออกท่า",
+          "locationId": "mountain",
+          "scope": "personal",
+          "skill": "SWORD",
+          "statPath": "intellect.perceptiveness",
+          "minVal": 65,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_ART_TAIXUAN_SCRIPTURE",
+      "titleTh": "โถงศิลาจารึกบทกวีไท่เสวียนริมเกาะร้าง",
+      "category": "LEGENDARY_ART",
+      "targetKind": "TECH_MANUAL",
+      "targetId": "LEG_MANTRA_TAIXUAN_SCRIPTURE",
+      "tier": 6,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "water",
+      "visitorRoles": [
+        "merchant",
+        "wanderer",
+        "scholar"
+      ],
+      "stepCount": 2,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "sail_to_inscription_island",
+          "type": "search_site",
+          "titleTh": "เดินทางข้ามแก่งน้ำเชี่ยวสู่เกาะจารึกโบราณ",
+          "locationId": "water",
+          "scope": "party_all",
+          "skill": "survival",
+          "statPath": null,
+          "minVal": 48,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "trace_stroke_flow",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "trace_stroke_flow",
+          "type": "spirit_judgment",
+          "titleTh": "มองเส้นสายอักษรเป็นกระแสปราณและท่วงท่าธรรมชาติ",
+          "locationId": "water",
+          "scope": "personal",
+          "skill": null,
+          "statPath": "intellect.intuition",
+          "minVal": 58,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_ART_SIX_MERIDIAN_QI",
+      "titleTh": "ผังปราณกระบี่หกชีพจรของอารามหลวงโบราณ",
+      "category": "LEGENDARY_ART",
+      "targetKind": "TECH_MANUAL",
+      "targetId": "LEG_MANTRA_SIX_MERIDIAN_QI",
+      "tier": 7,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "ruins",
+      "visitorRoles": [
+        "scholar",
+        "envoy"
+      ],
+      "stepCount": 3,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "assist_archivist",
+          "type": "speak_contact",
+          "titleTh": "มอบสมุนไพรและศิลาช่วยซ่อมแซมบันทึกของอาราม",
+          "locationId": "sect",
+          "scope": "personal",
+          "skill": null,
+          "statPath": "personality.integrity",
+          "minVal": 48,
+          "stoneCost": 150,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "recover_temple_folio",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "recover_temple_folio",
+          "type": "guardian_combat",
+          "titleTh": "ฝ่าด่านผู้พิทักษ์อารามร้างเพื่อนำม้วนผังปราณกลับคืน",
+          "locationId": "ruins",
+          "scope": "party_all",
+          "skill": null,
+          "statPath": null,
+          "minVal": null,
+          "stoneCost": 0,
+          "guardianNameTh": "องครักษ์ศิลาหกชีพจร",
+          "guardianPower": 2400,
+          "onPass": "meridian_foundation_check",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 3,
+          "nodeId": "meridian_foundation_check",
+          "type": "body_trial",
+          "titleTh": "ทดสอบความจุเส้นลมปราณเพื่อรับฉบับคัดลอกสมบูรณ์",
+          "locationId": "ruins",
+          "scope": "personal",
+          "skill": null,
+          "statPath": "physiology.meridianCapacity",
+          "minVal": 60,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_ART_DRAGON_ELEPHANT_PRAJNA",
+      "titleTh": "แผ่นศิลาลอกลายมหาคัมภีร์กายานาคช้าง",
+      "category": "LEGENDARY_ART",
+      "targetKind": "TECH_MANUAL",
+      "targetId": "LEG_MANTRA_DRAGON_ELEPHANT_PRAJNA",
+      "tier": 6,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "SRC110_MW_ENV_03_FROZEN_HIGHLANDS",
+      "visitorRoles": [
+        "merchant",
+        "wanderer"
+      ],
+      "stepCount": 2,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "trace_monastery_stele",
+          "type": "search_site",
+          "titleTh": "ตามรอยอารามศิลาบนที่ราบสูงเหมันต์",
+          "locationId": "SRC110_MW_ENV_03_FROZEN_HIGHLANDS",
+          "scope": "party_any",
+          "skill": "survival",
+          "statPath": null,
+          "minVal": 48,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "endurance_boulder_trial",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "endurance_boulder_trial",
+          "type": "body_trial",
+          "titleTh": "ยกแท่นศิลาสิบสามชั้นเปิดช่องลับใต้ฐานพระ",
+          "locationId": "SRC110_MW_ENV_03_FROZEN_HIGHLANDS",
+          "scope": "personal",
+          "skill": "BODY_REFINING",
+          "statPath": "physiology.strength",
+          "minVal": 60,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_ART_DIAMOND_INDESTRUCTIBLE",
+      "titleTh": "วิญญาณผู้พิทักษ์คัมภีร์กายาวัชระอมตะ",
+      "category": "LEGENDARY_ART",
+      "targetKind": "TECH_MANUAL",
+      "targetId": "LEG_MANTRA_DIAMOND_INDESTRUCTIBLE",
+      "tier": 7,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "mountain",
+      "visitorRoles": [
+        "scholar",
+        "envoy"
+      ],
+      "stepCount": 2,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "repair_guardian_stupa",
+          "type": "skill_trial",
+          "titleTh": "บูรณะฐานเจดีย์ศิลาและระฆังสำริด",
+          "locationId": "mountain",
+          "scope": "party_any",
+          "skill": "construction",
+          "statPath": "physiology.endurance",
+          "minVal": 48,
+          "stoneCost": 100,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "unyielding_vajra_trial",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "unyielding_vajra_trial",
+          "type": "spirit_judgment",
+          "titleTh": "รับแรงปะทะสามฝ่ามือวัชระโดยไม่ถอยแม้แต่ก้าวเดียว",
+          "locationId": "mountain",
+          "scope": "personal",
+          "skill": null,
+          "statPath": "physiology.toughness",
+          "minVal": 64,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_ART_EIGHT_DESOLATIONS_GOD",
+      "titleTh": "ปฏิทินศิลาแปดทิศและวิหารเทวะเร้นเมฆ",
+      "category": "LEGENDARY_ART",
+      "targetKind": "TECH_MANUAL",
+      "targetId": "LEG_MANTRA_EIGHT_DESOLATIONS_GOD",
+      "tier": 6,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "SRC110_MW_ENV_11_CELESTIAL_GARDEN_RUINS",
+      "visitorRoles": [
+        "scholar",
+        "herbalist"
+      ],
+      "stepCount": 2,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "align_solar_calendar",
+          "type": "inspect_inscription",
+          "titleTh": "คำนวณตำแหน่งแสงอาทิตย์ผ่านวงแหวนศิลาแปดทิศ",
+          "locationId": "SRC110_MW_ENV_11_CELESTIAL_GARDEN_RUINS",
+          "scope": "party_any",
+          "skill": "ARRAY",
+          "statPath": "intellect.reasoning",
+          "minVal": 55,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "vital_harmony_resonance",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "vital_harmony_resonance",
+          "type": "spirit_judgment",
+          "titleTh": "ประสานปราณชีวิตเข้ากับศิลาเทวะแปดทิศ",
+          "locationId": "SRC110_MW_ENV_11_CELESTIAL_GARDEN_RUINS",
+          "scope": "personal",
+          "skill": null,
+          "statPath": "physiology.spiritualFoundation",
+          "minVal": 60,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_ART_CELESTIAL_MANDATE_CANON",
+      "titleTh": "ตราหยกโองการสวรรค์และแท่นสัตย์สาบานสามภพ",
+      "category": "LEGENDARY_ART",
+      "targetKind": "TECH_MANUAL",
+      "targetId": "LEG_MANTRA_CELESTIAL_MANDATE_CANON",
+      "tier": 7,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "ruins",
+      "visitorRoles": [
+        "envoy",
+        "scholar"
+      ],
+      "stepCount": 3,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "verify_mandate_seal",
+          "type": "inspect_inscription",
+          "titleTh": "ตรวจสอบอักขระบนตราหยกและบันทึกพันธสัญญาเก่า",
+          "locationId": "sect",
+          "scope": "party_any",
+          "skill": "SCRIPTURE",
+          "statPath": null,
+          "minVal": 54,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "defend_oath_sanctuary",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "defend_oath_sanctuary",
+          "type": "guardian_combat",
+          "titleTh": "ปราบอสูรผู้ละเมิดสัตย์ที่บุกรุกแท่นโองการสวรรค์",
+          "locationId": "ruins",
+          "scope": "party_all",
+          "skill": null,
+          "statPath": null,
+          "minVal": null,
+          "stoneCost": 0,
+          "guardianNameTh": "มารทมิฬผู้กลืนกินคำสัตย์",
+          "guardianPower": 2600,
+          "onPass": "keeper_mandate_judgment",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 3,
+          "nodeId": "keeper_mandate_judgment",
+          "type": "spirit_judgment",
+          "titleTh": "รับการพิพากษาความเที่ยงธรรมและภาวะผู้นำจากวิญญาณผู้เฝ้าตรา",
+          "locationId": "ruins",
+          "scope": "personal",
+          "skill": null,
+          "statPath": "personality.integrity",
+          "minVal": 62,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_ART_ASHURA_BLOOD_SEA",
+      "titleTh": "คลังศาสตราสมรภูมิร้างและมหาคัมภีร์มารทะเลโลหิต",
+      "category": "LEGENDARY_ART",
+      "targetKind": "TECH_MANUAL",
+      "targetId": "LEG_MANTRA_ASHURA_BLOOD_SEA",
+      "tier": 6,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "desert",
+      "visitorRoles": [
+        "wanderer",
+        "merchant"
+      ],
+      "stepCount": 2,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "battle_ashura_remnant",
+          "type": "guardian_combat",
+          "titleTh": "เอาชนะเงาแม่ทัพอสูรโลหิตในสมรภูมิทรายแดง",
+          "locationId": "desert",
+          "scope": "party_all",
+          "skill": null,
+          "statPath": null,
+          "minVal": null,
+          "stoneCost": 0,
+          "guardianNameTh": "เงาแม่ทัพอสูรทะเลโลหิต",
+          "guardianPower": 2100,
+          "onPass": "absorb_blood_stele",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "absorb_blood_stele",
+          "type": "spirit_judgment",
+          "titleTh": "สะกดจิตสังหารของศิลาโลหิตด้วยความเด็ดเดี่ยว",
+          "locationId": "desert",
+          "scope": "personal",
+          "skill": null,
+          "statPath": "intellect.willpower",
+          "minVal": 58,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_ART_TEN_THOUSAND_GU_MONARCH",
+      "titleTh": "เรือนเพาะพิษโบราณและคัมภีร์จักรพรรดิกู่หมื่นพิษ",
+      "category": "LEGENDARY_ART",
+      "targetKind": "TECH_MANUAL",
+      "targetId": "LEG_MANTRA_TEN_THOUSAND_GU_MONARCH",
+      "tier": 7,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "SRC110_MW_ENV_02_MIASMA_MANGROVE",
+      "visitorRoles": [
+        "herbalist",
+        "scholar"
+      ],
+      "stepCount": 2,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "neutralize_miasma_ward",
+          "type": "skill_trial",
+          "titleTh": "ปรุงผงสลายหมอกพิษเจ็ดชั้นหน้าเรือนเพาะกู่",
+          "locationId": "SRC110_MW_ENV_02_MIASMA_MANGROVE",
+          "scope": "party_any",
+          "skill": "ALCHEMY",
+          "statPath": "physiology.immunity",
+          "minVal": 56,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "subdue_gu_vessel",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "subdue_gu_vessel",
+          "type": "skill_trial",
+          "titleTh": "จำแนกโถราชันย์กู่และนำคัมภีร์ออกจากแท่นศิลาพิษ",
+          "locationId": "SRC110_MW_ENV_02_MIASMA_MANGROVE",
+          "scope": "personal",
+          "skill": "POISON",
+          "statPath": "intellect.comprehension",
+          "minVal": 62,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_ART_NINE_YIN_SOUL_MIRROR",
+      "titleTh": "หอดูดาวกระจกเงาและมหาคัมภีร์จิตเก้าหยิน",
+      "category": "LEGENDARY_ART",
+      "targetKind": "TECH_MANUAL",
+      "targetId": "LEG_MANTRA_NINE_YIN_SOUL_MIRROR",
+      "tier": 6,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "forest",
+      "visitorRoles": [
+        "scholar",
+        "wanderer"
+      ],
+      "stepCount": 2,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "interview_mirror_witness",
+          "type": "speak_contact",
+          "titleTh": "ซักถามรายละเอียดมุมสะท้อนของกระจกสำริดจากผู้เคยรอดชีวิต",
+          "locationId": "sect",
+          "scope": "party_any",
+          "skill": null,
+          "statPath": "intellect.perceptiveness",
+          "minVal": 48,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "see_through_nine_mirrors",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "see_through_nine_mirrors",
+          "type": "spirit_judgment",
+          "titleTh": "แยกแยะเงาจริงจากภาพลวงเก้าชั้นด้วยตบะจิตวิญญาณ",
+          "locationId": "forest",
+          "scope": "personal",
+          "skill": "SOUL_DIVINE",
+          "statPath": "intellect.judgement",
+          "minVal": 60,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_ART_LITTLE_LI_HEART_BLADE",
+      "titleTh": "บันทึกจิตมีดบินไร้พลาดของอดีตบัณฑิตผู้เร้นกาย",
+      "category": "LEGENDARY_ART",
+      "targetKind": "TECH_MANUAL",
+      "targetId": "LEG_MANTRA_LITTLE_LI_HEART_BLADE",
+      "tier": 7,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "plains",
+      "visitorRoles": [
+        "scholar",
+        "wanderer"
+      ],
+      "stepCount": 2,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "keep_promise_at_pavilion",
+          "type": "speak_contact",
+          "titleTh": "รับปากนำสุราและยารักษาไปมอบให้สหายเก่าของบัณฑิตเร้นกาย",
+          "locationId": "sect",
+          "scope": "personal",
+          "skill": null,
+          "statPath": "personality.integrity",
+          "minVal": 52,
+          "stoneCost": 80,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "heart_blade_focus_trial",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "heart_blade_focus_trial",
+          "type": "spirit_judgment",
+          "titleTh": "พิสูจน์สมาธิจิตที่นิ่งสงบและเปี่ยมด้วยความเมตตาหน้ากระท่อมไผ่",
+          "locationId": "plains",
+          "scope": "personal",
+          "skill": null,
+          "statPath": "intellect.focus",
+          "minVal": 64,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_WPN_YITIAN_SWORD",
+      "titleTh": "เบาะแสกระบี่อิงฟ้าพิฆาตมารในหอคอยเมฆาโบราณ",
+      "category": "LEGENDARY_WEAPON",
+      "targetKind": "EQUIPMENT",
+      "targetId": "LEG_WPN_YITIAN_SWORD",
+      "tier": 7,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "SRC110_MW_ENV_11_CELESTIAL_GARDEN_RUINS",
+      "visitorRoles": [
+        "envoy",
+        "scholar"
+      ],
+      "stepCount": 3,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "decipher_emei_seal",
+          "type": "inspect_inscription",
+          "titleTh": "ถอดความรหัสคำกลอน「อิงฟ้าไม่ปรากฏ ใครเลยจะกล้าต่อกร」",
+          "locationId": "sect",
+          "scope": "party_any",
+          "skill": "SCRIPTURE",
+          "statPath": null,
+          "minVal": 50,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "guardian_sword_wraith",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "guardian_sword_wraith",
+          "type": "guardian_combat",
+          "titleTh": "ประลองกับเจตจำนงผู้พิทักษ์หอคอยกระบี่อิงฟ้า",
+          "locationId": "SRC110_MW_ENV_11_CELESTIAL_GARDEN_RUINS",
+          "scope": "party_all",
+          "skill": null,
+          "statPath": null,
+          "minVal": null,
+          "stoneCost": 0,
+          "guardianNameTh": "เจตจำนงผู้พิทักษ์กระบี่อิงฟ้า",
+          "guardianPower": 2650,
+          "onPass": "unsheathe_yitian_trial",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 3,
+          "nodeId": "unsheathe_yitian_trial",
+          "type": "skill_trial",
+          "titleTh": "ชักกระบี่อิงฟ้าออกจากฝักหยกด้วยความเชี่ยวชาญกระบี่",
+          "locationId": "SRC110_MW_ENV_11_CELESTIAL_GARDEN_RUINS",
+          "scope": "personal",
+          "skill": "SWORD",
+          "statPath": "physiology.reflex",
+          "minVal": 60,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_WPN_XUANTIE_HEAVY_SWORD",
+      "titleTh": "สุสานกระบี่หุบเขาลึกและกระบี่เหล็กนิลไร้คม",
+      "category": "LEGENDARY_WEAPON",
+      "targetKind": "EQUIPMENT",
+      "targetId": "LEG_WPN_XUANTIE_HEAVY_SWORD",
+      "tier": 7,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "mountain",
+      "visitorRoles": [
+        "wanderer",
+        "artisan"
+      ],
+      "stepCount": 2,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "spar_ancient_condor",
+          "type": "guardian_combat",
+          "titleTh": "รับมือพญาอินทรีเทพผู้เฝ้าสุสานกระบี่",
+          "locationId": "mountain",
+          "scope": "party_all",
+          "skill": null,
+          "statPath": null,
+          "minVal": null,
+          "stoneCost": 0,
+          "guardianNameTh": "พญาอินทรีเหล็กผู้เฝ้าสุสานกระบี่",
+          "guardianPower": 2500,
+          "onPass": "lift_xuantie_sword",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "lift_xuantie_sword",
+          "type": "body_trial",
+          "titleTh": "ยกกระบี่เหล็กนิลหนักแปดสิบเอ็ดชั่งขึ้นจากแท่นหิน",
+          "locationId": "mountain",
+          "scope": "personal",
+          "skill": null,
+          "statPath": "physiology.strength",
+          "minVal": 60,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_WPN_TULONG_SABER",
+      "titleTh": "เบาะแสดาบฆ่ามังกรในเกาะเพลิงน้ำแข็งโพ้นทะเล",
+      "category": "LEGENDARY_WEAPON",
+      "targetKind": "EQUIPMENT",
+      "targetId": "LEG_WPN_TULONG_SABER",
+      "tier": 7,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "SRC110_MW_ENV_04_VOLCANIC_CALDERA",
+      "visitorRoles": [
+        "merchant",
+        "envoy",
+        "artisan"
+      ],
+      "stepCount": 3,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "survive_volcanic_gorge",
+          "type": "body_trial",
+          "titleTh": "ฝ่าคลื่นความร้อนของแอ่งอัคคีหินหนืดเข้าสู่โถงผนึกดาบ",
+          "locationId": "SRC110_MW_ENV_04_VOLCANIC_CALDERA",
+          "scope": "party_all",
+          "skill": null,
+          "statPath": "physiology.toughness",
+          "minVal": 50,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "defeat_flame_lion_guardian",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "defeat_flame_lion_guardian",
+          "type": "guardian_combat",
+          "titleTh": "สยบราชสีห์ขนทองเพลิงบรรพกาลที่เฝ้าแท่นดาบ",
+          "locationId": "SRC110_MW_ENV_04_VOLCANIC_CALDERA",
+          "scope": "party_all",
+          "skill": null,
+          "statPath": null,
+          "minVal": null,
+          "stoneCost": 0,
+          "guardianNameTh": "ราชสีห์ขนทองเพลิงบรรพกาล",
+          "guardianPower": 2700,
+          "onPass": "claim_tulong_saber",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 3,
+          "nodeId": "claim_tulong_saber",
+          "type": "skill_trial",
+          "titleTh": "ดึงดาบฆ่ามังกรออกจากแท่นหินหลอมเหลว",
+          "locationId": "SRC110_MW_ENV_04_VOLCANIC_CALDERA",
+          "scope": "personal",
+          "skill": "BLADE",
+          "statPath": "physiology.strength",
+          "minVal": 60,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_WPN_FULL_MOON_SCIMITAR",
+      "titleTh": "ศาลาฟังพิรุณและดาบโค้งจันทร์เพ็ญสะท้อนเงา",
+      "category": "LEGENDARY_WEAPON",
+      "targetKind": "EQUIPMENT",
+      "targetId": "LEG_WPN_FULL_MOON_SCIMITAR",
+      "tier": 6,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "forest",
+      "visitorRoles": [
+        "wanderer",
+        "scholar"
+      ],
+      "stepCount": 2,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "find_spring_rain_pavilion",
+          "type": "search_site",
+          "titleTh": "ตามหา「หอเล็กฟังเสียงฝนฤดูใบไม้ผลิ」ในป่าหมอกเขียว",
+          "locationId": "forest",
+          "scope": "party_any",
+          "skill": null,
+          "statPath": "intellect.perceptiveness",
+          "minVal": 50,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "moon_scimitar_duel_trial",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "moon_scimitar_duel_trial",
+          "type": "skill_trial",
+          "titleTh": "รับการทดสอบความเร็วเพลงดาบใต้แสงจันทร์",
+          "locationId": "forest",
+          "scope": "personal",
+          "skill": "BLADE",
+          "statPath": "physiology.agility",
+          "minVal": 58,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_WPN_XIAOLI_HEART_DAGGER",
+      "titleTh": "มีดสั้นเสี่ยวหลี่ของช่างตีเหล็กรถเข็นเก่า",
+      "category": "LEGENDARY_WEAPON",
+      "targetKind": "EQUIPMENT",
+      "targetId": "LEG_WPN_XIAOLI_HEART_DAGGER",
+      "tier": 7,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "plains",
+      "visitorRoles": [
+        "artisan",
+        "scholar",
+        "wanderer"
+      ],
+      "stepCount": 2,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "aid_elder_weaponsmith",
+          "type": "speak_contact",
+          "titleTh": "ช่วยเหลือทายาทช่างตีเหล็กชราและรับฟังประวัติของมีดบิน",
+          "locationId": "sect",
+          "scope": "personal",
+          "skill": null,
+          "statPath": "personality.empathy",
+          "minVal": 50,
+          "stoneCost": 90,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "plum_blossom_accuracy_trial",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "plum_blossom_accuracy_trial",
+          "type": "spirit_judgment",
+          "titleTh": "พิสูจน์สายตาและจิตใจที่เปี่ยมความยุติธรรมในการรับมีดสั้น",
+          "locationId": "plains",
+          "scope": "personal",
+          "skill": null,
+          "statPath": "intellect.perceptiveness",
+          "minVal": 64,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_WPN_DAGOU_JADE_STAFF",
+      "titleTh": "พลองหยกเขียวตีสุนัขในศาลเจ้าล้างมือ",
+      "category": "LEGENDARY_WEAPON",
+      "targetKind": "EQUIPMENT",
+      "targetId": "LEG_WPN_DAGOU_JADE_STAFF",
+      "tier": 6,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "plains",
+      "visitorRoles": [
+        "wanderer",
+        "envoy"
+      ],
+      "stepCount": 2,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "share_provisions_with_beggars",
+          "type": "speak_contact",
+          "titleTh": "แบ่งปันเสบียงและสุราแก่ผู้พเนจรหน้าสำนัก",
+          "locationId": "sect",
+          "scope": "personal",
+          "skill": null,
+          "statPath": "personality.empathy",
+          "minVal": 45,
+          "stoneCost": 60,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "jade_staff_agility_trial",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "jade_staff_agility_trial",
+          "type": "skill_trial",
+          "titleTh": "ผ่านค่ายกลไม้ไผ่แปดทิศในศาลเจ้าโบราณ",
+          "locationId": "plains",
+          "scope": "personal",
+          "skill": null,
+          "statPath": "physiology.dexterity",
+          "minVal": 56,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_WPN_OVERLORD_SPEAR",
+      "titleTh": "ทวนราชันย์พิชิตพยัคฆ์ ณ เนินพยัคฆ์หิว",
+      "category": "LEGENDARY_WEAPON",
+      "targetKind": "EQUIPMENT",
+      "targetId": "LEG_WPN_OVERLORD_SPEAR",
+      "tier": 6,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "mountain",
+      "visitorRoles": [
+        "wanderer",
+        "envoy"
+      ],
+      "stepCount": 2,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "challenge_hungry_tiger_ridge",
+          "type": "guardian_combat",
+          "titleTh": "เผชิญหน้าพยัคฆ์เขี้ยวดาบผู้เฝ้าเนินทวนราชันย์",
+          "locationId": "mountain",
+          "scope": "party_all",
+          "skill": null,
+          "statPath": null,
+          "minVal": null,
+          "stoneCost": 0,
+          "guardianNameTh": "พยัคฆ์ราชันย์เขี้ยวเหล็ก",
+          "guardianPower": 1950,
+          "onPass": "overlord_courage_trial",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "overlord_courage_trial",
+          "type": "spirit_judgment",
+          "titleTh": "ก้าวขึ้นถอนทวนราชันย์ด้วยจิตใจที่กล้าหาญไม่หวั่นไหว",
+          "locationId": "mountain",
+          "scope": "personal",
+          "skill": "SPEAR",
+          "statPath": "personality.courage",
+          "minVal": 58,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_WPN_OATHBREAKER_DRAGON_LANCE",
+      "titleTh": "ทวนเกล็ดมังกรครามใต้ศาลเจ้าบาดาล",
+      "category": "LEGENDARY_WEAPON",
+      "targetKind": "EQUIPMENT",
+      "targetId": "LEG_WPN_OATHBREAKER_DRAGON_LANCE",
+      "tier": 7,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "water",
+      "visitorRoles": [
+        "scholar",
+        "envoy"
+      ],
+      "stepCount": 3,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "dive_sunken_shrine",
+          "type": "body_trial",
+          "titleTh": "ดำดิ่งฝ่าแรงดันน้ำลึกสู่ศาลเจ้าแม่ทัพมังกรคราม",
+          "locationId": "water",
+          "scope": "party_all",
+          "skill": null,
+          "statPath": "physiology.endurance",
+          "minVal": 52,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "subdue_water_serpent_guard",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "subdue_water_serpent_guard",
+          "type": "guardian_combat",
+          "titleTh": "ปราบอสรพิษเกล็ดครามผู้เฝ้าแท่นทวนสัตย์สาบาน",
+          "locationId": "water",
+          "scope": "party_all",
+          "skill": null,
+          "statPath": null,
+          "minVal": null,
+          "stoneCost": 0,
+          "guardianNameTh": "อสรพิษมังกรครามพันปี",
+          "guardianPower": 2550,
+          "onPass": "oath_lance_recognition",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 3,
+          "nodeId": "oath_lance_recognition",
+          "type": "spirit_judgment",
+          "titleTh": "กล่าวคำสัตย์พิทักษ์สำนักต่อหน้าทวนเกล็ดมังกรคราม",
+          "locationId": "water",
+          "scope": "personal",
+          "skill": "SPEAR",
+          "statPath": "personality.loyalty",
+          "minVal": 60,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_WPN_WRATHFUL_TIGER_GAUNTLETS",
+      "titleTh": "สนับหมัดพยัคฆ์พิโรธ ณ หุบเขาหมาป่า",
+      "category": "LEGENDARY_WEAPON",
+      "targetKind": "EQUIPMENT",
+      "targetId": "LEG_WPN_WRATHFUL_TIGER_GAUNTLETS",
+      "tier": 6,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "SRC110_MW_ENV_01_ANCIENT_CANOPY",
+      "visitorRoles": [
+        "wanderer",
+        "artisan"
+      ],
+      "stepCount": 2,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "clear_wolf_pack_ambush",
+          "type": "guardian_combat",
+          "titleTh": "ฝ่าวงล้อมฝูงหมาป่าอสูรในพงไพรบรรพกาล",
+          "locationId": "SRC110_MW_ENV_01_ANCIENT_CANOPY",
+          "scope": "party_all",
+          "skill": null,
+          "statPath": null,
+          "minVal": null,
+          "stoneCost": 0,
+          "guardianNameTh": "จ่าฝูงหมาป่าวายุเขี้ยวเงิน",
+          "guardianPower": 1850,
+          "onPass": "tiger_gauntlet_fist_trial",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "tiger_gauntlet_fist_trial",
+          "type": "skill_trial",
+          "titleTh": "ชกทะลายแท่นศิลาสามชั้นด้วยเพลงหมัดและแรงระเบิด",
+          "locationId": "SRC110_MW_ENV_01_ANCIENT_CANOPY",
+          "scope": "personal",
+          "skill": "FIST_PALM",
+          "statPath": "physiology.explosiveness",
+          "minVal": 58,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_WPN_CONDOR_METEOR_BOW",
+      "titleTh": "ธนูเหล็กไหลยิงอินทรีคู่บนเนินผาลมกรด",
+      "category": "LEGENDARY_WEAPON",
+      "targetKind": "EQUIPMENT",
+      "targetId": "LEG_WPN_CONDOR_METEOR_BOW",
+      "tier": 6,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "SRC110_MW_ENV_05_MINERAL_DESERT",
+      "visitorRoles": [
+        "wanderer",
+        "merchant"
+      ],
+      "stepCount": 2,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "string_meteor_warbow",
+          "type": "body_trial",
+          "titleTh": "ออกแรงดึงสายเอ็นอสูรวายุขึ้นคันธนูเหล็กไหล",
+          "locationId": "SRC110_MW_ENV_05_MINERAL_DESERT",
+          "scope": "personal",
+          "skill": null,
+          "statPath": "physiology.strength",
+          "minVal": 54,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "shoot_wind_vane_target",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "shoot_wind_vane_target",
+          "type": "skill_trial",
+          "titleTh": "ยิงศรฝ่าลมกรดตัดห่วงทองคำสองวงพร้อมกัน",
+          "locationId": "SRC110_MW_ENV_05_MINERAL_DESERT",
+          "scope": "personal",
+          "skill": null,
+          "statPath": "intellect.perceptiveness",
+          "minVal": 58,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "templateId": "CLUE_LEG_WPN_PEACOCK_PLUME_FOCUS",
+      "titleTh": "ความลับคฤหาสน์นกยูงและขนนกยูงทองคำกลไกสวรรค์",
+      "category": "LEGENDARY_WEAPON",
+      "targetKind": "EQUIPMENT",
+      "targetId": "LEG_WPN_PEACOCK_PLUME_FOCUS",
+      "tier": 7,
+      "rarity": "Legendary",
+      "unique": true,
+      "cooldownDays": null,
+      "expiresAfterDays": null,
+      "regionId": "ruins",
+      "visitorRoles": [
+        "artisan",
+        "scholar",
+        "envoy"
+      ],
+      "stepCount": 2,
+      "steps": [
+        {
+          "stepIndex": 1,
+          "nodeId": "decode_peacock_mechanism",
+          "type": "inspect_inscription",
+          "titleTh": "ถอดรหัสกลไกสลักคู่ของกระบอกทองคำนกยูง",
+          "locationId": "sect",
+          "scope": "party_any",
+          "skill": "ARRAY",
+          "statPath": "intellect.inventiveness",
+          "minVal": 54,
+          "stoneCost": 130,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "peacock_confidence_trial",
+          "onFail": "RETRY_LATER"
+        },
+        {
+          "stepIndex": 2,
+          "nodeId": "peacock_confidence_trial",
+          "type": "spirit_judgment",
+          "titleTh": "ก้าวผ่านค่ายกลภาพลวงด้วยความเชื่อมั่นอันไม่สั่นคลอน",
+          "locationId": "ruins",
+          "scope": "personal",
+          "skill": null,
+          "statPath": "intellect.willpower",
+          "minVal": 64,
+          "stoneCost": 0,
+          "guardianNameTh": null,
+          "guardianPower": null,
+          "onPass": "REWARD",
+          "onFail": "RETRY_LATER"
+        }
+      ],
+      "status": "implemented"
+    }
+  ]
+}
