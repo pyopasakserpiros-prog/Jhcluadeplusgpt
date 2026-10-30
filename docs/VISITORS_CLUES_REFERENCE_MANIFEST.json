@@ -1,0 +1,711 @@
+{
+  "purpose": "Older reference metadata for design only. Continue newest Gemini source; revalidate all IDs, effects and source restrictions. This file is not new production data.",
+  "referenceCommit": "7a6694f91f0de0f22ed7aa02e39aae313e900d82",
+  "inspectedDateUTC": "2026-10-30",
+  "runtimeProbe": {
+    "referenceCommit": "7a6694f91f0de0f22ed7aa02e39aae313e900d82",
+    "counts": {
+      "materials": 261,
+      "items": 146,
+      "recipes": 278,
+      "uniqueTechIds": 468,
+      "legendary": 22
+    },
+    "weaponTypes": {
+      "SWORD": 8,
+      "BLADE": 9,
+      "SPEAR": 6,
+      "STAFF": 6,
+      "FOCUS": 6,
+      "BOW": 5,
+      "FIST": 5
+    },
+    "sample": {
+      "id": "ECO2_EQ_003_SWORD_6",
+      "tier": 6,
+      "q": 1.3,
+      "qualityPresent": false,
+      "fx": [
+        {
+          "effectId": "EFX_SWORD_STORM_STRIKE",
+          "params": {
+            "slashPower": 600,
+            "maxTargets": 5,
+            "armorPenRatio": 0.4
+          }
+        }
+      ],
+      "stats": {
+        "atk": 786.5,
+        "matk": 143,
+        "move": 5.2,
+        "acc": 171.6,
+        "crit": 3
+      }
+    },
+    "runtimeStatKeys": [
+      "hp",
+      "atk",
+      "matk",
+      "def",
+      "mdef",
+      "crit",
+      "critDmg",
+      "eva",
+      "acc",
+      "pen",
+      "cast",
+      "move"
+    ]
+  },
+  "weaponFamilies": {
+    "SWORD": "กระบี่",
+    "BLADE": "ดาบ",
+    "BOW": "ธนู",
+    "SPEAR": "หอก/ทวน",
+    "STAFF": "พลอง",
+    "FIST": "สนับหมัด",
+    "FOCUS": "สื่อปราณ"
+  },
+  "legendaryArts": [
+    {
+      "id": "LEG_COMBAT_DUGU_NINE_SWORDS",
+      "nameTh": "เก้ากระบี่เดียวดายทลายกระบวน",
+      "cat": "COMBAT_TECHNIQUE",
+      "path": "XIAN",
+      "sub": "SWORD_IMMORTAL",
+      "tier": 6,
+      "reqTier": 6,
+      "grade": "Legendary",
+      "legendary": true,
+      "weaponTypes": [
+        "SWORD"
+      ],
+      "fxKind": "legend_dugu_sword"
+    },
+    {
+      "id": "LEG_COMBAT_DRAGON_SUBDUING_PALMS",
+      "nameTh": "สิบแปดฝ่ามือพิชิตมังกรสะท้านภพ",
+      "cat": "COMBAT_TECHNIQUE",
+      "path": "BODY",
+      "sub": "BLOOD_DRAGON",
+      "tier": 6,
+      "reqTier": 6,
+      "grade": "Legendary",
+      "legendary": true,
+      "weaponTypes": [
+        "FIST"
+      ],
+      "fxKind": "legend_dragon_palm"
+    },
+    {
+      "id": "LEG_COMBAT_FEIXIAN_ONE_SWORD",
+      "nameTh": "หนึ่งกระบี่เซียนเหินจากฟากฟ้า",
+      "cat": "COMBAT_TECHNIQUE",
+      "path": "HEART_SOUL",
+      "sub": "MIND_SWORD_TELEKINESIS",
+      "tier": 7,
+      "reqTier": 7,
+      "grade": "Legendary",
+      "legendary": true,
+      "weaponTypes": [
+        "SWORD",
+        "FOCUS"
+      ],
+      "fxKind": "legend_feixian_beam"
+    },
+    {
+      "id": "LEG_AUX_QIANKUN_SHIFT",
+      "nameTh": "เคล็ดเคลื่อนย้ายจักรวาลพลิกผัน",
+      "cat": "AUXILIARY_ART",
+      "path": "XIAN",
+      "sub": "YIN_YANG_HARMONY",
+      "tier": 6,
+      "reqTier": 6,
+      "grade": "Legendary",
+      "legendary": true,
+      "fxKind": "legend_qiankun_taiji"
+    },
+    {
+      "id": "LEG_AUX_LINGXI_ONE_FINGER",
+      "nameTh": "ดัชนีใจสื่อใจสกัดพันคม",
+      "cat": "AUXILIARY_ART",
+      "path": "HEART_SOUL",
+      "sub": "ZEN_VOID_MIND",
+      "tier": 5,
+      "reqTier": 5,
+      "grade": "Legendary",
+      "legendary": true,
+      "fxKind": "legend_lingxi_gold"
+    },
+    {
+      "id": "LEG_LIGHT_LINGBO_STEP",
+      "nameTh": "ย่างก้าวเหยียบคลื่นไร้ร่องรอย",
+      "cat": "LIGHTNESS_ART",
+      "path": "XIAN",
+      "sub": "TIME_VOID",
+      "tier": 5,
+      "reqTier": 5,
+      "grade": "Legendary",
+      "legendary": true,
+      "fxKind": "legend_lingbo_afterimage"
+    },
+    {
+      "id": "LEG_LIGHT_MOON_BAT_SHADOW",
+      "nameTh": "ท่าร่างปีกจันทราเร้นเงาพันลี้",
+      "cat": "LIGHTNESS_ART",
+      "path": "DEMON",
+      "sub": "SHADOW_ASSASSIN",
+      "tier": 6,
+      "reqTier": 6,
+      "grade": "Legendary",
+      "legendary": true,
+      "fxKind": "legend_moon_shadow"
+    },
+    {
+      "id": "LEG_FORB_STAR_ABSORBING_VORTEX",
+      "nameTh": "มหาเวทต้องห้าม • วังวนดูดดาวกลืนชีพจร",
+      "cat": "FORBIDDEN_ART",
+      "path": "DEMON",
+      "sub": "HEAVEN_DEVOURING_DEMON",
+      "tier": 6,
+      "reqTier": 6,
+      "grade": "Legendary",
+      "legendary": true,
+      "fxKind": "legend_star_vortex"
+    },
+    {
+      "id": "LEG_FORB_BLOOD_LOTUS_SACRIFICE",
+      "nameTh": "วิชาต้องห้าม • บงกชโลหิตเผาอายุขัยสังหารเทพ",
+      "cat": "FORBIDDEN_ART",
+      "path": "ANY",
+      "sub": null,
+      "tier": 7,
+      "reqTier": 7,
+      "grade": "Legendary",
+      "legendary": true,
+      "fxKind": "legend_blood_lotus"
+    },
+    {
+      "id": "LEG_PASS_MINGYU_IMMORTAL_QI",
+      "nameTh": "เคล็ดปราณหยกใสไร้ราคี",
+      "cat": "PASSIVE",
+      "path": "XIAN",
+      "sub": null,
+      "tier": 6,
+      "reqTier": 6,
+      "grade": "Legendary",
+      "legendary": true,
+      "fxKind": "legend_aura_mingyu",
+      "descTh": "ปราณหยกใสหมุนเวียนไร้รั่วไหล เพิ่มป้องกันวิชา +22% ป้องกัน +16% ปราณสูงสุด +25% ลดใช้ปราณ 25% และฟื้นปราณ/เลือดต่อเนื่องในศึก"
+    },
+    {
+      "id": "LEG_PASS_NINE_YANG_MERIDIAN",
+      "nameTh": "คัมภีร์เก้าสุริยันคุ้มชีพจร",
+      "cat": "PASSIVE",
+      "path": "BODY",
+      "sub": null,
+      "tier": 6,
+      "reqTier": 6,
+      "grade": "Legendary",
+      "legendary": true,
+      "fxKind": "legend_aura_nine_yang",
+      "descTh": "ปราณเก้าสุริยันคุ้มกาย เพิ่มเลือด +20% ป้องกัน +18% โจมตี +14% ปราณสูงสุด +20% และเมื่อถูกโจมตีจะสะท้อนปราณหยางพร้อมฟื้นเลือด (มีคูลดาวน์)"
+    },
+    {
+      "id": "LEG_PASS_DUGU_SWORD_HEART",
+      "nameTh": "เจตจำนงกระบี่ไร้พ่ายอ่านช่องโหว่",
+      "cat": "PASSIVE",
+      "path": "ANY",
+      "sub": null,
+      "tier": 7,
+      "reqTier": 7,
+      "grade": "Legendary",
+      "legendary": true,
+      "weaponTypes": [
+        "SWORD"
+      ],
+      "fxKind": "legend_aura_dugu",
+      "descTh": "เมื่อถือกระบี่ จะเพิ่มโจมตี/โจมตีวิชา +16% แม่นยำ +15% อัตราคริ +14% แรงคริ +32% และเจาะเกราะ +18%"
+    },
+    {
+      "id": "LEG_MANTRA_TAIXUAN_SCRIPTURE",
+      "nameTh": "มหาคัมภีร์ปราณไท่เสวียนจารึกเกาะร้าง",
+      "cat": "QI_MANTRA",
+      "path": "XIAN",
+      "tier": 6,
+      "reqTier": 6,
+      "grade": "Legendary",
+      "legendary": true,
+      "fxKind": "legend_taixuan_runes",
+      "mantraBonus": {
+        "cultRatePct": 0.28,
+        "qiMaxPct": 0.22,
+        "p": {
+          "matk": 0.14,
+          "atk": 0.1,
+          "mdef": 0.1
+        },
+        "f": {
+          "cast": 8
+        }
+      }
+    },
+    {
+      "id": "LEG_MANTRA_SIX_MERIDIAN_QI",
+      "nameTh": "คัมภีร์ปราณกระบี่หกชีพจรไร้รูป",
+      "cat": "QI_MANTRA",
+      "path": "XIAN",
+      "tier": 7,
+      "reqTier": 7,
+      "grade": "Legendary",
+      "legendary": true,
+      "fxKind": "legend_six_meridian",
+      "mantraBonus": {
+        "cultRatePct": 0.32,
+        "qiMaxPct": 0.3,
+        "p": {
+          "matk": 0.18,
+          "acc": 0.14
+        },
+        "pp": {
+          "pen": 22,
+          "crit": 8
+        }
+      }
+    },
+    {
+      "id": "LEG_MANTRA_DRAGON_ELEPHANT_PRAJNA",
+      "nameTh": "มหาคัมภีร์กายานาคช้างปัญญาบารมี",
+      "cat": "BODY_MANTRA",
+      "path": "BODY",
+      "tier": 6,
+      "reqTier": 6,
+      "grade": "Legendary",
+      "legendary": true,
+      "fxKind": "legend_dragon_elephant",
+      "mantraBonus": {
+        "cultRatePct": 0.26,
+        "p": {
+          "def": 0.22,
+          "hp": 0.18,
+          "atk": 0.16
+        },
+        "pp": {
+          "pen": 10
+        }
+      }
+    },
+    {
+      "id": "LEG_MANTRA_DIAMOND_INDESTRUCTIBLE",
+      "nameTh": "คัมภีร์กายาวัชระอมตะไม่บุบสลาย",
+      "cat": "BODY_MANTRA",
+      "path": "BODY",
+      "tier": 7,
+      "reqTier": 7,
+      "grade": "Legendary",
+      "legendary": true,
+      "fxKind": "legend_vajra_bell",
+      "mantraBonus": {
+        "cultRatePct": 0.3,
+        "p": {
+          "def": 0.28,
+          "mdef": 0.22,
+          "hp": 0.24
+        },
+        "f": {
+          "move": -6
+        }
+      }
+    },
+    {
+      "id": "LEG_MANTRA_EIGHT_DESOLATIONS_GOD",
+      "nameTh": "มหาคัมภีร์ศรัทธาเทวะแปดทิศคืนเยาว์",
+      "cat": "FAITH_MANTRA",
+      "path": "GOD",
+      "tier": 6,
+      "reqTier": 6,
+      "grade": "Legendary",
+      "legendary": true,
+      "fxKind": "legend_eight_desolations",
+      "mantraBonus": {
+        "cultRatePct": 0.26,
+        "p": {
+          "hp": 0.2,
+          "mdef": 0.16,
+          "matk": 0.14
+        }
+      }
+    },
+    {
+      "id": "LEG_MANTRA_CELESTIAL_MANDATE_CANON",
+      "nameTh": "มหาคัมภีร์โองการสวรรค์ค้ำจุนสามภพ",
+      "cat": "FAITH_MANTRA",
+      "path": "GOD",
+      "tier": 7,
+      "reqTier": 7,
+      "grade": "Legendary",
+      "legendary": true,
+      "fxKind": "legend_celestial_mandate",
+      "mantraBonus": {
+        "cultRatePct": 0.32,
+        "p": {
+          "mdef": 0.22,
+          "def": 0.18,
+          "matk": 0.18
+        },
+        "f": {
+          "acc": 20
+        }
+      }
+    },
+    {
+      "id": "LEG_MANTRA_ASHURA_BLOOD_SEA",
+      "nameTh": "มหาคัมภีร์มารทะเลโลหิตอสูรบรรพกาล",
+      "cat": "DEMON_MANTRA",
+      "path": "DEMON",
+      "tier": 6,
+      "reqTier": 6,
+      "grade": "Legendary",
+      "legendary": true,
+      "fxKind": "legend_ashura_blood",
+      "mantraBonus": {
+        "cultRatePct": 0.28,
+        "p": {
+          "atk": 0.18,
+          "matk": 0.18
+        },
+        "pp": {
+          "crit": 10,
+          "critDmg": 22
+        }
+      }
+    },
+    {
+      "id": "LEG_MANTRA_TEN_THOUSAND_GU_MONARCH",
+      "nameTh": "มหาคัมภีร์มารจักรพรรดิกู่หมื่นพิษกลืนฟ้า",
+      "cat": "DEMON_MANTRA",
+      "path": "DEMON",
+      "tier": 7,
+      "reqTier": 7,
+      "grade": "Legendary",
+      "legendary": true,
+      "fxKind": "legend_gu_monarch",
+      "mantraBonus": {
+        "cultRatePct": 0.32,
+        "p": {
+          "matk": 0.22,
+          "mdef": 0.16
+        },
+        "pp": {
+          "pen": 18
+        },
+        "life": {
+          "POISON": 0.35
+        }
+      }
+    },
+    {
+      "id": "LEG_MANTRA_NINE_YIN_SOUL_MIRROR",
+      "nameTh": "มหาคัมภีร์จิตเก้าหยินส่องวิญญาณ",
+      "cat": "SOUL_MANTRA",
+      "path": "HEART_SOUL",
+      "tier": 6,
+      "reqTier": 6,
+      "grade": "Legendary",
+      "legendary": true,
+      "fxKind": "legend_nine_yin_mirror",
+      "mantraBonus": {
+        "cultRatePct": 0.28,
+        "p": {
+          "matk": 0.2,
+          "mdef": 0.18,
+          "eva": 0.12
+        },
+        "f": {
+          "cast": 10
+        }
+      }
+    },
+    {
+      "id": "LEG_MANTRA_LITTLE_LI_HEART_BLADE",
+      "nameTh": "มหาคัมภีร์จิตมีดบินไร้พลาดสะท้านภพ",
+      "cat": "SOUL_MANTRA",
+      "path": "HEART_SOUL",
+      "tier": 7,
+      "reqTier": 7,
+      "grade": "Legendary",
+      "legendary": true,
+      "fxKind": "legend_little_li_dagger",
+      "mantraBonus": {
+        "cultRatePct": 0.32,
+        "p": {
+          "matk": 0.24,
+          "acc": 0.2
+        },
+        "pp": {
+          "crit": 12,
+          "critDmg": 28,
+          "pen": 20
+        }
+      }
+    }
+  ],
+  "ordinaryArtCandidates": [
+    {
+      "id": "ART190_XIAN_001",
+      "nameTh": "เพลงกระบี่พิรุณหยกเจ็ดดาว",
+      "cat": "COMBAT_TECHNIQUE",
+      "path": "XIAN",
+      "sub": "SWORD_IMMORTAL",
+      "tier": 1,
+      "reqTier": 1,
+      "grade": "Common",
+      "weaponTypes": [
+        "SWORD"
+      ]
+    },
+    {
+      "id": "ART190_XIAN_013",
+      "nameTh": "เพลงกระบี่คู่หยินหยางหมุนเวียน",
+      "cat": "COMBAT_TECHNIQUE",
+      "path": "XIAN",
+      "sub": "SWORD_IMMORTAL",
+      "tier": 2,
+      "reqTier": 2,
+      "grade": "Rare",
+      "weaponTypes": [
+        "SWORD"
+      ]
+    }
+  ],
+  "itemMaterialCandidates": [
+    {
+      "id": "MAT_HERB_JADE_LOTUS_2",
+      "nameTh": "บัวหยกเขียวร้อยปี",
+      "category": "HERB",
+      "tier": 2,
+      "craft": "ALCHEMY",
+      "terrain": "plains",
+      "relic": false,
+      "value": 22
+    },
+    {
+      "id": "MAT_HERB_SNOW_LOTUS_5",
+      "nameTh": "บัวหิมะสวรรค์หมื่นปี",
+      "category": "HERB",
+      "tier": 5,
+      "craft": "ALCHEMY",
+      "terrain": "mountain",
+      "relic": false,
+      "value": 310
+    },
+    {
+      "id": "MAT_ORE_METEOR_IRON_5",
+      "nameTh": "แร่เหล็กไหลอุกกาบาต",
+      "category": "ORE",
+      "tier": 5,
+      "craft": "FORGING",
+      "terrain": "desert",
+      "relic": false,
+      "value": 340
+    },
+    {
+      "id": "MAT_BP_DRAGON_PEARL_7",
+      "nameTh": "มุกมังกรบรรพกาล",
+      "category": "BEAST_PART",
+      "tier": 7,
+      "craft": "ARRAY",
+      "terrain": "urban",
+      "relic": false,
+      "value": 2100
+    },
+    {
+      "id": "MAT_TR_WORLD_FORGE_SHARD",
+      "nameTh": "เศษศิลาสร้างพิภพบรรพกาล",
+      "category": "HERITAGE_RELIC",
+      "tier": 7,
+      "craft": "FORGING",
+      "terrain": "heritage_only",
+      "relic": true,
+      "value": 5200
+    },
+    {
+      "id": "MP_SWORD_5",
+      "nameTh": "กระบี่อุกกาบาต",
+      "out": "EQUIPMENT",
+      "slot": "WEAPON",
+      "gearType": "SWORD",
+      "tier": 5,
+      "craft": "FORGING",
+      "minStage": 3,
+      "value": 583.4430000000001
+    },
+    {
+      "id": "ECO2_EQ_003_SWORD_6",
+      "nameTh": "กระบี่มังกรทองเก้าสุริยัน",
+      "cat": "EQUIPMENT",
+      "out": "EQUIPMENT",
+      "slot": "WEAPON",
+      "gearType": "SWORD",
+      "tier": 6,
+      "craft": "FORGING",
+      "minStage": 5,
+      "value": 880,
+      "recipeId": "ECO2_REC_EQ_003_SWORD_6",
+      "effects": [
+        {
+          "effectId": "EFX_SWORD_STORM_STRIKE",
+          "params": {
+            "slashPower": 600,
+            "maxTargets": 5,
+            "armorPenRatio": 0.4
+          }
+        }
+      ]
+    }
+  ],
+  "regionalIntegrationReferences": [
+    {
+      "id": "forest",
+      "nameTh": "ป่าหมอกเขียว",
+      "danger": 1,
+      "terrain": "forest",
+      "days": 3,
+      "beastMax": 3
+    },
+    {
+      "id": "plains",
+      "nameTh": "ทุ่งราบเมฆา",
+      "danger": 1,
+      "terrain": "plains",
+      "days": 3,
+      "beastMax": 2
+    },
+    {
+      "id": "mountain",
+      "nameTh": "ทิวเขาศิลาคราม",
+      "danger": 2,
+      "terrain": "mountain",
+      "days": 5,
+      "beastMax": 4
+    },
+    {
+      "id": "desert",
+      "nameTh": "ทะเลทรายเพลิงอัสดง",
+      "danger": 3,
+      "terrain": "desert",
+      "days": 8,
+      "beastMax": 5
+    },
+    {
+      "id": "water",
+      "nameTh": "ลุ่มน้ำสาบมังกรคราม",
+      "danger": 2,
+      "terrain": "water",
+      "days": 4,
+      "beastMax": 6
+    },
+    {
+      "id": "ruins",
+      "nameTh": "ซากนครโบราณ",
+      "danger": 4,
+      "terrain": "mountain",
+      "days": 10,
+      "beastMax": 6
+    },
+    {
+      "id": "SRC110_MW_ENV_01_ANCIENT_CANOPY",
+      "nameTh": "พงไพรบรรพกาลเร้นเมฆา",
+      "danger": 1,
+      "terrain": "forest",
+      "days": 3,
+      "beastMax": 2
+    },
+    {
+      "id": "SRC110_MW_ENV_02_MIASMA_MANGROVE",
+      "nameTh": "บึงหมอกพิษโกงกางทมิฬ",
+      "danger": 2,
+      "terrain": "forest",
+      "days": 4,
+      "beastMax": 3
+    },
+    {
+      "id": "SRC110_MW_ENV_03_FROZEN_HIGHLANDS",
+      "nameTh": "ทุ่งทุนดราเหมันต์เก้าชั้นฟ้า",
+      "danger": 2,
+      "terrain": "mountain",
+      "days": 5,
+      "beastMax": 3
+    },
+    {
+      "id": "SRC110_MW_ENV_04_VOLCANIC_CALDERA",
+      "nameTh": "แอ่งอัคคีหินหนืดผลาญฟ้า",
+      "danger": 3,
+      "terrain": "desert",
+      "days": 6,
+      "beastMax": 4
+    },
+    {
+      "id": "SRC110_MW_ENV_05_MINERAL_DESERT",
+      "nameTh": "ทะเลทรายศิลาแร่และพายุทรายทอง",
+      "danger": 2,
+      "terrain": "desert",
+      "days": 5,
+      "beastMax": 3
+    },
+    {
+      "id": "SRC110_MW_ENV_11_CELESTIAL_GARDEN_RUINS",
+      "nameTh": "ซากอุทยานสวรรค์ร่วงหล่น",
+      "danger": 3,
+      "terrain": "mountain",
+      "days": 7,
+      "beastMax": 4
+    }
+  ],
+  "contentRegionReferences": [
+    {
+      "id": "SRC110_MW_ENV_01_ANCIENT_CANOPY",
+      "nameTh": "พงไพรบรรพกาลเร้นเมฆา",
+      "danger": 1,
+      "terrain": "forest"
+    },
+    {
+      "id": "SRC110_MW_ENV_02_MIASMA_MANGROVE",
+      "nameTh": "บึงหมอกพิษโกงกางทมิฬ",
+      "danger": 2,
+      "terrain": "forest"
+    },
+    {
+      "id": "SRC110_MW_ENV_03_FROZEN_HIGHLANDS",
+      "nameTh": "ทุ่งทุนดราเหมันต์เก้าชั้นฟ้า",
+      "danger": 2,
+      "terrain": "mountain"
+    },
+    {
+      "id": "SRC110_MW_ENV_04_VOLCANIC_CALDERA",
+      "nameTh": "แอ่งอัคคีหินหนืดผลาญฟ้า",
+      "danger": 3,
+      "terrain": "desert"
+    },
+    {
+      "id": "SRC110_MW_ENV_05_MINERAL_DESERT",
+      "nameTh": "ทะเลทรายศิลาแร่และพายุทรายทอง",
+      "danger": 2,
+      "terrain": "desert"
+    },
+    {
+      "id": "SRC110_MW_ENV_11_CELESTIAL_GARDEN_RUINS",
+      "nameTh": "ซากอุทยานสวรรค์ร่วงหล่น",
+      "danger": 3,
+      "terrain": "mountain"
+    }
+  ],
+  "caveFloorCount": 10,
+  "assertions": {
+    "researchPerformedByCodex": false,
+    "newerGeminiPatchesReviewed": false,
+    "combatEffectsVerifiedByProbe": false,
+    "gameplayModified": false
+  }
+}
