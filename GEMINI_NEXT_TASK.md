@@ -1,3 +1,3 @@
-# Current development state
+# Active next task
 
-The NPC, graphics and visitor/clue/legendary weapon updates have been delivered and reviewed with fixes. Read HANDOFF.md and JianghuSect_v1.10/ROADMAP/COMBINED_REVIEW_FOLLOWUPS_TH.md. Future work is not yet assigned; previous prompts are historical.
+Read HANDOFF.md, then implement [docs/NEXT_GEMINI_IMPLEMENTATION_PROMPT.md](docs/NEXT_GEMINI_IMPLEMENTATION_PROMPT.md). Previous patch prompts are historical.

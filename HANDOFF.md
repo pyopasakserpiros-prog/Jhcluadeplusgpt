@@ -1,4 +1,6 @@
-# Current handoff — combined game reviewed by Codex
+# Current handoff — next Gemini implementation
+
+**Active assignment:** Read [docs/NEXT_GEMINI_IMPLEMENTATION_PROMPT.md](docs/NEXT_GEMINI_IMPLEMENTATION_PROMPT.md) and implement it using this complete main-1 source.
 
 Active source: `JianghuSect_v1.10/`. Playable standalone: `JianghuSect_v1.10/JianghuSect_single.html`.
 
