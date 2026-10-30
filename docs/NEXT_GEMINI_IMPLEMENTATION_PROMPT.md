@@ -1,6 +1,6 @@
 # NEXT IMPLEMENTATION ASSIGNMENT — BELIEVABLE CLUE INVESTIGATIONS
 
-Read this document, the current HANDOFF.md, `JianghuSect_v1.10/docs/CODEX_COMBINED_PATCH_REVIEW_TH.md`, `CODEX_COMBINED_VERIFICATION.json`, and `ROADMAP/COMBINED_REVIEW_FOLLOWUPS_TH.md`. This is an implementation assignment. Work from the supplied complete main-1 ZIP, not an older upload or historical prompt. The reviewed runtime baseline is 8890680725f5643f77acfa01e5b71c919ff93918; this documentation may have a newer commit. Identify the actual source and preserve all integrated NPC, graphics, visitor, clue and weapon work and tests.
+Read this document, the current HANDOFF.md, `JianghuSect_v1.10/docs/CODEX_COMBINED_PATCH_REVIEW_TH.md`, `CODEX_COMBINED_VERIFICATION.json`, and `ROADMAP/COMBINED_REVIEW_FOLLOWUPS_TH.md`. Read only the active handoff, this prompt, the current review, verification, roadmap and source/tests relevant to the task. Historical reports, archives, old screenshots and source-reference material are available when needed; do not consume them wholesale. This is an implementation assignment. Work from the supplied complete main-1 ZIP, not an older upload or historical prompt. The reviewed runtime baseline is 8890680725f5643f77acfa01e5b71c919ff93918; this documentation may have a newer commit. Identify the actual source and preserve all integrated NPC, graphics, visitor, clue and weapon work and tests.
 
 ## Objective and discretion
 
