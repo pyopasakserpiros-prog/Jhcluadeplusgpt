@@ -1,0 +1,11 @@
+# Logs & temporary outputs
+*.log
+.run_*
+.git_*
+test_touch.txt
+test_watcher.sh
+
+# Test results and temporary files
+results/
+scratch/
+.DS_Store
