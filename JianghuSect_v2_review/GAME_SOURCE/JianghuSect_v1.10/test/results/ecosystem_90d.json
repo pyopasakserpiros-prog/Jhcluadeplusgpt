@@ -1,0 +1,282 @@
+{
+  "seed": "ecosystem-audit",
+  "days": 90,
+  "ticks": 129600,
+  "status": "PASS",
+  "elapsedMs": 8793,
+  "population": 22,
+  "deaths": 0,
+  "market": {
+    "visits": 14,
+    "sectBought": 180,
+    "sectSold": 197,
+    "memberBought": 3,
+    "memberSold": 5,
+    "sectStonesIn": 2206,
+    "sectStonesOut": 1966,
+    "memberStonesIn": 44,
+    "memberStonesOut": 51,
+    "seq": 14,
+    "activeVisitors": 0,
+    "historyEntries": 60,
+    "sectStones": 1839
+  },
+  "cp": {
+    "minted": 8930,
+    "burned": 3730,
+    "price": 0.8545786961321974,
+    "purchases": 84,
+    "studyFees": 103,
+    "guidanceFees": 92,
+    "trainingFees": 2214,
+    "recipeFees": 0,
+    "recipeAuthorizations": 0
+  },
+  "content": {
+    "gathered": 11,
+    "hunted": 8,
+    "formulas": 0,
+    "manuals": 0,
+    "expeditions": 5,
+    "formulasKept": 0,
+    "formulasDonated": 0,
+    "formulasTraded": 0,
+    "formulasCopied": 0,
+    "formulasAuthorized": 0,
+    "organsHarvested": 2,
+    "organsDamaged": 8,
+    "organsRefined": 0,
+    "organsDonated": 2,
+    "experimentsRun": 0,
+    "experimentsSucceeded": 0,
+    "treatiesSigned": 2,
+    "politicalEvents": 5,
+    "knownRecipes": 0,
+    "heldFormulas": 0,
+    "organsVault": {
+      "SRC110_MW_ORGAN_010": 1,
+      "SRC110_MW_ORGAN_001": 1
+    },
+    "experimentsDiscovered": [],
+    "politics": {
+      "treaties": {
+        "S0": {
+          "type": "ALLIANCE",
+          "signedDay": 420,
+          "expiresDay": 510
+        }
+      },
+      "stats": {
+        "treatiesSigned": 2,
+        "tradeShipments": 7,
+        "tributesPaid": 2,
+        "crisesResolved": 4,
+        "jointDefenses": 1
+      },
+      "eventsCount": 6
+    }
+  },
+  "sourceProduction": {},
+  "sourceConsumption": {},
+  "sourceSales": {},
+  "sourceInflow": {
+    "SRC110_MW_MAT_BP_142": 4,
+    "SRC110_MW_MAT_BP_143": 6,
+    "SRC110_MW_MAT_HERB_001": 20,
+    "SRC110_MW_MAT_BP_144": 9,
+    "SRC110_MW_MAT_BP_141": 7,
+    "SRC110_MW_MAT_HERB_050": 2,
+    "SRC110_MW_MAT_BP_148": 8,
+    "SRC110_MW_MAT_BP_147": 3,
+    "SRC110_MW_MAT_BP_145": 6,
+    "SRC110_MW_MAT_ORE_063": 5,
+    "SRC110_MW_MAT_BP_153": 2,
+    "SRC110_MW_MAT_EXO_108": 2,
+    "SRC110_MW_MAT_HERB_006": 2,
+    "SRC110_MW_MAT_BP_149": 2,
+    "SRC110_MW_MAT_BP_151": 1
+  },
+  "sourceOutflow": {},
+  "sourceStock": {
+    "SRC110_MW_MAT_BP_142": 4,
+    "SRC110_MW_MAT_BP_143": 6,
+    "SRC110_MW_MAT_HERB_001": 20,
+    "SRC110_MW_MAT_BP_144": 9,
+    "SRC110_MW_MAT_BP_141": 7,
+    "SRC110_MW_MAT_HERB_050": 2,
+    "SRC110_MW_MAT_BP_148": 8,
+    "SRC110_MW_MAT_BP_147": 3,
+    "SRC110_MW_MAT_BP_145": 6,
+    "SRC110_MW_MAT_ORE_063": 5,
+    "SRC110_MW_MAT_BP_153": 2,
+    "SRC110_MW_MAT_EXO_108": 2,
+    "SRC110_MW_MAT_HERB_006": 2,
+    "SRC110_MW_MAT_BP_149": 2,
+    "SRC110_MW_MAT_BP_151": 1
+  },
+  "tracks": {
+    "active": [
+      {
+        "id": "n284831",
+        "sub": "ZEN_VOID_MIND",
+        "ord": 1,
+        "realm": "สงบคลื่นอารมณ์"
+      },
+      {
+        "id": "n453754",
+        "sub": "VENOM_GU_SOVEREIGN",
+        "ord": 1,
+        "realm": "สัมผัสไอพิษ"
+      },
+      {
+        "id": "n15_557",
+        "sub": "DREAM_ILLUSION_WEAVER",
+        "ord": 1,
+        "realm": "ทอหมอกมายา"
+      },
+      {
+        "id": "n16_484",
+        "sub": "CALLIGRAPHY_PAINTING_SAGE",
+        "ord": 1,
+        "realm": "ฝนหมึกวิญญาณ"
+      },
+      {
+        "id": "n23_174",
+        "sub": "VENOM_GU_SOVEREIGN",
+        "ord": 1,
+        "realm": "สัมผัสไอพิษ"
+      },
+      {
+        "id": "n31_623",
+        "sub": "ZEN_VOID_MIND",
+        "ord": 1,
+        "realm": "สงบคลื่นอารมณ์"
+      },
+      {
+        "id": "n34_865",
+        "sub": "FROST_MOON_IMMORTAL",
+        "ord": 1,
+        "realm": "ซึมซับแสงจันทร์"
+      },
+      {
+        "id": "n37_956",
+        "sub": "HEAVEN_DEVOURING_DEMON",
+        "ord": 1,
+        "realm": "เปิดจุดชีพจรกลืนปราณ"
+      },
+      {
+        "id": "n38_105",
+        "sub": "FROST_MOON_IMMORTAL",
+        "ord": 1,
+        "realm": "ซึมซับแสงจันทร์"
+      },
+      {
+        "id": "n50_936",
+        "sub": "CALLIGRAPHY_PAINTING_SAGE",
+        "ord": 1,
+        "realm": "ฝนหมึกวิญญาณ"
+      },
+      {
+        "id": "n52_451",
+        "sub": "FROST_MOON_IMMORTAL",
+        "ord": 1,
+        "realm": "ซึมซับแสงจันทร์"
+      }
+    ]
+  },
+  "activityHourlySamples": {
+    "cultivate": 1872,
+    "practice": 1644,
+    "eat": 1539,
+    "brewBasic": 315,
+    "wildHunt": 329,
+    "pray": 540,
+    "duty": 1512,
+    "paidTraining": 181,
+    "idle": 654,
+    "sleep": 11777,
+    "guard": 1495,
+    "forge": 294,
+    "brew": 999,
+    "pair": 3292,
+    "fight": 88,
+    "shop": 92,
+    "cook": 377,
+    "leisure": 197,
+    "forage": 814,
+    "mine": 649,
+    "outsideTrade": 10,
+    "heal": 117,
+    "donate": 19,
+    "breakthrough": 30,
+    "errand": 19,
+    "AWAY": 1634,
+    "explore": 39,
+    "study": 175,
+    "farm": 419,
+    "hide": 2,
+    "festival": 14,
+    "guidedStudy": 2,
+    "consolidate": 30
+  },
+  "events": {
+    "craft": 57,
+    "combat": 371,
+    "finance": 124,
+    "appoint": 3,
+    "decision": 8,
+    "gear": 11,
+    "explore": 18,
+    "spar": 30,
+    "politics": 2,
+    "recruit": 62,
+    "event": 21,
+    "tournament": 1,
+    "mission": 21,
+    "promote": 18,
+    "breakthrough": 15,
+    "raid": 7,
+    "learn": 4,
+    "awaken": 2,
+    "relation": 1
+  },
+  "monthly": [
+    {
+      "day": 390,
+      "population": 10,
+      "stones": 214,
+      "cpMinted": 2303,
+      "cpBurned": 563,
+      "priceIndex": 0.8739805494697055,
+      "goods": 290,
+      "formulas": 0,
+      "heldFormulas": 0,
+      "sourceManuals": 0
+    },
+    {
+      "day": 420,
+      "population": 20,
+      "stones": 811,
+      "cpMinted": 5176,
+      "cpBurned": 1905,
+      "priceIndex": 0.8545786961321974,
+      "goods": 400,
+      "formulas": 0,
+      "heldFormulas": 0,
+      "sourceManuals": 0
+    },
+    {
+      "day": 450,
+      "population": 24,
+      "stones": 1688,
+      "cpMinted": 8930,
+      "cpBurned": 3709,
+      "priceIndex": 0.8545786961321974,
+      "goods": 519,
+      "formulas": 0,
+      "heldFormulas": 0,
+      "sourceManuals": 0
+    }
+  ],
+  "saveBytes": 637489
+}

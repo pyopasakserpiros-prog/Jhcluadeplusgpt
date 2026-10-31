@@ -1,0 +1,1269 @@
+{
+  "generatedAt": "2026-10-30T10:56:47.425Z",
+  "version": "1.12.3",
+  "mapDimensions": {
+    "width": 240,
+    "height": 192,
+    "baseHeightBeforeExtension": 160,
+    "exit": {
+      "x": 118,
+      "y": 188
+    }
+  },
+  "zones": {
+    "spirit_pond": {
+      "id": "spirit_pond",
+      "bkey": "spirit_pond",
+      "nameTh": "สระธารวิญญาณ (ในสำนัก)",
+      "maxStock": 18,
+      "dailyRegen": 6,
+      "danger": 0,
+      "maxTier": 3,
+      "descTh": "สระน้ำพุวิญญาณภายในกำแพงสำนัก ปลอดภัยและเงียบสงบ มีปลาลำธารและปลาหลีฮื้อหยกอาศัยอยู่"
+    },
+    "river_west": {
+      "id": "river_west",
+      "bkey": "river_west",
+      "nameTh": "คุ้งน้ำไผ่หยก (ธารใต้ฝั่งตะวันตก)",
+      "maxStock": 32,
+      "dailyRegen": 10,
+      "danger": 1,
+      "maxTier": 4,
+      "descTh": "คุ้งน้ำตื้นร่มไผ่ทางตะวันตกของธารน้ำปราณทักษิณ ชุกชุมด้วยปลาสำหรับทำอาหารและปลาสมุนไพร"
+    },
+    "river_central": {
+      "id": "river_central",
+      "bkey": "river_dock",
+      "nameTh": "ท่าน้ำธารปราณทักษิณ (ธารใต้ตอนกลาง)",
+      "maxStock": 38,
+      "dailyRegen": 12,
+      "danger": 1,
+      "maxTier": 5,
+      "descTh": "ท่าน้ำไม้และสะพานหลักข้ามธารน้ำปราณทักษิณ กระแสน้ำหมุนเวียนอุดมสมบูรณ์และมีโอกาสพบหีบปริศนาที่พัดมากับน้ำ"
+    },
+    "river_east": {
+      "id": "river_east",
+      "bkey": "river_east",
+      "nameTh": "วังน้ำศิลาคราม (ธารใต้ฝั่งตะวันออก)",
+      "maxStock": 28,
+      "dailyRegen": 9,
+      "danger": 2,
+      "maxTier": 5,
+      "descTh": "วังน้ำลึกและโขดหินปราณทางตะวันออก แหล่งอาศัยของปลาดาราเก้าจุดและปลามังกรหนวดหยกหายาก"
+    }
+  },
+  "fishSpeciesCatalog": [
+    {
+      "id": "MAT_FISH_SILVER_CARP_1",
+      "nameTh": "ปลาตะเพียนเงินลำธาร",
+      "category": "FISH",
+      "subCategory": "COOKING_FISH",
+      "tier": 1,
+      "rarity": "Common",
+      "value": 6,
+      "mealYield": 3,
+      "catchWeight": 36,
+      "minSkill": 0,
+      "habitats": [
+        "spirit_pond",
+        "river_west",
+        "river_central",
+        "river_east"
+      ],
+      "preferredSeasons": [
+        0,
+        1,
+        2
+      ],
+      "preferredWeather": [
+        "clear",
+        "cloud",
+        "rain"
+      ],
+      "preferredTime": [
+        "morning",
+        "day",
+        "dusk"
+      ],
+      "recipes": [
+        "FOOD_STEAMED_SPIRIT_FISH",
+        "CANTEEN_MEAL"
+      ],
+      "iconCell": "fish_common_silver",
+      "descTh": "ปลาเกล็ดเงินเนื้อนุ่มที่พบได้ชุกชุมในสระวิญญาณและคุ้งน้ำตื้น ใช้ปรุงอาหารในโรงครัวทดแทนข้าวสารหรือนึ่งขิงบำรุงกำลัง"
+    },
+    {
+      "id": "MAT_FISH_BAMBOO_GUDGEON_1",
+      "nameTh": "ปลาซิวไผ่หยก",
+      "category": "FISH",
+      "subCategory": "COOKING_FISH",
+      "tier": 1,
+      "rarity": "Common",
+      "value": 7,
+      "mealYield": 3,
+      "catchWeight": 32,
+      "minSkill": 0,
+      "habitats": [
+        "spirit_pond",
+        "river_west",
+        "river_central"
+      ],
+      "preferredSeasons": [
+        0,
+        1
+      ],
+      "preferredWeather": [
+        "clear",
+        "cloud"
+      ],
+      "preferredTime": [
+        "morning",
+        "day"
+      ],
+      "recipes": [
+        "FOOD_STEAMED_SPIRIT_FISH",
+        "CANTEEN_MEAL"
+      ],
+      "iconCell": "fish_common_jade",
+      "descTh": "ปลาตัวเล็กสีเขียวมรกตที่ชอบว่ายทวนน้ำใต้ร่มไผ่ มีกลิ่นหอมใบไผ่อ่อน ช่วยเจริญอาหารและคลายความอ่อนล้า"
+    },
+    {
+      "id": "MAT_FISH_GOLDEN_PERCH_2",
+      "nameTh": "ปลากะพงเกล็ดทอง",
+      "category": "FISH",
+      "subCategory": "COOKING_FISH",
+      "tier": 2,
+      "rarity": "Refined",
+      "value": 16,
+      "mealYield": 4,
+      "catchWeight": 22,
+      "minSkill": 4,
+      "habitats": [
+        "spirit_pond",
+        "river_west",
+        "river_central"
+      ],
+      "preferredSeasons": [
+        1,
+        2
+      ],
+      "preferredWeather": [
+        "clear",
+        "cloud"
+      ],
+      "preferredTime": [
+        "day",
+        "dusk"
+      ],
+      "recipes": [
+        "FOOD_STEAMED_SPIRIT_FISH",
+        "CANTEEN_MEAL"
+      ],
+      "iconCell": "fish_refined_gold",
+      "descTh": "ปลาน้ำจืดเนื้อแน่นเกล็ดสะท้อนแสงทอง อุดมด้วยปราณธาตุดินและทอง บำรุงกำลังกายและฟื้นฟูความเหนื่อยล้าจากการฝึกยุทธ์"
+    },
+    {
+      "id": "MAT_FISH_MIST_CATFISH_2",
+      "nameTh": "ปลากดหมอกคราม",
+      "category": "FISH",
+      "subCategory": "MEDICINAL_FISH",
+      "tier": 2,
+      "rarity": "Refined",
+      "value": 18,
+      "mealYield": 4,
+      "catchWeight": 20,
+      "minSkill": 5,
+      "habitats": [
+        "river_west",
+        "river_central",
+        "river_east"
+      ],
+      "preferredSeasons": [
+        0,
+        2
+      ],
+      "preferredWeather": [
+        "rain",
+        "fog",
+        "cloud"
+      ],
+      "preferredTime": [
+        "dusk",
+        "night"
+      ],
+      "recipes": [
+        "FOOD_EEL_VITALITY_BROTH"
+      ],
+      "iconCell": "fish_refined_catfish",
+      "descTh": "ปลาหนังลื่นที่ออกหากินยามหมอกลงจัดและฝนพรำ เนื้อและเมือกมีสรรพคุณสมานแผลและคลายความตึงเครียดของเส้นชีพจร"
+    },
+    {
+      "id": "MAT_FISH_JADE_KOI_3",
+      "nameTh": "ปลาหลีฮื้อหยกขาว",
+      "category": "FISH",
+      "subCategory": "SPIRIT_FISH",
+      "tier": 3,
+      "rarity": "Rare",
+      "value": 38,
+      "mealYield": 5,
+      "catchWeight": 12,
+      "minSkill": 10,
+      "habitats": [
+        "spirit_pond",
+        "river_central",
+        "river_east"
+      ],
+      "preferredSeasons": [
+        0,
+        2
+      ],
+      "preferredWeather": [
+        "clear",
+        "fog"
+      ],
+      "preferredTime": [
+        "morning",
+        "day"
+      ],
+      "recipes": [
+        "FOOD_JADE_KOI_SOUP",
+        "REC_FISH_GALL_CLARITY_3"
+      ],
+      "iconCell": "fish_rare_koi",
+      "descTh": "ปลาหลีฮื้อสีขาวพิสุทธิ์ดั่งหยกมันแพะ ซึมซับไอปราณจากตาน้ำวิญญาณ ช่วยชำระจิตมารและเสริมสมาธิในการศึกษาคัมภีร์"
+    },
+    {
+      "id": "MAT_FISH_SPIRIT_EEL_3",
+      "nameTh": "ปลาไหลปราณวารี",
+      "category": "FISH",
+      "subCategory": "MEDICINAL_FISH",
+      "tier": 3,
+      "rarity": "Rare",
+      "value": 42,
+      "mealYield": 5,
+      "catchWeight": 11,
+      "minSkill": 12,
+      "habitats": [
+        "river_west",
+        "river_east"
+      ],
+      "preferredSeasons": [
+        0,
+        1
+      ],
+      "preferredWeather": [
+        "rain",
+        "cloud",
+        "fog"
+      ],
+      "preferredTime": [
+        "dusk",
+        "night"
+      ],
+      "recipes": [
+        "FOOD_EEL_VITALITY_BROTH",
+        "REC_FISH_GALL_CLARITY_3"
+      ],
+      "iconCell": "fish_rare_eel",
+      "descTh": "ปลาไหลลำตัวยาวที่มีกระแสปราณธาตุน้ำไหลเวียนในโลหิต ใช้ต้มน้ำแกงบำรุงโลหิตและฟื้นฟูพลังปราณของผู้บาดเจ็บ"
+    },
+    {
+      "id": "MAT_FISH_STARLIGHT_TROUT_4",
+      "nameTh": "ปลาดาราเก้าจุด",
+      "category": "FISH",
+      "subCategory": "ALCHEMY_FISH",
+      "tier": 4,
+      "rarity": "Exceptional",
+      "value": 85,
+      "mealYield": 6,
+      "catchWeight": 5.5,
+      "minSkill": 18,
+      "habitats": [
+        "river_central",
+        "river_east"
+      ],
+      "preferredSeasons": [
+        2,
+        3
+      ],
+      "preferredWeather": [
+        "clear",
+        "snow"
+      ],
+      "preferredTime": [
+        "dusk",
+        "night"
+      ],
+      "recipes": [
+        "FOOD_JADE_KOI_SOUP",
+        "REC_FISH_GALL_CLARITY_3"
+      ],
+      "iconCell": "fish_exc_starlight",
+      "descTh": "ปลาหายากในวังน้ำลึกที่มีจุดแสงเก้าดาวเรียงตัวบนแผ่นหลัง ดีปลาและไข่มุกในหัวใช้หลอมโอสถเปิดจุดชีพจรและเร่งความเข้าใจวิชา"
+    },
+    {
+      "id": "MAT_FISH_CRIMSON_LOTUS_CARP_4",
+      "nameTh": "ปลาชาดบัวสวรรค์",
+      "category": "FISH",
+      "subCategory": "ALCHEMY_FISH",
+      "tier": 4,
+      "rarity": "Exceptional",
+      "value": 92,
+      "mealYield": 6,
+      "catchWeight": 5,
+      "minSkill": 20,
+      "habitats": [
+        "river_west",
+        "river_central"
+      ],
+      "preferredSeasons": [
+        0,
+        1
+      ],
+      "preferredWeather": [
+        "clear",
+        "rain"
+      ],
+      "preferredTime": [
+        "morning",
+        "day"
+      ],
+      "recipes": [
+        "FOOD_JADE_KOI_SOUP",
+        "REC_DRAGON_CARP_MARROW_5"
+      ],
+      "iconCell": "fish_exc_crimson",
+      "descTh": "ปลาเกล็ดสีชาดสดที่กินกลีบบัวปราณเป็นอาหาร มีฤทธิ์หยางอบอุ่นบริสุทธิ์ ช่วยขับพิษสะสมและเสริมพลังชีวิตอย่างยิ่งยวด"
+    },
+    {
+      "id": "MAT_FISH_DRAGON_WHISKER_CARP_5",
+      "nameTh": "ปลามังกรหนวดหยก",
+      "category": "FISH",
+      "subCategory": "APEX_SPIRIT_FISH",
+      "tier": 5,
+      "rarity": "Exceptional",
+      "value": 195,
+      "mealYield": 8,
+      "catchWeight": 2,
+      "minSkill": 28,
+      "habitats": [
+        "river_east"
+      ],
+      "preferredSeasons": [
+        0,
+        1
+      ],
+      "preferredWeather": [
+        "rain",
+        "fog"
+      ],
+      "preferredTime": [
+        "morning",
+        "dusk"
+      ],
+      "recipes": [
+        "FOOD_DRAGON_CARP_BANQUET",
+        "REC_DRAGON_CARP_MARROW_5"
+      ],
+      "iconCell": "fish_apex_dragon",
+      "descTh": "ราชาแห่งวังน้ำศิลาครามผู้มีหนวดยาวดุจมังกรและเกล็ดแข็งแกร่งดั่งหยกโบราณ แก่นโลหิตใช้หลอมโอสถชำระไขกระดูกและหนุนการทะลวงคอขวด"
+    },
+    {
+      "id": "MAT_FISH_FROST_JADE_STURGEON_5",
+      "nameTh": "ปลาสเตอร์เจียนหยกเหมันต์",
+      "category": "FISH",
+      "subCategory": "APEX_SPIRIT_FISH",
+      "tier": 5,
+      "rarity": "Exceptional",
+      "value": 210,
+      "mealYield": 8,
+      "catchWeight": 1.8,
+      "minSkill": 30,
+      "habitats": [
+        "river_central",
+        "river_east"
+      ],
+      "preferredSeasons": [
+        2,
+        3
+      ],
+      "preferredWeather": [
+        "snow",
+        "fog",
+        "clear"
+      ],
+      "preferredTime": [
+        "night",
+        "morning"
+      ],
+      "recipes": [
+        "FOOD_DRAGON_CARP_BANQUET",
+        "REC_DRAGON_CARP_MARROW_5"
+      ],
+      "iconCell": "fish_apex_sturgeon",
+      "descTh": "ปลาโบราณแห่งกระแสน้ำเย็นยะเยือกใต้ธารปราณทักษิณ ไขกระดูกเยือกแข็งบริสุทธิ์ช่วยสงบจิตมารขั้นลึกและเสริมรากฐานวิญญาณ"
+    }
+  ],
+  "specialItems": [
+    {
+      "id": "ITEM_MYSTERY_RIVER_CONTAINER",
+      "nameTh": "หีบไม้โบราณแช่น้ำ",
+      "category": "CONTAINER",
+      "tier": 3,
+      "rarity": "Rare",
+      "value": 0,
+      "noShopReward": true,
+      "iconCell": "mystery_river_box",
+      "descTh": "หีบไม้และถุงแพรปิดผนึกที่ถูกกระแสน้ำพัดพามาติดเบ็ด สามารถเปิดดูสิ่งของภายในได้ (โอกาส 50% เป็นเศษซากใต้น้ำ, 49.5% ของทั่วไปตามลำดับขั้น, 0.5% ของระดับตำนาน)"
+    },
+    {
+      "id": "TRASH_RIVER_DEBRIS",
+      "nameTh": "เศษซากใต้น้ำไร้ค่า",
+      "category": "TRASH",
+      "tier": 1,
+      "rarity": "Common",
+      "value": 0,
+      "worthless": true,
+      "noShopReward": true,
+      "iconCell": "river_trash_debris",
+      "descTh": "เศษไม้ผุพัง กรวดโคลน และซากผ้าขาดวิ่นที่เปื่อยยุ่ยอยู่ในน้ำ ไม่มีมูลค่าซื้อขายหรือแลกเปลี่ยนแต้มคุณูปการ สามารถทิ้งทำลายได้ทันที"
+    }
+  ],
+  "fishDishesCatalog": [
+    {
+      "id": "FOOD_STEAMED_SPIRIT_FISH",
+      "nameTh": "ปลานึ่งขิงปราณหอม",
+      "category": "FOOD",
+      "tier": 1,
+      "rarity": "Common",
+      "value": 14,
+      "satietyGain": 34,
+      "moodGain": 4,
+      "stressRelief": 2,
+      "inputs": [
+        {
+          "fishTiers": [
+            1,
+            2
+          ],
+          "count": 1
+        }
+      ],
+      "buff": {
+        "id": "food_nourish",
+        "nameTh": "ปราณอาหารอุ่นกาย",
+        "durationTicks": 360,
+        "hpRegenMult": 1.12,
+        "energySaveMult": 0.88,
+        "descTh": "ฟื้นฟูพลังกายและพลังชีวิตตามธรรมชาติเร็วขึ้น +12% และเหนื่อยช้าลง 12% นาน 6 ชั่วโมง"
+      },
+      "iconCell": "dish_steamed_fish",
+      "descTh": "ปลาสดจากลำธารนึ่งกับขิงแก่และต้นหอมวิญญาณ เนื้อหวานนุ่มชุ่มฉ่ำ ช่วยให้อิ่มท้องและฟื้นฟูเรี่ยวแรงได้อย่างต่อเนื่อง"
+    },
+    {
+      "id": "FOOD_EEL_VITALITY_BROTH",
+      "nameTh": "ซุปปลาไหลปราณบำรุงโลหิต",
+      "category": "FOOD",
+      "tier": 2,
+      "rarity": "Refined",
+      "value": 32,
+      "satietyGain": 38,
+      "moodGain": 5,
+      "stressRelief": 3,
+      "hpRestorePct": 0.1,
+      "qiRestorePct": 0.12,
+      "inputs": [
+        {
+          "fishIds": [
+            "MAT_FISH_MIST_CATFISH_2",
+            "MAT_FISH_SPIRIT_EEL_3"
+          ],
+          "count": 1
+        }
+      ],
+      "buff": {
+        "id": "food_qi_flow",
+        "nameTh": "กระแสปราณวารีไหลเวียน",
+        "durationTicks": 420,
+        "cultRateMult": 1.08,
+        "qiRegenMult": 1.14,
+        "injuryHealBonus": 0.12,
+        "descTh": "กระตุ้นการไหลเวียนของปราณและโลหิต ฟื้นปราณ +14% บ่มเพาะ +8% และสมานแผลเร็วขึ้นนาน 7 ชั่วโมง"
+      },
+      "iconCell": "dish_eel_broth",
+      "descTh": "น้ำแกงเคี่ยวจากปลาไหลปราณวารีหรือปลากดหมอกคราม รสชาติกลมกล่อมล้ำลึก ช่วยบำรุงโลหิตและเสริมการหมุนเวียนลมปราณ"
+    },
+    {
+      "id": "FOOD_JADE_KOI_SOUP",
+      "nameTh": "แกงจืดปลาหยกบัวสวรรค์",
+      "category": "FOOD",
+      "tier": 3,
+      "rarity": "Rare",
+      "value": 56,
+      "satietyGain": 36,
+      "moodGain": 7,
+      "stressRelief": 5,
+      "heartDemonRelief": 3,
+      "inputs": [
+        {
+          "fishIds": [
+            "MAT_FISH_JADE_KOI_3",
+            "MAT_FISH_STARLIGHT_TROUT_4",
+            "MAT_FISH_CRIMSON_LOTUS_CARP_4"
+          ],
+          "count": 1
+        }
+      ],
+      "buff": {
+        "id": "food_focus",
+        "nameTh": "จิตกระจ่างรสทิพย์",
+        "durationTicks": 420,
+        "studyMult": 1.12,
+        "stressGainMult": 0.8,
+        "descTh": "ช่วยให้จิตใจสงบนิ่ง ศึกษาคัมภีร์และฝึกทักษะเร็วขึ้น +12% และลดความเครียดสะสมลง 20% นาน 7 ชั่วโมง"
+      },
+      "iconCell": "dish_koi_soup",
+      "descTh": "น้ำแกงใสบริสุทธิ์ปรุงจากปลาหลีฮื้อหยกขาวหรือปลาดารา ช่วยชำระความฟุ้งซ่านในจิตใจและเพิ่มสมาธิในการศึกษาวิชา"
+    },
+    {
+      "id": "FOOD_DRAGON_CARP_BANQUET",
+      "nameTh": "หม้อไฟปลามังกรหยกทิพย์",
+      "category": "FOOD",
+      "tier": 5,
+      "rarity": "Exceptional",
+      "value": 145,
+      "satietyGain": 45,
+      "moodGain": 11,
+      "stressRelief": 8,
+      "heartDemonRelief": 5,
+      "hpRestorePct": 0.16,
+      "qiRestorePct": 0.18,
+      "inputs": [
+        {
+          "fishIds": [
+            "MAT_FISH_DRAGON_WHISKER_CARP_5",
+            "MAT_FISH_FROST_JADE_STURGEON_5"
+          ],
+          "count": 1
+        }
+      ],
+      "buff": {
+        "id": "food_dragon_vitality",
+        "nameTh": "ปราณมังกรวารีหนุนกาย",
+        "durationTicks": 480,
+        "hpRegenMult": 1.18,
+        "qiRegenMult": 1.18,
+        "cultRateMult": 1.12,
+        "studyMult": 1.12,
+        "descTh": "อาหารมงคลชั้นเลิศ ฟื้นฟูกายและปราณ +18% และหนุนการบ่มเพาะ/ศึกษาวิชา +12% นาน 8 ชั่วโมง"
+      },
+      "iconCell": "dish_dragon_banquet",
+      "descTh": "อาหารจานเอกที่เคี่ยวจากปลามังกรหนวดหยกหรือปลาสเตอร์เจียนหยกเหมันต์ อัดแน่นด้วยปราณวารีบริสุทธิ์ที่ช่วยชะล้างความเหนื่อยล้าและจิตมาร"
+    }
+  ],
+  "fishAlchemyRecipes": [
+    {
+      "id": "REC_FISH_GALL_CLARITY_3",
+      "nameTh": "ตำรับโอสถดีปลาหยกกระจ่างจิต",
+      "outNameTh": "โอสถดีปลาหยกกระจ่างจิต",
+      "craft": "ALCHEMY",
+      "outType": "PILL",
+      "fishAlchemyRecipe": true,
+      "tier": 3,
+      "minMastery": 18,
+      "yield": 2,
+      "compatiblePath": [
+        "ANY"
+      ],
+      "inputs": [
+        {
+          "matId": "MAT_FISH_JADE_KOI_3",
+          "count": 1
+        },
+        {
+          "matId": "MAT_HERB_JADE_LOTUS_2",
+          "count": 1
+        }
+      ],
+      "effect": {
+        "clearHeartDemon": 26,
+        "clearToxic": 18,
+        "insight": 1.32,
+        "cultivationProgress": 38
+      },
+      "descTh": "หลอมจากดีปลาหลีฮื้อหยกขาวและบัวหยก ช่วยขจัดจิตมาร ถอนพิษสะสม และเปิดความเข้าใจในการศึกษาวิชา"
+    },
+    {
+      "id": "REC_DRAGON_CARP_MARROW_5",
+      "nameTh": "ตำรับโอสถไขกระดูกปลามังกร",
+      "outNameTh": "โอสถไขกระดูกปลามังกรทะลวงขั้น",
+      "craft": "ALCHEMY",
+      "outType": "PILL",
+      "fishAlchemyRecipe": true,
+      "tier": 5,
+      "minMastery": 42,
+      "yield": 1,
+      "compatiblePath": [
+        "ANY"
+      ],
+      "inputs": [
+        {
+          "matId": "MAT_FISH_DRAGON_WHISKER_CARP_5",
+          "count": 1
+        },
+        {
+          "matId": "MAT_HERB_BLOOD_GINSENG_3",
+          "count": 1
+        }
+      ],
+      "effect": {
+        "cultivationProgress": 115,
+        "breakthroughBonus": 0.16,
+        "healHealth": 45,
+        "healInjury": 35
+      },
+      "descTh": "โอสถชั้นสูงที่หลอมจากไขกระดูกปลามังกรหนวดหยกและโสมโลหิต ช่วยเสริมตบะขนานใหญ่และเพิ่มโอกาสทะลวงคอขวด"
+    }
+  ],
+  "probabilityTables": {
+    "version": "1.12.3",
+    "catchOutcomes": {
+      "FISH": 0.9,
+      "MYSTERY_CONTAINER": 0.1
+    },
+    "containerBranches": {
+      "TRASH": 0.5,
+      "ORDINARY": 0.495,
+      "LEGENDARY": 0.005
+    },
+    "nominalLegendaryPerCatch": 0.0005,
+    "tierTablesByCount": {
+      "4": {
+        "1": 0.56,
+        "2": 0.28,
+        "3": 0.125,
+        "4": 0.035
+      },
+      "5": {
+        "1": 0.5,
+        "2": 0.265,
+        "3": 0.135,
+        "4": 0.07,
+        "5": 0.03
+      },
+      "6": {
+        "1": 0.46,
+        "2": 0.255,
+        "3": 0.14,
+        "4": 0.08,
+        "5": 0.045,
+        "6": 0.02
+      },
+      "7": {
+        "1": 0.44,
+        "2": 0.25,
+        "3": 0.145,
+        "4": 0.082,
+        "5": 0.046,
+        "6": 0.025,
+        "7": 0.012
+      }
+    },
+    "categories": {
+      "PILL": {
+        "category": "PILL",
+        "tierCount": 7,
+        "condOnOrdinaryBranch": 0.28,
+        "condOnContainerOpen": 0.1386,
+        "perSuccessfulCatch": 0.01386,
+        "tiers": {
+          "1": {
+            "tier": 1,
+            "condOnCategory": 0.44,
+            "condOnOrdinaryBranch": 0.1232,
+            "condOnContainerOpen": 0.060984,
+            "perSuccessfulCatch": 0.0060984
+          },
+          "2": {
+            "tier": 2,
+            "condOnCategory": 0.25,
+            "condOnOrdinaryBranch": 0.07,
+            "condOnContainerOpen": 0.03465,
+            "perSuccessfulCatch": 0.003465
+          },
+          "3": {
+            "tier": 3,
+            "condOnCategory": 0.145,
+            "condOnOrdinaryBranch": 0.0406,
+            "condOnContainerOpen": 0.020097,
+            "perSuccessfulCatch": 0.0020097
+          },
+          "4": {
+            "tier": 4,
+            "condOnCategory": 0.082,
+            "condOnOrdinaryBranch": 0.02296,
+            "condOnContainerOpen": 0.0113652,
+            "perSuccessfulCatch": 0.00113652
+          },
+          "5": {
+            "tier": 5,
+            "condOnCategory": 0.046,
+            "condOnOrdinaryBranch": 0.01288,
+            "condOnContainerOpen": 0.0063756,
+            "perSuccessfulCatch": 0.00063756
+          },
+          "6": {
+            "tier": 6,
+            "condOnCategory": 0.025,
+            "condOnOrdinaryBranch": 0.007,
+            "condOnContainerOpen": 0.003465,
+            "perSuccessfulCatch": 0.0003465
+          },
+          "7": {
+            "tier": 7,
+            "condOnCategory": 0.012,
+            "condOnOrdinaryBranch": 0.00336,
+            "condOnContainerOpen": 0.0016632,
+            "perSuccessfulCatch": 0.00016632
+          }
+        }
+      },
+      "EQUIPMENT": {
+        "category": "EQUIPMENT",
+        "tierCount": 5,
+        "condOnOrdinaryBranch": 0.22,
+        "condOnContainerOpen": 0.1089,
+        "perSuccessfulCatch": 0.01089,
+        "tiers": {
+          "1": {
+            "tier": 1,
+            "condOnCategory": 0.5,
+            "condOnOrdinaryBranch": 0.11,
+            "condOnContainerOpen": 0.05445,
+            "perSuccessfulCatch": 0.005445
+          },
+          "2": {
+            "tier": 2,
+            "condOnCategory": 0.265,
+            "condOnOrdinaryBranch": 0.0583,
+            "condOnContainerOpen": 0.0288585,
+            "perSuccessfulCatch": 0.00288585
+          },
+          "3": {
+            "tier": 3,
+            "condOnCategory": 0.135,
+            "condOnOrdinaryBranch": 0.0297,
+            "condOnContainerOpen": 0.0147015,
+            "perSuccessfulCatch": 0.00147015
+          },
+          "4": {
+            "tier": 4,
+            "condOnCategory": 0.07,
+            "condOnOrdinaryBranch": 0.0154,
+            "condOnContainerOpen": 0.007623,
+            "perSuccessfulCatch": 0.0007623
+          },
+          "5": {
+            "tier": 5,
+            "condOnCategory": 0.03,
+            "condOnOrdinaryBranch": 0.0066,
+            "condOnContainerOpen": 0.003267,
+            "perSuccessfulCatch": 0.0003267
+          }
+        }
+      },
+      "MATERIAL": {
+        "category": "MATERIAL",
+        "tierCount": 7,
+        "condOnOrdinaryBranch": 0.16,
+        "condOnContainerOpen": 0.0792,
+        "perSuccessfulCatch": 0.00792,
+        "tiers": {
+          "1": {
+            "tier": 1,
+            "condOnCategory": 0.44,
+            "condOnOrdinaryBranch": 0.0704,
+            "condOnContainerOpen": 0.034848,
+            "perSuccessfulCatch": 0.0034848
+          },
+          "2": {
+            "tier": 2,
+            "condOnCategory": 0.25,
+            "condOnOrdinaryBranch": 0.04,
+            "condOnContainerOpen": 0.0198,
+            "perSuccessfulCatch": 0.00198
+          },
+          "3": {
+            "tier": 3,
+            "condOnCategory": 0.145,
+            "condOnOrdinaryBranch": 0.0232,
+            "condOnContainerOpen": 0.011484,
+            "perSuccessfulCatch": 0.0011484
+          },
+          "4": {
+            "tier": 4,
+            "condOnCategory": 0.082,
+            "condOnOrdinaryBranch": 0.01312,
+            "condOnContainerOpen": 0.0064944,
+            "perSuccessfulCatch": 0.00064944
+          },
+          "5": {
+            "tier": 5,
+            "condOnCategory": 0.046,
+            "condOnOrdinaryBranch": 0.00736,
+            "condOnContainerOpen": 0.0036432,
+            "perSuccessfulCatch": 0.00036432
+          },
+          "6": {
+            "tier": 6,
+            "condOnCategory": 0.025,
+            "condOnOrdinaryBranch": 0.004,
+            "condOnContainerOpen": 0.00198,
+            "perSuccessfulCatch": 0.000198
+          },
+          "7": {
+            "tier": 7,
+            "condOnCategory": 0.012,
+            "condOnOrdinaryBranch": 0.00192,
+            "condOnContainerOpen": 0.0009504,
+            "perSuccessfulCatch": 0.00009504
+          }
+        }
+      },
+      "TECH_CRYSTAL": {
+        "category": "TECH_CRYSTAL",
+        "tierCount": 7,
+        "condOnOrdinaryBranch": 0.14,
+        "condOnContainerOpen": 0.0693,
+        "perSuccessfulCatch": 0.00693,
+        "tiers": {
+          "1": {
+            "tier": 1,
+            "condOnCategory": 0.44,
+            "condOnOrdinaryBranch": 0.0616,
+            "condOnContainerOpen": 0.030492,
+            "perSuccessfulCatch": 0.0030492
+          },
+          "2": {
+            "tier": 2,
+            "condOnCategory": 0.25,
+            "condOnOrdinaryBranch": 0.035,
+            "condOnContainerOpen": 0.017325,
+            "perSuccessfulCatch": 0.0017325
+          },
+          "3": {
+            "tier": 3,
+            "condOnCategory": 0.145,
+            "condOnOrdinaryBranch": 0.0203,
+            "condOnContainerOpen": 0.0100485,
+            "perSuccessfulCatch": 0.00100485
+          },
+          "4": {
+            "tier": 4,
+            "condOnCategory": 0.082,
+            "condOnOrdinaryBranch": 0.01148,
+            "condOnContainerOpen": 0.0056826,
+            "perSuccessfulCatch": 0.00056826
+          },
+          "5": {
+            "tier": 5,
+            "condOnCategory": 0.046,
+            "condOnOrdinaryBranch": 0.00644,
+            "condOnContainerOpen": 0.0031878,
+            "perSuccessfulCatch": 0.00031878
+          },
+          "6": {
+            "tier": 6,
+            "condOnCategory": 0.025,
+            "condOnOrdinaryBranch": 0.0035,
+            "condOnContainerOpen": 0.0017325,
+            "perSuccessfulCatch": 0.00017325
+          },
+          "7": {
+            "tier": 7,
+            "condOnCategory": 0.012,
+            "condOnOrdinaryBranch": 0.00168,
+            "condOnContainerOpen": 0.0008316,
+            "perSuccessfulCatch": 0.00008316
+          }
+        }
+      },
+      "SUB_CRYSTAL": {
+        "category": "SUB_CRYSTAL",
+        "tierCount": 4,
+        "condOnOrdinaryBranch": 0.09,
+        "condOnContainerOpen": 0.04455,
+        "perSuccessfulCatch": 0.004455,
+        "tiers": {
+          "1": {
+            "tier": 1,
+            "condOnCategory": 0.56,
+            "condOnOrdinaryBranch": 0.0504,
+            "condOnContainerOpen": 0.024948,
+            "perSuccessfulCatch": 0.0024948
+          },
+          "2": {
+            "tier": 2,
+            "condOnCategory": 0.28,
+            "condOnOrdinaryBranch": 0.0252,
+            "condOnContainerOpen": 0.012474,
+            "perSuccessfulCatch": 0.0012474
+          },
+          "3": {
+            "tier": 3,
+            "condOnCategory": 0.125,
+            "condOnOrdinaryBranch": 0.01125,
+            "condOnContainerOpen": 0.00556875,
+            "perSuccessfulCatch": 0.000556875
+          },
+          "4": {
+            "tier": 4,
+            "condOnCategory": 0.035,
+            "condOnOrdinaryBranch": 0.00315,
+            "condOnContainerOpen": 0.00155925,
+            "perSuccessfulCatch": 0.000155925
+          }
+        }
+      },
+      "TECH_MANUAL": {
+        "category": "TECH_MANUAL",
+        "tierCount": 7,
+        "condOnOrdinaryBranch": 0.07,
+        "condOnContainerOpen": 0.03465,
+        "perSuccessfulCatch": 0.003465,
+        "tiers": {
+          "1": {
+            "tier": 1,
+            "condOnCategory": 0.44,
+            "condOnOrdinaryBranch": 0.0308,
+            "condOnContainerOpen": 0.015246,
+            "perSuccessfulCatch": 0.0015246
+          },
+          "2": {
+            "tier": 2,
+            "condOnCategory": 0.25,
+            "condOnOrdinaryBranch": 0.0175,
+            "condOnContainerOpen": 0.0086625,
+            "perSuccessfulCatch": 0.00086625
+          },
+          "3": {
+            "tier": 3,
+            "condOnCategory": 0.145,
+            "condOnOrdinaryBranch": 0.01015,
+            "condOnContainerOpen": 0.00502425,
+            "perSuccessfulCatch": 0.000502425
+          },
+          "4": {
+            "tier": 4,
+            "condOnCategory": 0.082,
+            "condOnOrdinaryBranch": 0.00574,
+            "condOnContainerOpen": 0.0028413,
+            "perSuccessfulCatch": 0.00028413
+          },
+          "5": {
+            "tier": 5,
+            "condOnCategory": 0.046,
+            "condOnOrdinaryBranch": 0.00322,
+            "condOnContainerOpen": 0.0015939,
+            "perSuccessfulCatch": 0.00015939
+          },
+          "6": {
+            "tier": 6,
+            "condOnCategory": 0.025,
+            "condOnOrdinaryBranch": 0.00175,
+            "condOnContainerOpen": 0.00086625,
+            "perSuccessfulCatch": 0.000086625
+          },
+          "7": {
+            "tier": 7,
+            "condOnCategory": 0.012,
+            "condOnOrdinaryBranch": 0.00084,
+            "condOnContainerOpen": 0.0004158,
+            "perSuccessfulCatch": 0.00004158
+          }
+        }
+      },
+      "SUB_MANUAL": {
+        "category": "SUB_MANUAL",
+        "tierCount": 4,
+        "condOnOrdinaryBranch": 0.04,
+        "condOnContainerOpen": 0.0198,
+        "perSuccessfulCatch": 0.00198,
+        "tiers": {
+          "1": {
+            "tier": 1,
+            "condOnCategory": 0.56,
+            "condOnOrdinaryBranch": 0.0224,
+            "condOnContainerOpen": 0.011088,
+            "perSuccessfulCatch": 0.0011088
+          },
+          "2": {
+            "tier": 2,
+            "condOnCategory": 0.28,
+            "condOnOrdinaryBranch": 0.0112,
+            "condOnContainerOpen": 0.005544,
+            "perSuccessfulCatch": 0.0005544
+          },
+          "3": {
+            "tier": 3,
+            "condOnCategory": 0.125,
+            "condOnOrdinaryBranch": 0.005,
+            "condOnContainerOpen": 0.002475,
+            "perSuccessfulCatch": 0.0002475
+          },
+          "4": {
+            "tier": 4,
+            "condOnCategory": 0.035,
+            "condOnOrdinaryBranch": 0.0014,
+            "condOnContainerOpen": 0.000693,
+            "perSuccessfulCatch": 0.0000693
+          }
+        }
+      }
+    }
+  },
+  "naturalSimulations180d": {
+    "version": "1.12.3",
+    "daysPerRun": 180,
+    "ticksPerRun": 259200,
+    "runs": [
+      {
+        "seed": "fishing-natural-seed-1",
+        "startDay": 360,
+        "endDay": 540,
+        "wallTimeSec": 165.04,
+        "livingNpcs": 35,
+        "deaths": 1,
+        "avgSatiety": 55.74,
+        "avgMood": 11.77,
+        "sectStones": 2579,
+        "sectMeals": 111,
+        "sectGrain": 169,
+        "hourlySampleActivityShare": {
+          "dutySamples": 10095,
+          "practiceCultivateSamples": 14702,
+          "productionSamples": 8309,
+          "fishingSamples": 861,
+          "sleepSamples": 50990,
+          "eatSamples": 6473
+        },
+        "fishingStats": {
+          "attempts": 248,
+          "successfulCatches": 248,
+          "fishCaught": 221,
+          "containersCaught": 27,
+          "containersOpened": 27,
+          "trashOpened": 10,
+          "ordinaryOpened": 17,
+          "legendaryOpened": 0,
+          "legendaryFallbackUsed": 0,
+          "fishCookedMeals": 439,
+          "fishDishesCooked": 216,
+          "fishDishesEaten": 224,
+          "fishDonated": 140,
+          "fishSoldStones": 255,
+          "bySpecies": {
+            "MAT_FISH_BAMBOO_GUDGEON_1": 62,
+            "MAT_FISH_SILVER_CARP_1": 93,
+            "MAT_FISH_GOLDEN_PERCH_2": 24,
+            "MAT_FISH_MIST_CATFISH_2": 22,
+            "MAT_FISH_SPIRIT_EEL_3": 5,
+            "MAT_FISH_STARLIGHT_TROUT_4": 3,
+            "MAT_FISH_JADE_KOI_3": 12
+          },
+          "byCategory": {
+            "MATERIAL": 5,
+            "PILL": 3,
+            "EQUIPMENT": 3,
+            "SUB_CRYSTAL": 3,
+            "TECH_CRYSTAL": 2,
+            "TECH_MANUAL": 1
+          },
+          "byTier": {
+            "1": 9,
+            "2": 3,
+            "3": 2,
+            "4": 2,
+            "5": 1
+          }
+        },
+        "finalZoneStocks": {
+          "spirit_pond": {
+            "stock": 18,
+            "maxStock": 18,
+            "totalCaught": 100
+          },
+          "river_west": {
+            "stock": 32,
+            "maxStock": 32,
+            "totalCaught": 88
+          },
+          "river_central": {
+            "stock": 38,
+            "maxStock": 38,
+            "totalCaught": 0
+          },
+          "river_east": {
+            "stock": 28,
+            "maxStock": 28,
+            "totalCaught": 60
+          }
+        },
+        "uniqueArtifactAuditOk": true,
+        "uniqueArtifactsCount": 0
+      },
+      {
+        "seed": "fishing-natural-seed-2",
+        "startDay": 360,
+        "endDay": 540,
+        "wallTimeSec": 189.07,
+        "livingNpcs": 46,
+        "deaths": 2,
+        "avgSatiety": 56.41,
+        "avgMood": 10.36,
+        "sectStones": 2636,
+        "sectMeals": 156,
+        "sectGrain": 71,
+        "hourlySampleActivityShare": {
+          "dutySamples": 10436,
+          "practiceCultivateSamples": 18740,
+          "productionSamples": 9003,
+          "fishingSamples": 489,
+          "sleepSamples": 58597,
+          "eatSamples": 7481
+        },
+        "fishingStats": {
+          "attempts": 148,
+          "successfulCatches": 133,
+          "fishCaught": 119,
+          "containersCaught": 14,
+          "containersOpened": 14,
+          "trashOpened": 11,
+          "ordinaryOpened": 3,
+          "legendaryOpened": 0,
+          "legendaryFallbackUsed": 0,
+          "fishCookedMeals": 171,
+          "fishDishesCooked": 117,
+          "fishDishesEaten": 125,
+          "fishDonated": 54,
+          "fishSoldStones": 34,
+          "bySpecies": {
+            "MAT_FISH_BAMBOO_GUDGEON_1": 33,
+            "MAT_FISH_SILVER_CARP_1": 58,
+            "MAT_FISH_GOLDEN_PERCH_2": 16,
+            "MAT_FISH_MIST_CATFISH_2": 10,
+            "MAT_FISH_JADE_KOI_3": 2
+          },
+          "byCategory": {
+            "PILL": 1,
+            "TECH_CRYSTAL": 1,
+            "EQUIPMENT": 1
+          },
+          "byTier": {
+            "1": 1,
+            "2": 1,
+            "7": 1
+          }
+        },
+        "finalZoneStocks": {
+          "spirit_pond": {
+            "stock": 18,
+            "maxStock": 18,
+            "totalCaught": 62
+          },
+          "river_west": {
+            "stock": 32,
+            "maxStock": 32,
+            "totalCaught": 68
+          },
+          "river_central": {
+            "stock": 38,
+            "maxStock": 38,
+            "totalCaught": 0
+          },
+          "river_east": {
+            "stock": 28,
+            "maxStock": 28,
+            "totalCaught": 3
+          }
+        },
+        "uniqueArtifactAuditOk": true,
+        "uniqueArtifactsCount": 0
+      },
+      {
+        "seed": "fishing-natural-seed-3",
+        "startDay": 360,
+        "endDay": 540,
+        "wallTimeSec": 156.27,
+        "livingNpcs": 35,
+        "deaths": 0,
+        "avgSatiety": 55.22,
+        "avgMood": 13.06,
+        "sectStones": 136,
+        "sectMeals": 114,
+        "sectGrain": 54,
+        "hourlySampleActivityShare": {
+          "dutySamples": 9917,
+          "practiceCultivateSamples": 14122,
+          "productionSamples": 6272,
+          "fishingSamples": 387,
+          "sleepSamples": 43272,
+          "eatSamples": 5743
+        },
+        "fishingStats": {
+          "attempts": 50,
+          "successfulCatches": 84,
+          "fishCaught": 77,
+          "containersCaught": 7,
+          "containersOpened": 7,
+          "trashOpened": 6,
+          "ordinaryOpened": 1,
+          "legendaryOpened": 0,
+          "legendaryFallbackUsed": 0,
+          "fishCookedMeals": 134,
+          "fishDishesCooked": 77,
+          "fishDishesEaten": 80,
+          "fishDonated": 41,
+          "fishSoldStones": 0,
+          "bySpecies": {
+            "MAT_FISH_BAMBOO_GUDGEON_1": 20,
+            "MAT_FISH_JADE_KOI_3": 4,
+            "MAT_FISH_SILVER_CARP_1": 30,
+            "MAT_FISH_GOLDEN_PERCH_2": 19,
+            "MAT_FISH_MIST_CATFISH_2": 4
+          },
+          "byCategory": {
+            "EQUIPMENT": 1
+          },
+          "byTier": {
+            "1": 1
+          }
+        },
+        "finalZoneStocks": {
+          "spirit_pond": {
+            "stock": 18,
+            "maxStock": 18,
+            "totalCaught": 57
+          },
+          "river_west": {
+            "stock": 32,
+            "maxStock": 32,
+            "totalCaught": 26
+          },
+          "river_central": {
+            "stock": 38,
+            "maxStock": 38,
+            "totalCaught": 0
+          },
+          "river_east": {
+            "stock": 28,
+            "maxStock": 28,
+            "totalCaught": 1
+          }
+        },
+        "uniqueArtifactAuditOk": true,
+        "uniqueArtifactsCount": 0
+      }
+    ]
+  }
+}

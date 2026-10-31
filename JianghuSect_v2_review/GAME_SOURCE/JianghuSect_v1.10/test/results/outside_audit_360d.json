@@ -1,0 +1,198 @@
+{
+  "seed": "audit-release-2026-10-29",
+  "days": 360,
+  "nodeSpawns": {
+    "BASIC_HERB": 4598,
+    "OTHER_HERB": 299,
+    "ORE": 251,
+    "OTHER": 56
+  },
+  "harvestActions": 10368,
+  "harvestedUnits": 10368,
+  "privateRetains": 0,
+  "donations": {
+    "units": 10368,
+    "cp": 6638.900000000659
+  },
+  "basicPillsCrafted": 506,
+  "pillsPurchased": 105,
+  "pillsConsumed": 367,
+  "wildlifeBatches": {
+    "1": 429,
+    "2": 7,
+    "3": 2
+  },
+  "legendarySpawns": 13,
+  "maxActiveWildlife": 11,
+  "fortuneByRank": {
+    "1": 31,
+    "2": 0,
+    "3": 0,
+    "4": 0
+  },
+  "realmByRank": {
+    "1": 19,
+    "2": 0,
+    "3": 0,
+    "4": 0
+  },
+  "snapshots": [
+    {
+      "day": 30,
+      "population": 16,
+      "stones": 0,
+      "meals": 57,
+      "cp": 2162.7999999999997,
+      "minted": 2281.7999999999943,
+      "burned": 499,
+      "nodes": 48,
+      "harvestActions": 540,
+      "privateRetains": 0,
+      "basicPillsCrafted": 64
+    },
+    {
+      "day": 60,
+      "population": 19,
+      "stones": 152,
+      "meals": 53,
+      "cp": 3669.200000000007,
+      "minted": 4814.299999999983,
+      "burned": 1491,
+      "nodes": 47,
+      "harvestActions": 1517,
+      "privateRetains": 0,
+      "basicPillsCrafted": 91
+    },
+    {
+      "day": 90,
+      "population": 24,
+      "stones": 512,
+      "meals": 74,
+      "cp": 5347.900000000011,
+      "minted": 7332.500000000382,
+      "burned": 2318,
+      "nodes": 48,
+      "harvestActions": 2457,
+      "privateRetains": 0,
+      "basicPillsCrafted": 127
+    },
+    {
+      "day": 120,
+      "population": 28,
+      "stones": 365,
+      "meals": 102,
+      "cp": 6911.800000000018,
+      "minted": 10242.700000000661,
+      "burned": 3594,
+      "nodes": 45,
+      "harvestActions": 3341,
+      "privateRetains": 0,
+      "basicPillsCrafted": 174
+    },
+    {
+      "day": 150,
+      "population": 30,
+      "stones": 481,
+      "meals": 94,
+      "cp": 9121.900000000021,
+      "minted": 14029.700000000967,
+      "burned": 4933,
+      "nodes": 44,
+      "harvestActions": 4281,
+      "privateRetains": 0,
+      "basicPillsCrafted": 196
+    },
+    {
+      "day": 180,
+      "population": 29,
+      "stones": 972,
+      "meals": 113,
+      "cp": 9513.100000000033,
+      "minted": 18537.800000000334,
+      "burned": 6572,
+      "nodes": 43,
+      "harvestActions": 5239,
+      "privateRetains": 0,
+      "basicPillsCrafted": 235
+    },
+    {
+      "day": 210,
+      "population": 31,
+      "stones": 150,
+      "meals": 97,
+      "cp": 12311.90000000004,
+      "minted": 22857.999999998276,
+      "burned": 8013,
+      "nodes": 45,
+      "harvestActions": 6081,
+      "privateRetains": 0,
+      "basicPillsCrafted": 299
+    },
+    {
+      "day": 240,
+      "population": 33,
+      "stones": 362,
+      "meals": 123,
+      "cp": 14286.600000000048,
+      "minted": 27153.699999996523,
+      "burned": 9744,
+      "nodes": 48,
+      "harvestActions": 6930,
+      "privateRetains": 0,
+      "basicPillsCrafted": 340
+    },
+    {
+      "day": 270,
+      "population": 35,
+      "stones": 391,
+      "meals": 121,
+      "cp": 15925.700000000028,
+      "minted": 31634.399999995283,
+      "burned": 11868,
+      "nodes": 48,
+      "harvestActions": 7769,
+      "privateRetains": 0,
+      "basicPillsCrafted": 389
+    },
+    {
+      "day": 300,
+      "population": 34,
+      "stones": 153,
+      "meals": 122,
+      "cp": 15405.100000000031,
+      "minted": 36054.99999999344,
+      "burned": 14220,
+      "nodes": 43,
+      "harvestActions": 8588,
+      "privateRetains": 0,
+      "basicPillsCrafted": 431
+    },
+    {
+      "day": 330,
+      "population": 38,
+      "stones": 153,
+      "meals": 104,
+      "cp": 17685.600000000028,
+      "minted": 40656.09999999218,
+      "burned": 16465,
+      "nodes": 48,
+      "harvestActions": 9491,
+      "privateRetains": 0,
+      "basicPillsCrafted": 458
+    },
+    {
+      "day": 360,
+      "population": 33,
+      "stones": 686,
+      "meals": 102,
+      "cp": 13744.700000000033,
+      "minted": 45449.49999999203,
+      "burned": 20034,
+      "nodes": 47,
+      "harvestActions": 10368,
+      "privateRetains": 0,
+      "basicPillsCrafted": 506
+    }
+  ],
+  "elapsedMs": 195491
+}

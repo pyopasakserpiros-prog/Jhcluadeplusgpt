@@ -1,0 +1,244 @@
+{
+  "version": "1.12.3",
+  "daysPerRun": 180,
+  "ticksPerRun": 259200,
+  "runs": [
+    {
+      "seed": "fishing-natural-seed-1",
+      "startDay": 360,
+      "endDay": 540,
+      "wallTimeSec": 165.04,
+      "livingNpcs": 35,
+      "deaths": 1,
+      "avgSatiety": 55.74,
+      "avgMood": 11.77,
+      "sectStones": 2579,
+      "sectMeals": 111,
+      "sectGrain": 169,
+      "hourlySampleActivityShare": {
+        "dutySamples": 10095,
+        "practiceCultivateSamples": 14702,
+        "productionSamples": 8309,
+        "fishingSamples": 861,
+        "sleepSamples": 50990,
+        "eatSamples": 6473
+      },
+      "fishingStats": {
+        "attempts": 248,
+        "successfulCatches": 248,
+        "fishCaught": 221,
+        "containersCaught": 27,
+        "containersOpened": 27,
+        "trashOpened": 10,
+        "ordinaryOpened": 17,
+        "legendaryOpened": 0,
+        "legendaryFallbackUsed": 0,
+        "fishCookedMeals": 439,
+        "fishDishesCooked": 216,
+        "fishDishesEaten": 224,
+        "fishDonated": 140,
+        "fishSoldStones": 255,
+        "bySpecies": {
+          "MAT_FISH_BAMBOO_GUDGEON_1": 62,
+          "MAT_FISH_SILVER_CARP_1": 93,
+          "MAT_FISH_GOLDEN_PERCH_2": 24,
+          "MAT_FISH_MIST_CATFISH_2": 22,
+          "MAT_FISH_SPIRIT_EEL_3": 5,
+          "MAT_FISH_STARLIGHT_TROUT_4": 3,
+          "MAT_FISH_JADE_KOI_3": 12
+        },
+        "byCategory": {
+          "MATERIAL": 5,
+          "PILL": 3,
+          "EQUIPMENT": 3,
+          "SUB_CRYSTAL": 3,
+          "TECH_CRYSTAL": 2,
+          "TECH_MANUAL": 1
+        },
+        "byTier": {
+          "1": 9,
+          "2": 3,
+          "3": 2,
+          "4": 2,
+          "5": 1
+        }
+      },
+      "finalZoneStocks": {
+        "spirit_pond": {
+          "stock": 18,
+          "maxStock": 18,
+          "totalCaught": 100
+        },
+        "river_west": {
+          "stock": 32,
+          "maxStock": 32,
+          "totalCaught": 88
+        },
+        "river_central": {
+          "stock": 38,
+          "maxStock": 38,
+          "totalCaught": 0
+        },
+        "river_east": {
+          "stock": 28,
+          "maxStock": 28,
+          "totalCaught": 60
+        }
+      },
+      "uniqueArtifactAuditOk": true,
+      "uniqueArtifactsCount": 0
+    },
+    {
+      "seed": "fishing-natural-seed-2",
+      "startDay": 360,
+      "endDay": 540,
+      "wallTimeSec": 189.07,
+      "livingNpcs": 46,
+      "deaths": 2,
+      "avgSatiety": 56.41,
+      "avgMood": 10.36,
+      "sectStones": 2636,
+      "sectMeals": 156,
+      "sectGrain": 71,
+      "hourlySampleActivityShare": {
+        "dutySamples": 10436,
+        "practiceCultivateSamples": 18740,
+        "productionSamples": 9003,
+        "fishingSamples": 489,
+        "sleepSamples": 58597,
+        "eatSamples": 7481
+      },
+      "fishingStats": {
+        "attempts": 148,
+        "successfulCatches": 133,
+        "fishCaught": 119,
+        "containersCaught": 14,
+        "containersOpened": 14,
+        "trashOpened": 11,
+        "ordinaryOpened": 3,
+        "legendaryOpened": 0,
+        "legendaryFallbackUsed": 0,
+        "fishCookedMeals": 171,
+        "fishDishesCooked": 117,
+        "fishDishesEaten": 125,
+        "fishDonated": 54,
+        "fishSoldStones": 34,
+        "bySpecies": {
+          "MAT_FISH_BAMBOO_GUDGEON_1": 33,
+          "MAT_FISH_SILVER_CARP_1": 58,
+          "MAT_FISH_GOLDEN_PERCH_2": 16,
+          "MAT_FISH_MIST_CATFISH_2": 10,
+          "MAT_FISH_JADE_KOI_3": 2
+        },
+        "byCategory": {
+          "PILL": 1,
+          "TECH_CRYSTAL": 1,
+          "EQUIPMENT": 1
+        },
+        "byTier": {
+          "1": 1,
+          "2": 1,
+          "7": 1
+        }
+      },
+      "finalZoneStocks": {
+        "spirit_pond": {
+          "stock": 18,
+          "maxStock": 18,
+          "totalCaught": 62
+        },
+        "river_west": {
+          "stock": 32,
+          "maxStock": 32,
+          "totalCaught": 68
+        },
+        "river_central": {
+          "stock": 38,
+          "maxStock": 38,
+          "totalCaught": 0
+        },
+        "river_east": {
+          "stock": 28,
+          "maxStock": 28,
+          "totalCaught": 3
+        }
+      },
+      "uniqueArtifactAuditOk": true,
+      "uniqueArtifactsCount": 0
+    },
+    {
+      "seed": "fishing-natural-seed-3",
+      "startDay": 360,
+      "endDay": 540,
+      "wallTimeSec": 156.27,
+      "livingNpcs": 35,
+      "deaths": 0,
+      "avgSatiety": 55.22,
+      "avgMood": 13.06,
+      "sectStones": 136,
+      "sectMeals": 114,
+      "sectGrain": 54,
+      "hourlySampleActivityShare": {
+        "dutySamples": 9917,
+        "practiceCultivateSamples": 14122,
+        "productionSamples": 6272,
+        "fishingSamples": 387,
+        "sleepSamples": 43272,
+        "eatSamples": 5743
+      },
+      "fishingStats": {
+        "attempts": 50,
+        "successfulCatches": 84,
+        "fishCaught": 77,
+        "containersCaught": 7,
+        "containersOpened": 7,
+        "trashOpened": 6,
+        "ordinaryOpened": 1,
+        "legendaryOpened": 0,
+        "legendaryFallbackUsed": 0,
+        "fishCookedMeals": 134,
+        "fishDishesCooked": 77,
+        "fishDishesEaten": 80,
+        "fishDonated": 41,
+        "fishSoldStones": 0,
+        "bySpecies": {
+          "MAT_FISH_BAMBOO_GUDGEON_1": 20,
+          "MAT_FISH_JADE_KOI_3": 4,
+          "MAT_FISH_SILVER_CARP_1": 30,
+          "MAT_FISH_GOLDEN_PERCH_2": 19,
+          "MAT_FISH_MIST_CATFISH_2": 4
+        },
+        "byCategory": {
+          "EQUIPMENT": 1
+        },
+        "byTier": {
+          "1": 1
+        }
+      },
+      "finalZoneStocks": {
+        "spirit_pond": {
+          "stock": 18,
+          "maxStock": 18,
+          "totalCaught": 57
+        },
+        "river_west": {
+          "stock": 32,
+          "maxStock": 32,
+          "totalCaught": 26
+        },
+        "river_central": {
+          "stock": 38,
+          "maxStock": 38,
+          "totalCaught": 0
+        },
+        "river_east": {
+          "stock": 28,
+          "maxStock": 28,
+          "totalCaught": 1
+        }
+      },
+      "uniqueArtifactAuditOk": true,
+      "uniqueArtifactsCount": 0
+    }
+  ]
+}

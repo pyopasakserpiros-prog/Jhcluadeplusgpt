@@ -1,0 +1,4372 @@
+{
+  "sourcePack": "source-v2083",
+  "namespace": "SRC110_",
+  "selectedRawSha256": "5df22e23a2c4d8e14f7c44669a325098af4cbc98cf156e6afbbdc4ec3acfd934",
+  "progressionMapping": [
+    {
+      "subPath": "FROST_MOON_IMMORTAL",
+      "trackId": "TRACK_XIAN_FROST_MOON_IMMORTAL",
+      "sourceMajorPath": "XIAN",
+      "sourceIndependentRealmCount": 9,
+      "targetMajorPath": "XIAN",
+      "targetMajorStages": 9,
+      "mode": "INDEPENDENT_TRACK",
+      "sourceRealmOrdinalsImported": true,
+      "realms": [
+        {
+          "ordinal": 1,
+          "id": "R1200_FROST_MOON_IMMORTAL_01",
+          "nameTh": "ซึมซับแสงจันทร์",
+          "lifespanMax": 95,
+          "functionalCombatPower": 120,
+          "majorBandEquivalent": 1,
+          "skillGate": {
+            "primarySkill": "WATER_ICE",
+            "minPrimarySkill": 15,
+            "secondarySkill": "ALCHEMY",
+            "minSecondarySkill": 10
+          },
+          "resourceCost": {
+            "stones": 59,
+            "materialTier": 1
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1,
+            "vitalityMult": 1,
+            "faithPoolMult": 1,
+            "senseBonus": 0
+          },
+          "realmBuffs": {
+            "combatOffensePct": 3.1,
+            "combatDefensePct": 2.2,
+            "armorPenetrationPct": 2.5,
+            "counterStrikePct": 2,
+            "lifestealPct": 0,
+            "reflectPct": 0,
+            "evasionPct": 1.6,
+            "qiRegenBonusPct": 2
+          },
+          "breakthroughBaseChance": 0.74
+        },
+        {
+          "ordinal": 2,
+          "id": "R1200_FROST_MOON_IMMORTAL_02",
+          "nameTh": "เกล็ดน้ำค้างก่อตัว",
+          "lifespanMax": 125,
+          "functionalCombatPower": 250,
+          "majorBandEquivalent": 2,
+          "skillGate": {
+            "primarySkill": "WATER_ICE",
+            "minPrimarySkill": 25,
+            "secondarySkill": "ALCHEMY",
+            "minSecondarySkill": 10
+          },
+          "resourceCost": {
+            "stones": 73,
+            "materialTier": 1
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1.4,
+            "vitalityMult": 1.24,
+            "faithPoolMult": 1.16,
+            "senseBonus": 4
+          },
+          "realmBuffs": {
+            "combatOffensePct": 6.2,
+            "combatDefensePct": 4.4,
+            "armorPenetrationPct": 5,
+            "counterStrikePct": 4,
+            "lifestealPct": 0,
+            "reflectPct": 0,
+            "evasionPct": 3.2,
+            "qiRegenBonusPct": 4
+          },
+          "breakthroughBaseChance": 0.66
+        },
+        {
+          "ordinal": 3,
+          "id": "R1200_FROST_MOON_IMMORTAL_03",
+          "nameTh": "รากฐานบัวหิมะ",
+          "lifespanMax": 175,
+          "functionalCombatPower": 520,
+          "majorBandEquivalent": 3,
+          "skillGate": {
+            "primarySkill": "WATER_ICE",
+            "minPrimarySkill": 35,
+            "secondarySkill": "ALCHEMY",
+            "minSecondarySkill": 16
+          },
+          "resourceCost": {
+            "stones": 87,
+            "materialTier": 2
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1.8,
+            "vitalityMult": 1.48,
+            "faithPoolMult": 1.32,
+            "senseBonus": 8
+          },
+          "realmBuffs": {
+            "combatOffensePct": 9.3,
+            "combatDefensePct": 6.6,
+            "armorPenetrationPct": 7.5,
+            "counterStrikePct": 6,
+            "lifestealPct": 0,
+            "reflectPct": 0,
+            "evasionPct": 4.8,
+            "qiRegenBonusPct": 6
+          },
+          "breakthroughBaseChance": 0.58
+        },
+        {
+          "ordinal": 4,
+          "id": "R1200_FROST_MOON_IMMORTAL_04",
+          "nameTh": "ดวงจิตกระจกน้ำแข็ง",
+          "lifespanMax": 250,
+          "functionalCombatPower": 1100,
+          "majorBandEquivalent": 4,
+          "skillGate": {
+            "primarySkill": "WATER_ICE",
+            "minPrimarySkill": 45,
+            "secondarySkill": "ALCHEMY",
+            "minSecondarySkill": 24
+          },
+          "resourceCost": {
+            "stones": 101,
+            "materialTier": 2
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 2.2,
+            "vitalityMult": 1.72,
+            "faithPoolMult": 1.48,
+            "senseBonus": 12
+          },
+          "realmBuffs": {
+            "combatOffensePct": 12.4,
+            "combatDefensePct": 8.8,
+            "armorPenetrationPct": 10,
+            "counterStrikePct": 8,
+            "lifestealPct": 0,
+            "reflectPct": 0,
+            "evasionPct": 6.4,
+            "qiRegenBonusPct": 8
+          },
+          "breakthroughBaseChance": 0.5
+        },
+        {
+          "ordinal": 5,
+          "id": "R1200_FROST_MOON_IMMORTAL_05",
+          "nameTh": "ครรภ์จันทราคราม",
+          "lifespanMax": 380,
+          "functionalCombatPower": 2250,
+          "majorBandEquivalent": 5,
+          "skillGate": {
+            "primarySkill": "WATER_ICE",
+            "minPrimarySkill": 55,
+            "secondarySkill": "ALCHEMY",
+            "minSecondarySkill": 32
+          },
+          "resourceCost": {
+            "stones": 115,
+            "materialTier": 3
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 2.6,
+            "vitalityMult": 1.96,
+            "faithPoolMult": 1.64,
+            "senseBonus": 16
+          },
+          "realmBuffs": {
+            "combatOffensePct": 15.5,
+            "combatDefensePct": 11,
+            "armorPenetrationPct": 12.5,
+            "counterStrikePct": 10,
+            "lifestealPct": 0,
+            "reflectPct": 0,
+            "evasionPct": 8,
+            "qiRegenBonusPct": 10
+          },
+          "breakthroughBaseChance": 0.42
+        },
+        {
+          "ordinal": 6,
+          "id": "R1200_FROST_MOON_IMMORTAL_06",
+          "nameTh": "วิญญาณเหมันต์ไร้ใจ",
+          "lifespanMax": 560,
+          "functionalCombatPower": 4300,
+          "majorBandEquivalent": 6,
+          "skillGate": {
+            "primarySkill": "WATER_ICE",
+            "minPrimarySkill": 65,
+            "secondarySkill": "ALCHEMY",
+            "minSecondarySkill": 40
+          },
+          "resourceCost": {
+            "stones": 129,
+            "materialTier": 3
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3,
+            "vitalityMult": 2.2,
+            "faithPoolMult": 1.8,
+            "senseBonus": 20
+          },
+          "realmBuffs": {
+            "combatOffensePct": 18.6,
+            "combatDefensePct": 13.2,
+            "armorPenetrationPct": 15,
+            "counterStrikePct": 12,
+            "lifestealPct": 0,
+            "reflectPct": 0,
+            "evasionPct": 9.6,
+            "qiRegenBonusPct": 12
+          },
+          "breakthroughBaseChance": 0.34
+        },
+        {
+          "ordinal": 7,
+          "id": "R1200_FROST_MOON_IMMORTAL_07",
+          "nameTh": "เขตแดนเหมันต์เงียบงัน",
+          "lifespanMax": 820,
+          "functionalCombatPower": 8200,
+          "majorBandEquivalent": 7,
+          "skillGate": {
+            "primarySkill": "WATER_ICE",
+            "minPrimarySkill": 75,
+            "secondarySkill": "ALCHEMY",
+            "minSecondarySkill": 48
+          },
+          "resourceCost": {
+            "stones": 143,
+            "materialTier": 4
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3.4,
+            "vitalityMult": 2.44,
+            "faithPoolMult": 1.96,
+            "senseBonus": 24
+          },
+          "realmBuffs": {
+            "combatOffensePct": 21.7,
+            "combatDefensePct": 15.4,
+            "armorPenetrationPct": 17.5,
+            "counterStrikePct": 14,
+            "lifestealPct": 0,
+            "reflectPct": 0,
+            "evasionPct": 11.2,
+            "qiRegenBonusPct": 14
+          },
+          "breakthroughBaseChance": 0.26
+        },
+        {
+          "ordinal": 8,
+          "id": "R1200_FROST_MOON_IMMORTAL_08",
+          "nameTh": "วังน้ำแข็งเก้าสวรรค์",
+          "lifespanMax": 1150,
+          "functionalCombatPower": 15500,
+          "majorBandEquivalent": 8,
+          "skillGate": {
+            "primarySkill": "WATER_ICE",
+            "minPrimarySkill": 85,
+            "secondarySkill": "ALCHEMY",
+            "minSecondarySkill": 56
+          },
+          "resourceCost": {
+            "stones": 157,
+            "materialTier": 4
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3.8,
+            "vitalityMult": 2.68,
+            "faithPoolMult": 2.12,
+            "senseBonus": 28
+          },
+          "realmBuffs": {
+            "combatOffensePct": 24.8,
+            "combatDefensePct": 17.6,
+            "armorPenetrationPct": 20,
+            "counterStrikePct": 16,
+            "lifestealPct": 0,
+            "reflectPct": 0,
+            "evasionPct": 12.8,
+            "qiRegenBonusPct": 16
+          },
+          "breakthroughBaseChance": 0.18
+        },
+        {
+          "ordinal": 9,
+          "id": "R1200_FROST_MOON_IMMORTAL_09",
+          "nameTh": "เซียนจันทราเหมันต์อมตะ",
+          "lifespanMax": 1850,
+          "functionalCombatPower": 30000,
+          "majorBandEquivalent": 9,
+          "skillGate": {
+            "primarySkill": "WATER_ICE",
+            "minPrimarySkill": 95,
+            "secondarySkill": "ALCHEMY",
+            "minSecondarySkill": 64
+          },
+          "resourceCost": {
+            "stones": 171,
+            "materialTier": 5
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 4.2,
+            "vitalityMult": 2.92,
+            "faithPoolMult": 2.28,
+            "senseBonus": 32
+          },
+          "realmBuffs": {
+            "combatOffensePct": 27.9,
+            "combatDefensePct": 19.8,
+            "armorPenetrationPct": 22.5,
+            "counterStrikePct": 18,
+            "lifestealPct": 0,
+            "reflectPct": 0,
+            "evasionPct": 14.4,
+            "qiRegenBonusPct": 18
+          },
+          "breakthroughBaseChance": 0.14
+        }
+      ],
+      "majorPowerMapping": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "note": "Full 9-realm source track imported with explicit native track state, skill/resource gates, and functional major-power comparison without ordinal compression into 5 or 4 stages."
+    },
+    {
+      "subPath": "WOOD_SPRING_BODY",
+      "trackId": "TRACK_BODY_WOOD_SPRING_BODY",
+      "sourceMajorPath": "BODY",
+      "sourceIndependentRealmCount": 9,
+      "targetMajorPath": "BODY",
+      "targetMajorStages": 5,
+      "mode": "INDEPENDENT_TRACK",
+      "sourceRealmOrdinalsImported": true,
+      "realms": [
+        {
+          "ordinal": 1,
+          "id": "R1200_WOOD_SPRING_BODY_01",
+          "nameTh": "เพาะเมล็ดพันธุ์ชีวิต",
+          "lifespanMax": 95,
+          "functionalCombatPower": 280,
+          "majorBandEquivalent": 1,
+          "skillGate": {
+            "primarySkill": "BODY_REFINING",
+            "minPrimarySkill": 15,
+            "secondarySkill": "WOOD_LIFE",
+            "minSecondarySkill": 10
+          },
+          "resourceCost": {
+            "stones": 59,
+            "materialTier": 1
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1,
+            "vitalityMult": 1,
+            "faithPoolMult": 1,
+            "senseBonus": 0
+          },
+          "realmBuffs": {
+            "combatOffensePct": 3.1,
+            "combatDefensePct": 2.2,
+            "armorPenetrationPct": 2.5,
+            "counterStrikePct": 2,
+            "lifestealPct": 0,
+            "reflectPct": 0,
+            "evasionPct": 1.6,
+            "qiRegenBonusPct": 2
+          },
+          "breakthroughBaseChance": 0.74
+        },
+        {
+          "ordinal": 2,
+          "id": "R1200_WOOD_SPRING_BODY_02",
+          "nameTh": "เส้นเลือดเถาวัลย์หยก",
+          "lifespanMax": 125,
+          "functionalCombatPower": 520,
+          "majorBandEquivalent": 1.5,
+          "skillGate": {
+            "primarySkill": "BODY_REFINING",
+            "minPrimarySkill": 25,
+            "secondarySkill": "WOOD_LIFE",
+            "minSecondarySkill": 10
+          },
+          "resourceCost": {
+            "stones": 73,
+            "materialTier": 1
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1.4,
+            "vitalityMult": 1.24,
+            "faithPoolMult": 1.16,
+            "senseBonus": 4
+          },
+          "realmBuffs": {
+            "combatOffensePct": 6.2,
+            "combatDefensePct": 4.4,
+            "armorPenetrationPct": 5,
+            "counterStrikePct": 4,
+            "lifestealPct": 0,
+            "reflectPct": 0,
+            "evasionPct": 3.2,
+            "qiRegenBonusPct": 4
+          },
+          "breakthroughBaseChance": 0.66
+        },
+        {
+          "ordinal": 3,
+          "id": "R1200_WOOD_SPRING_BODY_03",
+          "nameTh": "รากฐานพฤกษาหยั่งราก",
+          "lifespanMax": 175,
+          "functionalCombatPower": 880,
+          "majorBandEquivalent": 2,
+          "skillGate": {
+            "primarySkill": "BODY_REFINING",
+            "minPrimarySkill": 35,
+            "secondarySkill": "WOOD_LIFE",
+            "minSecondarySkill": 16
+          },
+          "resourceCost": {
+            "stones": 87,
+            "materialTier": 2
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1.8,
+            "vitalityMult": 1.48,
+            "faithPoolMult": 1.32,
+            "senseBonus": 8
+          },
+          "realmBuffs": {
+            "combatOffensePct": 9.3,
+            "combatDefensePct": 6.6,
+            "armorPenetrationPct": 7.5,
+            "counterStrikePct": 6,
+            "lifestealPct": 0,
+            "reflectPct": 0,
+            "evasionPct": 4.8,
+            "qiRegenBonusPct": 6
+          },
+          "breakthroughBaseChance": 0.58
+        },
+        {
+          "ordinal": 4,
+          "id": "R1200_WOOD_SPRING_BODY_04",
+          "nameTh": "แก่นพฤกษามรกตพันปี",
+          "lifespanMax": 250,
+          "functionalCombatPower": 1600,
+          "majorBandEquivalent": 2.5,
+          "skillGate": {
+            "primarySkill": "BODY_REFINING",
+            "minPrimarySkill": 45,
+            "secondarySkill": "WOOD_LIFE",
+            "minSecondarySkill": 24
+          },
+          "resourceCost": {
+            "stones": 101,
+            "materialTier": 2
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 2.2,
+            "vitalityMult": 1.72,
+            "faithPoolMult": 1.48,
+            "senseBonus": 12
+          },
+          "realmBuffs": {
+            "combatOffensePct": 12.4,
+            "combatDefensePct": 8.8,
+            "armorPenetrationPct": 10,
+            "counterStrikePct": 8,
+            "lifestealPct": 0,
+            "reflectPct": 0,
+            "evasionPct": 6.4,
+            "qiRegenBonusPct": 8
+          },
+          "breakthroughBaseChance": 0.5
+        },
+        {
+          "ordinal": 5,
+          "id": "R1200_WOOD_SPRING_BODY_05",
+          "nameTh": "โลหิตน้ำอมฤตพฤกษา",
+          "lifespanMax": 380,
+          "functionalCombatPower": 2600,
+          "majorBandEquivalent": 3,
+          "skillGate": {
+            "primarySkill": "BODY_REFINING",
+            "minPrimarySkill": 55,
+            "secondarySkill": "WOOD_LIFE",
+            "minSecondarySkill": 32
+          },
+          "resourceCost": {
+            "stones": 115,
+            "materialTier": 3
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 2.6,
+            "vitalityMult": 1.96,
+            "faithPoolMult": 1.64,
+            "senseBonus": 16
+          },
+          "realmBuffs": {
+            "combatOffensePct": 15.5,
+            "combatDefensePct": 11,
+            "armorPenetrationPct": 12.5,
+            "counterStrikePct": 10,
+            "lifestealPct": 0,
+            "reflectPct": 0,
+            "evasionPct": 8,
+            "qiRegenBonusPct": 10
+          },
+          "breakthroughBaseChance": 0.42
+        },
+        {
+          "ordinal": 6,
+          "id": "R1200_WOOD_SPRING_BODY_06",
+          "nameTh": "วิญญาณต้นไม้โลก",
+          "lifespanMax": 560,
+          "functionalCombatPower": 5000,
+          "majorBandEquivalent": 3.5,
+          "skillGate": {
+            "primarySkill": "BODY_REFINING",
+            "minPrimarySkill": 65,
+            "secondarySkill": "WOOD_LIFE",
+            "minSecondarySkill": 40
+          },
+          "resourceCost": {
+            "stones": 129,
+            "materialTier": 3
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3,
+            "vitalityMult": 2.2,
+            "faithPoolMult": 1.8,
+            "senseBonus": 20
+          },
+          "realmBuffs": {
+            "combatOffensePct": 18.6,
+            "combatDefensePct": 13.2,
+            "armorPenetrationPct": 15,
+            "counterStrikePct": 12,
+            "lifestealPct": 0,
+            "reflectPct": 0,
+            "evasionPct": 9.6,
+            "qiRegenBonusPct": 12
+          },
+          "breakthroughBaseChance": 0.34
+        },
+        {
+          "ordinal": 7,
+          "id": "R1200_WOOD_SPRING_BODY_07",
+          "nameTh": "เขตแดนร่มเงาหมื่นชีวิต",
+          "lifespanMax": 820,
+          "functionalCombatPower": 8500,
+          "majorBandEquivalent": 4,
+          "skillGate": {
+            "primarySkill": "BODY_REFINING",
+            "minPrimarySkill": 75,
+            "secondarySkill": "WOOD_LIFE",
+            "minSecondarySkill": 48
+          },
+          "resourceCost": {
+            "stones": 143,
+            "materialTier": 4
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3.4,
+            "vitalityMult": 2.44,
+            "faithPoolMult": 1.96,
+            "senseBonus": 24
+          },
+          "realmBuffs": {
+            "combatOffensePct": 21.7,
+            "combatDefensePct": 15.4,
+            "armorPenetrationPct": 17.5,
+            "counterStrikePct": 14,
+            "lifestealPct": 0,
+            "reflectPct": 0,
+            "evasionPct": 11.2,
+            "qiRegenBonusPct": 14
+          },
+          "breakthroughBaseChance": 0.26
+        },
+        {
+          "ordinal": 8,
+          "id": "R1200_WOOD_SPRING_BODY_08",
+          "nameTh": "มหากายาต้นโพธิ์นิรันดร์",
+          "lifespanMax": 1150,
+          "functionalCombatPower": 18000,
+          "majorBandEquivalent": 4.5,
+          "skillGate": {
+            "primarySkill": "BODY_REFINING",
+            "minPrimarySkill": 85,
+            "secondarySkill": "WOOD_LIFE",
+            "minSecondarySkill": 56
+          },
+          "resourceCost": {
+            "stones": 157,
+            "materialTier": 4
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3.8,
+            "vitalityMult": 2.68,
+            "faithPoolMult": 2.12,
+            "senseBonus": 28
+          },
+          "realmBuffs": {
+            "combatOffensePct": 24.8,
+            "combatDefensePct": 17.6,
+            "armorPenetrationPct": 20,
+            "counterStrikePct": 16,
+            "lifestealPct": 0,
+            "reflectPct": 0,
+            "evasionPct": 12.8,
+            "qiRegenBonusPct": 16
+          },
+          "breakthroughBaseChance": 0.18
+        },
+        {
+          "ordinal": 9,
+          "id": "R1200_WOOD_SPRING_BODY_09",
+          "nameTh": "ราชันย์พฤกษาอมตะสูงสุด",
+          "lifespanMax": 1850,
+          "functionalCombatPower": 31000,
+          "majorBandEquivalent": 5,
+          "skillGate": {
+            "primarySkill": "BODY_REFINING",
+            "minPrimarySkill": 95,
+            "secondarySkill": "WOOD_LIFE",
+            "minSecondarySkill": 64
+          },
+          "resourceCost": {
+            "stones": 171,
+            "materialTier": 5
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 4.2,
+            "vitalityMult": 2.92,
+            "faithPoolMult": 2.28,
+            "senseBonus": 32
+          },
+          "realmBuffs": {
+            "combatOffensePct": 27.9,
+            "combatDefensePct": 19.8,
+            "armorPenetrationPct": 22.5,
+            "counterStrikePct": 18,
+            "lifestealPct": 0,
+            "reflectPct": 0,
+            "evasionPct": 14.4,
+            "qiRegenBonusPct": 18
+          },
+          "breakthroughBaseChance": 0.14
+        }
+      ],
+      "majorPowerMapping": [
+        1,
+        1.5,
+        2,
+        2.5,
+        3,
+        3.5,
+        4,
+        4.5,
+        5
+      ],
+      "note": "Full 9-realm source track imported with explicit native track state, skill/resource gates, and functional major-power comparison without ordinal compression into 5 or 4 stages."
+    },
+    {
+      "subPath": "MEDICINE_BODHI_GOD",
+      "trackId": "TRACK_GOD_MEDICINE_BODHI_GOD",
+      "sourceMajorPath": "GOD",
+      "sourceIndependentRealmCount": 9,
+      "targetMajorPath": "GOD",
+      "targetMajorStages": 4,
+      "mode": "INDEPENDENT_TRACK",
+      "sourceRealmOrdinalsImported": true,
+      "realms": [
+        {
+          "ordinal": 1,
+          "id": "R1200_MEDICINE_BODHI_GOD_01",
+          "nameTh": "จุดประทีปเมตตา",
+          "lifespanMax": 95,
+          "functionalCombatPower": 410,
+          "majorBandEquivalent": 1,
+          "skillGate": {
+            "primarySkill": "MEDICINE",
+            "minPrimarySkill": 15,
+            "secondarySkill": "SOUL_DIVINE",
+            "minSecondarySkill": 10
+          },
+          "resourceCost": {
+            "stones": 59,
+            "materialTier": 1
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1,
+            "vitalityMult": 1,
+            "faithPoolMult": 1,
+            "senseBonus": 0
+          },
+          "realmBuffs": {
+            "combatOffensePct": 3.1,
+            "combatDefensePct": 2.2,
+            "armorPenetrationPct": 2.5,
+            "counterStrikePct": 2,
+            "lifestealPct": 0,
+            "reflectPct": 0,
+            "evasionPct": 1.6,
+            "qiRegenBonusPct": 2
+          },
+          "breakthroughBaseChance": 0.74
+        },
+        {
+          "ordinal": 2,
+          "id": "R1200_MEDICINE_BODHI_GOD_02",
+          "nameTh": "หัตถ์โอสถอุ่นปราณ",
+          "lifespanMax": 125,
+          "functionalCombatPower": 950,
+          "majorBandEquivalent": 1.5,
+          "skillGate": {
+            "primarySkill": "MEDICINE",
+            "minPrimarySkill": 25,
+            "secondarySkill": "SOUL_DIVINE",
+            "minSecondarySkill": 10
+          },
+          "resourceCost": {
+            "stones": 73,
+            "materialTier": 1
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1.4,
+            "vitalityMult": 1.24,
+            "faithPoolMult": 1.16,
+            "senseBonus": 4
+          },
+          "realmBuffs": {
+            "combatOffensePct": 6.2,
+            "combatDefensePct": 4.4,
+            "armorPenetrationPct": 5,
+            "counterStrikePct": 4,
+            "lifestealPct": 0,
+            "reflectPct": 0,
+            "evasionPct": 3.2,
+            "qiRegenBonusPct": 4
+          },
+          "breakthroughBaseChance": 0.66
+        },
+        {
+          "ordinal": 3,
+          "id": "R1200_MEDICINE_BODHI_GOD_03",
+          "nameTh": "รากฐานบัวขาวโพธิญาณ",
+          "lifespanMax": 175,
+          "functionalCombatPower": 1750,
+          "majorBandEquivalent": 2,
+          "skillGate": {
+            "primarySkill": "MEDICINE",
+            "minPrimarySkill": 35,
+            "secondarySkill": "SOUL_DIVINE",
+            "minSecondarySkill": 16
+          },
+          "resourceCost": {
+            "stones": 87,
+            "materialTier": 2
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1.8,
+            "vitalityMult": 1.48,
+            "faithPoolMult": 1.32,
+            "senseBonus": 8
+          },
+          "realmBuffs": {
+            "combatOffensePct": 9.3,
+            "combatDefensePct": 6.6,
+            "armorPenetrationPct": 7.5,
+            "counterStrikePct": 6,
+            "lifestealPct": 0,
+            "reflectPct": 0,
+            "evasionPct": 4.8,
+            "qiRegenBonusPct": 6
+          },
+          "breakthroughBaseChance": 0.58
+        },
+        {
+          "ordinal": 4,
+          "id": "R1200_MEDICINE_BODHI_GOD_04",
+          "nameTh": "แก่นเทพโอสถทองคำ",
+          "lifespanMax": 250,
+          "functionalCombatPower": 4000,
+          "majorBandEquivalent": 2.5,
+          "skillGate": {
+            "primarySkill": "MEDICINE",
+            "minPrimarySkill": 45,
+            "secondarySkill": "SOUL_DIVINE",
+            "minSecondarySkill": 24
+          },
+          "resourceCost": {
+            "stones": 101,
+            "materialTier": 2
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 2.2,
+            "vitalityMult": 1.72,
+            "faithPoolMult": 1.48,
+            "senseBonus": 12
+          },
+          "realmBuffs": {
+            "combatOffensePct": 12.4,
+            "combatDefensePct": 8.8,
+            "armorPenetrationPct": 10,
+            "counterStrikePct": 8,
+            "lifestealPct": 0,
+            "reflectPct": 0,
+            "evasionPct": 6.4,
+            "qiRegenBonusPct": 8
+          },
+          "breakthroughBaseChance": 0.5
+        },
+        {
+          "ordinal": 5,
+          "id": "R1200_MEDICINE_BODHI_GOD_05",
+          "nameTh": "แจกันหยกน้ำอมฤต",
+          "lifespanMax": 380,
+          "functionalCombatPower": 7600,
+          "majorBandEquivalent": 3,
+          "skillGate": {
+            "primarySkill": "MEDICINE",
+            "minPrimarySkill": 55,
+            "secondarySkill": "SOUL_DIVINE",
+            "minSecondarySkill": 32
+          },
+          "resourceCost": {
+            "stones": 115,
+            "materialTier": 3
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 2.6,
+            "vitalityMult": 1.96,
+            "faithPoolMult": 1.64,
+            "senseBonus": 16
+          },
+          "realmBuffs": {
+            "combatOffensePct": 15.5,
+            "combatDefensePct": 11,
+            "armorPenetrationPct": 12.5,
+            "counterStrikePct": 10,
+            "lifestealPct": 0,
+            "reflectPct": 0,
+            "evasionPct": 8,
+            "qiRegenBonusPct": 10
+          },
+          "breakthroughBaseChance": 0.42
+        },
+        {
+          "ordinal": 6,
+          "id": "R1200_MEDICINE_BODHI_GOD_06",
+          "nameTh": "กายาโพธิสัตว์จำแลง",
+          "lifespanMax": 560,
+          "functionalCombatPower": 14000,
+          "majorBandEquivalent": 3.3,
+          "skillGate": {
+            "primarySkill": "MEDICINE",
+            "minPrimarySkill": 65,
+            "secondarySkill": "SOUL_DIVINE",
+            "minSecondarySkill": 40
+          },
+          "resourceCost": {
+            "stones": 129,
+            "materialTier": 3
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3,
+            "vitalityMult": 2.2,
+            "faithPoolMult": 1.8,
+            "senseBonus": 20
+          },
+          "realmBuffs": {
+            "combatOffensePct": 18.6,
+            "combatDefensePct": 13.2,
+            "armorPenetrationPct": 15,
+            "counterStrikePct": 12,
+            "lifestealPct": 0,
+            "reflectPct": 0,
+            "evasionPct": 9.6,
+            "qiRegenBonusPct": 12
+          },
+          "breakthroughBaseChance": 0.34
+        },
+        {
+          "ordinal": 7,
+          "id": "R1200_MEDICINE_BODHI_GOD_07",
+          "nameTh": "เขตแดนบุญไร้โรคภัย",
+          "lifespanMax": 820,
+          "functionalCombatPower": 20000,
+          "majorBandEquivalent": 3.7,
+          "skillGate": {
+            "primarySkill": "MEDICINE",
+            "minPrimarySkill": 75,
+            "secondarySkill": "SOUL_DIVINE",
+            "minSecondarySkill": 48
+          },
+          "resourceCost": {
+            "stones": 143,
+            "materialTier": 4
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3.4,
+            "vitalityMult": 2.44,
+            "faithPoolMult": 1.96,
+            "senseBonus": 24
+          },
+          "realmBuffs": {
+            "combatOffensePct": 21.7,
+            "combatDefensePct": 15.4,
+            "armorPenetrationPct": 17.5,
+            "counterStrikePct": 14,
+            "lifestealPct": 0,
+            "reflectPct": 0,
+            "evasionPct": 11.2,
+            "qiRegenBonusPct": 14
+          },
+          "breakthroughBaseChance": 0.26
+        },
+        {
+          "ordinal": 8,
+          "id": "R1200_MEDICINE_BODHI_GOD_08",
+          "nameTh": "ชุบชีวิตด้วยแสงทิพย์",
+          "lifespanMax": 1150,
+          "functionalCombatPower": 26000,
+          "majorBandEquivalent": 3.9,
+          "skillGate": {
+            "primarySkill": "MEDICINE",
+            "minPrimarySkill": 85,
+            "secondarySkill": "SOUL_DIVINE",
+            "minSecondarySkill": 56
+          },
+          "resourceCost": {
+            "stones": 157,
+            "materialTier": 4
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3.8,
+            "vitalityMult": 2.68,
+            "faithPoolMult": 2.12,
+            "senseBonus": 28
+          },
+          "realmBuffs": {
+            "combatOffensePct": 24.8,
+            "combatDefensePct": 17.6,
+            "armorPenetrationPct": 20,
+            "counterStrikePct": 16,
+            "lifestealPct": 0,
+            "reflectPct": 0,
+            "evasionPct": 12.8,
+            "qiRegenBonusPct": 16
+          },
+          "breakthroughBaseChance": 0.18
+        },
+        {
+          "ordinal": 9,
+          "id": "R1200_MEDICINE_BODHI_GOD_09",
+          "nameTh": "จอมเทพโอสถโพธิสัตว์สูงสุด",
+          "lifespanMax": 1850,
+          "functionalCombatPower": 32500,
+          "majorBandEquivalent": 4,
+          "skillGate": {
+            "primarySkill": "MEDICINE",
+            "minPrimarySkill": 95,
+            "secondarySkill": "SOUL_DIVINE",
+            "minSecondarySkill": 64
+          },
+          "resourceCost": {
+            "stones": 171,
+            "materialTier": 5
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 4.2,
+            "vitalityMult": 2.92,
+            "faithPoolMult": 2.28,
+            "senseBonus": 32
+          },
+          "realmBuffs": {
+            "combatOffensePct": 27.9,
+            "combatDefensePct": 19.8,
+            "armorPenetrationPct": 22.5,
+            "counterStrikePct": 18,
+            "lifestealPct": 0,
+            "reflectPct": 0,
+            "evasionPct": 14.4,
+            "qiRegenBonusPct": 18
+          },
+          "breakthroughBaseChance": 0.14
+        }
+      ],
+      "majorPowerMapping": [
+        1,
+        1.5,
+        2,
+        2.5,
+        3,
+        3.3,
+        3.7,
+        3.9,
+        4
+      ],
+      "note": "Full 9-realm source track imported with explicit native track state, skill/resource gates, and functional major-power comparison without ordinal compression into 5 or 4 stages."
+    },
+    {
+      "subPath": "SHADOW_ASSASSIN",
+      "trackId": "TRACK_DEMON_SHADOW_ASSASSIN",
+      "sourceMajorPath": "DEMON",
+      "sourceIndependentRealmCount": 9,
+      "targetMajorPath": "DEMON",
+      "targetMajorStages": 9,
+      "mode": "INDEPENDENT_TRACK",
+      "sourceRealmOrdinalsImported": true,
+      "realms": [
+        {
+          "ordinal": 1,
+          "id": "R1200_SHADOW_ASSASSIN_01",
+          "nameTh": "ก้าวสู่เงามืด",
+          "lifespanMax": 95,
+          "functionalCombatPower": 130,
+          "majorBandEquivalent": 1,
+          "skillGate": {
+            "primarySkill": "MOVEMENT",
+            "minPrimarySkill": 15,
+            "secondarySkill": "stealth",
+            "minSecondarySkill": 10
+          },
+          "resourceCost": {
+            "stones": 59,
+            "materialTier": 1
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1,
+            "vitalityMult": 1,
+            "faithPoolMult": 1,
+            "senseBonus": 0
+          },
+          "realmBuffs": {
+            "combatOffensePct": 3.1,
+            "combatDefensePct": 2.2,
+            "armorPenetrationPct": 2.5,
+            "counterStrikePct": 2,
+            "lifestealPct": 1.5,
+            "reflectPct": 0,
+            "evasionPct": 1.6,
+            "qiRegenBonusPct": 2
+          },
+          "breakthroughBaseChance": 0.74
+        },
+        {
+          "ordinal": 2,
+          "id": "R1200_SHADOW_ASSASSIN_02",
+          "nameTh": "เก็บงำลมหายใจ",
+          "lifespanMax": 125,
+          "functionalCombatPower": 270,
+          "majorBandEquivalent": 2,
+          "skillGate": {
+            "primarySkill": "MOVEMENT",
+            "minPrimarySkill": 25,
+            "secondarySkill": "stealth",
+            "minSecondarySkill": 10
+          },
+          "resourceCost": {
+            "stones": 73,
+            "materialTier": 1
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1.4,
+            "vitalityMult": 1.24,
+            "faithPoolMult": 1.16,
+            "senseBonus": 4
+          },
+          "realmBuffs": {
+            "combatOffensePct": 6.2,
+            "combatDefensePct": 4.4,
+            "armorPenetrationPct": 5,
+            "counterStrikePct": 4,
+            "lifestealPct": 3,
+            "reflectPct": 0,
+            "evasionPct": 3.2,
+            "qiRegenBonusPct": 4
+          },
+          "breakthroughBaseChance": 0.66
+        },
+        {
+          "ordinal": 3,
+          "id": "R1200_SHADOW_ASSASSIN_03",
+          "nameTh": "รากฐานเงาจันทร์เร้นลับ",
+          "lifespanMax": 175,
+          "functionalCombatPower": 550,
+          "majorBandEquivalent": 3,
+          "skillGate": {
+            "primarySkill": "MOVEMENT",
+            "minPrimarySkill": 35,
+            "secondarySkill": "stealth",
+            "minSecondarySkill": 16
+          },
+          "resourceCost": {
+            "stones": 87,
+            "materialTier": 2
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1.8,
+            "vitalityMult": 1.48,
+            "faithPoolMult": 1.32,
+            "senseBonus": 8
+          },
+          "realmBuffs": {
+            "combatOffensePct": 9.3,
+            "combatDefensePct": 6.6,
+            "armorPenetrationPct": 7.5,
+            "counterStrikePct": 6,
+            "lifestealPct": 4.5,
+            "reflectPct": 0,
+            "evasionPct": 4.8,
+            "qiRegenBonusPct": 6
+          },
+          "breakthroughBaseChance": 0.58
+        },
+        {
+          "ordinal": 4,
+          "id": "R1200_SHADOW_ASSASSIN_04",
+          "nameTh": "แก่นมารเงาพันร่าง",
+          "lifespanMax": 250,
+          "functionalCombatPower": 1120,
+          "majorBandEquivalent": 4,
+          "skillGate": {
+            "primarySkill": "MOVEMENT",
+            "minPrimarySkill": 45,
+            "secondarySkill": "stealth",
+            "minSecondarySkill": 24
+          },
+          "resourceCost": {
+            "stones": 101,
+            "materialTier": 2
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 2.2,
+            "vitalityMult": 1.72,
+            "faithPoolMult": 1.48,
+            "senseBonus": 12
+          },
+          "realmBuffs": {
+            "combatOffensePct": 12.4,
+            "combatDefensePct": 8.8,
+            "armorPenetrationPct": 10,
+            "counterStrikePct": 8,
+            "lifestealPct": 6,
+            "reflectPct": 0,
+            "evasionPct": 6.4,
+            "qiRegenBonusPct": 8
+          },
+          "breakthroughBaseChance": 0.5
+        },
+        {
+          "ordinal": 5,
+          "id": "R1200_SHADOW_ASSASSIN_05",
+          "nameTh": "หนึ่งคมปลิดวิญญาณ",
+          "lifespanMax": 380,
+          "functionalCombatPower": 2280,
+          "majorBandEquivalent": 5,
+          "skillGate": {
+            "primarySkill": "MOVEMENT",
+            "minPrimarySkill": 55,
+            "secondarySkill": "stealth",
+            "minSecondarySkill": 32
+          },
+          "resourceCost": {
+            "stones": 115,
+            "materialTier": 3
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 2.6,
+            "vitalityMult": 1.96,
+            "faithPoolMult": 1.64,
+            "senseBonus": 16
+          },
+          "realmBuffs": {
+            "combatOffensePct": 15.5,
+            "combatDefensePct": 11,
+            "armorPenetrationPct": 12.5,
+            "counterStrikePct": 10,
+            "lifestealPct": 7.5,
+            "reflectPct": 0,
+            "evasionPct": 8,
+            "qiRegenBonusPct": 10
+          },
+          "breakthroughBaseChance": 0.42
+        },
+        {
+          "ordinal": 6,
+          "id": "R1200_SHADOW_ASSASSIN_06",
+          "nameTh": "ทารกมารเงาไร้ลักษณ์",
+          "lifespanMax": 560,
+          "functionalCombatPower": 4500,
+          "majorBandEquivalent": 6,
+          "skillGate": {
+            "primarySkill": "MOVEMENT",
+            "minPrimarySkill": 65,
+            "secondarySkill": "stealth",
+            "minSecondarySkill": 40
+          },
+          "resourceCost": {
+            "stones": 129,
+            "materialTier": 3
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3,
+            "vitalityMult": 2.2,
+            "faithPoolMult": 1.8,
+            "senseBonus": 20
+          },
+          "realmBuffs": {
+            "combatOffensePct": 18.6,
+            "combatDefensePct": 13.2,
+            "armorPenetrationPct": 15,
+            "counterStrikePct": 12,
+            "lifestealPct": 9,
+            "reflectPct": 0,
+            "evasionPct": 9.6,
+            "qiRegenBonusPct": 12
+          },
+          "breakthroughBaseChance": 0.34
+        },
+        {
+          "ordinal": 7,
+          "id": "R1200_SHADOW_ASSASSIN_07",
+          "nameTh": "เขตแดนรัตติกาลไร้เสียง",
+          "lifespanMax": 820,
+          "functionalCombatPower": 8800,
+          "majorBandEquivalent": 7,
+          "skillGate": {
+            "primarySkill": "MOVEMENT",
+            "minPrimarySkill": 75,
+            "secondarySkill": "stealth",
+            "minSecondarySkill": 48
+          },
+          "resourceCost": {
+            "stones": 143,
+            "materialTier": 4
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3.4,
+            "vitalityMult": 2.44,
+            "faithPoolMult": 1.96,
+            "senseBonus": 24
+          },
+          "realmBuffs": {
+            "combatOffensePct": 21.7,
+            "combatDefensePct": 15.4,
+            "armorPenetrationPct": 17.5,
+            "counterStrikePct": 14,
+            "lifestealPct": 10.5,
+            "reflectPct": 0,
+            "evasionPct": 11.2,
+            "qiRegenBonusPct": 14
+          },
+          "breakthroughBaseChance": 0.26
+        },
+        {
+          "ordinal": 8,
+          "id": "R1200_SHADOW_ASSASSIN_08",
+          "nameTh": "ข้ามผ่านมิติเงามืด",
+          "lifespanMax": 1150,
+          "functionalCombatPower": 16500,
+          "majorBandEquivalent": 8,
+          "skillGate": {
+            "primarySkill": "MOVEMENT",
+            "minPrimarySkill": 85,
+            "secondarySkill": "stealth",
+            "minSecondarySkill": 56
+          },
+          "resourceCost": {
+            "stones": 157,
+            "materialTier": 4
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3.8,
+            "vitalityMult": 2.68,
+            "faithPoolMult": 2.12,
+            "senseBonus": 28
+          },
+          "realmBuffs": {
+            "combatOffensePct": 24.8,
+            "combatDefensePct": 17.6,
+            "armorPenetrationPct": 20,
+            "counterStrikePct": 16,
+            "lifestealPct": 12,
+            "reflectPct": 0,
+            "evasionPct": 12.8,
+            "qiRegenBonusPct": 16
+          },
+          "breakthroughBaseChance": 0.18
+        },
+        {
+          "ordinal": 9,
+          "id": "R1200_SHADOW_ASSASSIN_09",
+          "nameTh": "มหาจักรพรรดิเงาไร้ลักษณ์",
+          "lifespanMax": 1850,
+          "functionalCombatPower": 31000,
+          "majorBandEquivalent": 9,
+          "skillGate": {
+            "primarySkill": "MOVEMENT",
+            "minPrimarySkill": 95,
+            "secondarySkill": "stealth",
+            "minSecondarySkill": 64
+          },
+          "resourceCost": {
+            "stones": 171,
+            "materialTier": 5
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 4.2,
+            "vitalityMult": 2.92,
+            "faithPoolMult": 2.28,
+            "senseBonus": 32
+          },
+          "realmBuffs": {
+            "combatOffensePct": 27.9,
+            "combatDefensePct": 19.8,
+            "armorPenetrationPct": 22.5,
+            "counterStrikePct": 18,
+            "lifestealPct": 13.5,
+            "reflectPct": 0,
+            "evasionPct": 14.4,
+            "qiRegenBonusPct": 18
+          },
+          "breakthroughBaseChance": 0.14
+        }
+      ],
+      "majorPowerMapping": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "note": "Full 9-realm source track imported with explicit native track state, skill/resource gates, and functional major-power comparison without ordinal compression into 5 or 4 stages."
+    },
+    {
+      "subPath": "VENOM_GU_SOVEREIGN",
+      "trackId": "TRACK_DEMON_VENOM_GU_SOVEREIGN",
+      "sourceMajorPath": "DEMON",
+      "sourceIndependentRealmCount": 9,
+      "targetMajorPath": "DEMON",
+      "targetMajorStages": 9,
+      "mode": "INDEPENDENT_TRACK",
+      "sourceRealmOrdinalsImported": true,
+      "realms": [
+        {
+          "ordinal": 1,
+          "id": "R1200_VENOM_GU_SOVEREIGN_01",
+          "nameTh": "สัมผัสไอพิษ",
+          "lifespanMax": 95,
+          "functionalCombatPower": 130,
+          "majorBandEquivalent": 1,
+          "skillGate": {
+            "primarySkill": "POISON",
+            "minPrimarySkill": 15,
+            "secondarySkill": "ALCHEMY",
+            "minSecondarySkill": 10
+          },
+          "resourceCost": {
+            "stones": 59,
+            "materialTier": 1
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1,
+            "vitalityMult": 1,
+            "faithPoolMult": 1,
+            "senseBonus": 0
+          },
+          "realmBuffs": {
+            "combatOffensePct": 3.1,
+            "combatDefensePct": 2.2,
+            "armorPenetrationPct": 2.5,
+            "counterStrikePct": 2,
+            "lifestealPct": 1.5,
+            "reflectPct": 0,
+            "evasionPct": 1.6,
+            "qiRegenBonusPct": 2
+          },
+          "breakthroughBaseChance": 0.74
+        },
+        {
+          "ordinal": 2,
+          "id": "R1200_VENOM_GU_SOVEREIGN_02",
+          "nameTh": "หลอมโถกู่เบื้องต้น",
+          "lifespanMax": 125,
+          "functionalCombatPower": 270,
+          "majorBandEquivalent": 2,
+          "skillGate": {
+            "primarySkill": "POISON",
+            "minPrimarySkill": 25,
+            "secondarySkill": "ALCHEMY",
+            "minSecondarySkill": 10
+          },
+          "resourceCost": {
+            "stones": 73,
+            "materialTier": 1
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1.4,
+            "vitalityMult": 1.24,
+            "faithPoolMult": 1.16,
+            "senseBonus": 4
+          },
+          "realmBuffs": {
+            "combatOffensePct": 6.2,
+            "combatDefensePct": 4.4,
+            "armorPenetrationPct": 5,
+            "counterStrikePct": 4,
+            "lifestealPct": 3,
+            "reflectPct": 0,
+            "evasionPct": 3.2,
+            "qiRegenBonusPct": 4
+          },
+          "breakthroughBaseChance": 0.66
+        },
+        {
+          "ordinal": 3,
+          "id": "R1200_VENOM_GU_SOVEREIGN_03",
+          "nameTh": "รากฐานกู่เงินห้าสี",
+          "lifespanMax": 175,
+          "functionalCombatPower": 550,
+          "majorBandEquivalent": 3,
+          "skillGate": {
+            "primarySkill": "POISON",
+            "minPrimarySkill": 35,
+            "secondarySkill": "ALCHEMY",
+            "minSecondarySkill": 16
+          },
+          "resourceCost": {
+            "stones": 87,
+            "materialTier": 2
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1.8,
+            "vitalityMult": 1.48,
+            "faithPoolMult": 1.32,
+            "senseBonus": 8
+          },
+          "realmBuffs": {
+            "combatOffensePct": 9.3,
+            "combatDefensePct": 6.6,
+            "armorPenetrationPct": 7.5,
+            "counterStrikePct": 6,
+            "lifestealPct": 4.5,
+            "reflectPct": 0,
+            "evasionPct": 4.8,
+            "qiRegenBonusPct": 6
+          },
+          "breakthroughBaseChance": 0.58
+        },
+        {
+          "ordinal": 4,
+          "id": "R1200_VENOM_GU_SOVEREIGN_04",
+          "nameTh": "แก่นมารกู่ทองคำ",
+          "lifespanMax": 250,
+          "functionalCombatPower": 1120,
+          "majorBandEquivalent": 4,
+          "skillGate": {
+            "primarySkill": "POISON",
+            "minPrimarySkill": 45,
+            "secondarySkill": "ALCHEMY",
+            "minSecondarySkill": 24
+          },
+          "resourceCost": {
+            "stones": 101,
+            "materialTier": 2
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 2.2,
+            "vitalityMult": 1.72,
+            "faithPoolMult": 1.48,
+            "senseBonus": 12
+          },
+          "realmBuffs": {
+            "combatOffensePct": 12.4,
+            "combatDefensePct": 8.8,
+            "armorPenetrationPct": 10,
+            "counterStrikePct": 8,
+            "lifestealPct": 6,
+            "reflectPct": 0,
+            "evasionPct": 6.4,
+            "qiRegenBonusPct": 8
+          },
+          "breakthroughBaseChance": 0.5
+        },
+        {
+          "ordinal": 5,
+          "id": "R1200_VENOM_GU_SOVEREIGN_05",
+          "nameTh": "พิษกร่อนกระดูกและชีพจร",
+          "lifespanMax": 380,
+          "functionalCombatPower": 2280,
+          "majorBandEquivalent": 5,
+          "skillGate": {
+            "primarySkill": "POISON",
+            "minPrimarySkill": 55,
+            "secondarySkill": "ALCHEMY",
+            "minSecondarySkill": 32
+          },
+          "resourceCost": {
+            "stones": 115,
+            "materialTier": 3
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 2.6,
+            "vitalityMult": 1.96,
+            "faithPoolMult": 1.64,
+            "senseBonus": 16
+          },
+          "realmBuffs": {
+            "combatOffensePct": 15.5,
+            "combatDefensePct": 11,
+            "armorPenetrationPct": 12.5,
+            "counterStrikePct": 10,
+            "lifestealPct": 7.5,
+            "reflectPct": 0,
+            "evasionPct": 8,
+            "qiRegenBonusPct": 10
+          },
+          "breakthroughBaseChance": 0.42
+        },
+        {
+          "ordinal": 6,
+          "id": "R1200_VENOM_GU_SOVEREIGN_06",
+          "nameTh": "ทารกมารราชันย์กู่",
+          "lifespanMax": 560,
+          "functionalCombatPower": 4500,
+          "majorBandEquivalent": 6,
+          "skillGate": {
+            "primarySkill": "POISON",
+            "minPrimarySkill": 65,
+            "secondarySkill": "ALCHEMY",
+            "minSecondarySkill": 40
+          },
+          "resourceCost": {
+            "stones": 129,
+            "materialTier": 3
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3,
+            "vitalityMult": 2.2,
+            "faithPoolMult": 1.8,
+            "senseBonus": 20
+          },
+          "realmBuffs": {
+            "combatOffensePct": 18.6,
+            "combatDefensePct": 13.2,
+            "armorPenetrationPct": 15,
+            "counterStrikePct": 12,
+            "lifestealPct": 9,
+            "reflectPct": 0,
+            "evasionPct": 9.6,
+            "qiRegenBonusPct": 12
+          },
+          "breakthroughBaseChance": 0.34
+        },
+        {
+          "ordinal": 7,
+          "id": "R1200_VENOM_GU_SOVEREIGN_07",
+          "nameTh": "เขตแดนหมอกพิษหมื่นอสรพิษ",
+          "lifespanMax": 820,
+          "functionalCombatPower": 8800,
+          "majorBandEquivalent": 7,
+          "skillGate": {
+            "primarySkill": "POISON",
+            "minPrimarySkill": 75,
+            "secondarySkill": "ALCHEMY",
+            "minSecondarySkill": 48
+          },
+          "resourceCost": {
+            "stones": 143,
+            "materialTier": 4
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3.4,
+            "vitalityMult": 2.44,
+            "faithPoolMult": 1.96,
+            "senseBonus": 24
+          },
+          "realmBuffs": {
+            "combatOffensePct": 21.7,
+            "combatDefensePct": 15.4,
+            "armorPenetrationPct": 17.5,
+            "counterStrikePct": 14,
+            "lifestealPct": 10.5,
+            "reflectPct": 0,
+            "evasionPct": 11.2,
+            "qiRegenBonusPct": 14
+          },
+          "breakthroughBaseChance": 0.26
+        },
+        {
+          "ordinal": 8,
+          "id": "R1200_VENOM_GU_SOVEREIGN_08",
+          "nameTh": "หลอมรวมฟ้าดินเป็นโถกู่",
+          "lifespanMax": 1150,
+          "functionalCombatPower": 16500,
+          "majorBandEquivalent": 8,
+          "skillGate": {
+            "primarySkill": "POISON",
+            "minPrimarySkill": 85,
+            "secondarySkill": "ALCHEMY",
+            "minSecondarySkill": 56
+          },
+          "resourceCost": {
+            "stones": 157,
+            "materialTier": 4
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3.8,
+            "vitalityMult": 2.68,
+            "faithPoolMult": 2.12,
+            "senseBonus": 28
+          },
+          "realmBuffs": {
+            "combatOffensePct": 24.8,
+            "combatDefensePct": 17.6,
+            "armorPenetrationPct": 20,
+            "counterStrikePct": 16,
+            "lifestealPct": 12,
+            "reflectPct": 0,
+            "evasionPct": 12.8,
+            "qiRegenBonusPct": 16
+          },
+          "breakthroughBaseChance": 0.18
+        },
+        {
+          "ordinal": 9,
+          "id": "R1200_VENOM_GU_SOVEREIGN_09",
+          "nameTh": "มหาจักรพรรดิพิษกู่สูงสุด",
+          "lifespanMax": 1850,
+          "functionalCombatPower": 31000,
+          "majorBandEquivalent": 9,
+          "skillGate": {
+            "primarySkill": "POISON",
+            "minPrimarySkill": 95,
+            "secondarySkill": "ALCHEMY",
+            "minSecondarySkill": 64
+          },
+          "resourceCost": {
+            "stones": 171,
+            "materialTier": 5
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 4.2,
+            "vitalityMult": 2.92,
+            "faithPoolMult": 2.28,
+            "senseBonus": 32
+          },
+          "realmBuffs": {
+            "combatOffensePct": 27.9,
+            "combatDefensePct": 19.8,
+            "armorPenetrationPct": 22.5,
+            "counterStrikePct": 18,
+            "lifestealPct": 13.5,
+            "reflectPct": 0,
+            "evasionPct": 14.4,
+            "qiRegenBonusPct": 18
+          },
+          "breakthroughBaseChance": 0.14
+        }
+      ],
+      "majorPowerMapping": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "note": "Full 9-realm source track imported with explicit native track state, skill/resource gates, and functional major-power comparison without ordinal compression into 5 or 4 stages."
+    },
+    {
+      "subPath": "NETHER_GHOST_KING",
+      "trackId": "TRACK_DEMON_NETHER_GHOST_KING",
+      "sourceMajorPath": "DEMON",
+      "sourceIndependentRealmCount": 9,
+      "targetMajorPath": "DEMON",
+      "targetMajorStages": 9,
+      "mode": "INDEPENDENT_TRACK",
+      "sourceRealmOrdinalsImported": true,
+      "realms": [
+        {
+          "ordinal": 1,
+          "id": "R1200_NETHER_GHOST_KING_01",
+          "nameTh": "เปิดเนตรหยินยมโลก",
+          "lifespanMax": 95,
+          "functionalCombatPower": 130,
+          "majorBandEquivalent": 1,
+          "skillGate": {
+            "primarySkill": "SOUL_DIVINE",
+            "minPrimarySkill": 15,
+            "secondarySkill": "ALCHEMY",
+            "minSecondarySkill": 10
+          },
+          "resourceCost": {
+            "stones": 59,
+            "materialTier": 1
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1,
+            "vitalityMult": 1,
+            "faithPoolMult": 1,
+            "senseBonus": 0
+          },
+          "realmBuffs": {
+            "combatOffensePct": 3.1,
+            "combatDefensePct": 2.2,
+            "armorPenetrationPct": 2.5,
+            "counterStrikePct": 2,
+            "lifestealPct": 1.5,
+            "reflectPct": 0,
+            "evasionPct": 1.6,
+            "qiRegenBonusPct": 2
+          },
+          "breakthroughBaseChance": 0.74
+        },
+        {
+          "ordinal": 2,
+          "id": "R1200_NETHER_GHOST_KING_02",
+          "nameTh": "สดับเสียงภูตพราย",
+          "lifespanMax": 125,
+          "functionalCombatPower": 270,
+          "majorBandEquivalent": 2,
+          "skillGate": {
+            "primarySkill": "SOUL_DIVINE",
+            "minPrimarySkill": 25,
+            "secondarySkill": "ALCHEMY",
+            "minSecondarySkill": 10
+          },
+          "resourceCost": {
+            "stones": 73,
+            "materialTier": 1
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1.4,
+            "vitalityMult": 1.24,
+            "faithPoolMult": 1.16,
+            "senseBonus": 4
+          },
+          "realmBuffs": {
+            "combatOffensePct": 6.2,
+            "combatDefensePct": 4.4,
+            "armorPenetrationPct": 5,
+            "counterStrikePct": 4,
+            "lifestealPct": 3,
+            "reflectPct": 0,
+            "evasionPct": 3.2,
+            "qiRegenBonusPct": 4
+          },
+          "breakthroughBaseChance": 0.66
+        },
+        {
+          "ordinal": 3,
+          "id": "R1200_NETHER_GHOST_KING_03",
+          "nameTh": "รากฐานตำหนักยมทูต",
+          "lifespanMax": 175,
+          "functionalCombatPower": 550,
+          "majorBandEquivalent": 3,
+          "skillGate": {
+            "primarySkill": "SOUL_DIVINE",
+            "minPrimarySkill": 35,
+            "secondarySkill": "ALCHEMY",
+            "minSecondarySkill": 16
+          },
+          "resourceCost": {
+            "stones": 87,
+            "materialTier": 2
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1.8,
+            "vitalityMult": 1.48,
+            "faithPoolMult": 1.32,
+            "senseBonus": 8
+          },
+          "realmBuffs": {
+            "combatOffensePct": 9.3,
+            "combatDefensePct": 6.6,
+            "armorPenetrationPct": 7.5,
+            "counterStrikePct": 6,
+            "lifestealPct": 4.5,
+            "reflectPct": 0,
+            "evasionPct": 4.8,
+            "qiRegenBonusPct": 6
+          },
+          "breakthroughBaseChance": 0.58
+        },
+        {
+          "ordinal": 4,
+          "id": "R1200_NETHER_GHOST_KING_04",
+          "nameTh": "แก่นมารภูตยมโลก",
+          "lifespanMax": 250,
+          "functionalCombatPower": 1120,
+          "majorBandEquivalent": 4,
+          "skillGate": {
+            "primarySkill": "SOUL_DIVINE",
+            "minPrimarySkill": 45,
+            "secondarySkill": "ALCHEMY",
+            "minSecondarySkill": 24
+          },
+          "resourceCost": {
+            "stones": 101,
+            "materialTier": 2
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 2.2,
+            "vitalityMult": 1.72,
+            "faithPoolMult": 1.48,
+            "senseBonus": 12
+          },
+          "realmBuffs": {
+            "combatOffensePct": 12.4,
+            "combatDefensePct": 8.8,
+            "armorPenetrationPct": 10,
+            "counterStrikePct": 8,
+            "lifestealPct": 6,
+            "reflectPct": 0,
+            "evasionPct": 6.4,
+            "qiRegenBonusPct": 8
+          },
+          "breakthroughBaseChance": 0.5
+        },
+        {
+          "ordinal": 5,
+          "id": "R1200_NETHER_GHOST_KING_05",
+          "nameTh": "เกราะกระดูกขาวอเวจี",
+          "lifespanMax": 380,
+          "functionalCombatPower": 2280,
+          "majorBandEquivalent": 5,
+          "skillGate": {
+            "primarySkill": "SOUL_DIVINE",
+            "minPrimarySkill": 55,
+            "secondarySkill": "ALCHEMY",
+            "minSecondarySkill": 32
+          },
+          "resourceCost": {
+            "stones": 115,
+            "materialTier": 3
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 2.6,
+            "vitalityMult": 1.96,
+            "faithPoolMult": 1.64,
+            "senseBonus": 16
+          },
+          "realmBuffs": {
+            "combatOffensePct": 15.5,
+            "combatDefensePct": 11,
+            "armorPenetrationPct": 12.5,
+            "counterStrikePct": 10,
+            "lifestealPct": 7.5,
+            "reflectPct": 0,
+            "evasionPct": 8,
+            "qiRegenBonusPct": 10
+          },
+          "breakthroughBaseChance": 0.42
+        },
+        {
+          "ordinal": 6,
+          "id": "R1200_NETHER_GHOST_KING_06",
+          "nameTh": "ทารกมารราชันย์ภูต",
+          "lifespanMax": 560,
+          "functionalCombatPower": 4500,
+          "majorBandEquivalent": 6,
+          "skillGate": {
+            "primarySkill": "SOUL_DIVINE",
+            "minPrimarySkill": 65,
+            "secondarySkill": "ALCHEMY",
+            "minSecondarySkill": 40
+          },
+          "resourceCost": {
+            "stones": 129,
+            "materialTier": 3
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3,
+            "vitalityMult": 2.2,
+            "faithPoolMult": 1.8,
+            "senseBonus": 20
+          },
+          "realmBuffs": {
+            "combatOffensePct": 18.6,
+            "combatDefensePct": 13.2,
+            "armorPenetrationPct": 15,
+            "counterStrikePct": 12,
+            "lifestealPct": 9,
+            "reflectPct": 0,
+            "evasionPct": 9.6,
+            "qiRegenBonusPct": 12
+          },
+          "breakthroughBaseChance": 0.34
+        },
+        {
+          "ordinal": 7,
+          "id": "R1200_NETHER_GHOST_KING_07",
+          "nameTh": "เขตแดนประตูผีผ่าน",
+          "lifespanMax": 820,
+          "functionalCombatPower": 8800,
+          "majorBandEquivalent": 7,
+          "skillGate": {
+            "primarySkill": "SOUL_DIVINE",
+            "minPrimarySkill": 75,
+            "secondarySkill": "ALCHEMY",
+            "minSecondarySkill": 48
+          },
+          "resourceCost": {
+            "stones": 143,
+            "materialTier": 4
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3.4,
+            "vitalityMult": 2.44,
+            "faithPoolMult": 1.96,
+            "senseBonus": 24
+          },
+          "realmBuffs": {
+            "combatOffensePct": 21.7,
+            "combatDefensePct": 15.4,
+            "armorPenetrationPct": 17.5,
+            "counterStrikePct": 14,
+            "lifestealPct": 10.5,
+            "reflectPct": 0,
+            "evasionPct": 11.2,
+            "qiRegenBonusPct": 14
+          },
+          "breakthroughBaseChance": 0.26
+        },
+        {
+          "ordinal": 8,
+          "id": "R1200_NETHER_GHOST_KING_08",
+          "nameTh": "แม่น้ำลืมเลือนไหลบ่า",
+          "lifespanMax": 1150,
+          "functionalCombatPower": 16500,
+          "majorBandEquivalent": 8,
+          "skillGate": {
+            "primarySkill": "SOUL_DIVINE",
+            "minPrimarySkill": 85,
+            "secondarySkill": "ALCHEMY",
+            "minSecondarySkill": 56
+          },
+          "resourceCost": {
+            "stones": 157,
+            "materialTier": 4
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3.8,
+            "vitalityMult": 2.68,
+            "faithPoolMult": 2.12,
+            "senseBonus": 28
+          },
+          "realmBuffs": {
+            "combatOffensePct": 24.8,
+            "combatDefensePct": 17.6,
+            "armorPenetrationPct": 20,
+            "counterStrikePct": 16,
+            "lifestealPct": 12,
+            "reflectPct": 0,
+            "evasionPct": 12.8,
+            "qiRegenBonusPct": 16
+          },
+          "breakthroughBaseChance": 0.18
+        },
+        {
+          "ordinal": 9,
+          "id": "R1200_NETHER_GHOST_KING_09",
+          "nameTh": "มหาจักรพรรดิราชันย์ภูตสูงสุด",
+          "lifespanMax": 1850,
+          "functionalCombatPower": 31000,
+          "majorBandEquivalent": 9,
+          "skillGate": {
+            "primarySkill": "SOUL_DIVINE",
+            "minPrimarySkill": 95,
+            "secondarySkill": "ALCHEMY",
+            "minSecondarySkill": 64
+          },
+          "resourceCost": {
+            "stones": 171,
+            "materialTier": 5
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 4.2,
+            "vitalityMult": 2.92,
+            "faithPoolMult": 2.28,
+            "senseBonus": 32
+          },
+          "realmBuffs": {
+            "combatOffensePct": 27.9,
+            "combatDefensePct": 19.8,
+            "armorPenetrationPct": 22.5,
+            "counterStrikePct": 18,
+            "lifestealPct": 13.5,
+            "reflectPct": 0,
+            "evasionPct": 14.4,
+            "qiRegenBonusPct": 18
+          },
+          "breakthroughBaseChance": 0.14
+        }
+      ],
+      "majorPowerMapping": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "note": "Full 9-realm source track imported with explicit native track state, skill/resource gates, and functional major-power comparison without ordinal compression into 5 or 4 stages."
+    },
+    {
+      "subPath": "HEAVEN_DEVOURING_DEMON",
+      "trackId": "TRACK_DEMON_HEAVEN_DEVOURING_DEMON",
+      "sourceMajorPath": "DEMON",
+      "sourceIndependentRealmCount": 9,
+      "targetMajorPath": "DEMON",
+      "targetMajorStages": 9,
+      "mode": "INDEPENDENT_TRACK",
+      "sourceRealmOrdinalsImported": true,
+      "realms": [
+        {
+          "ordinal": 1,
+          "id": "R1200_HEAVEN_DEVOURING_DEMON_01",
+          "nameTh": "เปิดจุดชีพจรกลืนปราณ",
+          "lifespanMax": 95,
+          "functionalCombatPower": 130,
+          "majorBandEquivalent": 1,
+          "skillGate": {
+            "primarySkill": "FIST_PALM",
+            "minPrimarySkill": 15,
+            "secondarySkill": "FORGING",
+            "minSecondarySkill": 10
+          },
+          "resourceCost": {
+            "stones": 59,
+            "materialTier": 1
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1,
+            "vitalityMult": 1,
+            "faithPoolMult": 1,
+            "senseBonus": 0
+          },
+          "realmBuffs": {
+            "combatOffensePct": 3.1,
+            "combatDefensePct": 2.2,
+            "armorPenetrationPct": 2.5,
+            "counterStrikePct": 2,
+            "lifestealPct": 1.5,
+            "reflectPct": 0,
+            "evasionPct": 1.6,
+            "qiRegenBonusPct": 2
+          },
+          "breakthroughBaseChance": 0.74
+        },
+        {
+          "ordinal": 2,
+          "id": "R1200_HEAVEN_DEVOURING_DEMON_02",
+          "nameTh": "วังวนมารในฝ่ามือ",
+          "lifespanMax": 125,
+          "functionalCombatPower": 270,
+          "majorBandEquivalent": 2,
+          "skillGate": {
+            "primarySkill": "FIST_PALM",
+            "minPrimarySkill": 25,
+            "secondarySkill": "FORGING",
+            "minSecondarySkill": 10
+          },
+          "resourceCost": {
+            "stones": 73,
+            "materialTier": 1
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1.4,
+            "vitalityMult": 1.24,
+            "faithPoolMult": 1.16,
+            "senseBonus": 4
+          },
+          "realmBuffs": {
+            "combatOffensePct": 6.2,
+            "combatDefensePct": 4.4,
+            "armorPenetrationPct": 5,
+            "counterStrikePct": 4,
+            "lifestealPct": 3,
+            "reflectPct": 0,
+            "evasionPct": 3.2,
+            "qiRegenBonusPct": 4
+          },
+          "breakthroughBaseChance": 0.66
+        },
+        {
+          "ordinal": 3,
+          "id": "R1200_HEAVEN_DEVOURING_DEMON_03",
+          "nameTh": "รากฐานเตาหลอมมาร",
+          "lifespanMax": 175,
+          "functionalCombatPower": 550,
+          "majorBandEquivalent": 3,
+          "skillGate": {
+            "primarySkill": "FIST_PALM",
+            "minPrimarySkill": 35,
+            "secondarySkill": "FORGING",
+            "minSecondarySkill": 16
+          },
+          "resourceCost": {
+            "stones": 87,
+            "materialTier": 2
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1.8,
+            "vitalityMult": 1.48,
+            "faithPoolMult": 1.32,
+            "senseBonus": 8
+          },
+          "realmBuffs": {
+            "combatOffensePct": 9.3,
+            "combatDefensePct": 6.6,
+            "armorPenetrationPct": 7.5,
+            "counterStrikePct": 6,
+            "lifestealPct": 4.5,
+            "reflectPct": 0,
+            "evasionPct": 4.8,
+            "qiRegenBonusPct": 6
+          },
+          "breakthroughBaseChance": 0.58
+        },
+        {
+          "ordinal": 4,
+          "id": "R1200_HEAVEN_DEVOURING_DEMON_04",
+          "nameTh": "แก่นมารกลืนสวรรค์",
+          "lifespanMax": 250,
+          "functionalCombatPower": 1120,
+          "majorBandEquivalent": 4,
+          "skillGate": {
+            "primarySkill": "FIST_PALM",
+            "minPrimarySkill": 45,
+            "secondarySkill": "FORGING",
+            "minSecondarySkill": 24
+          },
+          "resourceCost": {
+            "stones": 101,
+            "materialTier": 2
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 2.2,
+            "vitalityMult": 1.72,
+            "faithPoolMult": 1.48,
+            "senseBonus": 12
+          },
+          "realmBuffs": {
+            "combatOffensePct": 12.4,
+            "combatDefensePct": 8.8,
+            "armorPenetrationPct": 10,
+            "counterStrikePct": 8,
+            "lifestealPct": 6,
+            "reflectPct": 0,
+            "evasionPct": 6.4,
+            "qiRegenBonusPct": 8
+          },
+          "breakthroughBaseChance": 0.5
+        },
+        {
+          "ordinal": 5,
+          "id": "R1200_HEAVEN_DEVOURING_DEMON_05",
+          "nameTh": "หลุมดำกลืนกินหมื่นวิชา",
+          "lifespanMax": 380,
+          "functionalCombatPower": 2280,
+          "majorBandEquivalent": 5,
+          "skillGate": {
+            "primarySkill": "FIST_PALM",
+            "minPrimarySkill": 55,
+            "secondarySkill": "FORGING",
+            "minSecondarySkill": 32
+          },
+          "resourceCost": {
+            "stones": 115,
+            "materialTier": 3
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 2.6,
+            "vitalityMult": 1.96,
+            "faithPoolMult": 1.64,
+            "senseBonus": 16
+          },
+          "realmBuffs": {
+            "combatOffensePct": 15.5,
+            "combatDefensePct": 11,
+            "armorPenetrationPct": 12.5,
+            "counterStrikePct": 10,
+            "lifestealPct": 7.5,
+            "reflectPct": 0,
+            "evasionPct": 8,
+            "qiRegenBonusPct": 10
+          },
+          "breakthroughBaseChance": 0.42
+        },
+        {
+          "ordinal": 6,
+          "id": "R1200_HEAVEN_DEVOURING_DEMON_06",
+          "nameTh": "ทารกมารอสูรบรรพกาล",
+          "lifespanMax": 560,
+          "functionalCombatPower": 4500,
+          "majorBandEquivalent": 6,
+          "skillGate": {
+            "primarySkill": "FIST_PALM",
+            "minPrimarySkill": 65,
+            "secondarySkill": "FORGING",
+            "minSecondarySkill": 40
+          },
+          "resourceCost": {
+            "stones": 129,
+            "materialTier": 3
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3,
+            "vitalityMult": 2.2,
+            "faithPoolMult": 1.8,
+            "senseBonus": 20
+          },
+          "realmBuffs": {
+            "combatOffensePct": 18.6,
+            "combatDefensePct": 13.2,
+            "armorPenetrationPct": 15,
+            "counterStrikePct": 12,
+            "lifestealPct": 9,
+            "reflectPct": 0,
+            "evasionPct": 9.6,
+            "qiRegenBonusPct": 12
+          },
+          "breakthroughBaseChance": 0.34
+        },
+        {
+          "ordinal": 7,
+          "id": "R1200_HEAVEN_DEVOURING_DEMON_07",
+          "nameTh": "เขตแดนจอมมารกลืนดารา",
+          "lifespanMax": 820,
+          "functionalCombatPower": 8800,
+          "majorBandEquivalent": 7,
+          "skillGate": {
+            "primarySkill": "FIST_PALM",
+            "minPrimarySkill": 75,
+            "secondarySkill": "FORGING",
+            "minSecondarySkill": 48
+          },
+          "resourceCost": {
+            "stones": 143,
+            "materialTier": 4
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3.4,
+            "vitalityMult": 2.44,
+            "faithPoolMult": 1.96,
+            "senseBonus": 24
+          },
+          "realmBuffs": {
+            "combatOffensePct": 21.7,
+            "combatDefensePct": 15.4,
+            "armorPenetrationPct": 17.5,
+            "counterStrikePct": 14,
+            "lifestealPct": 10.5,
+            "reflectPct": 0,
+            "evasionPct": 11.2,
+            "qiRegenBonusPct": 14
+          },
+          "breakthroughBaseChance": 0.26
+        },
+        {
+          "ordinal": 8,
+          "id": "R1200_HEAVEN_DEVOURING_DEMON_08",
+          "nameTh": "มารบรรพกาลกลืนสามภพ",
+          "lifespanMax": 1150,
+          "functionalCombatPower": 16500,
+          "majorBandEquivalent": 8,
+          "skillGate": {
+            "primarySkill": "FIST_PALM",
+            "minPrimarySkill": 85,
+            "secondarySkill": "FORGING",
+            "minSecondarySkill": 56
+          },
+          "resourceCost": {
+            "stones": 157,
+            "materialTier": 4
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3.8,
+            "vitalityMult": 2.68,
+            "faithPoolMult": 2.12,
+            "senseBonus": 28
+          },
+          "realmBuffs": {
+            "combatOffensePct": 24.8,
+            "combatDefensePct": 17.6,
+            "armorPenetrationPct": 20,
+            "counterStrikePct": 16,
+            "lifestealPct": 12,
+            "reflectPct": 0,
+            "evasionPct": 12.8,
+            "qiRegenBonusPct": 16
+          },
+          "breakthroughBaseChance": 0.18
+        },
+        {
+          "ordinal": 9,
+          "id": "R1200_HEAVEN_DEVOURING_DEMON_09",
+          "nameTh": "มหาจักรพรรดิจอมมารกลืนสวรรค์",
+          "lifespanMax": 1850,
+          "functionalCombatPower": 31000,
+          "majorBandEquivalent": 9,
+          "skillGate": {
+            "primarySkill": "FIST_PALM",
+            "minPrimarySkill": 95,
+            "secondarySkill": "FORGING",
+            "minSecondarySkill": 64
+          },
+          "resourceCost": {
+            "stones": 171,
+            "materialTier": 5
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 4.2,
+            "vitalityMult": 2.92,
+            "faithPoolMult": 2.28,
+            "senseBonus": 32
+          },
+          "realmBuffs": {
+            "combatOffensePct": 27.9,
+            "combatDefensePct": 19.8,
+            "armorPenetrationPct": 22.5,
+            "counterStrikePct": 18,
+            "lifestealPct": 13.5,
+            "reflectPct": 0,
+            "evasionPct": 14.4,
+            "qiRegenBonusPct": 18
+          },
+          "breakthroughBaseChance": 0.14
+        }
+      ],
+      "majorPowerMapping": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "note": "Full 9-realm source track imported with explicit native track state, skill/resource gates, and functional major-power comparison without ordinal compression into 5 or 4 stages."
+    },
+    {
+      "subPath": "ZEN_VOID_MIND",
+      "trackId": "TRACK_HEART_SOUL_ZEN_VOID_MIND",
+      "sourceMajorPath": "HEART_SOUL",
+      "sourceIndependentRealmCount": 9,
+      "targetMajorPath": "HEART_SOUL",
+      "targetMajorStages": 9,
+      "mode": "INDEPENDENT_TRACK",
+      "sourceRealmOrdinalsImported": true,
+      "realms": [
+        {
+          "ordinal": 1,
+          "id": "R1200_ZEN_VOID_MIND_01",
+          "nameTh": "สงบคลื่นอารมณ์",
+          "lifespanMax": 95,
+          "functionalCombatPower": 118,
+          "majorBandEquivalent": 1,
+          "skillGate": {
+            "primarySkill": "SCRIPTURE",
+            "minPrimarySkill": 15,
+            "secondarySkill": "SOUL_DIVINE",
+            "minSecondarySkill": 10
+          },
+          "resourceCost": {
+            "stones": 59,
+            "materialTier": 1
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1,
+            "vitalityMult": 1,
+            "faithPoolMult": 1,
+            "senseBonus": 0
+          },
+          "realmBuffs": {
+            "combatOffensePct": 3.1,
+            "combatDefensePct": 2.2,
+            "armorPenetrationPct": 2.5,
+            "counterStrikePct": 2,
+            "lifestealPct": 0,
+            "reflectPct": 1.8,
+            "evasionPct": 1.6,
+            "qiRegenBonusPct": 2
+          },
+          "breakthroughBaseChance": 0.74
+        },
+        {
+          "ordinal": 2,
+          "id": "R1200_ZEN_VOID_MIND_02",
+          "nameTh": "กระจกใจไร้ฝุ่น",
+          "lifespanMax": 125,
+          "functionalCombatPower": 255,
+          "majorBandEquivalent": 2,
+          "skillGate": {
+            "primarySkill": "SCRIPTURE",
+            "minPrimarySkill": 25,
+            "secondarySkill": "SOUL_DIVINE",
+            "minSecondarySkill": 10
+          },
+          "resourceCost": {
+            "stones": 73,
+            "materialTier": 1
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1.4,
+            "vitalityMult": 1.24,
+            "faithPoolMult": 1.16,
+            "senseBonus": 4
+          },
+          "realmBuffs": {
+            "combatOffensePct": 6.2,
+            "combatDefensePct": 4.4,
+            "armorPenetrationPct": 5,
+            "counterStrikePct": 4,
+            "lifestealPct": 0,
+            "reflectPct": 3.6,
+            "evasionPct": 3.2,
+            "qiRegenBonusPct": 4
+          },
+          "breakthroughBaseChance": 0.66
+        },
+        {
+          "ordinal": 3,
+          "id": "R1200_ZEN_VOID_MIND_03",
+          "nameTh": "รากฐานดอกบัวเซน",
+          "lifespanMax": 175,
+          "functionalCombatPower": 530,
+          "majorBandEquivalent": 3,
+          "skillGate": {
+            "primarySkill": "SCRIPTURE",
+            "minPrimarySkill": 35,
+            "secondarySkill": "SOUL_DIVINE",
+            "minSecondarySkill": 16
+          },
+          "resourceCost": {
+            "stones": 87,
+            "materialTier": 2
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1.8,
+            "vitalityMult": 1.48,
+            "faithPoolMult": 1.32,
+            "senseBonus": 8
+          },
+          "realmBuffs": {
+            "combatOffensePct": 9.3,
+            "combatDefensePct": 6.6,
+            "armorPenetrationPct": 7.5,
+            "counterStrikePct": 6,
+            "lifestealPct": 0,
+            "reflectPct": 5.4,
+            "evasionPct": 4.8,
+            "qiRegenBonusPct": 6
+          },
+          "breakthroughBaseChance": 0.58
+        },
+        {
+          "ordinal": 4,
+          "id": "R1200_ZEN_VOID_MIND_04",
+          "nameTh": "แก่นจิตสุญตา",
+          "lifespanMax": 250,
+          "functionalCombatPower": 1080,
+          "majorBandEquivalent": 4,
+          "skillGate": {
+            "primarySkill": "SCRIPTURE",
+            "minPrimarySkill": 45,
+            "secondarySkill": "SOUL_DIVINE",
+            "minSecondarySkill": 24
+          },
+          "resourceCost": {
+            "stones": 101,
+            "materialTier": 2
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 2.2,
+            "vitalityMult": 1.72,
+            "faithPoolMult": 1.48,
+            "senseBonus": 12
+          },
+          "realmBuffs": {
+            "combatOffensePct": 12.4,
+            "combatDefensePct": 8.8,
+            "armorPenetrationPct": 10,
+            "counterStrikePct": 8,
+            "lifestealPct": 0,
+            "reflectPct": 7.2,
+            "evasionPct": 6.4,
+            "qiRegenBonusPct": 8
+          },
+          "breakthroughBaseChance": 0.5
+        },
+        {
+          "ordinal": 5,
+          "id": "R1200_ZEN_VOID_MIND_05",
+          "nameTh": "สะท้อนหมื่นวิชาคืนต้นทาง",
+          "lifespanMax": 380,
+          "functionalCombatPower": 2200,
+          "majorBandEquivalent": 5,
+          "skillGate": {
+            "primarySkill": "SCRIPTURE",
+            "minPrimarySkill": 55,
+            "secondarySkill": "SOUL_DIVINE",
+            "minSecondarySkill": 32
+          },
+          "resourceCost": {
+            "stones": 115,
+            "materialTier": 3
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 2.6,
+            "vitalityMult": 1.96,
+            "faithPoolMult": 1.64,
+            "senseBonus": 16
+          },
+          "realmBuffs": {
+            "combatOffensePct": 15.5,
+            "combatDefensePct": 11,
+            "armorPenetrationPct": 12.5,
+            "counterStrikePct": 10,
+            "lifestealPct": 0,
+            "reflectPct": 9,
+            "evasionPct": 8,
+            "qiRegenBonusPct": 10
+          },
+          "breakthroughBaseChance": 0.42
+        },
+        {
+          "ordinal": 6,
+          "id": "R1200_ZEN_VOID_MIND_06",
+          "nameTh": "กายทิพย์ปราชญ์เซน",
+          "lifespanMax": 560,
+          "functionalCombatPower": 4350,
+          "majorBandEquivalent": 6,
+          "skillGate": {
+            "primarySkill": "SCRIPTURE",
+            "minPrimarySkill": 65,
+            "secondarySkill": "SOUL_DIVINE",
+            "minSecondarySkill": 40
+          },
+          "resourceCost": {
+            "stones": 129,
+            "materialTier": 3
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3,
+            "vitalityMult": 2.2,
+            "faithPoolMult": 1.8,
+            "senseBonus": 20
+          },
+          "realmBuffs": {
+            "combatOffensePct": 18.6,
+            "combatDefensePct": 13.2,
+            "armorPenetrationPct": 15,
+            "counterStrikePct": 12,
+            "lifestealPct": 0,
+            "reflectPct": 10.8,
+            "evasionPct": 9.6,
+            "qiRegenBonusPct": 12
+          },
+          "breakthroughBaseChance": 0.34
+        },
+        {
+          "ordinal": 7,
+          "id": "R1200_ZEN_VOID_MIND_07",
+          "nameTh": "เขตแดนความว่างเปล่าสมบูรณ์",
+          "lifespanMax": 820,
+          "functionalCombatPower": 8500,
+          "majorBandEquivalent": 7,
+          "skillGate": {
+            "primarySkill": "SCRIPTURE",
+            "minPrimarySkill": 75,
+            "secondarySkill": "SOUL_DIVINE",
+            "minSecondarySkill": 48
+          },
+          "resourceCost": {
+            "stones": 143,
+            "materialTier": 4
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3.4,
+            "vitalityMult": 2.44,
+            "faithPoolMult": 1.96,
+            "senseBonus": 24
+          },
+          "realmBuffs": {
+            "combatOffensePct": 21.7,
+            "combatDefensePct": 15.4,
+            "armorPenetrationPct": 17.5,
+            "counterStrikePct": 14,
+            "lifestealPct": 0,
+            "reflectPct": 12.6,
+            "evasionPct": 11.2,
+            "qiRegenBonusPct": 14
+          },
+          "breakthroughBaseChance": 0.26
+        },
+        {
+          "ordinal": 8,
+          "id": "R1200_ZEN_VOID_MIND_08",
+          "nameTh": "โลกธาตุในหนึ่งขณะจิต",
+          "lifespanMax": 1150,
+          "functionalCombatPower": 16000,
+          "majorBandEquivalent": 8,
+          "skillGate": {
+            "primarySkill": "SCRIPTURE",
+            "minPrimarySkill": 85,
+            "secondarySkill": "SOUL_DIVINE",
+            "minSecondarySkill": 56
+          },
+          "resourceCost": {
+            "stones": 157,
+            "materialTier": 4
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3.8,
+            "vitalityMult": 2.68,
+            "faithPoolMult": 2.12,
+            "senseBonus": 28
+          },
+          "realmBuffs": {
+            "combatOffensePct": 24.8,
+            "combatDefensePct": 17.6,
+            "armorPenetrationPct": 20,
+            "counterStrikePct": 16,
+            "lifestealPct": 0,
+            "reflectPct": 14.4,
+            "evasionPct": 12.8,
+            "qiRegenBonusPct": 16
+          },
+          "breakthroughBaseChance": 0.18
+        },
+        {
+          "ordinal": 9,
+          "id": "R1200_ZEN_VOID_MIND_09",
+          "nameTh": "จอมเมธีเซนสุญตาสูงสุด",
+          "lifespanMax": 1850,
+          "functionalCombatPower": 30500,
+          "majorBandEquivalent": 9,
+          "skillGate": {
+            "primarySkill": "SCRIPTURE",
+            "minPrimarySkill": 95,
+            "secondarySkill": "SOUL_DIVINE",
+            "minSecondarySkill": 64
+          },
+          "resourceCost": {
+            "stones": 171,
+            "materialTier": 5
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 4.2,
+            "vitalityMult": 2.92,
+            "faithPoolMult": 2.28,
+            "senseBonus": 32
+          },
+          "realmBuffs": {
+            "combatOffensePct": 27.9,
+            "combatDefensePct": 19.8,
+            "armorPenetrationPct": 22.5,
+            "counterStrikePct": 18,
+            "lifestealPct": 0,
+            "reflectPct": 16.2,
+            "evasionPct": 14.4,
+            "qiRegenBonusPct": 18
+          },
+          "breakthroughBaseChance": 0.14
+        }
+      ],
+      "majorPowerMapping": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "note": "Full 9-realm source track imported with explicit native track state, skill/resource gates, and functional major-power comparison without ordinal compression into 5 or 4 stages."
+    },
+    {
+      "subPath": "CALLIGRAPHY_PAINTING_SAGE",
+      "trackId": "TRACK_HEART_SOUL_CALLIGRAPHY_PAINTING_SAGE",
+      "sourceMajorPath": "HEART_SOUL",
+      "sourceIndependentRealmCount": 9,
+      "targetMajorPath": "HEART_SOUL",
+      "targetMajorStages": 9,
+      "mode": "INDEPENDENT_TRACK",
+      "sourceRealmOrdinalsImported": true,
+      "realms": [
+        {
+          "ordinal": 1,
+          "id": "R1200_CALLIGRAPHY_PAINTING_SAGE_01",
+          "nameTh": "ฝนหมึกวิญญาณ",
+          "lifespanMax": 95,
+          "functionalCombatPower": 118,
+          "majorBandEquivalent": 1,
+          "skillGate": {
+            "primarySkill": "TALISMAN",
+            "minPrimarySkill": 15,
+            "secondarySkill": "ARRAY",
+            "minSecondarySkill": 10
+          },
+          "resourceCost": {
+            "stones": 59,
+            "materialTier": 1
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1,
+            "vitalityMult": 1,
+            "faithPoolMult": 1,
+            "senseBonus": 0
+          },
+          "realmBuffs": {
+            "combatOffensePct": 3.1,
+            "combatDefensePct": 2.2,
+            "armorPenetrationPct": 2.5,
+            "counterStrikePct": 2,
+            "lifestealPct": 0,
+            "reflectPct": 1.8,
+            "evasionPct": 1.6,
+            "qiRegenBonusPct": 2
+          },
+          "breakthroughBaseChance": 0.74
+        },
+        {
+          "ordinal": 2,
+          "id": "R1200_CALLIGRAPHY_PAINTING_SAGE_02",
+          "nameTh": "ปลายพู่กันแฝงปราณ",
+          "lifespanMax": 125,
+          "functionalCombatPower": 255,
+          "majorBandEquivalent": 2,
+          "skillGate": {
+            "primarySkill": "TALISMAN",
+            "minPrimarySkill": 25,
+            "secondarySkill": "ARRAY",
+            "minSecondarySkill": 10
+          },
+          "resourceCost": {
+            "stones": 73,
+            "materialTier": 1
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1.4,
+            "vitalityMult": 1.24,
+            "faithPoolMult": 1.16,
+            "senseBonus": 4
+          },
+          "realmBuffs": {
+            "combatOffensePct": 6.2,
+            "combatDefensePct": 4.4,
+            "armorPenetrationPct": 5,
+            "counterStrikePct": 4,
+            "lifestealPct": 0,
+            "reflectPct": 3.6,
+            "evasionPct": 3.2,
+            "qiRegenBonusPct": 4
+          },
+          "breakthroughBaseChance": 0.66
+        },
+        {
+          "ordinal": 3,
+          "id": "R1200_CALLIGRAPHY_PAINTING_SAGE_03",
+          "nameTh": "รากฐานม้วนภาพขุนเขา",
+          "lifespanMax": 175,
+          "functionalCombatPower": 530,
+          "majorBandEquivalent": 3,
+          "skillGate": {
+            "primarySkill": "TALISMAN",
+            "minPrimarySkill": 35,
+            "secondarySkill": "ARRAY",
+            "minSecondarySkill": 16
+          },
+          "resourceCost": {
+            "stones": 87,
+            "materialTier": 2
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1.8,
+            "vitalityMult": 1.48,
+            "faithPoolMult": 1.32,
+            "senseBonus": 8
+          },
+          "realmBuffs": {
+            "combatOffensePct": 9.3,
+            "combatDefensePct": 6.6,
+            "armorPenetrationPct": 7.5,
+            "counterStrikePct": 6,
+            "lifestealPct": 0,
+            "reflectPct": 5.4,
+            "evasionPct": 4.8,
+            "qiRegenBonusPct": 6
+          },
+          "breakthroughBaseChance": 0.58
+        },
+        {
+          "ordinal": 4,
+          "id": "R1200_CALLIGRAPHY_PAINTING_SAGE_04",
+          "nameTh": "แก่นเมธีอักษรสวรรค์",
+          "lifespanMax": 250,
+          "functionalCombatPower": 1080,
+          "majorBandEquivalent": 4,
+          "skillGate": {
+            "primarySkill": "TALISMAN",
+            "minPrimarySkill": 45,
+            "secondarySkill": "ARRAY",
+            "minSecondarySkill": 24
+          },
+          "resourceCost": {
+            "stones": 101,
+            "materialTier": 2
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 2.2,
+            "vitalityMult": 1.72,
+            "faithPoolMult": 1.48,
+            "senseBonus": 12
+          },
+          "realmBuffs": {
+            "combatOffensePct": 12.4,
+            "combatDefensePct": 8.8,
+            "armorPenetrationPct": 10,
+            "counterStrikePct": 8,
+            "lifestealPct": 0,
+            "reflectPct": 7.2,
+            "evasionPct": 6.4,
+            "qiRegenBonusPct": 8
+          },
+          "breakthroughBaseChance": 0.5
+        },
+        {
+          "ordinal": 5,
+          "id": "R1200_CALLIGRAPHY_PAINTING_SAGE_05",
+          "nameTh": "กักขังในภาพวาดพันลี้",
+          "lifespanMax": 380,
+          "functionalCombatPower": 2200,
+          "majorBandEquivalent": 5,
+          "skillGate": {
+            "primarySkill": "TALISMAN",
+            "minPrimarySkill": 55,
+            "secondarySkill": "ARRAY",
+            "minSecondarySkill": 32
+          },
+          "resourceCost": {
+            "stones": 115,
+            "materialTier": 3
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 2.6,
+            "vitalityMult": 1.96,
+            "faithPoolMult": 1.64,
+            "senseBonus": 16
+          },
+          "realmBuffs": {
+            "combatOffensePct": 15.5,
+            "combatDefensePct": 11,
+            "armorPenetrationPct": 12.5,
+            "counterStrikePct": 10,
+            "lifestealPct": 0,
+            "reflectPct": 9,
+            "evasionPct": 8,
+            "qiRegenBonusPct": 10
+          },
+          "breakthroughBaseChance": 0.42
+        },
+        {
+          "ordinal": 6,
+          "id": "R1200_CALLIGRAPHY_PAINTING_SAGE_06",
+          "nameTh": "กายทิพย์ปราชญ์พู่กัน",
+          "lifespanMax": 560,
+          "functionalCombatPower": 4350,
+          "majorBandEquivalent": 6,
+          "skillGate": {
+            "primarySkill": "TALISMAN",
+            "minPrimarySkill": 65,
+            "secondarySkill": "ARRAY",
+            "minSecondarySkill": 40
+          },
+          "resourceCost": {
+            "stones": 129,
+            "materialTier": 3
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3,
+            "vitalityMult": 2.2,
+            "faithPoolMult": 1.8,
+            "senseBonus": 20
+          },
+          "realmBuffs": {
+            "combatOffensePct": 18.6,
+            "combatDefensePct": 13.2,
+            "armorPenetrationPct": 15,
+            "counterStrikePct": 12,
+            "lifestealPct": 0,
+            "reflectPct": 10.8,
+            "evasionPct": 9.6,
+            "qiRegenBonusPct": 12
+          },
+          "breakthroughBaseChance": 0.34
+        },
+        {
+          "ordinal": 7,
+          "id": "R1200_CALLIGRAPHY_PAINTING_SAGE_07",
+          "nameTh": "เขตแดนหนึ่งตวัดเปลี่ยนฤดูกาล",
+          "lifespanMax": 820,
+          "functionalCombatPower": 8500,
+          "majorBandEquivalent": 7,
+          "skillGate": {
+            "primarySkill": "TALISMAN",
+            "minPrimarySkill": 75,
+            "secondarySkill": "ARRAY",
+            "minSecondarySkill": 48
+          },
+          "resourceCost": {
+            "stones": 143,
+            "materialTier": 4
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3.4,
+            "vitalityMult": 2.44,
+            "faithPoolMult": 1.96,
+            "senseBonus": 24
+          },
+          "realmBuffs": {
+            "combatOffensePct": 21.7,
+            "combatDefensePct": 15.4,
+            "armorPenetrationPct": 17.5,
+            "counterStrikePct": 14,
+            "lifestealPct": 0,
+            "reflectPct": 12.6,
+            "evasionPct": 11.2,
+            "qiRegenBonusPct": 14
+          },
+          "breakthroughBaseChance": 0.26
+        },
+        {
+          "ordinal": 8,
+          "id": "R1200_CALLIGRAPHY_PAINTING_SAGE_08",
+          "nameTh": "ม้วนภาพซ่อนโลกธาตุ",
+          "lifespanMax": 1150,
+          "functionalCombatPower": 16000,
+          "majorBandEquivalent": 8,
+          "skillGate": {
+            "primarySkill": "TALISMAN",
+            "minPrimarySkill": 85,
+            "secondarySkill": "ARRAY",
+            "minSecondarySkill": 56
+          },
+          "resourceCost": {
+            "stones": 157,
+            "materialTier": 4
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3.8,
+            "vitalityMult": 2.68,
+            "faithPoolMult": 2.12,
+            "senseBonus": 28
+          },
+          "realmBuffs": {
+            "combatOffensePct": 24.8,
+            "combatDefensePct": 17.6,
+            "armorPenetrationPct": 20,
+            "counterStrikePct": 16,
+            "lifestealPct": 0,
+            "reflectPct": 14.4,
+            "evasionPct": 12.8,
+            "qiRegenBonusPct": 16
+          },
+          "breakthroughBaseChance": 0.18
+        },
+        {
+          "ordinal": 9,
+          "id": "R1200_CALLIGRAPHY_PAINTING_SAGE_09",
+          "nameTh": "จอมเมธีพู่กันภาพมายาสูงสุด",
+          "lifespanMax": 1850,
+          "functionalCombatPower": 30500,
+          "majorBandEquivalent": 9,
+          "skillGate": {
+            "primarySkill": "TALISMAN",
+            "minPrimarySkill": 95,
+            "secondarySkill": "ARRAY",
+            "minSecondarySkill": 64
+          },
+          "resourceCost": {
+            "stones": 171,
+            "materialTier": 5
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 4.2,
+            "vitalityMult": 2.92,
+            "faithPoolMult": 2.28,
+            "senseBonus": 32
+          },
+          "realmBuffs": {
+            "combatOffensePct": 27.9,
+            "combatDefensePct": 19.8,
+            "armorPenetrationPct": 22.5,
+            "counterStrikePct": 18,
+            "lifestealPct": 0,
+            "reflectPct": 16.2,
+            "evasionPct": 14.4,
+            "qiRegenBonusPct": 18
+          },
+          "breakthroughBaseChance": 0.14
+        }
+      ],
+      "majorPowerMapping": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "note": "Full 9-realm source track imported with explicit native track state, skill/resource gates, and functional major-power comparison without ordinal compression into 5 or 4 stages."
+    },
+    {
+      "subPath": "DREAM_ILLUSION_WEAVER",
+      "trackId": "TRACK_HEART_SOUL_DREAM_ILLUSION_WEAVER",
+      "sourceMajorPath": "HEART_SOUL",
+      "sourceIndependentRealmCount": 9,
+      "targetMajorPath": "HEART_SOUL",
+      "targetMajorStages": 9,
+      "mode": "INDEPENDENT_TRACK",
+      "sourceRealmOrdinalsImported": true,
+      "realms": [
+        {
+          "ordinal": 1,
+          "id": "R1200_DREAM_ILLUSION_WEAVER_01",
+          "nameTh": "ทอหมอกมายา",
+          "lifespanMax": 95,
+          "functionalCombatPower": 118,
+          "majorBandEquivalent": 1,
+          "skillGate": {
+            "primarySkill": "SOUL_DIVINE",
+            "minPrimarySkill": 15,
+            "secondarySkill": "arts",
+            "minSecondarySkill": 10
+          },
+          "resourceCost": {
+            "stones": 59,
+            "materialTier": 1
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1,
+            "vitalityMult": 1,
+            "faithPoolMult": 1,
+            "senseBonus": 0
+          },
+          "realmBuffs": {
+            "combatOffensePct": 3.1,
+            "combatDefensePct": 2.2,
+            "armorPenetrationPct": 2.5,
+            "counterStrikePct": 2,
+            "lifestealPct": 0,
+            "reflectPct": 1.8,
+            "evasionPct": 1.6,
+            "qiRegenBonusPct": 2
+          },
+          "breakthroughBaseChance": 0.74
+        },
+        {
+          "ordinal": 2,
+          "id": "R1200_DREAM_ILLUSION_WEAVER_02",
+          "nameTh": "เงาสะท้อนในกระจกน้ำ",
+          "lifespanMax": 125,
+          "functionalCombatPower": 255,
+          "majorBandEquivalent": 2,
+          "skillGate": {
+            "primarySkill": "SOUL_DIVINE",
+            "minPrimarySkill": 25,
+            "secondarySkill": "arts",
+            "minSecondarySkill": 10
+          },
+          "resourceCost": {
+            "stones": 73,
+            "materialTier": 1
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1.4,
+            "vitalityMult": 1.24,
+            "faithPoolMult": 1.16,
+            "senseBonus": 4
+          },
+          "realmBuffs": {
+            "combatOffensePct": 6.2,
+            "combatDefensePct": 4.4,
+            "armorPenetrationPct": 5,
+            "counterStrikePct": 4,
+            "lifestealPct": 0,
+            "reflectPct": 3.6,
+            "evasionPct": 3.2,
+            "qiRegenBonusPct": 4
+          },
+          "breakthroughBaseChance": 0.66
+        },
+        {
+          "ordinal": 3,
+          "id": "R1200_DREAM_ILLUSION_WEAVER_03",
+          "nameTh": "รากฐานผีเสื้อความฝัน",
+          "lifespanMax": 175,
+          "functionalCombatPower": 530,
+          "majorBandEquivalent": 3,
+          "skillGate": {
+            "primarySkill": "SOUL_DIVINE",
+            "minPrimarySkill": 35,
+            "secondarySkill": "arts",
+            "minSecondarySkill": 16
+          },
+          "resourceCost": {
+            "stones": 87,
+            "materialTier": 2
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1.8,
+            "vitalityMult": 1.48,
+            "faithPoolMult": 1.32,
+            "senseBonus": 8
+          },
+          "realmBuffs": {
+            "combatOffensePct": 9.3,
+            "combatDefensePct": 6.6,
+            "armorPenetrationPct": 7.5,
+            "counterStrikePct": 6,
+            "lifestealPct": 0,
+            "reflectPct": 5.4,
+            "evasionPct": 4.8,
+            "qiRegenBonusPct": 6
+          },
+          "breakthroughBaseChance": 0.58
+        },
+        {
+          "ordinal": 4,
+          "id": "R1200_DREAM_ILLUSION_WEAVER_04",
+          "nameTh": "แก่นจิตมายาเจ็ดอารมณ์",
+          "lifespanMax": 250,
+          "functionalCombatPower": 1080,
+          "majorBandEquivalent": 4,
+          "skillGate": {
+            "primarySkill": "SOUL_DIVINE",
+            "minPrimarySkill": 45,
+            "secondarySkill": "arts",
+            "minSecondarySkill": 24
+          },
+          "resourceCost": {
+            "stones": 101,
+            "materialTier": 2
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 2.2,
+            "vitalityMult": 1.72,
+            "faithPoolMult": 1.48,
+            "senseBonus": 12
+          },
+          "realmBuffs": {
+            "combatOffensePct": 12.4,
+            "combatDefensePct": 8.8,
+            "armorPenetrationPct": 10,
+            "counterStrikePct": 8,
+            "lifestealPct": 0,
+            "reflectPct": 7.2,
+            "evasionPct": 6.4,
+            "qiRegenBonusPct": 8
+          },
+          "breakthroughBaseChance": 0.5
+        },
+        {
+          "ordinal": 5,
+          "id": "R1200_DREAM_ILLUSION_WEAVER_05",
+          "nameTh": "ห้วงฝันซ้อนฝันเก้าชั้น",
+          "lifespanMax": 380,
+          "functionalCombatPower": 2200,
+          "majorBandEquivalent": 5,
+          "skillGate": {
+            "primarySkill": "SOUL_DIVINE",
+            "minPrimarySkill": 55,
+            "secondarySkill": "arts",
+            "minSecondarySkill": 32
+          },
+          "resourceCost": {
+            "stones": 115,
+            "materialTier": 3
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 2.6,
+            "vitalityMult": 1.96,
+            "faithPoolMult": 1.64,
+            "senseBonus": 16
+          },
+          "realmBuffs": {
+            "combatOffensePct": 15.5,
+            "combatDefensePct": 11,
+            "armorPenetrationPct": 12.5,
+            "counterStrikePct": 10,
+            "lifestealPct": 0,
+            "reflectPct": 9,
+            "evasionPct": 8,
+            "qiRegenBonusPct": 10
+          },
+          "breakthroughBaseChance": 0.42
+        },
+        {
+          "ordinal": 6,
+          "id": "R1200_DREAM_ILLUSION_WEAVER_06",
+          "nameTh": "กายทิพย์จ้าวแห่งความฝัน",
+          "lifespanMax": 560,
+          "functionalCombatPower": 4350,
+          "majorBandEquivalent": 6,
+          "skillGate": {
+            "primarySkill": "SOUL_DIVINE",
+            "minPrimarySkill": 65,
+            "secondarySkill": "arts",
+            "minSecondarySkill": 40
+          },
+          "resourceCost": {
+            "stones": 129,
+            "materialTier": 3
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3,
+            "vitalityMult": 2.2,
+            "faithPoolMult": 1.8,
+            "senseBonus": 20
+          },
+          "realmBuffs": {
+            "combatOffensePct": 18.6,
+            "combatDefensePct": 13.2,
+            "armorPenetrationPct": 15,
+            "counterStrikePct": 12,
+            "lifestealPct": 0,
+            "reflectPct": 10.8,
+            "evasionPct": 9.6,
+            "qiRegenBonusPct": 12
+          },
+          "breakthroughBaseChance": 0.34
+        },
+        {
+          "ordinal": 7,
+          "id": "R1200_DREAM_ILLUSION_WEAVER_07",
+          "nameTh": "เขตแดนหนึ่งฝันยาวนานร้อยปี",
+          "lifespanMax": 820,
+          "functionalCombatPower": 8500,
+          "majorBandEquivalent": 7,
+          "skillGate": {
+            "primarySkill": "SOUL_DIVINE",
+            "minPrimarySkill": 75,
+            "secondarySkill": "arts",
+            "minSecondarySkill": 48
+          },
+          "resourceCost": {
+            "stones": 143,
+            "materialTier": 4
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3.4,
+            "vitalityMult": 2.44,
+            "faithPoolMult": 1.96,
+            "senseBonus": 24
+          },
+          "realmBuffs": {
+            "combatOffensePct": 21.7,
+            "combatDefensePct": 15.4,
+            "armorPenetrationPct": 17.5,
+            "counterStrikePct": 14,
+            "lifestealPct": 0,
+            "reflectPct": 12.6,
+            "evasionPct": 11.2,
+            "qiRegenBonusPct": 14
+          },
+          "breakthroughBaseChance": 0.26
+        },
+        {
+          "ordinal": 8,
+          "id": "R1200_DREAM_ILLUSION_WEAVER_08",
+          "nameTh": "ความจริงคือความฝันตื่นหนึ่ง",
+          "lifespanMax": 1150,
+          "functionalCombatPower": 16000,
+          "majorBandEquivalent": 8,
+          "skillGate": {
+            "primarySkill": "SOUL_DIVINE",
+            "minPrimarySkill": 85,
+            "secondarySkill": "arts",
+            "minSecondarySkill": 56
+          },
+          "resourceCost": {
+            "stones": 157,
+            "materialTier": 4
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3.8,
+            "vitalityMult": 2.68,
+            "faithPoolMult": 2.12,
+            "senseBonus": 28
+          },
+          "realmBuffs": {
+            "combatOffensePct": 24.8,
+            "combatDefensePct": 17.6,
+            "armorPenetrationPct": 20,
+            "counterStrikePct": 16,
+            "lifestealPct": 0,
+            "reflectPct": 14.4,
+            "evasionPct": 12.8,
+            "qiRegenBonusPct": 16
+          },
+          "breakthroughBaseChance": 0.18
+        },
+        {
+          "ordinal": 9,
+          "id": "R1200_DREAM_ILLUSION_WEAVER_09",
+          "nameTh": "จอมเมธีมายาฝันสูงสุด",
+          "lifespanMax": 1850,
+          "functionalCombatPower": 30500,
+          "majorBandEquivalent": 9,
+          "skillGate": {
+            "primarySkill": "SOUL_DIVINE",
+            "minPrimarySkill": 95,
+            "secondarySkill": "arts",
+            "minSecondarySkill": 64
+          },
+          "resourceCost": {
+            "stones": 171,
+            "materialTier": 5
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 4.2,
+            "vitalityMult": 2.92,
+            "faithPoolMult": 2.28,
+            "senseBonus": 32
+          },
+          "realmBuffs": {
+            "combatOffensePct": 27.9,
+            "combatDefensePct": 19.8,
+            "armorPenetrationPct": 22.5,
+            "counterStrikePct": 18,
+            "lifestealPct": 0,
+            "reflectPct": 16.2,
+            "evasionPct": 14.4,
+            "qiRegenBonusPct": 18
+          },
+          "breakthroughBaseChance": 0.14
+        }
+      ],
+      "majorPowerMapping": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "note": "Full 9-realm source track imported with explicit native track state, skill/resource gates, and functional major-power comparison without ordinal compression into 5 or 4 stages."
+    },
+    {
+      "subPath": "MIND_SWORD_TELEKINESIS",
+      "trackId": "TRACK_HEART_SOUL_MIND_SWORD_TELEKINESIS",
+      "sourceMajorPath": "HEART_SOUL",
+      "sourceIndependentRealmCount": 9,
+      "targetMajorPath": "HEART_SOUL",
+      "targetMajorStages": 9,
+      "mode": "INDEPENDENT_TRACK",
+      "sourceRealmOrdinalsImported": true,
+      "realms": [
+        {
+          "ordinal": 1,
+          "id": "R1200_MIND_SWORD_TELEKINESIS_01",
+          "nameTh": "หลอมจิตเป็นคมมีด",
+          "lifespanMax": 95,
+          "functionalCombatPower": 118,
+          "majorBandEquivalent": 1,
+          "skillGate": {
+            "primarySkill": "SWORD",
+            "minPrimarySkill": 15,
+            "secondarySkill": "SOUL_DIVINE",
+            "minSecondarySkill": 10
+          },
+          "resourceCost": {
+            "stones": 59,
+            "materialTier": 1
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1,
+            "vitalityMult": 1,
+            "faithPoolMult": 1,
+            "senseBonus": 0
+          },
+          "realmBuffs": {
+            "combatOffensePct": 3.1,
+            "combatDefensePct": 2.2,
+            "armorPenetrationPct": 2.5,
+            "counterStrikePct": 2,
+            "lifestealPct": 0,
+            "reflectPct": 1.8,
+            "evasionPct": 1.6,
+            "qiRegenBonusPct": 2
+          },
+          "breakthroughBaseChance": 0.74
+        },
+        {
+          "ordinal": 2,
+          "id": "R1200_MIND_SWORD_TELEKINESIS_02",
+          "nameTh": "ประกายกระบี่ในดวงตา",
+          "lifespanMax": 125,
+          "functionalCombatPower": 255,
+          "majorBandEquivalent": 2,
+          "skillGate": {
+            "primarySkill": "SWORD",
+            "minPrimarySkill": 25,
+            "secondarySkill": "SOUL_DIVINE",
+            "minSecondarySkill": 10
+          },
+          "resourceCost": {
+            "stones": 73,
+            "materialTier": 1
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1.4,
+            "vitalityMult": 1.24,
+            "faithPoolMult": 1.16,
+            "senseBonus": 4
+          },
+          "realmBuffs": {
+            "combatOffensePct": 6.2,
+            "combatDefensePct": 4.4,
+            "armorPenetrationPct": 5,
+            "counterStrikePct": 4,
+            "lifestealPct": 0,
+            "reflectPct": 3.6,
+            "evasionPct": 3.2,
+            "qiRegenBonusPct": 4
+          },
+          "breakthroughBaseChance": 0.66
+        },
+        {
+          "ordinal": 3,
+          "id": "R1200_MIND_SWORD_TELEKINESIS_03",
+          "nameTh": "รากฐานกระบี่วิญญาณ",
+          "lifespanMax": 175,
+          "functionalCombatPower": 530,
+          "majorBandEquivalent": 3,
+          "skillGate": {
+            "primarySkill": "SWORD",
+            "minPrimarySkill": 35,
+            "secondarySkill": "SOUL_DIVINE",
+            "minSecondarySkill": 16
+          },
+          "resourceCost": {
+            "stones": 87,
+            "materialTier": 2
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 1.8,
+            "vitalityMult": 1.48,
+            "faithPoolMult": 1.32,
+            "senseBonus": 8
+          },
+          "realmBuffs": {
+            "combatOffensePct": 9.3,
+            "combatDefensePct": 6.6,
+            "armorPenetrationPct": 7.5,
+            "counterStrikePct": 6,
+            "lifestealPct": 0,
+            "reflectPct": 5.4,
+            "evasionPct": 4.8,
+            "qiRegenBonusPct": 6
+          },
+          "breakthroughBaseChance": 0.58
+        },
+        {
+          "ordinal": 4,
+          "id": "R1200_MIND_SWORD_TELEKINESIS_04",
+          "nameTh": "แก่นจิตกระบี่ไร้รูป",
+          "lifespanMax": 250,
+          "functionalCombatPower": 1080,
+          "majorBandEquivalent": 4,
+          "skillGate": {
+            "primarySkill": "SWORD",
+            "minPrimarySkill": 45,
+            "secondarySkill": "SOUL_DIVINE",
+            "minSecondarySkill": 24
+          },
+          "resourceCost": {
+            "stones": 101,
+            "materialTier": 2
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 2.2,
+            "vitalityMult": 1.72,
+            "faithPoolMult": 1.48,
+            "senseBonus": 12
+          },
+          "realmBuffs": {
+            "combatOffensePct": 12.4,
+            "combatDefensePct": 8.8,
+            "armorPenetrationPct": 10,
+            "counterStrikePct": 8,
+            "lifestealPct": 0,
+            "reflectPct": 7.2,
+            "evasionPct": 6.4,
+            "qiRegenBonusPct": 8
+          },
+          "breakthroughBaseChance": 0.5
+        },
+        {
+          "ordinal": 5,
+          "id": "R1200_MIND_SWORD_TELEKINESIS_05",
+          "nameTh": "ค่ายกลกระบี่จิตพันเล่ม",
+          "lifespanMax": 380,
+          "functionalCombatPower": 2200,
+          "majorBandEquivalent": 5,
+          "skillGate": {
+            "primarySkill": "SWORD",
+            "minPrimarySkill": 55,
+            "secondarySkill": "SOUL_DIVINE",
+            "minSecondarySkill": 32
+          },
+          "resourceCost": {
+            "stones": 115,
+            "materialTier": 3
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 2.6,
+            "vitalityMult": 1.96,
+            "faithPoolMult": 1.64,
+            "senseBonus": 16
+          },
+          "realmBuffs": {
+            "combatOffensePct": 15.5,
+            "combatDefensePct": 11,
+            "armorPenetrationPct": 12.5,
+            "counterStrikePct": 10,
+            "lifestealPct": 0,
+            "reflectPct": 9,
+            "evasionPct": 8,
+            "qiRegenBonusPct": 10
+          },
+          "breakthroughBaseChance": 0.42
+        },
+        {
+          "ordinal": 6,
+          "id": "R1200_MIND_SWORD_TELEKINESIS_06",
+          "nameTh": "กายทิพย์จอมกระบี่จิต",
+          "lifespanMax": 560,
+          "functionalCombatPower": 4350,
+          "majorBandEquivalent": 6,
+          "skillGate": {
+            "primarySkill": "SWORD",
+            "minPrimarySkill": 65,
+            "secondarySkill": "SOUL_DIVINE",
+            "minSecondarySkill": 40
+          },
+          "resourceCost": {
+            "stones": 129,
+            "materialTier": 3
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3,
+            "vitalityMult": 2.2,
+            "faithPoolMult": 1.8,
+            "senseBonus": 20
+          },
+          "realmBuffs": {
+            "combatOffensePct": 18.6,
+            "combatDefensePct": 13.2,
+            "armorPenetrationPct": 15,
+            "counterStrikePct": 12,
+            "lifestealPct": 0,
+            "reflectPct": 10.8,
+            "evasionPct": 9.6,
+            "qiRegenBonusPct": 12
+          },
+          "breakthroughBaseChance": 0.34
+        },
+        {
+          "ordinal": 7,
+          "id": "R1200_MIND_SWORD_TELEKINESIS_07",
+          "nameTh": "เขตแดนใจอยู่ที่ใดกระบี่อยู่ที่นั่น",
+          "lifespanMax": 820,
+          "functionalCombatPower": 8500,
+          "majorBandEquivalent": 7,
+          "skillGate": {
+            "primarySkill": "SWORD",
+            "minPrimarySkill": 75,
+            "secondarySkill": "SOUL_DIVINE",
+            "minSecondarySkill": 48
+          },
+          "resourceCost": {
+            "stones": 143,
+            "materialTier": 4
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3.4,
+            "vitalityMult": 2.44,
+            "faithPoolMult": 1.96,
+            "senseBonus": 24
+          },
+          "realmBuffs": {
+            "combatOffensePct": 21.7,
+            "combatDefensePct": 15.4,
+            "armorPenetrationPct": 17.5,
+            "counterStrikePct": 14,
+            "lifestealPct": 0,
+            "reflectPct": 12.6,
+            "evasionPct": 11.2,
+            "qiRegenBonusPct": 14
+          },
+          "breakthroughBaseChance": 0.26
+        },
+        {
+          "ordinal": 8,
+          "id": "R1200_MIND_SWORD_TELEKINESIS_08",
+          "nameTh": "หนึ่งความคิดหมื่นกระบี่",
+          "lifespanMax": 1150,
+          "functionalCombatPower": 16000,
+          "majorBandEquivalent": 8,
+          "skillGate": {
+            "primarySkill": "SWORD",
+            "minPrimarySkill": 85,
+            "secondarySkill": "SOUL_DIVINE",
+            "minSecondarySkill": 56
+          },
+          "resourceCost": {
+            "stones": 157,
+            "materialTier": 4
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 3.8,
+            "vitalityMult": 2.68,
+            "faithPoolMult": 2.12,
+            "senseBonus": 28
+          },
+          "realmBuffs": {
+            "combatOffensePct": 24.8,
+            "combatDefensePct": 17.6,
+            "armorPenetrationPct": 20,
+            "counterStrikePct": 16,
+            "lifestealPct": 0,
+            "reflectPct": 14.4,
+            "evasionPct": 12.8,
+            "qiRegenBonusPct": 16
+          },
+          "breakthroughBaseChance": 0.18
+        },
+        {
+          "ordinal": 9,
+          "id": "R1200_MIND_SWORD_TELEKINESIS_09",
+          "nameTh": "จอมเมธีกระบี่จิตไร้รูปสูงสุด",
+          "lifespanMax": 1850,
+          "functionalCombatPower": 30500,
+          "majorBandEquivalent": 9,
+          "skillGate": {
+            "primarySkill": "SWORD",
+            "minPrimarySkill": 95,
+            "secondarySkill": "SOUL_DIVINE",
+            "minSecondarySkill": 64
+          },
+          "resourceCost": {
+            "stones": 171,
+            "materialTier": 5
+          },
+          "capacityMultipliers": {
+            "maxQiMult": 4.2,
+            "vitalityMult": 2.92,
+            "faithPoolMult": 2.28,
+            "senseBonus": 32
+          },
+          "realmBuffs": {
+            "combatOffensePct": 27.9,
+            "combatDefensePct": 19.8,
+            "armorPenetrationPct": 22.5,
+            "counterStrikePct": 18,
+            "lifestealPct": 0,
+            "reflectPct": 16.2,
+            "evasionPct": 14.4,
+            "qiRegenBonusPct": 18
+          },
+          "breakthroughBaseChance": 0.14
+        }
+      ],
+      "majorPowerMapping": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "note": "Full 9-realm source track imported with explicit native track state, skill/resource gates, and functional major-power comparison without ordinal compression into 5 or 4 stages."
+    }
+  ],
+  "rankPolicy": "Keep original target XIAN9 / BODY5 / GOD4 stage arrays and thresholds unchanged for backwards compatibility, and register native DEMON9 and HEART_SOUL9 major paths. Specialization tracks import all 9 authentic source realms with native track state, skill/resource gates, and functional power mapping without ordinal compression into 5 or 4 stages.",
+  "effectPolicy": "Source heal, injury, cultivation and equipment multipliers use native target fields. Source restoreQi percentage is divided by100 into target qiRestore fraction-of-max. clearPoison is deliberately adapted to native clearToxic pill-toxin relief. Unsupported source-only effects are excluded from effect and listed per recipe.",
+  "pricePolicy": "Imported ingredient value is rounded6*1.7^(tier-1), matching the target early material economy (tier1=6, tier2=10, tier3=17). Original value is retained in sourceBaseValueStones.",
+  "geographyPolicy": "Six target collection routes are curated from source environment themes and material definitions (Ancient Canopy, Miasma Mangrove, Frozen Highlands, Volcanic Caldera, Mineral Desert, Celestial Garden Ruins); each route features matching resident species, authentic drops, and 100% closed-loop material acquisition and recipe consumption without unsupported FORM IDs.",
+  "organsExperimentsPoliticsPolicy": "Ten authentic rare beast organs (MW_ORGAN_*), eight property-based experiment designs (MW_EXP_*), and six external sect faction templates (EXTERNAL_SECTS_TEMPLATES_V300) are migrated into JD.EXPANSION with deterministic harvesting, refinement, property experimentation, treaties, and world political events inside the single native engine.",
+  "fields": {
+    "materials": {
+      "primaryCraftPath": "craft",
+      "baseValueStones": "sourceBaseValueStones; target value=round(6*1.7^(tier-1))",
+      "anatomyType": "anatomy"
+    },
+    "recipes": {
+      "craftPath": "craft",
+      "durationDays": "days",
+      "outputType": "outType",
+      "outputNameTh": "outNameTh",
+      "inputs[].matId": "SRC110_ + source matId"
+    },
+    "techniques": {
+      "category": "cat=COMBAT_TECHNIQUE for all selected combat abilities",
+      "roleGroup": "role",
+      "subPath": "sub",
+      "requiredNormalizedTier": "reqTier",
+      "effectBindings": "sourceEffectIds metadata; combatArch drives native target behavior"
+    },
+    "effects": {
+      "healHealth": "healHealth",
+      "healInjury": "healInjury",
+      "restoreQi": "qiRestore=restoreQi/100",
+      "cultivationProgress": "cultivationProgress",
+      "clearPoison": "clearToxic",
+      "toxicity": "toxicity",
+      "combatMult": "combatMult",
+      "defenseMult": "defenseMult",
+      "minStageReq": "minStageReq",
+      "foundationBonus": "unsupportedEffects only",
+      "studyBonus": "unsupportedEffects only",
+      "craftBonusPath": "unsupportedEffects only",
+      "craftBonusScore": "unsupportedEffects only"
+    }
+  },
+  "imports": {
+    "subPaths": [
+      {
+        "id": "FROST_MOON_IMMORTAL",
+        "sourceId": "FROST_MOON_IMMORTAL",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/living-content-v111.js"
+      },
+      {
+        "id": "WOOD_SPRING_BODY",
+        "sourceId": "WOOD_SPRING_BODY",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/living-content-v111.js"
+      },
+      {
+        "id": "MEDICINE_BODHI_GOD",
+        "sourceId": "MEDICINE_BODHI_GOD",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/living-content-v111.js"
+      }
+    ],
+    "materials": [
+      {
+        "id": "SRC110_MW_MAT_BP_141",
+        "sourceId": "MW_MAT_BP_141",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_BP_142",
+        "sourceId": "MW_MAT_BP_142",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_BP_143",
+        "sourceId": "MW_MAT_BP_143",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_BP_144",
+        "sourceId": "MW_MAT_BP_144",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_BP_145",
+        "sourceId": "MW_MAT_BP_145",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_BP_146",
+        "sourceId": "MW_MAT_BP_146",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_BP_147",
+        "sourceId": "MW_MAT_BP_147",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_BP_148",
+        "sourceId": "MW_MAT_BP_148",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_BP_149",
+        "sourceId": "MW_MAT_BP_149",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_BP_151",
+        "sourceId": "MW_MAT_BP_151",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_BP_153",
+        "sourceId": "MW_MAT_BP_153",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_EXO_101",
+        "sourceId": "MW_MAT_EXO_101",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_EXO_102",
+        "sourceId": "MW_MAT_EXO_102",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_EXO_108",
+        "sourceId": "MW_MAT_EXO_108",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_EXO_111",
+        "sourceId": "MW_MAT_EXO_111",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_EXO_117",
+        "sourceId": "MW_MAT_EXO_117",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_EXO_125",
+        "sourceId": "MW_MAT_EXO_125",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_EXO_126",
+        "sourceId": "MW_MAT_EXO_126",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_EXO_130",
+        "sourceId": "MW_MAT_EXO_130",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_EXO_131",
+        "sourceId": "MW_MAT_EXO_131",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_HERB_001",
+        "sourceId": "MW_MAT_HERB_001",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_HERB_002",
+        "sourceId": "MW_MAT_HERB_002",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_HERB_003",
+        "sourceId": "MW_MAT_HERB_003",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_HERB_005",
+        "sourceId": "MW_MAT_HERB_005",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_HERB_006",
+        "sourceId": "MW_MAT_HERB_006",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_HERB_008",
+        "sourceId": "MW_MAT_HERB_008",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_HERB_010",
+        "sourceId": "MW_MAT_HERB_010",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_HERB_050",
+        "sourceId": "MW_MAT_HERB_050",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_HERB_051",
+        "sourceId": "MW_MAT_HERB_051",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_HERB_052",
+        "sourceId": "MW_MAT_HERB_052",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_ORE_056",
+        "sourceId": "MW_MAT_ORE_056",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_ORE_058",
+        "sourceId": "MW_MAT_ORE_058",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_ORE_060",
+        "sourceId": "MW_MAT_ORE_060",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_ORE_061",
+        "sourceId": "MW_MAT_ORE_061",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_ORE_063",
+        "sourceId": "MW_MAT_ORE_063",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_ORE_067",
+        "sourceId": "MW_MAT_ORE_067",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_ORE_086",
+        "sourceId": "MW_MAT_ORE_086",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_ORE_087",
+        "sourceId": "MW_MAT_ORE_087",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_MAT_ORE_088",
+        "sourceId": "MW_MAT_ORE_088",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_NW_MAT_191",
+        "sourceId": "NW_MAT_191",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/legacy.bundle.js"
+      }
+    ],
+    "recipes": [
+      {
+        "id": "SRC110_MW_REC_001",
+        "sourceId": "MW_REC_001",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js",
+        "unsupportedEffects": {}
+      },
+      {
+        "id": "SRC110_MW_REC_005",
+        "sourceId": "MW_REC_005",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js",
+        "unsupportedEffects": {
+          "foundationBonus": 6
+        }
+      },
+      {
+        "id": "SRC110_MW_REC_006",
+        "sourceId": "MW_REC_006",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js",
+        "unsupportedEffects": {}
+      },
+      {
+        "id": "SRC110_MW_REC_021",
+        "sourceId": "MW_REC_021",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js",
+        "unsupportedEffects": {}
+      },
+      {
+        "id": "SRC110_MW_REC_022",
+        "sourceId": "MW_REC_022",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js",
+        "unsupportedEffects": {}
+      },
+      {
+        "id": "SRC110_MW_REC_044",
+        "sourceId": "MW_REC_044",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js",
+        "unsupportedEffects": {
+          "studyBonus": 0.05,
+          "craftBonusPath": "TALISMAN",
+          "craftBonusScore": 6
+        }
+      },
+      {
+        "id": "SRC110_MW_REC_045",
+        "sourceId": "MW_REC_045",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js",
+        "unsupportedEffects": {}
+      },
+      {
+        "id": "SRC110_MW_REC_048",
+        "sourceId": "MW_REC_048",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js",
+        "unsupportedEffects": {
+          "craftBonusPath": "ARRAY",
+          "craftBonusScore": 10
+        }
+      },
+      {
+        "id": "SRC110_MW_REC_002",
+        "sourceId": "MW_REC_002",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js",
+        "unsupportedEffects": {}
+      },
+      {
+        "id": "SRC110_MW_REC_003",
+        "sourceId": "MW_REC_003",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js",
+        "unsupportedEffects": {
+          "griefRelief": 16
+        }
+      },
+      {
+        "id": "SRC110_MW_REC_024",
+        "sourceId": "MW_REC_024",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js",
+        "unsupportedEffects": {}
+      },
+      {
+        "id": "SRC110_MW_REC_025",
+        "sourceId": "MW_REC_025",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js",
+        "unsupportedEffects": {}
+      },
+      {
+        "id": "SRC110_MW_REC_056",
+        "sourceId": "MW_REC_056",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js",
+        "unsupportedEffects": {
+          "studyBonus": 0.015
+        }
+      },
+      {
+        "id": "SRC110_MW_REC_066",
+        "sourceId": "MW_REC_066",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js",
+        "unsupportedEffects": {}
+      }
+    ],
+    "techniques": [
+      {
+        "id": "SRC110_NW_ART_002",
+        "sourceId": "NW_ART_002",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/legacy.bundle.js"
+      },
+      {
+        "id": "SRC110_NW_ART_047",
+        "sourceId": "NW_ART_047",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/legacy.bundle.js"
+      },
+      {
+        "id": "SRC110_NW_ART_075",
+        "sourceId": "NW_ART_075",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/legacy.bundle.js"
+      },
+      {
+        "id": "SRC110_NW_ART_083",
+        "sourceId": "NW_ART_083",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/legacy.bundle.js"
+      },
+      {
+        "id": "SRC110_NW_ART_126",
+        "sourceId": "NW_ART_126",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/legacy.bundle.js"
+      },
+      {
+        "id": "SRC110_NW_ART_146",
+        "sourceId": "NW_ART_146",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/legacy.bundle.js"
+      },
+      {
+        "id": "SRC110_ART_V112_XIAN_MOON_MIRROR_T3",
+        "sourceId": "ART_V112_XIAN_MOON_MIRROR_T3",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/living-content-v111.js"
+      },
+      {
+        "id": "SRC110_ART_V112_BODY_IRONWOOD_BARK_T3",
+        "sourceId": "ART_V112_BODY_IRONWOOD_BARK_T3",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/living-content-v111.js"
+      },
+      {
+        "id": "SRC110_ART_V112_GOD_LOTUS_SANCTUARY_T3",
+        "sourceId": "ART_V112_GOD_LOTUS_SANCTUARY_T3",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/living-content-v111.js"
+      }
+    ],
+    "regions": [
+      {
+        "id": "SRC110_MW_ENV_01_ANCIENT_CANOPY",
+        "sourceId": "MW_ENV_01_ANCIENT_CANOPY",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_ENV_02_MIASMA_MANGROVE",
+        "sourceId": "MW_ENV_02_MIASMA_MANGROVE",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_ENV_03_FROZEN_HIGHLANDS",
+        "sourceId": "MW_ENV_03_FROZEN_HIGHLANDS",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_ENV_04_VOLCANIC_CALDERA",
+        "sourceId": "MW_ENV_04_VOLCANIC_CALDERA",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_ENV_05_MINERAL_DESERT",
+        "sourceId": "MW_ENV_05_MINERAL_DESERT",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_ENV_11_CELESTIAL_GARDEN_RUINS",
+        "sourceId": "MW_ENV_11_CELESTIAL_GARDEN_RUINS",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      }
+    ],
+    "beasts": [
+      {
+        "id": "SRC110_MW_BEAST_001",
+        "sourceId": "MW_BEAST_001",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_BEAST_002",
+        "sourceId": "MW_BEAST_002",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_BEAST_003",
+        "sourceId": "MW_BEAST_003",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_BEAST_010",
+        "sourceId": "MW_BEAST_010",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_BEAST_011",
+        "sourceId": "MW_BEAST_011",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_BEAST_013",
+        "sourceId": "MW_BEAST_013",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_BEAST_018",
+        "sourceId": "MW_BEAST_018",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_BEAST_026",
+        "sourceId": "MW_BEAST_026",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_BEAST_034",
+        "sourceId": "MW_BEAST_034",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_BEAST_035",
+        "sourceId": "MW_BEAST_035",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      }
+    ],
+    "rareOrgans": [
+      {
+        "id": "SRC110_MW_ORGAN_010",
+        "sourceId": "MW_ORGAN_010",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_ORGAN_001",
+        "sourceId": "MW_ORGAN_001",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_ORGAN_008",
+        "sourceId": "MW_ORGAN_008",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_ORGAN_006",
+        "sourceId": "MW_ORGAN_006",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_ORGAN_011",
+        "sourceId": "MW_ORGAN_011",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_ORGAN_012",
+        "sourceId": "MW_ORGAN_012",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_ORGAN_023",
+        "sourceId": "MW_ORGAN_023",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_ORGAN_013",
+        "sourceId": "MW_ORGAN_013",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_ORGAN_019",
+        "sourceId": "MW_ORGAN_019",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_ORGAN_024",
+        "sourceId": "MW_ORGAN_024",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      }
+    ],
+    "experiments": [
+      {
+        "id": "SRC110_MW_EXP_001",
+        "sourceId": "MW_EXP_001",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_EXP_002",
+        "sourceId": "MW_EXP_002",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_EXP_006",
+        "sourceId": "MW_EXP_006",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_EXP_008",
+        "sourceId": "MW_EXP_008",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_EXP_010",
+        "sourceId": "MW_EXP_010",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_EXP_013",
+        "sourceId": "MW_EXP_013",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_EXP_015",
+        "sourceId": "MW_EXP_015",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      },
+      {
+        "id": "SRC110_MW_EXP_017",
+        "sourceId": "MW_EXP_017",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/myriad-worlds-data.js"
+      }
+    ],
+    "factions": [
+      {
+        "id": "SRC110_FACTION_CN",
+        "sourceId": "CN",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/jianghu-data.js"
+      },
+      {
+        "id": "SRC110_FACTION_SG",
+        "sourceId": "SG",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/jianghu-data.js"
+      },
+      {
+        "id": "SRC110_FACTION_IN",
+        "sourceId": "IN",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/jianghu-data.js"
+      },
+      {
+        "id": "SRC110_FACTION_JP",
+        "sourceId": "JP",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/jianghu-data.js"
+      },
+      {
+        "id": "SRC110_FACTION_VN",
+        "sourceId": "VN",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/jianghu-data.js"
+      },
+      {
+        "id": "SRC110_FACTION_RU",
+        "sourceId": "RU",
+        "sourcePath": "02_SOURCE_FULL/source/scripts/jianghu-data.js"
+      }
+    ]
+  },
+  "checks": {
+    "counts": {
+      "subPaths": 3,
+      "materials": 40,
+      "recipes": 14,
+      "techniques": 9,
+      "regions": 6,
+      "beasts": 10,
+      "rareOrgans": 10,
+      "experiments": 8,
+      "factions": 6
+    },
+    "tracksCount": 11,
+    "unresolvedIngredients": [],
+    "undiscoverableRecipes": [],
+    "undiscoverableTechniques": [],
+    "unreachableIngredients": []
+  }
+}

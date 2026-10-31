@@ -1,0 +1,319 @@
+{
+  "generatedAt": "2026-10-31",
+  "baseline": "JianghuSect main-1 v1.12.4 Small Logic Hotfix",
+  "sourceRoot": "GAME_SOURCE/JianghuSect_v1.10/",
+  "recordOccurrences": 3661,
+  "uniqueIdsAcrossAllRegistries": 1979,
+  "duplicateIdOccurrencesBeyondFirst": 1682,
+  "recordsByRegistry": {
+    "JD.CORE.personality14": 14,
+    "JD.CORE.values8": 8,
+    "JD.CORE.aptitudes6": 6,
+    "JD.CORE.rootGrades": 5,
+    "JD.CORE.constitutions": 12,
+    "JD.CORE.archetypes": 10,
+    "JD.CORE.extraTraits": 4,
+    "JD.CORE.procTraits": 360,
+    "JD.CORE.curatedTraits": 24,
+    "JD.CORE.elementList20": 20,
+    "JD.CULT.paths": 5,
+    "JD.CULT.paths.XIAN.subPaths": 11,
+    "JD.CULT.paths.BODY.subPaths": 10,
+    "JD.CULT.paths.GOD.subPaths": 8,
+    "JD.CULT.paths.DEMON.subPaths": 4,
+    "JD.CULT.paths.HEART_SOUL.subPaths": 4,
+    "JD.CULT.pills": 7,
+    "JD.CULT.craftPaths": 5,
+    "JD.TECH.techniques": 397,
+    "JD.TECH.mantras": 71,
+    "JD.ITEMS.materials": 261,
+    "JD.ITEMS.items": 157,
+    "JD.ITEMS.recipes": 278,
+    "JD.MARTIAL.items": 42,
+    "JD.MARTIAL.recipes": 42,
+    "JD.MARTIAL.techniques": 10,
+    "JD.MARTIAL.curriculum": 5,
+    "JD.MARTIAL.overhaulPassives": 64,
+    "JD.MARTIAL.legendaryTechniques": 12,
+    "JD.MARTIAL.legendaryMantras": 10,
+    "JD.MARTIAL.SYNERGIES": 14,
+    "JD.MARTIAL.innateTechniques": 12,
+    "JD.EXPANSION.nativeMajorSubPaths": 8,
+    "JD.EXPANSION.subPaths": 3,
+    "JD.EXPANSION.materials": 40,
+    "JD.EXPANSION.recipes": 14,
+    "JD.EXPANSION.techniques": 9,
+    "JD.EXPANSION.regions": 6,
+    "JD.EXPANSION.beasts": 10,
+    "JD.EXPANSION.rareOrgans": 10,
+    "JD.EXPANSION.experiments": 8,
+    "JD.EXPANSION.factions": 6,
+    "JD.BEASTS.species": 110,
+    "JD.BEASTS.kings": 6,
+    "JD.ECOLOGY.species": 80,
+    "JD.ECOLOGY.materials": 160,
+    "JD.ECOLOGY.recipes": 80,
+    "JD.ECOLOGY.items": 32,
+    "JD.BT.PILL_RECIPES": 31,
+    "JD.BT.TREASURES": 23,
+    "JD.CB.RECIPES": 6,
+    "JD.CP.BASIC": 8,
+    "JD.CP.RECOVERY": 6,
+    "VC.LEGENDARY_WEAPONS": 11,
+    "SECT.EDITOR.catalog": 1102
+  },
+  "elementalAffinityKeys": [
+    "FIRE",
+    "WATER_ICE",
+    "LIGHTNING",
+    "WIND",
+    "EARTH_METAL",
+    "WOOD_LIFE",
+    "YIN_SHADOW",
+    "LIGHT_YANG"
+  ],
+  "nonElementalAffinityKeys": [
+    "ALCHEMY",
+    "FORGING",
+    "ARRAY",
+    "TALISMAN",
+    "BEAST_TAMING",
+    "POISON",
+    "MEDICINE",
+    "SCRIPTURE",
+    "SWORD",
+    "BLADE",
+    "SPEAR",
+    "FIST_PALM",
+    "MOVEMENT",
+    "BODY_REFINING",
+    "SOUL_DIVINE"
+  ],
+  "totalAffinityKeys": 23,
+  "coreElementIds": [
+    "FIRE",
+    "WATER_ICE",
+    "LIGHTNING",
+    "WIND",
+    "EARTH_METAL",
+    "WOOD_LIFE",
+    "YIN_SHADOW",
+    "LIGHT_YANG"
+  ],
+  "specialElements": [
+    "ASTRAL",
+    "BLOOD_DEMON"
+  ],
+  "runtimeSkillElementIds": [
+    "FIRE",
+    "WATER_ICE",
+    "LIGHTNING",
+    "EARTH_METAL",
+    "WOOD_LIFE",
+    "WIND",
+    "ASTRAL",
+    "YIN_SHADOW",
+    "LIGHT_YANG",
+    "BLOOD_DEMON",
+    "NEUTRAL"
+  ],
+  "rootGrades": [
+    {
+      "id": "DEFECTIVE",
+      "nameTh": "รากวิญญาณเทียมพิการ",
+      "tier": 1,
+      "weight": 14,
+      "cultivationMult": 0.72,
+      "breakthroughBonus": -0.06,
+      "bodySynergy": 1.15,
+      "descTh": "ปราณฟ้าดินซึมผ่านได้ยากยิ่ง แต่กระดูกและเนื้อหนังทนทานต่อการเคี่ยวกรำ"
+    },
+    {
+      "id": "MORTAL",
+      "nameTh": "รากวิญญาณเบญจธาตุสามัญ",
+      "tier": 2,
+      "weight": 46,
+      "cultivationMult": 0.95,
+      "breakthroughBonus": 0,
+      "bodySynergy": 1,
+      "descTh": "รากวิญญาณคละธาตุที่พบได้ทั่วไปในหมู่ผู้ฝึกตน ต้องอาศัยความเพียรเป็นหลัก"
+    },
+    {
+      "id": "SPIRIT",
+      "nameTh": "รากวิญญาณธาตุคู่บริสุทธิ์",
+      "tier": 3,
+      "weight": 26,
+      "cultivationMult": 1.15,
+      "breakthroughBonus": 0.05,
+      "bodySynergy": 1.02,
+      "descTh": "รากวิญญาณสองธาตุเกื้อหนุนกัน ดูดซับปราณฟ้าดินได้รวดเร็วและมั่นคง"
+    },
+    {
+      "id": "TRUE",
+      "nameTh": "รากวิญญาณเอกธาตุแท้จริง",
+      "tier": 4,
+      "weight": 10,
+      "cultivationMult": 1.35,
+      "breakthroughBonus": 0.1,
+      "bodySynergy": 1.05,
+      "descTh": "รากวิญญาณธาตุเดียวบริสุทธิ์ไร้สิ่งเจือปน เป็นเมล็ดพันธุ์ชั้นเลิศของสำนักใหญ่"
+    },
+    {
+      "id": "HEAVENLY",
+      "nameTh": "รากวิญญาณสวรรค์กลายพันธุ์",
+      "tier": 5,
+      "weight": 4,
+      "cultivationMult": 1.6,
+      "breakthroughBonus": 0.16,
+      "bodySynergy": 1.1,
+      "descTh": "รากวิญญาณศักดิ์สิทธิ์ที่หลอมรวมปราณฟ้าดินได้ดั่งน้ำวน ทะลวงคอขวดได้ง่ายดาย"
+    }
+  ],
+  "curatedTraitCount": 24,
+  "extraTraitCount": 4,
+  "procTraitCount": 360,
+  "legendaryWeaponCount": 11,
+  "legendaryTechniqueCount": 12,
+  "legendaryMantraCount": 10,
+  "editHubCatalogCount": 1102,
+  "editHubLegendaryManualCount": 22,
+  "editHubLegendaryWeaponCount": 0,
+  "editHubFirst60LegendaryManualCount": 0,
+  "editHubSearchLegendaryCount": 0,
+  "editHubSearchLegIdCount": 22,
+  "rawElementTagOccurrences": [
+    {
+      "tag": "ARRAY",
+      "fieldOccurrences": 2
+    },
+    {
+      "tag": "ASTRAL",
+      "fieldOccurrences": 59
+    },
+    {
+      "tag": "BEAST_TAMING",
+      "fieldOccurrences": 1
+    },
+    {
+      "tag": "BLADE",
+      "fieldOccurrences": 1
+    },
+    {
+      "tag": "BLOOD",
+      "fieldOccurrences": 1
+    },
+    {
+      "tag": "BLOOD_DEMON",
+      "fieldOccurrences": 30
+    },
+    {
+      "tag": "BODY_REFINING",
+      "fieldOccurrences": 1
+    },
+    {
+      "tag": "CHAOS",
+      "fieldOccurrences": 2
+    },
+    {
+      "tag": "EARTH",
+      "fieldOccurrences": 1
+    },
+    {
+      "tag": "EARTH_METAL",
+      "fieldOccurrences": 130
+    },
+    {
+      "tag": "FIRE",
+      "fieldOccurrences": 91
+    },
+    {
+      "tag": "FIVE_ELEMENTS",
+      "fieldOccurrences": 2
+    },
+    {
+      "tag": "FORGING",
+      "fieldOccurrences": 1
+    },
+    {
+      "tag": "ICE",
+      "fieldOccurrences": 2
+    },
+    {
+      "tag": "LIGHT",
+      "fieldOccurrences": 3
+    },
+    {
+      "tag": "LIGHT_YANG",
+      "fieldOccurrences": 76
+    },
+    {
+      "tag": "LIGHTNING",
+      "fieldOccurrences": 46
+    },
+    {
+      "tag": "MEDICINE",
+      "fieldOccurrences": 1
+    },
+    {
+      "tag": "METAL",
+      "fieldOccurrences": 9
+    },
+    {
+      "tag": "NEUTRAL",
+      "fieldOccurrences": 136
+    },
+    {
+      "tag": "POISON",
+      "fieldOccurrences": 1
+    },
+    {
+      "tag": "SCRIPTURE",
+      "fieldOccurrences": 1
+    },
+    {
+      "tag": "SOUL_DIVINE",
+      "fieldOccurrences": 1
+    },
+    {
+      "tag": "SPEAR",
+      "fieldOccurrences": 1
+    },
+    {
+      "tag": "SWORD",
+      "fieldOccurrences": 1
+    },
+    {
+      "tag": "WATER",
+      "fieldOccurrences": 2
+    },
+    {
+      "tag": "WATER_ICE",
+      "fieldOccurrences": 81
+    },
+    {
+      "tag": "WIND",
+      "fieldOccurrences": 57
+    },
+    {
+      "tag": "WOOD",
+      "fieldOccurrences": 4
+    },
+    {
+      "tag": "WOOD_LIFE",
+      "fieldOccurrences": 102
+    },
+    {
+      "tag": "YANG",
+      "fieldOccurrences": 2
+    },
+    {
+      "tag": "YIN",
+      "fieldOccurrences": 7
+    },
+    {
+      "tag": "YIN_SHADOW",
+      "fieldOccurrences": 67
+    }
+  ],
+  "note": "This is a source-derived inventory and raw-tag extraction, not the final semantic classification. Gemini must classify every occurrence as intrinsic, weighted multi-element, link-only, special, explicit non-elemental, or unknown requiring review."
+}

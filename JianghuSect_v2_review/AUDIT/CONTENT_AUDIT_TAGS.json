@@ -1,0 +1,134 @@
+[
+  {
+    "tag": "ARRAY",
+    "fieldOccurrences": 2
+  },
+  {
+    "tag": "ASTRAL",
+    "fieldOccurrences": 59
+  },
+  {
+    "tag": "BEAST_TAMING",
+    "fieldOccurrences": 1
+  },
+  {
+    "tag": "BLADE",
+    "fieldOccurrences": 1
+  },
+  {
+    "tag": "BLOOD",
+    "fieldOccurrences": 1
+  },
+  {
+    "tag": "BLOOD_DEMON",
+    "fieldOccurrences": 30
+  },
+  {
+    "tag": "BODY_REFINING",
+    "fieldOccurrences": 1
+  },
+  {
+    "tag": "CHAOS",
+    "fieldOccurrences": 2
+  },
+  {
+    "tag": "EARTH",
+    "fieldOccurrences": 1
+  },
+  {
+    "tag": "EARTH_METAL",
+    "fieldOccurrences": 130
+  },
+  {
+    "tag": "FIRE",
+    "fieldOccurrences": 91
+  },
+  {
+    "tag": "FIVE_ELEMENTS",
+    "fieldOccurrences": 2
+  },
+  {
+    "tag": "FORGING",
+    "fieldOccurrences": 1
+  },
+  {
+    "tag": "ICE",
+    "fieldOccurrences": 2
+  },
+  {
+    "tag": "LIGHT",
+    "fieldOccurrences": 3
+  },
+  {
+    "tag": "LIGHT_YANG",
+    "fieldOccurrences": 76
+  },
+  {
+    "tag": "LIGHTNING",
+    "fieldOccurrences": 46
+  },
+  {
+    "tag": "MEDICINE",
+    "fieldOccurrences": 1
+  },
+  {
+    "tag": "METAL",
+    "fieldOccurrences": 9
+  },
+  {
+    "tag": "NEUTRAL",
+    "fieldOccurrences": 136
+  },
+  {
+    "tag": "POISON",
+    "fieldOccurrences": 1
+  },
+  {
+    "tag": "SCRIPTURE",
+    "fieldOccurrences": 1
+  },
+  {
+    "tag": "SOUL_DIVINE",
+    "fieldOccurrences": 1
+  },
+  {
+    "tag": "SPEAR",
+    "fieldOccurrences": 1
+  },
+  {
+    "tag": "SWORD",
+    "fieldOccurrences": 1
+  },
+  {
+    "tag": "WATER",
+    "fieldOccurrences": 2
+  },
+  {
+    "tag": "WATER_ICE",
+    "fieldOccurrences": 81
+  },
+  {
+    "tag": "WIND",
+    "fieldOccurrences": 57
+  },
+  {
+    "tag": "WOOD",
+    "fieldOccurrences": 4
+  },
+  {
+    "tag": "WOOD_LIFE",
+    "fieldOccurrences": 102
+  },
+  {
+    "tag": "YANG",
+    "fieldOccurrences": 2
+  },
+  {
+    "tag": "YIN",
+    "fieldOccurrences": 7
+  },
+  {
+    "tag": "YIN_SHADOW",
+    "fieldOccurrences": 67
+  }
+]

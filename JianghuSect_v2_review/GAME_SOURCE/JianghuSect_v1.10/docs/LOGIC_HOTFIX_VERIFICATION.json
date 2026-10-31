@@ -1,0 +1,92 @@
+{
+  "release": "JianghuSect main-1 v1.12.4 Small Logic Hotfix",
+  "generatedAt": "2026-10-30",
+  "baseline": "JianghuSect_v1.12.3_Southern_River_Fishing_All_In_One.zip (main-1 source)",
+  "humanCore": {
+    "fingerprint": "155:2f9c9dd7",
+    "sha256": "a0d393284fb4b136848e5b80e12f3edd2c4f9437c419c793c2a7e75d881c0542",
+    "unchanged": true
+  },
+  "changes": [
+    "WILD.spawn explicit speciesId requests now obey zone, pool, tier, valid-drop and ordinary/legendary constraints",
+    "Unknown explicit poolId fails closed",
+    "Empty named wildlife pools no longer substitute unrelated species from the zone",
+    "west_hound_pool max tier corrected from 3 to 4 for BEAST_BLOOD_FIEND_HOUND_4",
+    "Restored inventory_grid_ui_suite referenced by test runner and added wildlife_spawn_integrity suite"
+  ],
+  "fullRegression": {
+    "command": "node test/run_all.js",
+    "status": "PASS",
+    "groups": 65,
+    "passed": 65,
+    "failed": [],
+    "syntaxFiles": 133,
+    "syntaxStatus": "PASS"
+  },
+  "focusedSuites": {
+    "core_lock": "PASS",
+    "ecology_expansion": "PASS",
+    "legendary_spawn_gate": "PASS",
+    "onmap_wildlife": "PASS",
+    "wildlife_batches": "PASS",
+    "wildlife_spawn_integrity": "PASS",
+    "phase2_edit_hub_inventory": "PASS",
+    "codex_combined_review": "PASS",
+    "inventory_grid_ui_suite": "PASS",
+    "fishing_river_suite": "PASS",
+    "npc_life_authority_overhaul": "PASS",
+    "graphics_overhaul_suite": "PASS",
+    "visitors_clues_weapons_suite": "PASS",
+    "standalone": "PASS"
+  },
+  "inventoryGridBrowser": {
+    "status": "PASS",
+    "viewports": [
+      {
+        "viewport": "360x800",
+        "logicalColumns": 5,
+        "logicalRows": 3,
+        "perPage": 15,
+        "cssColumns": 5,
+        "horizontalOverflow": false
+      },
+      {
+        "viewport": "800x360",
+        "logicalColumns": 8,
+        "logicalRows": 2,
+        "perPage": 16,
+        "cssColumns": 8,
+        "horizontalOverflow": false
+      },
+      {
+        "viewport": "1280x800",
+        "logicalColumns": 10,
+        "logicalRows": 3,
+        "perPage": 30,
+        "cssColumns": 10,
+        "horizontalOverflow": false
+      }
+    ],
+    "atlas": "72 cells, 8x9, 512x576; fish/container/trash cells 64-71 verified",
+    "browserErrors": 0
+  },
+  "wildlifeCatalogAudit": {
+    "zones": 6,
+    "pools": 28,
+    "poolSpeciesReferences": 114,
+    "missingSpeciesIds": 0,
+    "tierRangeMismatches": 0,
+    "aquaticLandPoolMismatches": 0,
+    "invalidDropSpecies": 0
+  },
+  "standalone": {
+    "status": "PASS",
+    "inlineScripts": 40,
+    "externalRuntimeFiles": 0,
+    "nativeSimulationAndSaveLoad": "PASS"
+  },
+  "notRun": [
+    "Physical Android device verification on Snapdragon 8 Elite / Chrome",
+    "New multi-year multi-seed economy and CP balance certification (no economy values changed in this hotfix)"
+  ]
+}

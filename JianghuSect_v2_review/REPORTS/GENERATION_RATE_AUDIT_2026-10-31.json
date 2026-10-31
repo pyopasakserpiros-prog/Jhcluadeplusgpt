@@ -1,0 +1,48 @@
+{
+  "title": "Generated-character throughput calibration audit",
+  "date": "2026-10-31",
+  "world_year_days": 360,
+  "prior_measurement_batch": {
+    "runs": 11,
+    "mean_generated_characters_per_world_year": 387.27,
+    "observed_range": [
+      326,
+      436
+    ],
+    "note": "The prior 11-run aggregate was recorded in the previous review; individual raw rows were not present in the working package."
+  },
+  "additional_deterministic_runs": [
+    {
+      "seed": "v2026-root-rate-180d",
+      "days": 180,
+      "setup_generations_excluded": 3,
+      "post_setup_generations": 183,
+      "generated_characters_per_world_year": 366
+    },
+    {
+      "seed": "v2026-root-rate-90d-beta",
+      "days": 90,
+      "setup_generations_excluded": 3,
+      "post_setup_generations": 87,
+      "generated_characters_per_world_year": 348
+    },
+    {
+      "seed": "v2026-root-rate-90d-gamma",
+      "days": 90,
+      "setup_generations_excluded": 3,
+      "post_setup_generations": 109,
+      "generated_characters_per_world_year": 436
+    }
+  ],
+  "combined": {
+    "runs": 14,
+    "mean_generated_characters_per_world_year": 386.43,
+    "observed_range": [
+      326,
+      436
+    ],
+    "configured_rate": 390,
+    "configured_rate_deviation_percent": 0.92,
+    "reason": "390 is retained as a clean rounded calibration and is within 1% of the pooled observed mean; the rarity model is calibrated to generated character appearances, not literal births."
+  }
+}

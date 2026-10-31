@@ -1,0 +1,156 @@
+{
+  "version": "1.10.7",
+  "browser": "Chromium Headless (CDP)",
+  "viewports": {
+    "mobile_360": {
+      "width": 360,
+      "height": 800,
+      "noHorizontalOverflow": true,
+      "allSpeedsVisible": true,
+      "minSpeedBtnWidthPx": 40.4,
+      "allNavsVisible": true,
+      "minimapClickable": true
+    },
+    "mobile_412": {
+      "width": 412,
+      "height": 860,
+      "noHorizontalOverflow": true,
+      "allSpeedsVisible": true,
+      "minSpeedBtnWidthPx": 46.9,
+      "allNavsVisible": true,
+      "minimapClickable": true
+    },
+    "desktop_1280": {
+      "width": 1280,
+      "height": 800,
+      "noHorizontalOverflow": true,
+      "allSpeedsVisible": true,
+      "minSpeedBtnWidthPx": 36,
+      "allNavsVisible": true,
+      "minimapClickable": true
+    }
+  },
+  "gestures": {
+    "dragPan": "PASS",
+    "pinchZoom": "PASS",
+    "wheelZoom": "PASS",
+    "tapSelectNpc": "PASS",
+    "tapEmptyDeselect": "PASS",
+    "minimapNavigate": "PASS"
+  },
+  "uiSweep": {
+    "panels": 24,
+    "npcTabs": 24,
+    "buildings": 38
+  },
+  "saveLoadRoundtrip": "PASS",
+  "speedBenchStandard": {
+    "0x": {
+      "speed": 0,
+      "runtimeError": null,
+      "actualSpeed": 0,
+      "targetTicksPerSec": 0,
+      "measuredTicksPerSec": 0,
+      "completedTicks": 0,
+      "fps": 58.3,
+      "pendingTicks": 0
+    },
+    "1x": {
+      "speed": 1,
+      "runtimeError": null,
+      "actualSpeed": 1,
+      "targetTicksPerSec": 4,
+      "measuredTicksPerSec": 4,
+      "completedTicks": 2,
+      "fps": 54.9,
+      "pendingTicks": 0.4
+    },
+    "2x": {
+      "speed": 2,
+      "runtimeError": null,
+      "actualSpeed": 2,
+      "targetTicksPerSec": 8,
+      "measuredTicksPerSec": 8.1,
+      "completedTicks": 4,
+      "fps": 57.6,
+      "pendingTicks": 0.93
+    },
+    "4x": {
+      "speed": 4,
+      "runtimeError": null,
+      "actualSpeed": 4,
+      "targetTicksPerSec": 16,
+      "measuredTicksPerSec": 16,
+      "completedTicks": 9,
+      "fps": 60,
+      "pendingTicks": 0.87
+    },
+    "8x": {
+      "speed": 8,
+      "runtimeError": null,
+      "actualSpeed": 8,
+      "targetTicksPerSec": 32,
+      "measuredTicksPerSec": 31.2,
+      "completedTicks": 20,
+      "fps": 51,
+      "pendingTicks": 0.8
+    },
+    "16x": {
+      "speed": 16,
+      "runtimeError": null,
+      "actualSpeed": 16,
+      "targetTicksPerSec": 64,
+      "measuredTicksPerSec": 64.6,
+      "completedTicks": 39,
+      "fps": 57.3,
+      "pendingTicks": 0.47
+    },
+    "32x": {
+      "speed": 32,
+      "runtimeError": null,
+      "actualSpeed": 32,
+      "targetTicksPerSec": 128,
+      "measuredTicksPerSec": 128.1,
+      "completedTicks": 78,
+      "fps": 58.4,
+      "pendingTicks": 0.92
+    },
+    "48x": {
+      "speed": 48,
+      "runtimeError": null,
+      "actualSpeed": 48,
+      "targetTicksPerSec": 192,
+      "measuredTicksPerSec": 192.2,
+      "completedTicks": 118,
+      "fps": 60.1,
+      "pendingTicks": 0.39
+    }
+  },
+  "largePopBench": {
+    "population": 79,
+    "initialPopulation": 80,
+    "minPopulation": 79,
+    "avgMsPerTick": 0.845,
+    "maxTickMs": 39.9,
+    "maxSustainableTicksPerSec": 1183,
+    "maxSustainableSpeedMultiplier": 295.8,
+    "liveSpeeds": {
+      "16x": {
+        "measuredTicksPerSec": 65.9,
+        "fps": 56,
+        "pendingTicks": 0.53
+      },
+      "32x": {
+        "measuredTicksPerSec": 127.2,
+        "fps": 60.4,
+        "pendingTicks": 0.94
+      },
+      "48x": {
+        "measuredTicksPerSec": 191.9,
+        "fps": 60.2,
+        "pendingTicks": 0.41
+      }
+    }
+  },
+  "errors": 0
+}

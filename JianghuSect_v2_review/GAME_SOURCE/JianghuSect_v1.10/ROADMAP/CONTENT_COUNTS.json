@@ -1,0 +1,20 @@
+{
+  "version": "1.10.0",
+  "paths": 3,
+  "subPaths": 27,
+  "techniques": 249,
+  "mantras": 47,
+  "materials": 86,
+  "recipes": 134,
+  "items": 72,
+  "beasts": 25,
+  "imported": {
+    "subPaths": 3,
+    "techniques": 9,
+    "materials": 25,
+    "recipes": 8,
+    "regions": 4,
+    "beasts": 5
+  },
+  "errors": []
+}

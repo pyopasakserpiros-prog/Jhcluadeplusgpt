@@ -1,0 +1,309 @@
+{
+  "generatedAt": "2026-10-30T08:35:54.842Z",
+  "patchVersion": "1.12.2-combined-followup-and-inventory-ui",
+  "humanCoreSha256": "a0d393284fb4b136848e5b80e12f3edd2c4f9437c419c793c2a7e75d881c0542",
+  "humanCoreFingerprint": "155:2f9c9dd7",
+  "testSuiteSummary": {
+    "totalGroups": 63,
+    "passedGroups": 63,
+    "failedGroups": 0
+  },
+  "roadmapItemsVerified": {
+    "item1_guardianCombatEngine": "PASS (6-round tactical combat, weapon procs, pill use, courage/caution retreat, zero-survivor expedition guard)",
+    "item2_clueResolutionApproaches": "PASS (7 approaches: interpret_evidence, help_contact, honor_commitment, nonlethal_trial, deliver_item, guardian_combat, tactical_retreat)",
+    "item3_multiRegionAndKnowledgeScoping": "PASS (exterior Region A -> Region B traversal, getNpcKnownClueView & getPlayerClueView hide undiscovered steps and world truth)",
+    "item4_companionConsentAndResourceGovernance": "PASS (evaluateCompanionConsent with refusal logs & commitments; authorizeClueResourceUse enforces officer authority & reserve floors)",
+    "item5_rarityDistributionAndVisitorNews": "PASS (two-stage hierarchical rarity roll Common > Rare > Exceptional >= Legendary; shareVisitorWorldNews active)",
+    "item6_readinessForecastAndFailureBackoff": "PASS (forecastNodeReadiness, 2->4->8->16d exponential backoff, cluePrep hints, history cap = 24)",
+    "item7_uniqueWeaponLifecycleAndGuestPruning": "PASS (AI.kill & SIM.retire transfer n.inv.gear to sect stock; syncUniqueArtifacts & auditUniqueWeaponInvariant hold; relationship-aware guest pruning)",
+    "item8_legendaryWeaponBalanceAndProcs": "PASS (Yitian Sword severs shieldBp; Dagou Staff redirects damage on struck; 11-weapon benchmark spread < 2.2)",
+    "item9_deterministicApplicantEvalAndClueGoals": "PASS (SECT.examineApplicant deterministic totalScore without PA leak; investigate_clue goal integrated)",
+    "item10_visualDifferentiationAndPerformance": "PASS (80-NPC browser perf 2.307 ms/tick; 100-NPC Node benchmark 4.893 ms/tick)"
+  },
+  "inventoryGridUiAndAtlasSummary": {
+    "atlasFile": "assets/wuxia_item_atlas.png",
+    "atlasDimensions": "512x512",
+    "gridLayout": "8x8 (64 cells, 64x64px, 4px margin, 0 border bleed)",
+    "bespokeLegendaryWeaponIcons": 11,
+    "bespokeLegendaryTechniqueIcons": 22,
+    "reusableCategoryVariantIcons": 29,
+    "fallbackIcons": 2,
+    "offlineEmbeddedInSingleHtml": true,
+    "viewportsVerified": [
+      "mobile_portrait_360x800",
+      "mobile_landscape_800x360",
+      "mobile_412x860",
+      "desktop_1280x800"
+    ],
+    "testingDisclosure": "Mobile portrait/landscape and touch interactions were verified via headless Chromium mobile viewport/touch emulation (Playwright CDP), not physical phone hardware."
+  },
+  "performanceBenchmarks": {
+    "browser80NpcAvgMsPerTick": 2.307,
+    "node100NpcAvgMsPerTick": 4.893,
+    "node100NpcTotal720TicksMs": 3523.3
+  },
+  "legendaryWeaponCombatBenchmark": [
+    {
+      "id": "LEG_WPN_YITIAN_SWORD",
+      "nameTh": "กระบี่อิงฟ้าพิฆาตมาร",
+      "gearType": "SWORD",
+      "tier": 7,
+      "powerWithLegendary": 2646,
+      "powerWithCraftable": 1882,
+      "powerRatio": 1.41,
+      "winRateVsCraftable": 0.75,
+      "procsTriggered": 79
+    },
+    {
+      "id": "LEG_WPN_XUANTIE_HEAVY_SWORD",
+      "nameTh": "กระบี่เหล็กนิลไร้คม",
+      "gearType": "SWORD",
+      "tier": 7,
+      "powerWithLegendary": 1918,
+      "powerWithCraftable": 1684,
+      "powerRatio": 1.14,
+      "winRateVsCraftable": 0.67,
+      "procsTriggered": 0
+    },
+    {
+      "id": "LEG_WPN_TULONG_SABER",
+      "nameTh": "ดาบฆ่ามังกรบัญชาหล้า",
+      "gearType": "BLADE",
+      "tier": 7,
+      "powerWithLegendary": 3396,
+      "powerWithCraftable": 1557,
+      "powerRatio": 2.18,
+      "winRateVsCraftable": 1,
+      "procsTriggered": 63
+    },
+    {
+      "id": "LEG_WPN_FULL_MOON_SCIMITAR",
+      "nameTh": "ดาบโค้งจันทร์เพ็ญสะท้อนเงา",
+      "gearType": "BLADE",
+      "tier": 6,
+      "powerWithLegendary": 2433,
+      "powerWithCraftable": 1556,
+      "powerRatio": 1.56,
+      "winRateVsCraftable": 0.92,
+      "procsTriggered": 59
+    },
+    {
+      "id": "LEG_WPN_XIAOLI_HEART_DAGGER",
+      "nameTh": "มีดสั้นเสี่ยวหลี่สะท้านภพ",
+      "gearType": "BLADE",
+      "tier": 7,
+      "powerWithLegendary": 2402,
+      "powerWithCraftable": 1529,
+      "powerRatio": 1.57,
+      "winRateVsCraftable": 1,
+      "procsTriggered": 75
+    },
+    {
+      "id": "LEG_WPN_DAGOU_JADE_STAFF",
+      "nameTh": "พลองหยกเขียวตีสุนัข",
+      "gearType": "STAFF",
+      "tier": 6,
+      "powerWithLegendary": 2005,
+      "powerWithCraftable": 1524,
+      "powerRatio": 1.32,
+      "winRateVsCraftable": 1,
+      "procsTriggered": 36
+    },
+    {
+      "id": "LEG_WPN_OVERLORD_SPEAR",
+      "nameTh": "ทวนราชันย์พิชิตพยัคฆ์",
+      "gearType": "SPEAR",
+      "tier": 6,
+      "powerWithLegendary": 2214,
+      "powerWithCraftable": 1503,
+      "powerRatio": 1.47,
+      "winRateVsCraftable": 0.83,
+      "procsTriggered": 86
+    },
+    {
+      "id": "LEG_WPN_OATHBREAKER_DRAGON_LANCE",
+      "nameTh": "ทวนเกล็ดมังกรครามสัตย์สาบาน",
+      "gearType": "SPEAR",
+      "tier": 7,
+      "powerWithLegendary": 2856,
+      "powerWithCraftable": 1455,
+      "powerRatio": 1.96,
+      "winRateVsCraftable": 1,
+      "procsTriggered": 86
+    },
+    {
+      "id": "LEG_WPN_WRATHFUL_TIGER_GAUNTLETS",
+      "nameTh": "สนับหมัดพยัคฆ์พิโรธสะท้านผา",
+      "gearType": "FIST",
+      "tier": 6,
+      "powerWithLegendary": 3133,
+      "powerWithCraftable": 1482,
+      "powerRatio": 2.11,
+      "winRateVsCraftable": 1,
+      "procsTriggered": 82
+    },
+    {
+      "id": "LEG_WPN_CONDOR_METEOR_BOW",
+      "nameTh": "ธนูเหล็กไหลยิงอินทรีคู่",
+      "gearType": "BOW",
+      "tier": 6,
+      "powerWithLegendary": 2183,
+      "powerWithCraftable": 1498,
+      "powerRatio": 1.46,
+      "winRateVsCraftable": 0.75,
+      "procsTriggered": 80
+    },
+    {
+      "id": "LEG_WPN_PEACOCK_PLUME_FOCUS",
+      "nameTh": "ขนนกยูงทองคำกลไกสวรรค์",
+      "gearType": "FOCUS",
+      "tier": 7,
+      "powerWithLegendary": 2322,
+      "powerWithCraftable": 1569,
+      "powerRatio": 1.48,
+      "winRateVsCraftable": 0.83,
+      "procsTriggered": 77
+    }
+  ],
+  "naturalSimulation180d": [
+    {
+      "seed": "vc-180d-seed1",
+      "daysSimulated": 180,
+      "elapsedMs": 76195,
+      "finalPopulation": 21,
+      "housingCapacity": 46,
+      "peakActiveGuests": 4,
+      "totalRegisteredGuests": 49,
+      "visitorHistoryEntries": 80,
+      "traderVisits": 24,
+      "funnel": {
+        "visits": 46,
+        "admitted": 40,
+        "rejected": 6,
+        "infoEncounters": 13,
+        "cluesByTier": {
+          "1": 3,
+          "2": 9,
+          "5": 1
+        },
+        "cluesByRarity": {
+          "Common": 12,
+          "Rare": 1
+        },
+        "investigationsStarted": 4,
+        "nodesPassed": 8,
+        "nodesFailed": 1,
+        "terminalsReached": 7,
+        "grantsSucceeded": 7,
+        "grantsBlockedDuplicate": 0,
+        "equippedOrLearned": 0,
+        "rumorsSpawned": 13,
+        "rewardsClaimed": 7,
+        "worldNewsShared": 170,
+        "cluesShared": 12
+      },
+      "activeCluesCount": 13,
+      "claimedReceiptsCount": 7,
+      "uniqueArtifactsClaimed": [],
+      "invariants": {
+        "guestInNpcsViolations": 0,
+        "memberCapViolations": 0
+      }
+    },
+    {
+      "seed": "vc-180d-seed2",
+      "daysSimulated": 180,
+      "elapsedMs": 90295,
+      "finalPopulation": 33,
+      "housingCapacity": 46,
+      "peakActiveGuests": 4,
+      "totalRegisteredGuests": 50,
+      "visitorHistoryEntries": 80,
+      "traderVisits": 29,
+      "funnel": {
+        "visits": 58,
+        "admitted": 50,
+        "rejected": 8,
+        "infoEncounters": 31,
+        "cluesByTier": {
+          "1": 12,
+          "2": 8,
+          "5": 5,
+          "7": 2
+        },
+        "cluesByRarity": {
+          "Common": 20,
+          "Rare": 5,
+          "Exceptional": 1,
+          "Legendary": 1
+        },
+        "investigationsStarted": 2,
+        "nodesPassed": 15,
+        "nodesFailed": 1,
+        "terminalsReached": 14,
+        "grantsSucceeded": 14,
+        "grantsBlockedDuplicate": 0,
+        "equippedOrLearned": 0,
+        "rumorsSpawned": 27,
+        "cluesShared": 35,
+        "rewardsClaimed": 14,
+        "worldNewsShared": 376
+      },
+      "activeCluesCount": 27,
+      "claimedReceiptsCount": 14,
+      "uniqueArtifactsClaimed": [],
+      "invariants": {
+        "guestInNpcsViolations": 0,
+        "memberCapViolations": 0
+      }
+    },
+    {
+      "seed": "vc-180d-seed3",
+      "daysSimulated": 180,
+      "elapsedMs": 178113,
+      "finalPopulation": 50,
+      "housingCapacity": 58,
+      "peakActiveGuests": 5,
+      "totalRegisteredGuests": 49,
+      "visitorHistoryEntries": 80,
+      "traderVisits": 38,
+      "funnel": {
+        "visits": 78,
+        "admitted": 64,
+        "rejected": 14,
+        "infoEncounters": 35,
+        "cluesByTier": {
+          "1": 6,
+          "2": 17,
+          "5": 5,
+          "6": 1,
+          "7": 2
+        },
+        "cluesByRarity": {
+          "Common": 23,
+          "Rare": 5,
+          "Exceptional": 2,
+          "Legendary": 1
+        },
+        "investigationsStarted": 8,
+        "nodesPassed": 15,
+        "nodesFailed": 2,
+        "terminalsReached": 12,
+        "grantsSucceeded": 12,
+        "grantsBlockedDuplicate": 0,
+        "equippedOrLearned": 0,
+        "rumorsSpawned": 31,
+        "cluesShared": 59,
+        "worldNewsShared": 833,
+        "rewardsClaimed": 12
+      },
+      "activeCluesCount": 31,
+      "claimedReceiptsCount": 12,
+      "uniqueArtifactsClaimed": [],
+      "invariants": {
+        "guestInNpcsViolations": 0,
+        "memberCapViolations": 0
+      }
+    }
+  ]
+}

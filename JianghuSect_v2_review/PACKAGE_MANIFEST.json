@@ -1,0 +1,2053 @@
+{
+  "package": "JianghuSect v2.0.2 — Gemini Handoff Review Package",
+  "created": "2026-10-31",
+  "runtime": {
+    "version": "1.10.11",
+    "patch": "1.12.7",
+    "elementalAuthority": "2.0.1",
+    "saveSchema": "2.0.0-elemental"
+  },
+  "protectedCore": {
+    "path": "GAME_SOURCE/JianghuSect_v1.10/js/human_core.js",
+    "sha256": "a0d393284fb4b136848e5b80e12f3edd2c4f9437c419c793c2a7e75d881c0542",
+    "fingerprint": "155:2f9c9dd7"
+  },
+  "standalone": {
+    "path": "JianghuSect_single.html",
+    "bytes": 3582995,
+    "sha256": "57c65c23ed4cd97657ebea85bc484a8ec995099ac8980be6394c36676dc8ec41",
+    "sourceCopyIdentical": true
+  },
+  "verification": {
+    "parallelRegression": {
+      "total": 70,
+      "pass": 70,
+      "fail": 0,
+      "timeout": 0,
+      "workers": 2,
+      "node": "v22.16.0"
+    },
+    "syntaxFiles": 140,
+    "finalNativeSimulation": {
+      "days": 90,
+      "status": "PASS",
+      "result": "GAME_SOURCE/JianghuSect_v1.10/test/results/long_simulation_90d_patch_1127.json"
+    },
+    "finalEcologySimulation": {
+      "days": 90,
+      "status": "PASS",
+      "result": "GAME_SOURCE/JianghuSect_v1.10/test/results/long_ecology_90d_patch_1127.json"
+    },
+    "standaloneTest": "PASS",
+    "physicalAndroidCertification": "NOT PERFORMED"
+  },
+  "github": {
+    "repository": "pyopasakserpiros-prog/Jhcluadeplusgpt",
+    "main1HeadAtInspection": "e5e4f8ff5d111625dacf6c630434cbe2eba7428e",
+    "main1FetchedPatch": "1.12.0",
+    "note": "Remote main-1 was older than this attached package; this package was not pushed."
+  },
+  "fileCountExcludingManifest": 400,
+  "files": [
+    {
+      "path": "AUDIT/ACCEPTANCE_TEST_MATRIX.md",
+      "bytes": 6206,
+      "sha256": "2da7a055e80de828ef3c73ee3d9c7d12b3ce1d9f4e885207c12966494fc25617"
+    },
+    {
+      "path": "AUDIT/BASELINE_SMALL_LOGIC_AUDIT.md",
+      "bytes": 8399,
+      "sha256": "396ea74dd7ae2121001a69f460d8177961e32e39c53649934cfca22acbd6c845"
+    },
+    {
+      "path": "AUDIT/BASELINE_VERIFICATION_RECORDED.json",
+      "bytes": 2846,
+      "sha256": "740fd86e881fa9a5293ae6c7704e4a35462a067b80bc5bf0ca3600120375f086"
+    },
+    {
+      "path": "AUDIT/CONTENT_AUDIT_MANIFEST.json",
+      "bytes": 620302,
+      "sha256": "c4c0668e045ea6606d95e2df6d95172b384a8968df548d8ee9039ea1b339037d"
+    },
+    {
+      "path": "AUDIT/CONTENT_AUDIT_SUMMARY.md",
+      "bytes": 5114,
+      "sha256": "97748a2531bf6a1e2f4ba5e1067685d80a9db84212b7a27bf282bb81aec96efb"
+    },
+    {
+      "path": "AUDIT/CONTENT_AUDIT_TAGS.json",
+      "bytes": 1899,
+      "sha256": "269ba8a8a26339ffa8d2119e61128383e8a31a8ccdfe1f741c02e2523aceb996"
+    },
+    {
+      "path": "AUDIT/EDIT_HUB_GAP_ANALYSIS.md",
+      "bytes": 3464,
+      "sha256": "575f5f6af066755ca96edb0dc004f7beacaf584b68c9f29feb95be8f2dd12b08"
+    },
+    {
+      "path": "AUDIT/MANIFEST_GENERATION_SUMMARY.json",
+      "bytes": 8194,
+      "sha256": "517ba0f0a49668f0a63a7ac526dd441d8582c8661bf315be6e3622c963b2e42e"
+    },
+    {
+      "path": "AUDIT/NPC_AI_INTEGRATION_MATRIX.md",
+      "bytes": 5820,
+      "sha256": "30a4d3ac3a9bda9044dfe290cdb19eb01dbbca5fe6f84e59449b7b2e73a924cc"
+    },
+    {
+      "path": "AUDIT/SOURCE_AUDIT_REPORT_TH.md",
+      "bytes": 19355,
+      "sha256": "cb24dfaf7c8c9dc61b30e7a398a6f823a707dd0417202dadfb5dd5ba3cb71166"
+    },
+    {
+      "path": "AUDIT/generate_manifest.js",
+      "bytes": 9147,
+      "sha256": "2d50da4c7c9d7aaf8466af4401dd4db8411b0fb5fc83a1c9594188e7e79d71fc"
+    },
+    {
+      "path": "DESIGN/ELEMENTAL_ROOTS_SYSTEM_ARCHITECTURE_EN.md",
+      "bytes": 19266,
+      "sha256": "0ce1af1bc797d3b6b7c6ac6e7cb9c5f3ce8ec68f6cd73ba182e26a85fb5fe3ca"
+    },
+    {
+      "path": "DESIGN/ROOT_GENIUS_RARITY_RULES.md",
+      "bytes": 4675,
+      "sha256": "adc878c64ce340ff092f196276c74513576a17cdbcf979caf5c119279751dcb9"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/AUDIT_REPORT_TH.md",
+      "bytes": 7022,
+      "sha256": "455d311cd37fd3c94dad6d4754529af03cc378201a4204c9d3f602f800fada73"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/CODEX_FISHING_REVIEW_HANDOFF.md",
+      "bytes": 3546,
+      "sha256": "42ea2b7f7ca533a2fb5cedab6ed40bff5fd7a4721ca70e28d7b681638b310bd5"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/FISHING_CODE_MAP.md",
+      "bytes": 4580,
+      "sha256": "078a45bf3a92101c0d21b6097e78e2436dc6b53f8a8873fea5040cf0a94e44b0"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/FISHING_IMPLEMENTATION_REPORT.md",
+      "bytes": 18234,
+      "sha256": "06a6eca282fd7f6dece0630327cc1660fb18ed90ec6ab4fbee0360387ef57045"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/FISHING_LOOT_CATALOG_AND_PROBABILITIES.json",
+      "bytes": 40997,
+      "sha256": "2032c420b3b7a52742a4f05238e039becff88cf14db3eed4fab1f514d5a711c5"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/HANDOFF.md",
+      "bytes": 4611,
+      "sha256": "b7fe757371511e98c0a409ebfd2d7e429e6251f948abc555327dd1b9a9203307"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/JianghuSect_single.html",
+      "bytes": 3582995,
+      "sha256": "57c65c23ed4cd97657ebea85bc484a8ec995099ac8980be6394c36676dc8ec41"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/README.md",
+      "bytes": 5169,
+      "sha256": "7ce6ae9668ab15709e914deb21a8bb0690157fed5a80c46a900b6274bea9ecf6"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/README_TH.md",
+      "bytes": 5768,
+      "sha256": "f513545399952766f44e27fc2db954de4c5a2960087537fc27fb147148bd8d0d"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/ROADMAP/ARCHITECTURE.md",
+      "bytes": 9107,
+      "sha256": "9a7db75736991c3fe900d96df9bdfd591d24beb8c667acb7d180700c40ce3ac7"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/ROADMAP/BASELINE_MANIFEST.json",
+      "bytes": 9432,
+      "sha256": "ae87cb331c84e6e3464285c59f3768436ed2ee1abff91e9349d7b0dae0559e61"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/ROADMAP/COMBINED_REVIEW_FOLLOWUPS_TH.md",
+      "bytes": 7568,
+      "sha256": "c53114d44e71a4d98fd2688d57688a8fc02c20454342bf82588293aff8b2b05b"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/ROADMAP/CONTENT_CATALOG.md",
+      "bytes": 10102,
+      "sha256": "9911d3e35e0e94bb368f77674ea81f89ad15a195782918023e02f705e51e0cb9"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/ROADMAP/CONTENT_COUNTS.json",
+      "bytes": 314,
+      "sha256": "f9394a5810f5a810d268b2e1c194e9f10d1bdf20fc637d5c339138a3b4ae7f7f"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/ROADMAP/CURRENT_STATUS.md",
+      "bytes": 17308,
+      "sha256": "7e991c8a9c521d4beb3a9e388bcd524be7b623418551d2c7643841193f62f21b"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/ROADMAP/DATA_MIGRATION_MAP.md",
+      "bytes": 4506,
+      "sha256": "a6bb8e66c59b106f73ce1e1ef122895deca626d734a66bad5b9dbd29ef6dfb5f"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/ROADMAP/DECISIONS_AND_KNOWN_ISSUES.md",
+      "bytes": 4657,
+      "sha256": "f5689c9993c7dfcb93ab2fa20440b11cc7e5e88cae54fc0a22858dc0e30ee458"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/ROADMAP/FUTURE_NPC_AUTHORITY_RELATIONSHIPS_TH.md",
+      "bytes": 8404,
+      "sha256": "b16305cb2ec84255260920d1e6f74f5db5dec4bbb2e0c760e820eb0cf4dd2812"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/ROADMAP/FUTURE_VISITORS_TH.md",
+      "bytes": 5024,
+      "sha256": "69d15188a65be9c364f461976be6bc80f828962afbc471ba70c36c9e7920efe1"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/ROADMAP/IMPLEMENTATION_PLAN.md",
+      "bytes": 2732,
+      "sha256": "2eca6f0627217763a4dcc802f555e55edb918544a969e9dbd7a36b91f782e317"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/ROADMAP/PATCH_v1.10.1_EXTERNAL_MARKET.md",
+      "bytes": 3193,
+      "sha256": "68ce0092549f73c594225a4c7bcb5b103615680534a2b6fd1820fb8662caba1c"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/ROADMAP/PATCH_v1.10.2_RECIPE_LIFECYCLE_AND_ECONOMY.md",
+      "bytes": 4849,
+      "sha256": "e7b5083607f2b740eaa70376e5a644cf0980cfcb15fbe535590ecaa4f796dc69"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/ROADMAP/PATCH_v1.10.3_INDEPENDENT_SPECIALIZATION_TRACKS.md",
+      "bytes": 6893,
+      "sha256": "e81a3c72c27ba520765f71314b7edec41d0cbe4a7d941e5fcc75f7cf94cf6c63"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/ROADMAP/PATCH_v1.10.4_RICHER_PATH_SPECIFIC_PASSIVES.md",
+      "bytes": 6663,
+      "sha256": "29fc38d0e3842c02cd20af89054980907e29f66e7db1cce7bbf20437b4295a17"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/ROADMAP/PATCH_v1.10.5_COHERENT_REGIONS_AND_RECIPES.md",
+      "bytes": 11643,
+      "sha256": "5b092b86bf4b3080bd9d7d2888d828172ca5e47cd0042e8b8fbcde71f768201b"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/ROADMAP/PATCH_v1.10.6_WIDER_WELFARE_PRODUCTION_POLICIES.md",
+      "bytes": 9148,
+      "sha256": "ad207bff391451617308bf5c1959cb79ce6271e58dd15bfc3b15c06ff77643ca"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/ROADMAP/PATCH_v1.10.7_BROWSER_AND_MOBILE_PERFORMANCE.md",
+      "bytes": 5960,
+      "sha256": "d8a74fc7a5b8d4541b1b738653be3946b650dc7681569f54d41f771e88f27c96"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/ROADMAP/PATCH_v1.10.8_NATIVE_DEMON_AND_HEART_SOUL_PATHS.md",
+      "bytes": 9594,
+      "sha256": "03d3b00d487aa0383ea850d174f1ac6437f6cb6a277485059a70f722dc925fb6"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/ROADMAP/PATCH_v1.10.9_ORGANS_EXPERIMENTS_AND_WORLD_POLITICS.md",
+      "bytes": 14188,
+      "sha256": "3dab841817e5003c6b23a20617b0ee7bbba36193ca99e3fb6e8a02cf5e49a39e"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/ROADMAP/README.md",
+      "bytes": 1952,
+      "sha256": "9cad99d8eba2789ae81f604682b3f74a11f8aa5456230407cabc7685c7a72440"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/ROADMAP/ROADMAP.md",
+      "bytes": 16697,
+      "sha256": "875836db5545c366e8b2827b75946bf1223f4beb45d4b8e6ecf7c42c1e7df402"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/ROADMAP/SOURCE_GAME_ANALYSIS.md",
+      "bytes": 12241,
+      "sha256": "aad891d4752ef4888400bb6d2dc777f64000d7f23bf533dae47b03bc56d1ac0d"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/ROADMAP/TESTING_AND_VALIDATION.md",
+      "bytes": 7629,
+      "sha256": "7427958486695b275272a8be1ef7e44ecf585e5029bdc9bb48b668626d9d66a8"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/LICENSE_AND_PROVENANCE.md",
+      "bytes": 175,
+      "sha256": "5546fcd09b401943aa861c52d9e33959dd3b6d939bbbc63117c7a332f6cff99a"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/ORIGINAL_ARCHIVE_NOTICE.md",
+      "bytes": 996,
+      "sha256": "d86ad77eae78b4d81e5c343c6b140d5cf0560daa502f5f229d8c2589b594cde1"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/README.md",
+      "bytes": 4097,
+      "sha256": "818ab8a7145acfd907250f791551a78cf886cbf5793ca8f46f82286dc330a77f"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/SECURITY_REVIEW.md",
+      "bytes": 2774,
+      "sha256": "57ddd43dd551ba10c5c68dcb299c18c4aec2aebdb39c27ad6627b5f6054e63ca"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/SOURCE_AUDIT_REPORT.md",
+      "bytes": 10122,
+      "sha256": "77847bd81a5b400ceaa2773394d0d325eeac052aa3faa4de594f72f31f7ca15e"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/SOURCE_DATA_CATALOG.md",
+      "bytes": 5369,
+      "sha256": "5247adc585da19f10bcea6b97dcea4851b26fa10e71544fe91f654bd2299be1e"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/SOURCE_LICENSES_AND_ATTRIBUTION.md",
+      "bytes": 2201,
+      "sha256": "ff448dc1f8388b713d6b976bdb5effc0c8ac6fa7b8d6d39ac2a3994e8e183753"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/SOURCE_MANIFEST.json",
+      "bytes": 149010,
+      "sha256": "da0e70ee18efc0dc8fd4558433a1d9ae9e124ecf4df7d6d372dd46b92b8e1752"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/SOURCE_MANIFEST.md",
+      "bytes": 3383,
+      "sha256": "88201b440e0a784b4b067e7fc16ad7935d30fa6ddcf5dde635eda6ac3b737e93"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/catalogs/inspected_catalog.json",
+      "bytes": 3850313,
+      "sha256": "a9cfd00bf4b5eec93ad37230a01d31de6a810ad4bc746dd3345fb2d6575253ba"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/AI_READ_FIRST_TH.md",
+      "bytes": 1302,
+      "sha256": "224021c9b62c18f32d1d792a82cd824986b949f530ed3852ab796bb2562b3268"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/ARCHITECTURE.md",
+      "bytes": 2118,
+      "sha256": "677ff2e2ab624ad0a4d549fa12d1de31d9af5f5f634f504eb385ea5c53c4b47a"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/BUILD_MANIFEST.json",
+      "bytes": 9194,
+      "sha256": "e2c9d238240fdbf8438dd7dc6447a73f34b7bec397b3edb93e6ecf9f1be502fc"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/COMBAT_CONTENT_MANIFEST.json",
+      "bytes": 977280,
+      "sha256": "5b914da14b4e2ee9e9e9bff80260da76d5ad3a8d810a43a87dc4c9d8878e702b"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/COMBAT_STAT_GUIDE_TH.md",
+      "bytes": 11655,
+      "sha256": "5ecf34aba7f7b3ba0eb5e06dc04e438a0d61803bb3f6b2c2eea196e0f2a1c2c1"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/DEVELOPMENT_RULES.md",
+      "bytes": 1321,
+      "sha256": "9f50359e5fdd8652edfaa6f15be181b1a423113fad27fe7a1c47802354fdd979"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/ECONOMY_BUILDINGS_GUIDE_TH.md",
+      "bytes": 11463,
+      "sha256": "d065f906915e905af6cefddf80ab44064edd5dae855ddac1e7f13216266725ea"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/FIX_REPORT_TH.md",
+      "bytes": 8814,
+      "sha256": "11fdda09b7298f1faaec7073089c18211c9f692174c093799606c414fa7c90aa"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/FIX_REPORT_v2083_TH.md",
+      "bytes": 2899,
+      "sha256": "9bb4d040b3dd0d8b071275ea2543f8947c4a1832a7c29b64881b13a45a4037af"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/GEMINI.md",
+      "bytes": 693,
+      "sha256": "d5a7188c620b6d00ee349e997743f0df6fff554773b7fab1f8a434b29b1e032c"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/HUMAN_FIELD_REFERENCE.md",
+      "bytes": 9769,
+      "sha256": "cd7f646eca1404f2bc6246e84e1fe8542bc0785fe5f3f0cd7752fd0581579677"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/KNOWN_LIMITATIONS.md",
+      "bytes": 1984,
+      "sha256": "db0c699f57945f7f11ae56af899466c6542410f2a7905a30f5a31196d1ff9cd3"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/NPC_CORE_LOCK.md",
+      "bytes": 1599,
+      "sha256": "15f97d739ce22f22528908ebfadf49260ff6bbeebd4367bc7428f6a7223a00a5"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/NPC_IDENTITY_SPEC.md",
+      "bytes": 20001,
+      "sha256": "752d4500723162c0262b0153e85b1313d7d10946c5366be751cb0047415834b2"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/PATCH_NOTES_v2082_TH.md",
+      "bytes": 2360,
+      "sha256": "84832c8c1da686a9f1aee6f9941720533af31a65f1ea0764828a214b582c6701"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/PATCH_NOTES_v2083_TH.md",
+      "bytes": 3035,
+      "sha256": "bd33fd41091746160063d4a0ee267c1b9be05c2d7a824f5818ca64f0360b2b98"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/PATCH_NOTES_v208_TH.md",
+      "bytes": 5960,
+      "sha256": "2290ba33e207a84b233bcb3aee00acfff9967f8af91f36be3664b75bbb104f95"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/QA_REPORT_TH.md",
+      "bytes": 10952,
+      "sha256": "7d3f2870847eed20b914c9f2ad906359d82c3c1ebfa352bb96b2a4a22c5828e5"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/README_TH.md",
+      "bytes": 3780,
+      "sha256": "328c66de4e4a1b828c8bed54bf5548a5b1bbef26662e465252e30e56a6b990e1"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/ROADMAP_TH.md",
+      "bytes": 57148,
+      "sha256": "2c579f8f1197f6bf7b692bccc61d02728ee9dd3af6de7aa9ebe7692d79e79484"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/SOURCE_AUDIT.json",
+      "bytes": 11704,
+      "sha256": "949227b905cecb3cf4a71853c82636f636239ee563d6cba033c6c8622277d86a"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/V2082_HANDOFF_TH.md",
+      "bytes": 1535,
+      "sha256": "07d69bb0fea0397860292ccff6f2315fa46837407dc3314c21933181a407c9a3"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/V2083_HANDOFF_TH.md",
+      "bytes": 804,
+      "sha256": "08dee6591676c58e2b7657f44be6091296926495a84b211f99ee76624b4cff6f"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/V208_HANDOFF_TH.md",
+      "bytes": 3906,
+      "sha256": "93267578ac818c2a422760379346ae3a2236ce130812cd2438338137513265bd"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/VERSION.txt",
+      "bytes": 81,
+      "sha256": "ab53fa56694f844e48d4d80fb411e0e545bd22eb6c0ed0b4f6e1e2992209c982"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/assets/NOTO_SANS_THAI_LICENSE.txt",
+      "bytes": 4378,
+      "sha256": "bd85ada3eef71267263e0fd24a40ae20380015c7cf1afa0c27a4340b03431320"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/package.json",
+      "bytes": 360,
+      "sha256": "b36217124b8b6e541d2350451b9338580d01d4766508d8253c26b4fd508cbcc4"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/references/BASELINE_V116_SHA256.json",
+      "bytes": 1823,
+      "sha256": "03bd5de849b99910827c93444460890580e4eea122dff1ecd2577164f57e1f2e"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/references/BASELINE_V200_SHA256.json",
+      "bytes": 2936,
+      "sha256": "07a36a73bf1a097381999b1db52f0b7c4b344b371136991ff634fac96ff1fb3e"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/README.md",
+      "bytes": 860,
+      "sha256": "9892e6380671ef20bd34e586c32d385832d26a3ef844ae5d83c2888703ca011f"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/index.html",
+      "bytes": 6165,
+      "sha256": "a1af304965ba61467e33b4723f7761e1ed4b2fb59b822d9941f1cc66d9657205"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/academy.js",
+      "bytes": 37894,
+      "sha256": "21a6201c64a5f11c818cfd35a3d53a4379c86860158f1b1bf896ef31e94332e4"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/combat-data.js",
+      "bytes": 38430,
+      "sha256": "ef77c236263b3fe1da166ea95de34ceba18dda588c76a1c519cdd82e15e63ec4"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/combat-overhaul.js",
+      "bytes": 15546,
+      "sha256": "32e03c45f60b407889f4f93b15a87d163a8a26448e19d5f920ea5d12e4b5dd3b"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/combat-stats.js",
+      "bytes": 37706,
+      "sha256": "ec29283a73f574e89bd816a0aa11b5f50c5d5cb7c73fa99994b0752e811fc2c5"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/combat-tactics.js",
+      "bytes": 21891,
+      "sha256": "c2558268ed713f64c2f01e9d04c5262cc4bc7abf70abd86a272c440918cc7318"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/combat.js",
+      "bytes": 23827,
+      "sha256": "517fe45210d048d78a3378f93cb6fb251675ba08dafc18bd4514e8fb13cd2335"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/discovery.js",
+      "bytes": 23711,
+      "sha256": "fd1ce663a8543b0d8a6448835ab59c3b8d1db5161fb04156b0113b8e5740282b"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/human.js",
+      "bytes": 33246,
+      "sha256": "b230108298cae486c3dc6bf6698f0384ca67128b064ff3947f19fa6e5522328a"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/jade-inventory.js",
+      "bytes": 31965,
+      "sha256": "d56ba3fde0a75d6fbf3e06b24015fa2e22e838288ec96b924175b4cd5ada654e"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/jianghu-data.js",
+      "bytes": 47581,
+      "sha256": "5d31b7014a871b2c3f8be45732335151925fc6998a006ece9ba1a58fed437ed9"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/jianghu.js",
+      "bytes": 62711,
+      "sha256": "bda15c3f08883b7faba7335090bbbe9faa988350d929333830f8ef3c5e4bd20e"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/legacy.bundle.js",
+      "bytes": 18867242,
+      "sha256": "605e8e3d9a2cf282f3be29dee6e124aeb5448af9b2f5ae005b147761404905b2"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/living-content-v111.js",
+      "bytes": 573913,
+      "sha256": "c5470e66c15b12a41816966b94eb50ea045fdd67704841b0975a5de255a9a2d3"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/myriad-worlds-data.js",
+      "bytes": 1202339,
+      "sha256": "3561b4a7fb9563a16b15d268ff34d8c34eed61c2f40f3e1fb7917e754d621b2b"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/myriad-worlds.js",
+      "bytes": 103771,
+      "sha256": "b76f2a508b1ae75a711a37715278230f50f8bf6c7bb22ce6c8b42e9cd428085f"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/progression.js",
+      "bytes": 78556,
+      "sha256": "8e13d7f8ed4edc7cf10f8c28489336efa18c62a6a9718a181d023a415be24b08"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/sect-contributions.js",
+      "bytes": 115719,
+      "sha256": "e42b6e4fdb78f1df582870890d1db0ada4f52e0c09ef86466ec9fa65cc0504c7"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/sect-infrastructure.js",
+      "bytes": 17153,
+      "sha256": "2405a60cbf939274463a7b0a78d4d538ae021ffda90a064742d27ffcbd836f8b"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/sect-library.js",
+      "bytes": 7554,
+      "sha256": "f32a26eb3d8ef67fb2aed352a0ee84def14747f28ce3faa41b218b5f0ab445fe"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/sect-life.js",
+      "bytes": 34215,
+      "sha256": "c992e2982e1f2ab17dc809c40f971077c1c8542aaf2eec7ed5f9e8a7a844636d"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/extracted/02_SOURCE_FULL/source/scripts/story-sidequests.js",
+      "bytes": 38531,
+      "sha256": "16881ce2d837c3c7265fb3e62de171a572944c337b65ce3b32fd2dde818f4836"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/migration/CONVERSION_RULES.md",
+      "bytes": 1003,
+      "sha256": "c92bfe634b9a64f7fc3804839ba6d7e6eb28d31806cad90b88777662c0c2edd3"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/migration/EXCLUDED_CONTENT.md",
+      "bytes": 1290,
+      "sha256": "3bcbfc90122e400c92582b80f171385a2057325b660090f34cb1008f3addbef3"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/migration/SOURCE_TO_TARGET_MAPPING.md",
+      "bytes": 544,
+      "sha256": "5df2af25b8a077c0447b9a0083a272bf2aa1b09dc38b5fcf939a5904a3b2881e"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/migration/mapping.json",
+      "bytes": 138858,
+      "sha256": "dbe92dbb64f24fa6e18ed331c1ebaa780563fa9dbba56f9db6e2bcb02e71aeef"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/SOURCE_REFERENCE/migration/selected_raw.json",
+      "bytes": 158521,
+      "sha256": "5df22e23a2c4d8e14f7c44669a325098af4cbc98cf156e6afbbdc4ec3acfd934"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/assets/wuxia_item_atlas.png",
+      "bytes": 35537,
+      "sha256": "58701690859f522fc8596dbed96c84727ed61b5bff30eb57499eba6bc847071d"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/css/style.css",
+      "bytes": 17240,
+      "sha256": "dcc61127984f4eb3db1beea7e7db999677579167fbde4ca74ab880c43dcb3577"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/data/data_beasts.js",
+      "bytes": 9550,
+      "sha256": "8dbcc2eb4c294e2bd6d94e7fdc19aa2cd1fdbc46853c323e04b57f819f187f08"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/data/data_bt.js",
+      "bytes": 12086,
+      "sha256": "5ddb7f56459ec364a1b386780b6fddd64ba88609204b0c40ed47d0157ea187dc"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/data/data_cb.js",
+      "bytes": 2935,
+      "sha256": "646e94b753d472cc0ec24aee70e6b639e0525347bfbaad1ef2fcbfac90b37ee5"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/data/data_core.js",
+      "bytes": 172081,
+      "sha256": "5010e4d672ff46158313a603aec4393430832323e1458e8e6e8d0250c0546192"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/data/data_cp.js",
+      "bytes": 3111,
+      "sha256": "c6b824ee69a4d4b512e434812b3d038fda8bea132e5cd88e44c4a09235a63852"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/data/data_cult.js",
+      "bytes": 43947,
+      "sha256": "b74b3670d1dfecded970b5fb1acc4906d8fefc8673c076094490fdbec9d1898c"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/data/data_ecology.js",
+      "bytes": 248041,
+      "sha256": "d1f9f05498c3865aa4d936fdd210ddcaf8ab2302ecb8286cd0bd5f211bd3acd9"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/data/data_expansion.js",
+      "bytes": 265440,
+      "sha256": "d4c6fe90157d2773244e571f23bb5cfc38aaebfbc5e2d01c2fe693cfbd8e7d23"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/data/data_items.js",
+      "bytes": 125865,
+      "sha256": "07837eb9def88efe8864021733c1c34422ac452cad90ee256976c5307854979f"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/data/data_martial.js",
+      "bytes": 143783,
+      "sha256": "798e6d305809f1d816d16a6c4cdfb23818264dcff55644634751205cc0a010c6"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/data/data_tech.js",
+      "bytes": 217080,
+      "sha256": "0771f8d144945c6190e0dd7f3d13714815a1ec2b76e8c7fd85cdfb12bcbce566"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/AI_HUMAN_DECISION_BLUEPRINT_TH.md",
+      "bytes": 8632,
+      "sha256": "01c76142c1b17521eed64470e3a392cc91ed3e06c75c6af6ba0f1a031de58a6e"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/BALANCE_AND_RARITY_REPORT.md",
+      "bytes": 8785,
+      "sha256": "8a17313a718dc29b4ca6353209ed2c18d7bfd2126022e12263ed02a7cdf19e61"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/BUG_AUDIT_2026_10_29.md",
+      "bytes": 5269,
+      "sha256": "2dd112b077a6822d9d0f0ea5c16a70f5c96dcd70ef86e8d42fe3d3b3dd686697"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/BUG_AUDIT_V2_POST_REVIEW_TH.md",
+      "bytes": 8795,
+      "sha256": "389514d733f409f48f6cd71ecdbee95aa28acdbb780de55dad755eee3384975d"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/CAVE_UPDATE_TH.md",
+      "bytes": 3537,
+      "sha256": "f6d6e2959cdeaf37c8d62fa3e0aa844ba4d70043da69410611dc637bba67d8c8"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/CHANGELOG.md",
+      "bytes": 35196,
+      "sha256": "0af26d572c1adab8804aa699fc1ee102598ea6554a0fe9040a39ddf961945283"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/CLUE_SOURCE_CATALOG.json",
+      "bytes": 96356,
+      "sha256": "9df3824d12ca76d26ad6e5890c979816f84b38f9d1baa7f9a58562e3f80763b0"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/CODEX_COMBINED_PATCH_REVIEW_TH.md",
+      "bytes": 11810,
+      "sha256": "8a327dc36c07354211088d2e5ebce175276099b82b3a741658e357b1e6910754"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/CODEX_COMBINED_VERIFICATION.json",
+      "bytes": 10218,
+      "sha256": "f57ed16af1d25a4600522be17152d115e1ab78f548b2a6a8d14b1f961869a71f"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/CODEX_FISHING_REVIEW_HANDOFF.md",
+      "bytes": 3546,
+      "sha256": "42ea2b7f7ca533a2fb5cedab6ed40bff5fd7a4721ca70e28d7b681638b310bd5"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/CODEX_GRAPHICS_REVIEW_HANDOFF.md",
+      "bytes": 4436,
+      "sha256": "3b63fa08b6265b36544024cc8834b2407c4d6040fe1125ec243d90d28b38e461"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/CODEX_VISITORS_CLUES_HANDOFF.md",
+      "bytes": 7994,
+      "sha256": "92556ee2cc5fbcce90f17bc0c5bb9594b24cb97a74fe241cb90afb07460b36e5"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/COMBINED_FOLLOWUP_AND_INVENTORY_UI_REPORT_TH.md",
+      "bytes": 24285,
+      "sha256": "b9a33b9a3c62eb9663d976a4e2c68ebd090de5415903b63267a2a875840985b2"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/ECOLOGY_EXPANSION.md",
+      "bytes": 23583,
+      "sha256": "cce16f96a95750580acffee532d67020506a48439bfe1298aba52d31fb0262de"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/FISHING_CODE_MAP.md",
+      "bytes": 4580,
+      "sha256": "078a45bf3a92101c0d21b6097e78e2436dc6b53f8a8873fea5040cf0a94e44b0"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/FISHING_IMPLEMENTATION_REPORT.md",
+      "bytes": 18234,
+      "sha256": "06a6eca282fd7f6dece0630327cc1660fb18ed90ec6ab4fbee0360387ef57045"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/FISHING_LOOT_CATALOG_AND_PROBABILITIES.json",
+      "bytes": 40997,
+      "sha256": "2032c420b3b7a52742a4f05238e039becff88cf14db3eed4fab1f514d5a711c5"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/GAMEPLAY_FINDINGS_PATCH.md",
+      "bytes": 6623,
+      "sha256": "5cb5e035402e077cd734125757788d31ab314924925a9c83116cbf3570f8bab0"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/GRAPHICS_CODE_MAP.md",
+      "bytes": 9891,
+      "sha256": "b4776ed8f3e2d80c7f97416a98eab76b35df6b6e4618e7d02470412027804ad5"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/GRAPHICS_IMPLEMENTATION_REPORT.md",
+      "bytes": 15004,
+      "sha256": "f714be4a3b2a5fa5c605e9166044265b3e5f3dbdbde98b45351a3e4e27bda93d"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/GRAPHICS_UPDATE_TH.md",
+      "bytes": 2168,
+      "sha256": "335f3e095dfa679a0f2496773e3b834f0c92339a5b11a6fdf452578af72220f4"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/HUMAN_CORE_SPEC_TH.md",
+      "bytes": 39754,
+      "sha256": "f85d3cc644e3f10050ba78f3fbb9f7570269b9b183c2710eb5a2c59248051c65"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/ITEM_ICON_ATLAS_MAP.json",
+      "bytes": 75991,
+      "sha256": "2acdc08a8e3c03313a48d679c22e2704d7d8e7e8c392e9acba98024aa64734f1"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/KNOWN_LIMITATIONS_TH.md",
+      "bytes": 8606,
+      "sha256": "97803b39ddf12dab01b2dece166567093af44ae7208f82f4283c526f7cf57bfd"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/LEGENDARY_WEAPON_RESEARCH.md",
+      "bytes": 22569,
+      "sha256": "593c94b31c0f26df09f0d5e54c4f377448d61507592ff0d024ec8a8fdfa78550"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/LOGIC_HOTFIX_VERIFICATION.json",
+      "bytes": 2846,
+      "sha256": "740fd86e881fa9a5293ae6c7704e4a35462a067b80bc5bf0ca3600120375f086"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/MARTIAL_PATHS.md",
+      "bytes": 12710,
+      "sha256": "b643e193a8441bca8bcac2cf5d75284a9944ca8a441a4039dec7f81b7fef7d13"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/NEXT_PATCH_GAMEPLAY_FINDINGS.md",
+      "bytes": 5685,
+      "sha256": "186edb969f3bd6b1aee565aa859a704d8c12e6af5f1d33cbcf65dda466ff7253"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/NEXT_PATCH_GAMEPLAY_FINDINGS_V2.md",
+      "bytes": 11198,
+      "sha256": "1728dcc1e061ad17e6ad2595405bc2ea045478af9a2f2ddd703535d00ada7cb9"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/NPC_ARCHITECTURE_AND_CODE_MAP.md",
+      "bytes": 10984,
+      "sha256": "27dfba3cfa18957f304e2a9aa509a4bab8e934395d2fe7a41a18b21722066b90"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/NPC_BUG_FIX_AND_DESIGN_REPORT.md",
+      "bytes": 13349,
+      "sha256": "43a46c7efcb9a7c573d71c55823610ec4790e058740aaa6432876c697972ef3f"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/NPC_HUMANLIKE_AI.md",
+      "bytes": 18163,
+      "sha256": "ac2b7dc842139dbc380e85b25da53345cbcd040bb11d84dd5dce8efa03ddac45"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/NPC_PATCH_PROGRESS.md",
+      "bytes": 2357,
+      "sha256": "27318fbd5f84696a24acfab3e7214cd60d3b49f61e92cee6ce424ac292f2596e"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/NPC_TEST_AND_SIMULATION_RESULTS.md",
+      "bytes": 8444,
+      "sha256": "cce445191fd4246ea5bb581be394d50947469da78cadf65e613b0d93e0072cc5"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/OUTSIDE_RANK_RESOURCES.md",
+      "bytes": 19478,
+      "sha256": "57844a1fe9996a306ea0f29e34eae0184be5d5c1fe0ab8a16b03d24291901fef"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/QA_REPORT_TH.md",
+      "bytes": 21023,
+      "sha256": "1993bda96219e385e831de9c995e052969c1a1a1610d7e0bef98732b0f83e428"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/SKILL_EFFECTS.md",
+      "bytes": 12669,
+      "sha256": "06a3d5f9b88195115833835b9c9d245dd06ce553efbf5050d5a66fbfc7134157"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/SMALL_LOGIC_AUDIT.md",
+      "bytes": 8399,
+      "sha256": "396ea74dd7ae2121001a69f460d8177961e32e39c53649934cfca22acbd6c845"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/V112_INTEGRATION_REVIEW_TH.md",
+      "bytes": 3083,
+      "sha256": "892bbe3d3b9a8c7b2aeb34e8a02716a3b320b0536448b9fdadd11aa19ba32843"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/VISITORS_CLUES_CODE_MAP.md",
+      "bytes": 6020,
+      "sha256": "4f10a33e4d53cb1b625fdd01a550ed4a895e630d8f5827bfe52724d93715966e"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/VISITORS_CLUES_IMPLEMENTATION_REPORT.md",
+      "bytes": 8942,
+      "sha256": "a62c7dc2a9ad58434f6e59a63cdd7f15c281a380b8085b864a5fceb7f0e2a36e"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/graphics_update.patch",
+      "bytes": 299072,
+      "sha256": "667faf049c08854a779b31ef94a3b6fa1bdadad223d7e53e48991d2e14a6edb3"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/docs/visitors_clues_weapons.patch",
+      "bytes": 439802,
+      "sha256": "9cb2e7b576dad60cbf6afa6395f54ae9f41b9b9d15c5eb71bbe27486786cbc84"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/index.html",
+      "bytes": 6250,
+      "sha256": "6e1b20505257db44f67ac60cd90cef468238d9a4f15c89458c35140e8f6f5832"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/js/ai.js",
+      "bytes": 84373,
+      "sha256": "e5f35705a8d3c3cdcff3fc7197230d9d4446cbf0fcdc7db57f0d8f7404e3147b"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/js/bottleneck.js",
+      "bytes": 14683,
+      "sha256": "542fb290bdf41ffc2d7d5ac93c09d83b31a2aa837a26fc42ccd435f470307e69"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/js/cognition.js",
+      "bytes": 117070,
+      "sha256": "5c1088804b0cba54c0371ef01019d0faff182f5cddca652fb773ff67a260fcd4"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/js/combat.js",
+      "bytes": 52328,
+      "sha256": "06a0cffaf952d5451907000c2133029b390592dc71eef733323f2b0b0fdc44dc"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/js/content.js",
+      "bytes": 66369,
+      "sha256": "a5a62cf078e2ad5fc1b983e30ecf0a76a221aac499712038cfe278791585bc4d"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/js/cpeco.js",
+      "bytes": 62484,
+      "sha256": "5bf547489b366fa1354e9fc246c760bab9b97669aac3f1fde7d96e00b908f316"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/js/cultivation.js",
+      "bytes": 125588,
+      "sha256": "3b19d5ad616654238544aa1deae1b5893140c0cbcd273f594322a69331940fa7"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/js/economy.js",
+      "bytes": 42080,
+      "sha256": "c7d1d4225a295472809ec02c21e49c9b007efc968d3310538a8d002e0fe4c423"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/js/expedition.js",
+      "bytes": 62122,
+      "sha256": "43be4a5791053639efd1c6133ec3ec3dd5c0b2033b7363889f8b8ddd8f5ff789"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/js/explore.js",
+      "bytes": 239837,
+      "sha256": "6a69e990fb2866c1f2d88898fa6099dd5c769afe4505a5b18a0b587a7dc52c9b"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/js/external_market.js",
+      "bytes": 25306,
+      "sha256": "f5210f419b4f8bd7099222e289161c344db7dee14ce56967f211c84f632da4cd"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/js/fishing.js",
+      "bytes": 95976,
+      "sha256": "035f2abc30faa77415f0fe498597d362af09a3b9bb04555ec34693835235e646"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/js/human_core.js",
+      "bytes": 68270,
+      "sha256": "a0d393284fb4b136848e5b80e12f3edd2c4f9437c419c793c2a7e75d881c0542"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/js/knowledge.js",
+      "bytes": 38013,
+      "sha256": "2c04eb2ea6c30a86f9d83383d1f4c77d1d5762b7aef3b2d7281130798542da3c"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/js/main.js",
+      "bytes": 9968,
+      "sha256": "698a8cbcbf550f28c8dc0eb0f0e7c9caf422d14578577e5434b412b464a1ecc2"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/js/martial.js",
+      "bytes": 42911,
+      "sha256": "0d6db06af041e7c48c922b1f2c550418d297777a9acd01fdfae29355c64201a7"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/js/proficiency.js",
+      "bytes": 11800,
+      "sha256": "da8914c9c4bdafaf7dad03e3a05fe2a139f5e23150d692758ca4d4c079201ee4"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/js/render.js",
+      "bytes": 152770,
+      "sha256": "e66c23f8d097832de17e0ccf9c1c9def3affdf2797390b05e229f24eab523ac6"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/js/retraining.js",
+      "bytes": 12841,
+      "sha256": "88d07d7d0b467996acf1ecbd0644a6c89adce9ef7fc3ca108582f2f7fccd3543"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/js/sect.js",
+      "bytes": 157731,
+      "sha256": "895ce40122bbaff31b0bdda02847ef476ec79fd758c3209f7d521e954e216d7b"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/js/sim.js",
+      "bytes": 32493,
+      "sha256": "ba30c69044477cc9e836073344811e27de43b1124ee018f95534af18564ad799"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/js/skills.js",
+      "bytes": 30881,
+      "sha256": "1b2b18bd259a544979225cb75cd888d1d5220214c22c42730e820e82cf6fe553"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/js/stats.js",
+      "bytes": 40408,
+      "sha256": "d1c6e6c8ede328b58405c5dcb23d99d580433300058a9ca5bb787f64ea0ebbde"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/js/ui.js",
+      "bytes": 364725,
+      "sha256": "437a7a24a50293008fb96a6c4b573ac5952728eefdd2c7b038706e367ed29e80"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/js/util.js",
+      "bytes": 4118,
+      "sha256": "06448a81a410d9de425d93894e3a07773a7d17edffcbaac4122a21be92863119"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/js/visitors_clues.js",
+      "bytes": 267858,
+      "sha256": "0bf17731a7ac632140efc49380a9dc8c5105918365d9c2f954bdd8ec19ea1b71"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/js/wild_resources.js",
+      "bytes": 21205,
+      "sha256": "f509e013d98c0717cf56d8f8146bce35cf5392567270698d55a86eb4b6adab38"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/js/wildlife.js",
+      "bytes": 24349,
+      "sha256": "41dc890e7a7086509923db2cb8c9d8c752596ca17027d716331b73879ca91d72"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/js/world_map.js",
+      "bytes": 46976,
+      "sha256": "faf9e5c36108d12e693528dfe48627aab39880f996eaa6987c735aeec8d13165"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/patches/fishing_river_v1.12.3.patch",
+      "bytes": 592214,
+      "sha256": "6a5d712c65238cf74adf91c028bbbe067650858a6a2a551bca177bb2cee0cc10"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/autonomous_economy_facilities.js",
+      "bytes": 29304,
+      "sha256": "94fbca7960a2ba73eefa9ff2497b6e79841d2b2c005d8cb6bad57f7d24fa5cc8"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/beast_ecology.js",
+      "bytes": 1135,
+      "sha256": "2a24a5b2c3ddc66d427a4609c0e15337d2893816ecad6b4dfede64734f47d83a"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/bottleneck.js",
+      "bytes": 1714,
+      "sha256": "7efc32fb8048726278c67c7d73dec4198bba49aa9b02ff6a2b5989ff2c30c7a3"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/browser.js",
+      "bytes": 2012,
+      "sha256": "546ec45dc8c90a3e14fc86b12a02edd23655ef3c8a2d5ba9aa905d8c55f2effa"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/browser2.js",
+      "bytes": 3109,
+      "sha256": "81aa7c3c4d96594da80d3fbca56bc3e6df004b35332c398623ad4ee7b95335f8"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/browser3.js",
+      "bytes": 1459,
+      "sha256": "2e7603edfb7ce261777df8a08ec6a14f4696e38801f2aa851ec4fd3d87cab912"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/browser_mobile_perf.js",
+      "bytes": 18485,
+      "sha256": "a1567f64607665604c32ee3f708dd13d7705b4f032778bbbcd1101d50435b4d9"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/cave_pools.js",
+      "bytes": 6702,
+      "sha256": "a081330c49a51978dba595ad763c2c4a7930001b82277992c65d5359cba73280"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/codex_combined_review.js",
+      "bytes": 19409,
+      "sha256": "f8d39e36146424f8ce0f6d1e6d59b767e85f4cc2e4b6150c248f4fb75b6b3ee0"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/coherent_regions_recipes.js",
+      "bytes": 10060,
+      "sha256": "d85f9a4718ac0cefc7348fa88eecd3ad3693ba9291e71494a043a111851b5917"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/combat_balance.js",
+      "bytes": 5341,
+      "sha256": "2d5153ec5cbf5cece4d9e6ebdc22126f1df568dca16fa99a282956324c02b97b"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/combat_passives.js",
+      "bytes": 17983,
+      "sha256": "19bb3a0895f3a891b8aa4fce072d95ba826ccd62daefc6ac35458fa0011065fd"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/combat_stats.js",
+      "bytes": 1012,
+      "sha256": "4d9f81f74856f78c3be2300139e3b8d1d73044010d3aeee8794207dfdf212b9b"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/content_discovery.js",
+      "bytes": 1126,
+      "sha256": "8356c7a54941a65f3e24992ea52d10b15a7522b3aa0f311eeee4dcff6f4e8fe0"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/content_economy.js",
+      "bytes": 4354,
+      "sha256": "d2508b308563066bcb30350000cd529abe8069c079fb02d4f8ac61f334460605"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/content_expansion.js",
+      "bytes": 3906,
+      "sha256": "c95844db1290d606f49c4fc60cbf19edc62c217c38e77c2e273fedda512ad7c2"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/core_lock.js",
+      "bytes": 1126,
+      "sha256": "edaf57b2c8ed1bb89775132ef807622887d24c3e947af0592cdc8d9c8149a6d1"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/cp_economy.js",
+      "bytes": 12737,
+      "sha256": "49780c2338c18c9a8b63f3ebdd82b660fad537ef5e19970e7ee6fba626560281"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/cp_soak.js",
+      "bytes": 3340,
+      "sha256": "9d53c00f5be951a1c2c808cd652baa65866442a3bee4274ff0ac805d66b025ee"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/cp_supply_pressure.js",
+      "bytes": 723,
+      "sha256": "71c0615a684c4305123064c7c14b90086b25fcbef82f2301675360753d0e634c"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/cpeco.js",
+      "bytes": 922,
+      "sha256": "139979060afc25952a00adac1dde00fe55abfddb26cce2ff73da0a43d97d06c3"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/craft_transactions.js",
+      "bytes": 11246,
+      "sha256": "900848d76e464ce5feede7194d2a0253151a47d7c3731f45c0c553353172ae92"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/demon_heartsoul_paths.js",
+      "bytes": 15101,
+      "sha256": "8227103b27c2d636972e49fbdb6ed31d41d42bd6b2042e8779a36ba7994efe76"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/ecology_expansion.js",
+      "bytes": 22950,
+      "sha256": "1eecf560d66cb620afc8a8dabc13f33039ffb3835a8264e2a42d6da80fb70418"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/elemental_balance_v202.js",
+      "bytes": 7073,
+      "sha256": "ebd42325975a77173ff57b27fac4a12381e46d10160b74e2fa001fb19f77a5c6"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/elemental_balance_v203.js",
+      "bytes": 15921,
+      "sha256": "207df19f2b318d03ba48db6fe3db50e884ad3df7078887087909b5711a82e0ab"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/elemental_generation_api.js",
+      "bytes": 2395,
+      "sha256": "1e7a7ae0e8b0000650cb67e884cf54311e5cf883a903cac121141e777d55bf29"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/elemental_overhaul_suite.js",
+      "bytes": 18841,
+      "sha256": "b0319e41ebd22e632673fae224266df155b6b323b5c3cf0dd400255f3fd6479e"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/exploration_replay.js",
+      "bytes": 756,
+      "sha256": "f7ac760fe79a6c3c6bb8e766653dcce7d8abe196cc42cef10d1365bd895c03a5"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/explore.js",
+      "bytes": 767,
+      "sha256": "e5f736ea6f72ba97cbd3b57ab01fe83d84bfc1a22864782b782a070eaccb424b"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/external_market.js",
+      "bytes": 8721,
+      "sha256": "c191a966a1dd4ad725e9c676fbea7df37e1b175459dd3c6a2712d64c5cf0923b"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/fishing_river_suite.js",
+      "bytes": 23796,
+      "sha256": "95f00aeb9c01b51e0fb25981b53de67a1265da23811cdd502d01b89b4deb7ae0"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/fixtures/v1_9_synthetic.json",
+      "bytes": 27343,
+      "sha256": "81a9ad35647bb24d75933b249cf0b4c9fc11b804e72a9e0d78e29c6d2d83dba8"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/gameplay_findings_patch.js",
+      "bytes": 10062,
+      "sha256": "34f92160009ffd5f86a746420d6796940d306b487e50b4965e477ebc3849dd6f"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/gesture.js",
+      "bytes": 2030,
+      "sha256": "d746603aab96d1015134e855df2e06babdbcf80b62efc016a08be7b84716f356"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/graphics_overhaul_suite.js",
+      "bytes": 8298,
+      "sha256": "cdad07420c08adcd5343ead6ab71d90a715cb8c15f8451355cf1b0f72aab3985"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/input_cancellation.js",
+      "bytes": 3119,
+      "sha256": "4fe69c70c9af0dd6da804450e783147712837e65e5793cc5f0ed5e4e3739c22e"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/inventory_grid_ui_suite.js",
+      "bytes": 11335,
+      "sha256": "f2706b627051ca10f7cde17b7e8f80231e8d9fc0c65b83105949b883e486990a"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/ledger.js",
+      "bytes": 923,
+      "sha256": "9bfcda867d8aa158a115ea444b0737c66e1070f694b181893c83b35a6b659b2c"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/legacy_save.js",
+      "bytes": 1825,
+      "sha256": "d8f6810faeee7cd02c5429f8828bff21a4f846a3bea77cf6153c3fe1b55aae63"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/legendary_spawn_gate.js",
+      "bytes": 1133,
+      "sha256": "aa4fdb23c676497c3d1e263a3a662172f47f941b97f175ad9e6dcb8f2778601b"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/load.js",
+      "bytes": 831,
+      "sha256": "49e0d863bf41f72ecc1f1e97c239834cb0bf2d98ef2d4e5833bab42deab043ba"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/logs.js",
+      "bytes": 452,
+      "sha256": "2b271b6cdacfbcdb5e30385535fe74bed679b0e772fd9b94c004c83e8fe6cf5d"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/long_ecology_rank_simulation.js",
+      "bytes": 5679,
+      "sha256": "62384449d9c07aee6d3dac0b38b46abbef2372ae13241a5482658e234e47cd03"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/long_ecology_simulation.js",
+      "bytes": 8497,
+      "sha256": "88ad0828ed5960f36debc163efaba82ed9a28a4f231930475276d454b357a058"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/long_simulation.js",
+      "bytes": 6646,
+      "sha256": "9e8128649012b597a5ab513d59e2ae3d16b7d9a2d753c5b6fe0a84b5479af9cf"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/martial_paths.js",
+      "bytes": 11224,
+      "sha256": "eb3f38dbdfc2b1f5a3facb6046cebffb01b56736b6691851268ad6f0778a62b7"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/martial_retraining.js",
+      "bytes": 11252,
+      "sha256": "48632c5b83ee0b7ec6ffb389ac85d97ee0719feef2ec984fcc41bc524f7c417f"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/masters.js",
+      "bytes": 936,
+      "sha256": "1f2477d7699cf364703b1b2a3061d3d9542c82d908943866c62149b418c3def8"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/merchant_guest_lifecycle.js",
+      "bytes": 3274,
+      "sha256": "63129b8c221c0f993606b06687e2ee52d5dfde0893c349a88c16d8e2fca6b559"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/npc_cognition.js",
+      "bytes": 5737,
+      "sha256": "aad176e83f0b8b9504b4da9d73db37f3553b4a4018d5174085d45996b3963ada"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/npc_command.js",
+      "bytes": 1510,
+      "sha256": "167a2d6242b5b93b5b54cc8f2fbb7818f6b11e5c244991a80933468bd82bf52c"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/npc_life_authority_overhaul.js",
+      "bytes": 26004,
+      "sha256": "6157ead9b533ed0d2352f01938c4c74a8572d5ff85af5a16a100376f2335ccb0"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/npc_offices.js",
+      "bytes": 2745,
+      "sha256": "bf7bd30f66f38846684fd05c19ef0b3593ed55ec11aadbb158e9e5a2665216a5"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/npc_social_help.js",
+      "bytes": 1138,
+      "sha256": "2428251f646dd9ebc5929018bfa1f25092b4af9798589742186954cc5a0e4620"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/onmap_wildlife.js",
+      "bytes": 2477,
+      "sha256": "7eb04fdf4ffde38d81e3993e3ec92da78d114020fed5d8108d637bd2e4277cee"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/organs_experiments_politics.js",
+      "bytes": 12348,
+      "sha256": "7b51131bb391aebdac6c512f607d33a211968b21bfcdcd07aaef840e7cb24e13"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/outside_audit.js",
+      "bytes": 6890,
+      "sha256": "09f7fd7e53cc77b8b87c88a20c2cd22dd8d9672638aad1a86d65f2afe8a39984"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/outside_visual_browser.js",
+      "bytes": 1834,
+      "sha256": "bd63be2022b04afb5698879119139f664a8d53fb17b68b5bd8f8afebc546f0b2"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/patch_v1_12_suites.js",
+      "bytes": 724,
+      "sha256": "520bb11b2848b379a3361037d2c59225766609cb07c5931def4d5496024ae615"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/perf.js",
+      "bytes": 1059,
+      "sha256": "edd12cebb26b34976a61021ef77ef55f405eae05bcaf0cae3b3118177af05280"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/personal_crafting.js",
+      "bytes": 4025,
+      "sha256": "2debdce1f5075925be10924ca169a58ccbbe5990097d089cac9880863904308d"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/phase1_recruitment_facilities.js",
+      "bytes": 7988,
+      "sha256": "fec1927df64481bb8d9f1a3f1cb346383539b677c604ce7e18e61b302e29bc1b"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/phase2_edit_hub_inventory.js",
+      "bytes": 9083,
+      "sha256": "6c3cbc2f66ea620dad3626613095d523fdd109d6ae10a2d1e6c9564b7b743d3e"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/phase3_stock_distribution_log.js",
+      "bytes": 6707,
+      "sha256": "4016fd6d8a598d1b7d9724a4573252bc5c6e9279727411dbe9ba1f820655891b"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/recipe_coverage.js",
+      "bytes": 1192,
+      "sha256": "2590fe221e2f49ea7a314af6ab23d17d6f38a3336df3977be6fbead8d4d62067"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/recipe_scroll_lifecycle.js",
+      "bytes": 11952,
+      "sha256": "a789bc1d724c6d810668def27779d9fa2eaa162600f6de272c82aedfac0422e9"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/recruitment_queue_review.js",
+      "bytes": 1443,
+      "sha256": "02da384722ecc6af908f0aee977c635e7fab0a636d448864ada831e8f93a3a3d"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/assertions.json",
+      "bytes": 32359,
+      "sha256": "1418a351eecf2f56005e55862532a3bc3678a0a43f8aed0b27bd8228ffb0a66c"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/assertions_gemini_v2_initial.json",
+      "bytes": 32427,
+      "sha256": "68142c3c99e06ad081d46d5f511f62b686204b3ce7b79d9b6c18752a44178144"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/audit_extra_checks.json",
+      "bytes": 12939,
+      "sha256": "638b7fc4310977dac801f2b9d57e7bf49ffdd56f4475e26021fa20c2b1775622"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/audit_long_360d.json",
+      "bytes": 13489,
+      "sha256": "9ae7d0ec7ab027f095fa38227d06e602d55e9243a993c28c04aae594ec3067ed"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/audit_summary.json",
+      "bytes": 39953,
+      "sha256": "b3b365a98bf6c15ca23ba85c146157c656657d06968f90a50ef1df2fe698b61a"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/baseline_qa.json",
+      "bytes": 8519,
+      "sha256": "634b2435c0c1483b6c7e01144debe5d28f964c030e18f9a07a3400ee5c4f8ce5"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/baseline_qa.md",
+      "bytes": 6779,
+      "sha256": "bf9e42d58073d54254e7ba335f4ead2b451a1faab0b4e34943aaa482fb6910c7"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/browser_availability.json",
+      "bytes": 428,
+      "sha256": "0f00e455cfe24d725e7e456b918d5af1dd5fcf7088600a9b28e69fc4423c307c"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/browser_mobile_perf_v1107.json",
+      "bytes": 3532,
+      "sha256": "1efe008c8a69405ba98af32a470fe6e7aa6eb21b56f10d80ae1dbc9903d132b9"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/codex_review_2026-10-31.json",
+      "bytes": 33224,
+      "sha256": "ccb84d499460b120f1899ded9fba42ad076d76ec1235116454f650bebd55e127"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/combat_balance.txt",
+      "bytes": 1135,
+      "sha256": "4f64db4d0e559c40f9554acf11551757e745f8ab31666fe6a6e410b1395b4165"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/combat_stats.txt",
+      "bytes": 966,
+      "sha256": "208e45eeb57477e555f6eb321de981a6ecc200a69ea76df48ceaa533494b29ac"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/converter.json",
+      "bytes": 350,
+      "sha256": "815a44d05a07c1b021e97efb4e448389a7f54f21ec636894c87b07012f5d23bb"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/cp_smoke.json",
+      "bytes": 1450,
+      "sha256": "ecf4163430d0eff58cb5af0fe83e10c80e9215d7460df41226f4d78b604c1a79"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/ecosystem_360d.json",
+      "bytes": 12982,
+      "sha256": "b49a3fd8edf12d31861e58738604eed8d4425ed816caad35d011fc262630798d"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/ecosystem_90d.json",
+      "bytes": 6387,
+      "sha256": "177f2a66a820f30556912e55fe6121596c1b78755d0c65a5b223a5f6f28f04c6"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/explore_smoke.txt",
+      "bytes": 1005,
+      "sha256": "d6787db64793506fa4389b0ad37d87d56f83280acc4345693954804a0efc8187"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/external_market_observational_360d.json",
+      "bytes": 2961,
+      "sha256": "4fea1f9d2fa8185346f164c9cdfe38fc614c1786ca194157ecfa1e9cda47a968"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/external_market_smoke_90d.json",
+      "bytes": 2748,
+      "sha256": "4d269ed905116c26d511c957ca54ee2c325c45d1a75c16860937896dbc0e6e4f"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/final_long_validation.json",
+      "bytes": 5961,
+      "sha256": "2b3e6d39840a7846606a88f31ae5d823d1a2e858e03ee9eb658cb43becae9e78"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/final_long_validation.md",
+      "bytes": 2166,
+      "sha256": "32b3482ee8dd39fb67028da68cb5f1fec0104271b97628395e2f074db11955b1"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/findings_sim_90d.json",
+      "bytes": 2066,
+      "sha256": "d855a01e372bf47933455d1faa81895b5a55123e4f770e7201b308448319b629"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/fishing_river_180d_3seeds.json",
+      "bytes": 6122,
+      "sha256": "2d823865137c127d15573533c0ee7c5a8e7c27c889b25955e827a9c5a8a73862"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/graphics_after_manifest.json",
+      "bytes": 3889,
+      "sha256": "10a6eeb1763d61576c57f1818abe46f19e53d9260966cdebfd60b72352e3888a"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/graphics_before_manifest.json",
+      "bytes": 3915,
+      "sha256": "d90ca105d2c953f0a0e4cde1a7eeac1f48432676ba4a5adaebe643dfb01ada15"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/graphics_cave_30d.json",
+      "bytes": 3176,
+      "sha256": "c49aae0bb8aa249e2aaf48a5d5ad58c4848eda64fe11dd4b8220ea9a9c963cab"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/human_core_bytes.json",
+      "bytes": 132,
+      "sha256": "8f9b8136f9763ba1ae2910d4d91aebde25be820391e5c2f190c178d0fa924ec5"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/intermediate_review.json",
+      "bytes": 9174,
+      "sha256": "8cf092d8c010d803455f52c26d5664435ad269c683c7b9475a5c2f6b0e98ba9d"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/intermediate_review.md",
+      "bytes": 3686,
+      "sha256": "f264dc8e95299ae50acc048c800814aca7514c0fe724b282fde41253038e282f"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/long_ecology_360d.json",
+      "bytes": 9030,
+      "sha256": "0aafe4ee176925089d0ac84cffae8086ee26be9c29364779100b4a8b68cbcf0a"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/long_ecology_90d_patch_1127.json",
+      "bytes": 4794,
+      "sha256": "fdfec6faac886e50cb98c578780c05803c73cd0450169ac42ed3cd3615932cab"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/long_martial_paths_360d.json",
+      "bytes": 10094,
+      "sha256": "25b844b9fdc7996ee5ae86408bc9777880a5d47673394f2e7be028f2b1697ea4"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/long_npc_humanlike_360d.json",
+      "bytes": 8843,
+      "sha256": "277993f92abecd2ec7051b93ea1a9c25416cf9d6fa2c45f99b53628af61396f5"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/long_simulation_90d_patch_1127.json",
+      "bytes": 5114,
+      "sha256": "3a6aa8907eb737f5d58feb6f952594ce7734714f961fa26fa1e8f6c0dce2506d"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/long_v1102_seed1.json",
+      "bytes": 8171,
+      "sha256": "b30116eb7ad4b67be4746759194e14c5c5858816733a594fa777e79f51239fb8"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/long_v1102_seed2.json",
+      "bytes": 8177,
+      "sha256": "38a704e9789eea8b850af6a5feda1e128b3f3729cdb286a43d5a2c40d028071c"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/long_v1103_seed1.json",
+      "bytes": 8776,
+      "sha256": "e2e24101d6390682f0f16368ee16a0e9ccacaed5201184729d7fce78be9ea5bc"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/long_v1104_seed1.json",
+      "bytes": 9722,
+      "sha256": "b6c679e9c8437a6aea3d1f9162e3497c3ca17bc0136fdf3812b92f59228f98e8"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/long_v1105_seed1.json",
+      "bytes": 10017,
+      "sha256": "b47eae6d0b59dbf01a58efda4c1edb022a1dd1cb9d44632b57d81c0723da66a1"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/long_v1106_seed1.json",
+      "bytes": 10234,
+      "sha256": "f1e513a0db58b0e8b04e7318304256bf35ae1bc65ec2c8819baccbed762c7870"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/long_v1107_seed1.json",
+      "bytes": 10168,
+      "sha256": "1584a4cf18dbe04c357b7f31f9d1ae7c9e47622343cadb21725d5ad88416e731"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/long_v1108_seed1.json",
+      "bytes": 13870,
+      "sha256": "1cc69de538bc9911e04bd3d438dcdbe331d15c8216d014311087eec4ebd77163"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/long_v1109_seed1.json",
+      "bytes": 13700,
+      "sha256": "92e3056483bcf0290d416fc68ff3ae3a5501feefbc5d1c32e1c092a474f201b1"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/long_v110_seed1.json",
+      "bytes": 6917,
+      "sha256": "bbc0a0901c098738a5bb0a2b28b21d046e3f218a03b55bbc4d456463992bd886"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/long_v110_seed2.json",
+      "bytes": 6902,
+      "sha256": "799544f2219a4f635eb5704c6b5a1144af74384c8f13a3904d5d4f22d7809840"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/long_v110_seed3.json",
+      "bytes": 9676,
+      "sha256": "f6b1260d777abef990872d81741eebf604a82ec790f889c7c6283bfb06cc57ec"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/npc_overhaul_360d.json",
+      "bytes": 3535,
+      "sha256": "5b4d7a50226d1ca521289970424089eed43c6bfcc0abe31cbc1de6c88dfcaa29"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/outside_audit_360d.json",
+      "bytes": 4185,
+      "sha256": "d3eb4ddd853a0ba3eef4a467a49ff3d18ca2f506b9ea945c7a0e746f225220ba"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/package_validation.json",
+      "bytes": 428,
+      "sha256": "7f4e643ce2b80aa800ca913a82a82a376ada8cd55f8556642cdd01c4371a679b"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/parallel_audit_latest.json",
+      "bytes": 32359,
+      "sha256": "1418a351eecf2f56005e55862532a3bc3678a0a43f8aed0b27bd8228ffb0a66c"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/screenshots/after/01_mobile_360x800_overview.png",
+      "bytes": 492408,
+      "sha256": "d4e631550f45ca782aa720957c509dfc744160aecf1eac081d656f377dab191f"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/screenshots/after/02_mobile_412x860_overview.png",
+      "bytes": 567517,
+      "sha256": "7921e724b97e564b83d3edbea59da249980ae05673fca4cc4a532894709e2997"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/screenshots/after/03_mobile_412x860_detail_activity.png",
+      "bytes": 435293,
+      "sha256": "fa6044d3a355ac8609e6e377ad2eea0563a65584c482999d4d86332b5b6336d3"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/screenshots/after/04_mobile_412x860_character_sheet.png",
+      "bytes": 361816,
+      "sha256": "94ab1d739032c167721c4a369be241f0575152d371581ae5ce23f2b950a0cb57"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/screenshots/after/05_mobile_412x860_sect_stock.png",
+      "bytes": 364386,
+      "sha256": "4394b6f02e3920982f184103f10e1624e72e4e3b06ad7d3ba3faa9b86a08b861"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/screenshots/after/06_mobile_412x860_log_longname.png",
+      "bytes": 313683,
+      "sha256": "f3c670ba7b2d16a87205f1818129a2673797e8fa94cfd40b9d12a343aaec162e"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/screenshots/after/07_desktop_1280x800_day_overview.png",
+      "bytes": 1515690,
+      "sha256": "04d864e48d4cb95f2408f16a3526892fe9bb62940d9e06aee5127eb043bc8355"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/screenshots/after/08_desktop_1280x800_night_rain.png",
+      "bytes": 1550534,
+      "sha256": "bfa3c6370caadeddfcf22aabb3f5255645ceb42f311c744d54d6bdeb9e3289fd"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/screenshots/after/09_landscape_860x412_legendary_fx.png",
+      "bytes": 429617,
+      "sha256": "d0d6328d8f3356cca13746315a89e80e3e993dab2b34d02ece66a5d00bc2fe2d"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/screenshots/before/01_mobile_360x800_overview.png",
+      "bytes": 424843,
+      "sha256": "dd77fb5c17f971d7da63963c442b4739a72247d288250234cdf0aa7487d86391"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/screenshots/before/02_mobile_412x860_overview.png",
+      "bytes": 504263,
+      "sha256": "1e2b053de9377bc0d0c48413e51cea51f9863249fcc44b959d86738fddb4e82d"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/screenshots/before/03_mobile_412x860_detail_activity.png",
+      "bytes": 349046,
+      "sha256": "7e1f37dbcfa0ad0f7198746df15991683615e219a281fe218350b8aa8f8fa9b8"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/screenshots/before/04_mobile_412x860_character_sheet.png",
+      "bytes": 275118,
+      "sha256": "2a735f46f6408f2b83383478b252541a6709c350df4c7599310b23116b7154b2"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/screenshots/before/05_mobile_412x860_sect_stock.png",
+      "bytes": 297180,
+      "sha256": "086d6bc6a5afdf6e5f5c5ee237ad9bdb2be4cbd84fe1b70005c2e3f0464885ed"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/screenshots/before/06_mobile_412x860_log_longname.png",
+      "bytes": 280987,
+      "sha256": "ba074cded569507e9e7a26f8178c9d83c70481c3443290983a906f2640c62196"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/screenshots/before/07_desktop_1280x800_day_overview.png",
+      "bytes": 1038128,
+      "sha256": "5d8499d2e70fc7fea538d3f99dd2ba20e2acf9283aebfd5e9bf84d8d38d5aa20"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/screenshots/before/08_desktop_1280x800_night_rain.png",
+      "bytes": 1786237,
+      "sha256": "ef09d2d124e5dec6dd1a6eded107b755f6d0691004c22c6476fe5966b880b66e"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/screenshots/before/09_landscape_860x412_legendary_fx.png",
+      "bytes": 342222,
+      "sha256": "1bd403aec60be4c52668ddf0f112119506b8f0780e544a946f844153103e60cf"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/results/visitors_clues_180d.json",
+      "bytes": 3852,
+      "sha256": "20964b203adc1a1607dfb8c64669bf928be9d77685607ece5522b4bb7e3a85fa"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/review_fixes.js",
+      "bytes": 2134,
+      "sha256": "f8e1c3f95a9683be2da425bc8aa8fc922565b116a6bd2d3f4eadcb867b313374"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/run_all.js",
+      "bytes": 2888,
+      "sha256": "f734e1f851dc5ef5de06d85933e25d471a11756bff52bdb743ed8f0d0c033b60"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/runtime_timing.js",
+      "bytes": 6573,
+      "sha256": "6a525c1a6c565e3de1e84d58d510afb69665989f254274b2aaa1955aa022fa6e"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/save_integrity.js",
+      "bytes": 2894,
+      "sha256": "ffa29b4cebfb720c2408378ff7144fadef5557bf53e67cd81b30692d7b70702b"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/skill_visual_browser.js",
+      "bytes": 2747,
+      "sha256": "f57b68b558bbea4369365a8c2aabb2a3a2e671f53d4bdd937934521154f22a86"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/skill_visual_events.js",
+      "bytes": 2139,
+      "sha256": "a78221008661c1db4f645babe6c83f11319513797052695bd92c2c1ea44a6be4"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/soak.js",
+      "bytes": 1625,
+      "sha256": "1f591c98a024175e0e88ee9e377981ce4561dcab21beb4b5771deca68ed445e4"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/specialization_tracks.js",
+      "bytes": 10547,
+      "sha256": "119a094fe5c113c68041e13b5d330d6972c92129e43ec3529a66f6beb3ce7e76"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/speed_controls.js",
+      "bytes": 2956,
+      "sha256": "061c817321edfecc8e6cdd12599713c28945dbbed136308d46cdbc8b84682fbf"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/standalone.js",
+      "bytes": 1607,
+      "sha256": "b6cd9c8f9bad1692cb0b08b497ef9d5a5500d86cc868e0d8de48ac646a11857d"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/startup_ui.js",
+      "bytes": 6860,
+      "sha256": "3d6c070c01ab1c589214db6947b7f532f5d7d0c39d06cb1e77129f50b346dcdf"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/technique_overhaul_suites.js",
+      "bytes": 915,
+      "sha256": "5bd178c9bcdeedf7fd39c27f88fc0e679b3660ccbe3c90103834ad61d98a9c76"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/test_runner.js",
+      "bytes": 1918,
+      "sha256": "9282df928c332def5362d44993fadc45f66bda379a9fcfc7ffcc58e954c18666"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/time_controls.js",
+      "bytes": 1353,
+      "sha256": "ec991331931b7997270576a4ceace136d9919210f08ad6bb5ab355e292f95f76"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/ui_content.js",
+      "bytes": 3725,
+      "sha256": "c3185f6ed85b0d4225d25fc7d55f746ef20cbde45a95913e58de79d820a43fd3"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/visitors_clues_weapons_suite.js",
+      "bytes": 18440,
+      "sha256": "e1dfead39143234b565c73220aef9d757cbda0b34c061959635e1bb86d3a19cc"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/welfare_authority.js",
+      "bytes": 2557,
+      "sha256": "e8e2f2c7c12cd1b90ac34981035091927a415d3a45d826458ad2142406401538"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/welfare_production_policies.js",
+      "bytes": 9655,
+      "sha256": "02b0bf8182d66ddb48c658f9f1f3e9df1d2bc00538d64847182ab2a830484c2f"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/wild_resources.js",
+      "bytes": 8625,
+      "sha256": "e9673d7c2579abf8f03565a768776c4c243193e15414de8f66444ce05601f814"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/wildlife_batches.js",
+      "bytes": 4013,
+      "sha256": "93ee4bdd9e09856d341bc90cea14136eff5993d983194344f84df21f0edf180b"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/wildlife_spawn_integrity.js",
+      "bytes": 4467,
+      "sha256": "2445b2eb7b2d8b9ff3f9234a8771f46ea49c081b080394da622a36f72ee2bb5a"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/test/world_rank.js",
+      "bytes": 7532,
+      "sha256": "8ec9c123eda45164851d1fa2369cd950452f04836373fc8067d5580947b957d0"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/tools/audit_character_generation_rate.js",
+      "bytes": 1951,
+      "sha256": "e52b2129d4959982f1524eeb35186dfa2a0a9954231176f1f23ff2c6c43b6827"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/tools/build_ecology_data.js",
+      "bytes": 65787,
+      "sha256": "a26ac5d1cbcd1fde6a30b82fffbc90e89804c5f5dce8d48c68167edd58edba22"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/tools/build_single.js",
+      "bytes": 773,
+      "sha256": "36c867015b255f372f4d198434ac5a07589198e199961d647279c2785fee4d7f"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/tools/capture_graphics_suite.js",
+      "bytes": 13297,
+      "sha256": "55886674cfc130fce71c3fa7be364dce957db84acf1e486ccb29699982bd3080"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/tools/cdp_playwright.js",
+      "bytes": 19768,
+      "sha256": "63e1b9d21f63c2a44a6cbbbb2b92a633507b2bf994a3b7c2fdbc5151681f412d"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/tools/extract_data.js",
+      "bytes": 8915,
+      "sha256": "f0ca1b3eaf587257bc372400ff1a5e7b843f95097f5a5841888278489516e09f"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/tools/generate_item_atlas.py",
+      "bytes": 30308,
+      "sha256": "e44c48032efa85654b141a67944d07663d280fab86aee2f4a6a8fec43c947ac5"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/tools/migrate_source.js",
+      "bytes": 33280,
+      "sha256": "08ef4a11a04392623d06c82fd99fae196aab9c5f7e180b4d92f685a0723b5133"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/tools/package_release.py",
+      "bytes": 8755,
+      "sha256": "d0769c683d3997bce9b488e0bfed277f87559170c519d1f67ed75f5b071d054d"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/tools/run_fishing_sim_180d.js",
+      "bytes": 5743,
+      "sha256": "f8bed9bcfcbe34dfe3bce86af8d646aab4a74fe11c0faccaeb95a20ac60282bc"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/tools/run_npc_overhaul_360d.js",
+      "bytes": 6860,
+      "sha256": "9b7ca9f70f70286e647e73609b514f8c6a9a04a0a4c527d515edbc4a12232893"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/tools/run_parallel_tests.js",
+      "bytes": 4645,
+      "sha256": "f49c7308e6d2e20d09cfe6cf0f1dbd5a98a99450217400f1262d7f8df704f070"
+    },
+    {
+      "path": "GAME_SOURCE/JianghuSect_v1.10/tools/run_visitors_clues_sim.js",
+      "bytes": 5233,
+      "sha256": "bb86435d8d96ce97e4c57e14b62d990ec8a055948ffa2ec06ad1db144b1acf61"
+    },
+    {
+      "path": "HANDOFF.md",
+      "bytes": 4611,
+      "sha256": "b7fe757371511e98c0a409ebfd2d7e429e6251f948abc555327dd1b9a9203307"
+    },
+    {
+      "path": "JianghuSect_single.html",
+      "bytes": 3582995,
+      "sha256": "57c65c23ed4cd97657ebea85bc484a8ec995099ac8980be6394c36676dc8ec41"
+    },
+    {
+      "path": "PROMPT/GEMINI_COMMAND_TO_SEND.md",
+      "bytes": 3738,
+      "sha256": "0f6d192b94c69d5430b789d707959c64131be858975f08e42248420e53ed037a"
+    },
+    {
+      "path": "PROMPT/GEMINI_CONTINUATION_PROMPT_V2_0_2_EN.md",
+      "bytes": 8535,
+      "sha256": "fb56f6136f058afd9842501641e3d9922415e53bcda643681b20eaa91daad9f3"
+    },
+    {
+      "path": "PROMPT/GEMINI_IMPLEMENTATION_PROMPT_EN.md",
+      "bytes": 42852,
+      "sha256": "0228266023937fe4de6d1a21a0a301f2e3395485f59439b3359f55460c33a43c"
+    },
+    {
+      "path": "README_TH.md",
+      "bytes": 5169,
+      "sha256": "7ce6ae9668ab15709e914deb21a8bb0690157fed5a80c46a900b6274bea9ecf6"
+    },
+    {
+      "path": "REFERENCE/BASELINE_HANDOFF.md",
+      "bytes": 1743,
+      "sha256": "0c3cee0e6201c92189377af344ce177bc1c41568e4330f7300630ff74b9255ce"
+    },
+    {
+      "path": "REFERENCE/BASELINE_README.md",
+      "bytes": 482,
+      "sha256": "1883e3849bdc68773a31b0ed4130b1def7b6738d10e96ff354ca3fd505a226c1"
+    },
+    {
+      "path": "REFERENCE/HISTORICAL_DOCS_NOTICE.md",
+      "bytes": 1343,
+      "sha256": "299fbb75eddaa374fc597282dd9650a508bd0fccfd0aaabf92d7f4ab1678d70a"
+    },
+    {
+      "path": "REFERENCE/HISTORICAL_EDIT_HUB_REVIEW_v0.3.md",
+      "bytes": 14140,
+      "sha256": "ab145e4f870653cce0e4cf15a02ce516d4828d4f6af68bcfacdf2f438e7d92a0"
+    },
+    {
+      "path": "REFERENCE/HISTORICAL_ELEMENT_SYSTEM_ROADMAP_v0.1.docx",
+      "bytes": 49845,
+      "sha256": "29907c3771aa42eb462f5c08b543e012831f7993b991993d4d5cd9a840a01177"
+    },
+    {
+      "path": "REFERENCE/HISTORICAL_ELEMENT_SYSTEM_ROADMAP_v0.2.docx",
+      "bytes": 48285,
+      "sha256": "befede6c8ad6edd513587b0926b4811b7f1a41a19b2235b480deb3ee0b506c92"
+    },
+    {
+      "path": "REFERENCE/HISTORICAL_ROOTS_NPC_DESIGN_v0.5.md",
+      "bytes": 16951,
+      "sha256": "973e3a76de0cb1e5737177ba1b1c8c269739b8fa7cba9956b430ff3a8726e414"
+    },
+    {
+      "path": "REFERENCE/HISTORICAL_ROOT_DESIGN_DECISIONS_v0.4.docx",
+      "bytes": 44483,
+      "sha256": "faa85b6657c0e8637b89ea584ce849a6135f2dd5637eb1dfccfb604e10e2fa19"
+    },
+    {
+      "path": "REFERENCE/affinity_ui_reference_crop.png",
+      "bytes": 154669,
+      "sha256": "f428e1fa946c08f339f1f4a78c2287accbeb6aa1baa679519a220e2ab2ea4dd3"
+    },
+    {
+      "path": "REPORTS/BALANCE_AND_RARITY_REPORT.md",
+      "bytes": 8785,
+      "sha256": "8a17313a718dc29b4ca6353209ed2c18d7bfd2126022e12263ed02a7cdf19e61"
+    },
+    {
+      "path": "REPORTS/BUG_AUDIT_V2_POST_REVIEW_TH.md",
+      "bytes": 8795,
+      "sha256": "389514d733f409f48f6cd71ecdbee95aa28acdbb780de55dad755eee3384975d"
+    },
+    {
+      "path": "REPORTS/CONTENT_AUDIT_MANIFEST.json",
+      "bytes": 620302,
+      "sha256": "c4c0668e045ea6606d95e2df6d95172b384a8968df548d8ee9039ea1b339037d"
+    },
+    {
+      "path": "REPORTS/EDIT_HUB_COVERAGE_REPORT.md",
+      "bytes": 2045,
+      "sha256": "83d36f9bbc19e2b3b128a246ff4cb4df19eb8e9e1e2dc22b0af2949c386c0332"
+    },
+    {
+      "path": "REPORTS/GENERATION_RATE_AUDIT_2026-10-31.json",
+      "bytes": 1463,
+      "sha256": "efd9df2ebebef58328683407e888c4438190f57d59dcb4ca921c26401f648888"
+    },
+    {
+      "path": "REPORTS/IMPLEMENTATION_REPORT.md",
+      "bytes": 6432,
+      "sha256": "d92503e7cad5638f1d1728d3962b8139148a382e25e1c5c50f44493cc9d7b434"
+    },
+    {
+      "path": "REPORTS/NEXT_PATCH_GAMEPLAY_FINDINGS_V2.md",
+      "bytes": 11198,
+      "sha256": "1728dcc1e061ad17e6ad2595405bc2ea045478af9a2f2ddd703535d00ada7cb9"
+    },
+    {
+      "path": "REPORTS/NPC_AI_INTEGRATION_REPORT.md",
+      "bytes": 2776,
+      "sha256": "5765cfa6d97ecf9af4a5dde0bd30934d0b03fa0b8a2c611daa9c4603edeb97d4"
+    },
+    {
+      "path": "REPORTS/PATCH_1_12_7_IMPLEMENTATION_REPORT_TH.md",
+      "bytes": 4181,
+      "sha256": "f083770078e129d3524e28b2c3377858950fe6df5cfa6fa407c921b15b573502"
+    },
+    {
+      "path": "REPORTS/POST_RELEASE_CODEX_REVIEW_TH.md",
+      "bytes": 7235,
+      "sha256": "95edd470b4b501e816344da58de4ca369c0cd02a86cd3a9a43e0a625871f8fe1"
+    },
+    {
+      "path": "REPORTS/codex_review_2026-10-31.json",
+      "bytes": 33224,
+      "sha256": "ccb84d499460b120f1899ded9fba42ad076d76ec1235116454f650bebd55e127"
+    },
+    {
+      "path": "REPORTS/parallel_audit_latest.json",
+      "bytes": 32359,
+      "sha256": "1418a351eecf2f56005e55862532a3bc3678a0a43f8aed0b27bd8228ffb0a66c"
+    },
+    {
+      "path": "REPORTS/parallel_audit_patch_1_12_7.json",
+      "bytes": 32359,
+      "sha256": "1418a351eecf2f56005e55862532a3bc3678a0a43f8aed0b27bd8228ffb0a66c"
+    }
+  ]
+}

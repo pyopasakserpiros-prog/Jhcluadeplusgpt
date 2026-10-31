@@ -1,0 +1,491 @@
+{
+  "date": "2026-10-31T03:28:07.897Z",
+  "node": "v22.16.0",
+  "mode": "parallel regression audit",
+  "maxWorkers": 3,
+  "perTestTimeoutMs": 110000,
+  "durationSec": 20.563,
+  "summary": {
+    "total": 68,
+    "pass": 68,
+    "fail": 0,
+    "timeout": 0
+  },
+  "results": [
+    {
+      "test": "martial_retraining",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.509,
+      "output": "PASS29 skill effects/training, matching weapons, atomic explicit retraining, cost-aware preparation and review regressions\n"
+    },
+    {
+      "test": "martial_paths",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 1.624,
+      "output": "PASS martial paths: finite knowledge, economy, rarity, exclusive paths, typed gear, progression and pure scoring\n"
+    },
+    {
+      "test": "core_lock",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.222,
+      "output": "PASS fingerprint 155:2f9c9dd7 == 155:2f9c9dd7\nPASS personality 14 / values 8 / aptitudes 6\nPASS validate 3 npcs\nPASS compare A≠B (25%), A=A (100%)\nPASS save carries fingerprint\n"
+    },
+    {
+      "test": "legendary_spawn_gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.293,
+      "output": "PASS legendary shared rarity gate across all zones\n"
+    },
+    {
+      "test": "npc_cognition",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.899,
+      "output": "PASS cognition: read-only explanation, authority, emergencies, goal continuity, outcome memory, bounded save-safe state\n"
+    },
+    {
+      "test": "npc_offices",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.683,
+      "output": "PASS new offices: real appointments, suitability, work locations, useful directives, authority and personality\n"
+    },
+    {
+      "test": "npc_command",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.281,
+      "output": "PASS commander leads real raid and future offices remain dormant\n"
+    },
+    {
+      "test": "npc_social_help",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.264,
+      "output": "PASS social help: real transferred medicine, preserved quality, no free pills or points\n"
+    },
+    {
+      "test": "cp_economy",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.661,
+      "output": "PASS contribution economy: scarcity pricing, basic recipes, sourced crafting, truthful handover, personal donation, one-time study payment, no free starting pills, zero-balance preservation, save/load inventory, true pill consumption, premium pill shop, adaptive price index, paid guidance service, paid training sink\n"
+    },
+    {
+      "test": "speed_controls",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.05,
+      "output": "PASS speed button list: 0×, 1×, 2×, 4×, 8×, 16×, 32×, 48×\nPASS clicking 16× and 32× changes G.speed and refreshes the HUD\nPASS mobile speed-button layout rule and 32× performance test coverage\nNOTE: full simulation throughput still needs a browser/device benchmark\n"
+    },
+    {
+      "test": "time_controls",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.036,
+      "output": "PASS time controls: 16×, 32×, 48× retained; pending ticks preserved; high-speed rendering throttled; mobile layout responsive\n"
+    },
+    {
+      "test": "runtime_timing",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.058,
+      "output": "PASS runtime timing: 1/2/4/8/16/32/48x, full stalled elapsed time, 12 ms budget, preserved backlog, pause, save/load, fresh world clocks, legacy save defaults\nPASS runtime error recovery: load/new game clear stale errors and subsequent failures pause again\nPASS legacy browser load restores paused and accelerated saves without runtimeTiming\n"
+    },
+    {
+      "test": "craft_transactions",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.892,
+      "output": "PASS inventory rejects negative and non-finite quantities\nPASS craft completion without paid inputs produces nothing\nPASS starting one action twice spends its ingredients once\nPASS basic crafting grants output and contribution rewards once\nPASS brew completes its paid recipe and grants native rewards once\nPASS forge completes its paid recipe and grants native rewards once\nPASS paid craft survives save/load and rejects replay after another reload\nPASS a receipt cannot pay for another actor or recipe\nPASS failed crafting can return paid materials only once\nPASS duplicate recipe inputs are reserved atomically\nPASS legacy direct API still requires a consumable reservation\nPASS legacy paid action adoption does not charge its inputs again\nPASS a replacement craft invalidates an interrupted receipt without refunds\nPASS stale actor receipts can be pruned without returning consumed materials\nPASS discoverable recipes require knowledge as well as the normal tier gate\nPASS native crafting revalidates discovered recipe requirements at start\nPASS craft duration uses its captured recipe when the hall order changes\n"
+    },
+    {
+      "test": "content_expansion",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.622,
+      "output": "PASS content integrity, new branches/combat, discovery gates, renewable stocks, exactly-once handover, compatibility\n"
+    },
+    {
+      "test": "content_economy",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.626,
+      "output": "PASS new subpaths have distinctive stat and affinity effects\nPASS physical imported goods can be donated, sold, consumed with exact transfers\nPASS stale or forged shop prices cannot charge or create corrupt balances\nPASS wrong cultivation affinity does not buy or consume specialized medicine\nPASS new regional expedition resolves once, roundtrips outcomes and formula access\nPASS paid imported technique selects and charges the same manual only once\nPASS legacy paid crafting migrates without consuming inputs a second time\nPASS 7 content economy integration checks\n"
+    },
+    {
+      "test": "content_discovery",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.465,
+      "output": "PASS starting curriculum gating and regional acquisition provenance\n"
+    },
+    {
+      "test": "exploration_replay",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.412,
+      "output": "PASS cave/realm rewards, progress, logs and RNG settle once across reload\n"
+    },
+    {
+      "test": "ui_content",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.373,
+      "output": "PASS native UI content, discovery locks, personal formula scrolls, external market panel/map marker and existing world/sect tab renderers\n"
+    },
+    {
+      "test": "legacy_save",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.323,
+      "output": "PASS v2 save schema & synthetic save: v2 roots/mastery, identities, progression, inventory, CP, library, RNG, season and paid craft resume\n"
+    },
+    {
+      "test": "save_integrity",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.441,
+      "output": "PASS a paused save remains paused after loading\nPASS missing legacy speed still defaults to normal playback\nPASS a failed map import preserves the running game clocks\nPASS a failure during extension migration preserves the running game clocks\nPASS rejects nonnumeric simulation time without affecting the running game\nPASS rejects incomplete RNG state without affecting the running game\nPASS rejects duplicate NPC identities without affecting the running game\nPASS rejects missing log storage without affecting the running game\nPASS rejects negative playback speed without affecting the running game\nPASS rejects missing map seed without affecting the running game\nPASS rejects missing NPC sequence without affecting the running game\nPASS rejects missing log sequence without affecting the running game\nPASS a successful import publishes the restored simulation clocks\n"
+    },
+    {
+      "test": "test_runner",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.038,
+      "output": "PASS test runner: denied spawn, timeout, assertion failure, and successful child process\n"
+    },
+    {
+      "test": "beast_ecology",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.306,
+      "output": "PASS regional beasts stay in their habitats; native sect raids cannot create rare parts\n"
+    },
+    {
+      "test": "external_market",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.607,
+      "output": "PASS external market: sect purchase/sale, member purchase/sale, quote safety, save/load, and visit cycle\n"
+    },
+    {
+      "test": "recipe_scroll_lifecycle",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.546,
+      "output": "PASS recipe scroll lifecycle & anti-arbitrage: single discovery, keep/copy/trade/donate, 0-CP duplicate donation, one-time authorization fee, save/estate recovery, and zero purchase/donate arbitrage\n"
+    },
+    {
+      "test": "specialization_tracks",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.354,
+      "output": "Testing independent specialization tracks (v1.10.3)...\nPASS 1: Catalog & Track registry preserves all 9 ordinals without position compression\nPASS 2: Track state initialization and awakening lifecycle\nPASS 3: Dual progression and thresholds\nPASS 4: Explicit skill and resource gates validation\nPASS 5: Breakthrough resolution, cost deduction, and failure retreat\nPASS 6: Functional combat power and cross-path power comparison\nPASS 7: Specialization track realm buffs applied to combat stats\nPASS 8: Serialization and save compatibility\nALL SPECIALIZATION TRACK CHECKS PASSED.\n"
+    },
+    {
+      "test": "combat_passives",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.436,
+      "output": "Testing richer path-specific passives & combat profiles (v1.10.4)...\nPASS 1: Explicit combat profiles (support, heal, summon, channel) & summary text\nPASS 2: Support target handler (C.alliesOf) and party buff execution\nPASS 3: Heal target handler (lowestAlly) and debuff cleanse execution\nPASS 4: Summon creation, target aggregation, damage absorption, and clean despawn\nPASS 5: Channeled ability tick execution, interrupt handling, and completion\nPASS 6: Subpath passives alignment and descriptive text matching native effects\nALL COMBAT PASSIVES AND SPECIALIZATION PROFILE CHECKS PASSED.\n"
+    },
+    {
+      "test": "skill_visual_events",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.541,
+      "output": "PASS shared skill visuals: ordinary/forbidden active casts, target binding, cooldown, silence, stun, nonlethal gate, basic attacks\n"
+    },
+    {
+      "test": "skill_visual_browser",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 1.44,
+      "output": "PASS browser skill visuals: two shared styles, pause, expiry, no replay, load baseline and 24-effect cap\n"
+    },
+    {
+      "test": "cave_pools",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.484,
+      "output": "PASS ten cave themes, weighted bounded subsets, seeded variety, actual expedition journal, save/resume, guardians and replay protection\n"
+    },
+    {
+      "test": "coherent_regions_recipes",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.668,
+      "output": "PASS coherent_regions_recipes: 6 biomes, 10 beasts, 14 recipes, 40 materials, 100% closed-loop ecology and dependency completeness\n"
+    },
+    {
+      "test": "welfare_production_policies",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.412,
+      "output": "Testing Wider Welfare & Production Policies (v1.10.6)...\nPASS welfare_production_policies: reserve directives, visible shortages, need/bias welfare, premium protection, and save compatibility verified.\n"
+    },
+    {
+      "test": "welfare_authority",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.338,
+      "output": "PASS welfare authority: appointed acting officer, restoration, physical stock, absence\nPASS acting deputy, stable audit record, save/load and master fallback\n"
+    },
+    {
+      "test": "personal_crafting",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.404,
+      "output": "PASS personal crafting purchase, quality and once-only donation\nPASS purchased-only anti-arbitrage and failed purchase rollback\nPASS autonomous personal production selects an actual alchemy station and uses result\nPASS donated quality persists into stock and improves actual healing\nPASS hunter uses and consumes crafted medicine during combat\n"
+    },
+    {
+      "test": "cp_supply_pressure",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.228,
+      "output": "PASS contribution rewards respond to extreme oversupply and stay positive without shop arbitrage\n"
+    },
+    {
+      "test": "onmap_wildlife",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.412,
+      "output": "PASS on-map wildlife zones, neutral behavior, real drops, no replay, legendary expiry and save\nPASS deterministic spawning, peaceful proximity, exterior boundary and autonomous hunter route\n"
+    },
+    {
+      "test": "browser_mobile_perf",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 12.02,
+      "output": "PASS browser_mobile_perf: 360px/412px/1280px viewports, gestures, 24 panel tabs, save/load, 0x-48x speeds, 80-NPC stress (0.845 ms/tick, 295.8x cap)\n"
+    },
+    {
+      "test": "input_cancellation",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 1.558,
+      "output": "PASS input cancellation: selection/follow preserved, ordinary tap works, minimap drag stops\n"
+    },
+    {
+      "test": "startup_ui",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 5.982,
+      "output": "PASS startup load menu exposes only actions available without a world\nPASS cancelling startup load restores the same selectable candidates\nPASS gameplay navigation before loading returns safely to startup\nPASS loading a saved slot enters the world and retains the normal game menu\nPASS a corrupt saved slot remains recoverable\nPASS a failed file import can be retried with a valid save\nPASS a successful import dismisses an open startup overlay\n"
+    },
+    {
+      "test": "demon_heartsoul_paths",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.397,
+      "output": "Testing Priority P3: Native DEMON and HEART_SOUL paths (v1.10.8)...\nPASS 1: Native DEMON and HEART_SOUL major paths (9 stages, 4 subpaths each) registered\nPASS 2: All 8 DEMON and HEART_SOUL subpaths have 9-realm independent tracks with lifestealPct/reflectPct\nPASS 3: Autonomous path selection and awakening for DEMON and HEART_SOUL\nPASS 4: Distinct strategic training costs, risks, and cultivation tick mechanics verified\nPASS 5: Stats parity, mantras, bottleneck pills/treasures, and skill profiles verified\nPASS 6: Combat lifesteal, reflection, blood harvest, and spar tempering verified\nPASS 7: UI rendering and save/load roundtrip verified\nALL DEMON AND HEART_SOUL PATH CHECKS PASSED (v1.10.8).\n"
+    },
+    {
+      "test": "organs_experiments_politics",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.376,
+      "output": "PASS v1.10.9 rare organs, property experimentation, factions/world politics, synergies, save/load, and UI rendering\n"
+    },
+    {
+      "test": "standalone",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.592,
+      "output": "PASS standalone:40 actual inline scripts, no external runtime files, initialized globals,external market,wild resources,24-hour native simulation and save/load\n"
+    },
+    {
+      "test": "recipe_coverage",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.558,
+      "output": "PASS all 14 imported recipes: native skill gates, actual inputs, functional outputs and replay rejection\n"
+    },
+    {
+      "test": "autonomous_economy_facilities",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.704,
+      "output": "Testing Autonomous Economy & Facility Expansion...\n  PASS: Scenario 1 - Inventory overflow and surplus sales\n  PASS: Scenario 2 - Shortages and external purchasing\n  PASS: Scenario 3 - No merchant availability\n  PASS: Scenario 4 - Insufficient spirit stones / cash reserve protection\n  PASS: Scenario 5 - Emergency and welfare reserve protection\n  PASS: Scenario 6 - Duplicate transaction prevention\n  PASS: Scenario 7 - Donation-crafting-purchase arbitrage protection\n  PASS: Scenario 8 - CP issuance, spending, and circulation tracking\n  PASS: Scenario 9 - Sustained facility congestion tracking\n  PASS: Scenario 10 - Construction completion and usable capacity expansion\n  PASS: Scenario 11 - Multiple simultaneous NPC demands\n  PASS: Scenario 12 - Save/load continuity\n  PASS: Scenario 13 - Multiple deterministic simulation seeds\n  PASS: Scenario 14 - Facility demand decay resets stale congestion\n  PASS: Scenario 15 - Active sustained congestion triggers upgrade lifecycle and prevents duplicate expansion\n  PASS: Scenario 16 - Multi-zone outer beasts, multi-pools, perimeter gates, and loot flow\n  PASS: Scenario 17 - Rich wuxia event logging and multi-category filtering\nALL 17 AUTONOMOUS ECONOMY, WILDLIFE & LOGGING TESTS PASSED.\n"
+    },
+    {
+      "test": "ecology_expansion",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.469,
+      "output": "Testing Living Beast & Craft Ecology Expansion (v1.10.12)...\n  Testing Catalog Integrity & Manifest Counts...\n    PASS: 80 species, 160 materials, 80 recipes (48 pills + 32 equipment) verified unique with zero dangling IDs\n  Testing Wildlife Spawning, Legendary Cap & Ordinary Isolation...\n    PASS: Wildlife spawning, ordinary isolation, and global legendary cap 1 verified\n  Testing Combat Victory, Drops, Merit & Idempotency...\n    PASS: Real combat victory awards drops & merit idempotently with no double-loot\n  Testing Material Donation, CP Minting & Anti-Arbitrage...\n    PASS: Personal beast material donation converts to sect stock and CP correctly\n  Testing Crafting Lifecycle for ECO2_ Pills and Equipment...\n    PASS: Real crafting lifecycle for pills and equipment functions accurately\n  Testing NPC Purchase of ECO2_ Combat Pills & preFight Consumption...\n    PASS: Member purchases and consumes ECO2_ combat buff pills before battle\n  Testing Save/Load Round-Trip Continuity & Determinism...\n    PASS: Save/load serialization and deterministic seed execution verified\n  Testing Autonomous & In-Fight Usage of ECO2_ Healing Pills...\n    PASS: NPC healing pill selection, consumption decrement, threshold gating, and fightUse verified\n  Testing Combat Poison (clearPoison) vs Cultivation Toxic (clearToxic)...\n    PASS: clearPoison clears combat status from npc.sx without confusing with cult.toxic\n  Testing Terrestrial vs Aquatic Habitat Isolation & Full 80 Species Encounter Coverage...\n    PASS: 0 aquatic beasts on land map; water expedition encounters verified; 100% of 80 species reachable\n  Testing External Market High-Tier Materials, ECO2_ Pills & Arbitrage Protection...\n    PASS: External market high-tier material & pill trading, stone exchange, and reserve floor verified\nALL ECOLOGY EXPANSION TESTS PASSED.\n"
+    },
+    {
+      "test": "world_rank",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.318,
+      "output": "--- Testing World Rank & Rank-Based Pools ---\nPASS monotonic mapping across all 5 paths and all stages\nPASS rational arithmetic boundary rounding (> 0.75 remainder)\nPASS gear/buff/HP/mental invariance of world rank\nPASS retraining stage reset updates world rank\nPASS party departure snapshots partyRank and commits site/pool\nPASS Fortune registry data-driven 4 ranks x 3 themes x 2 pools\nPASS Myriad Worlds 12 worlds x 4 ranked areas with static calibrated reference foe power\nPASS Myriad Worlds departure records partyRank and rankArea\nALL World Rank & Rank-Based Pools tests PASSED.\n"
+    },
+    {
+      "test": "wild_resources",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 1.259,
+      "output": "--- Testing Finite Outdoor Resource Gathering & Medicine Economy ---\nPASS active node cap 48 respected\nPASS nodes placed strictly outside wall and herbs in safe belt vicinity\nDistribution over 1500 nodes: BasicHerb=70.4%, Ore=12.0%\nPASS resource categories and basic herb weights verified\nPASS claim leasing, mutual exclusion, and robust release on interruption\nPASS finite harvesting directly into n.inv.mats with 0 CP minted\nPASS node exhaustion removal\nPASS SECT.donateMat material deduction, sect stock addition, and CP reward\nPASS donated herbs -> actual brewing -> shop purchase -> healing and unit consumption\nPASS save/load serialization preserves wildResources\nALL Finite Outdoor Resource Gathering & Medicine Economy tests PASSED.\n"
+    },
+    {
+      "test": "wildlife_batches",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.223,
+      "output": "--- Testing Bounded Wildlife Batches & Safe Belt Isolation ---\nPASS initial batch refill spawned 1 beasts (within 1..3 bounds)\nPASS hard cap 12 respected over multiple ticks (count: 10)\nPASS refills distributed across least-populated exterior zones\nPASS aggressive and tier >= 3 beasts excluded from spawning in safe belt\nPASS aggressive beasts blocked from initiating combat inside safe belt\nPASS aggressive beasts wander and aggro boundary excludes safe belt\nPASS legendary cap <= 1 strictly preserved\nALL Bounded Wildlife Batches & Safe Belt Isolation tests PASSED.\n"
+    },
+    {
+      "test": "wildlife_spawn_integrity",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.281,
+      "output": "Testing wildlife spawn habitat, pool, tier, and rarity integrity...\n  PASS: 114 pool species references match their declared tier, habitat, and drop data\n  PASS: targeted spawns enforce zone, pool, tier, and ordinary/legendary constraints\n  PASS: empty named pools fail safely without losing habitat identity\n  PASS: tier-4 blood fiend hound is no longer excluded by its pool range\nALL WILDLIFE SPAWN INTEGRITY TESTS PASSED.\n"
+    },
+    {
+      "test": "outside_audit",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.691,
+      "output": "PASS safe gathering remains reachable through the two tiles just outside the gate\nPASS basic herb job refuses an unsafe destination even when it is the only node\nPASS legendary spawn cannot bypass safe-belt exclusion\nPASS resource placement rejects isolated passable islands\nPASS learned recipes outside the scroll bag can motivate retaining gathered herbs\nPASS alchemy fortune trial uses learned ALCHEMY proficiency\nPASS invalid donation quantities cannot consume stock or mint contribution points\nPASS failed movement releases the resource lease immediately\nPASS beginner gathering preference uses cultivation rank rather than sect office rank\nPASS uncollected dangerous nodes cannot fill the slots needed for safe basic herb supply\nPASS a real gathering action settles exactly once across a mid-action save/load\n"
+    },
+    {
+      "test": "outside_visual_browser",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 1.311,
+      "output": "PASS real Canvas resource rendering: both herb categories have leaves and material-specific petals\n"
+    },
+    {
+      "test": "gameplay_findings_patch",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.402,
+      "output": "--- Testing Gameplay Findings Patch (v1.10.14) ---\nPASS natural outdoor resource pool excludes manufactured formation flags\nPASS gathering duration and extraction efficiency scale gradually with skill\nPASS fortune proficiency check is strictly monotonic with no zero-skill discontinuity\nPASS expedition depart fairly distributes site selection among all matching biome sites\nPASS all 12 worlds have 2 distinct subpools per rank with calibrated non-combat DC\nPASS injured member with craft aptitude retains gathered herb, brews personal pill, and consumes for healing\nPASS broke disciple donates gathered herb for CP to survive\n\nALL GAMEPLAY FINDINGS PATCH TESTS PASSED (7/7).\n"
+    },
+    {
+      "test": "review_fixes",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.308,
+      "output": "PASS personal medicine responds to injury, toxicity and heart demon\n"
+    },
+    {
+      "test": "recruitment_queue_review",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.27,
+      "output": "PASS multiple applicants admitted without exceeding capacity\n"
+    },
+    {
+      "test": "phase1_recruitment_facilities",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.376,
+      "output": "Testing Phase 1: Recruitment Pipeline, Talent Distribution, CA/PA Privacy & Facility Caps...\n  PASS: Authoritative housing capacity (46 -> 100) and per-facility max levels\n  PASS: 5-tier applicant talent distribution and fame scaling\n  PASS: Strict CA vs PA separation in evaluation and UI\n  PASS: Queue cap, sanitization, officer availability, expiry, and recruitment drive\nALL PHASE 1 TESTS PASSED.\n"
+    },
+    {
+      "test": "phase2_edit_hub_inventory",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.297,
+      "output": "Testing Phase 2: Character Editor, Item Spawner, Anti-Minting & Bag/Stock UI...\n  PASS: Character editor validation, cultivation/gear reconciliation, derived stats, and undo\n  PASS: Item spawner across all categories, anti-minting guards, personal bag actions, and Edit Hub UI\nALL PHASE 2 TESTS PASSED.\n"
+    },
+    {
+      "test": "phase3_stock_distribution_log",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.311,
+      "output": "Testing Phase 3: Dynamic Stock Awareness, Autonomous Stock Distribution & Log Linking/Filtering...\n  PASS: Dynamic stock awareness, reserve protection, and autonomous gift distribution\n  PASS: Single-pass positional log linking (duplicate names, renames, buildings, deleted IDs) & sub-filters\n  PASS: Save/load round-trip preserves Phase 1-3 state\nALL PHASE 3 TESTS PASSED.\n"
+    },
+    {
+      "test": "technique_overhaul_suites",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.238,
+      "output": "PASS catalog IDs, passive availability, tier distribution and save/RNG\n"
+    },
+    {
+      "test": "patch_v1_12_suites",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.216,
+      "output": "PASS actual rank 1 tier 7 discovery and innate exclusion\n"
+    },
+    {
+      "test": "npc_life_authority_overhaul",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.537,
+      "output": "Running test/npc_life_authority_overhaul.js ...\nPASS npc_life_authority_overhaul: aspirations, goal continuity, station starvation fix, bounded knowledge, CA/PA separation, gear/loadout, commitments/reciprocity, office authority/delegation/abuse, flattery, and save/load determinism\n"
+    },
+    {
+      "test": "graphics_overhaul_suite",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.402,
+      "output": "PASS graphics_overhaul_suite: determinism, read-only purity, weapon/appearance cache invalidation, building Lv.1-3 sprites, 22 legendary motifs, and pause freeze verified\n"
+    },
+    {
+      "test": "visitors_clues_weapons_suite",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.571,
+      "output": "=== Running Visitors, Living Clues & Legendary Weapons Suite ===\nPASS visitors_clues_weapons_suite: 41/41 clue chains, 11/11 legendary weapons, outsider isolation, provenance & idempotency verified\n"
+    },
+    {
+      "test": "merchant_guest_lifecycle",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.224,
+      "output": "PASS merchant guest lifecycle: wallet/stock/wants survive return; malformed trader records are rebuilt by EXT; explicit merchants use market initialization\n"
+    },
+    {
+      "test": "elemental_generation_api",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.227,
+      "output": "PASS elemental generation API: normalized case-insensitive tags and deterministic forced roots work through SIM.buildNpc and SIM.addNpc\n"
+    },
+    {
+      "test": "codex_combined_review",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 1.095,
+      "output": "PASS story rewards require all completed nodes\nPASS legendary weapon cooldown survives save/load\nPASS expired clues cannot grant even with forced trial success\nPASS daily planning does not complete local activity\nPASS completed clues do not exhaust the active opportunity budget\nPASS clue departures preserve protected work and sleep\nPASS Item 1: Guardian encounter tactical combat & zero-survivor expedition guard\nPASS Item 2: 7 distinct clue resolution approaches\nPASS Item 3: Multi-region exterior traversal & knowledge scoping without leaking future steps or truth\nPASS Item 4: Companion consent, refusal reasons, and sect resource authorization\nPASS Item 5: Two-stage rarity roll and visitor general world news\nPASS Item 6: Readiness forecast, exponential backoff, and history cap\nPASS Item 7: Unique weapon lifecycle on death/retire and guest registry pruning\nPASS Item 8: Yitian shield-sever proc, Dagou redirection proc, and weapon balance benchmark\nPASS Item 9: Deterministic SECT.examineApplicant without PA leak & investigate_clue goal\nPASS Additional Requirement: Wuxia Item Icon Atlas (64 cells, 11 Legendary Weapons + 22 Legendary Techs unique, 0 border bleed)\nPASS Additional Requirement: Personal Bag, Sect Stock, and Sect Shop data builders & transaction parity\n"
+    },
+    {
+      "test": "inventory_grid_ui_suite",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 1.982,
+      "output": "Testing Wuxia Inventory Grid/List, Sect Stock & Shop UI...\n  PASS: 72-cell atlas, unique keys, and fish/container/trash mappings\n  PASS: 4 responsive page geometries and saved grid/list preference\n  PASS: personal bag, sect stock and shop builders preserve data and transaction rows\n  PASS: Personal Bag, Sect Stock and Sect Shop render in Grid and Classic List modes\n  PASS: Chromium UI interactions at 360x800, 800x360 and 1280x800; no horizontal overflow or browser errors\n  VIEWPORTS: [{\"width\":360,\"height\":800,\"cols\":5,\"rows\":3,\"perPage\":15,\"cssCols\":5,\"overflow\":false},{\"width\":800,\"height\":360,\"cols\":8,\"rows\":2,\"perPage\":16,\"cssCols\":8,\"overflow\":false},{\"width\":1280,\"height\":800,\"cols\":10,\"rows\":3,\"perPage\":30,\"cssCols\":10,\"overflow\":false}]\nALL INVENTORY GRID UI TESTS PASSED.\n"
+    },
+    {
+      "test": "fishing_river_suite",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 3.348,
+      "output": "Testing Southern Spirit River, Fishing, Mysterious Containers & Fish Utilization (v1.12.3)...\n  1. Testing Map Expansion (240x192), Southern Spirit River, Bridges & Station Reachability...\n    PASS: 240x192 map, impassable river water, 3 bridges, and 26 reachable fishing stations verified.\n  2. Testing Legacy Save Migration & Save/Load Round-Trip Idempotency...\n    PASS: Legacy save migration, receipt idempotency, and save/load round-trip verified.\n  3. Testing 10-Species Fish Catalog, Bounded Zone Depletion & Daily Recovery...\n    PASS: 10 fish species, bounded pool depletion, and daily natural recovery verified.\n  4. Testing Exact Probability Tables (4, 5, 6, 7 Tiers) & 100,000-Trial Monte Carlo Verification...\n    PASS: 100,000-sample Monte Carlo verified: Catch(Fish=89.94%, Box=10.05%), Open(Trash=49.89%, Ordinary=49.66%, Legendary=0.446%).\n  5. Testing Unique Legendary Artifact Non-Duplication & Empty-Pool Fallback...\n    PASS: All 33 unique legendaries claimed without duplication, and empty-pool fallback verified.\n  6. Testing Trash Non-Arbitrage, Fish Cooking, Bounded Food Buffs & Alchemy Recipes...\n    PASS: Trash protection, canteen fish cooking, foodBuff + appetite gate, and fish alchemy verified.\n  7. Testing Real NPC Fishing Activity (AI.ACTS.riverFish) Lifecycle...\n    PASS: Real NPC fishing lifecycle, movement, skill gain, and station release verified.\n  8. Testing Headless Chromium UI: River Dock Sheet, Atlas Cells 64..71, Container Opening, Cooking & Eating...\n    PASS: Headless Chromium UI verification passed with 0 errors and 0 overflow.\nALL SOUTHERN RIVER & FISHING TESTS PASSED.\n"
+    },
+    {
+      "test": "elemental_overhaul_suite",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSec": 0.789,
+      "output": "PASS elemental_overhaul_suite: 72/72 focused assertions; root validation, progression, special access, compatibility contexts, equipment synergy and save integrity verified\n"
+    },
+    {
+      "test": "syntax_check_all_js",
+      "status": "PASS",
+      "files": 137,
+      "failures": []
+    }
+  ]
+}
