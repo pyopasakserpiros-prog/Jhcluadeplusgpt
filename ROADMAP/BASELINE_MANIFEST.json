@@ -1,0 +1,286 @@
+{
+  "filename": "JianghuSect_v1-9_download.zip",
+  "sha256": "3d734684c4bcfa848e26a9528497d61ff9b6c890013e6ab658bba215eb658a78",
+  "files": [
+    {
+      "path": "JianghuSect_v1/README_TH.md",
+      "bytes": 24750,
+      "sha256": "cac9bfa3b66958f3f188a83342b15508fca262289cec4b058235b30c33f43c2c"
+    },
+    {
+      "path": "JianghuSect_v1/data/data_core.js",
+      "bytes": 124506,
+      "sha256": "261b89bb17a1ce48a95179aa77728de21936fe39c18071a7cb370337e0d3a3eb"
+    },
+    {
+      "path": "JianghuSect_v1/data/data_items.js",
+      "bytes": 98879,
+      "sha256": "d4fdb34f93e17216eee8fb48e5d321cab68375fce2bfdb67254b12d08bf0778d"
+    },
+    {
+      "path": "JianghuSect_v1/data/data_cult.js",
+      "bytes": 25683,
+      "sha256": "118e619add480024fd57df446b73e8c1d17765c99388cfae304964ce3dcfc98a"
+    },
+    {
+      "path": "JianghuSect_v1/data/data_beasts.js",
+      "bytes": 6646,
+      "sha256": "6b8bc5741f111fc0771b32131988e3a50693b7277423a68bacd4c51a870b2d3f"
+    },
+    {
+      "path": "JianghuSect_v1/data/data_cp.js",
+      "bytes": 2774,
+      "sha256": "9d39260eb5cb67601a7bd0169ef7a2b6b1fd12cc08e8fb06ad58e5ce941c054e"
+    },
+    {
+      "path": "JianghuSect_v1/data/data_cb.js",
+      "bytes": 2652,
+      "sha256": "1c0103a83b0b8494f37df31a35239236c79af2edcb6ea7b1f5d7b0b53cb86e3e"
+    },
+    {
+      "path": "JianghuSect_v1/data/data_tech.js",
+      "bytes": 132782,
+      "sha256": "748735c15dc0c272bddc6753ab86eeeaf6a5d1e6d5d0a4f8e1357b5606bd8c39"
+    },
+    {
+      "path": "JianghuSect_v1/data/data_bt.js",
+      "bytes": 6392,
+      "sha256": "68119f2556364196c533e047639f8291af0375401c8ab33a7aefdce7f7abfd42"
+    },
+    {
+      "path": "JianghuSect_v1/tools/build_single.js",
+      "bytes": 773,
+      "sha256": "36c867015b255f372f4d198434ac5a07589198e199961d647279c2785fee4d7f"
+    },
+    {
+      "path": "JianghuSect_v1/tools/extract_data.js",
+      "bytes": 8915,
+      "sha256": "f0ca1b3eaf587257bc372400ff1a5e7b843f95097f5a5841888278489516e09f"
+    },
+    {
+      "path": "JianghuSect_v1/css/style.css",
+      "bytes": 9108,
+      "sha256": "2f03547f4d5ee47a25c7a9484ded124aa1ceb72e539745c183ca7e8e96d2d85c"
+    },
+    {
+      "path": "JianghuSect_v1/test/cp_economy.js",
+      "bytes": 12493,
+      "sha256": "4dd54873008727471e6250bdc9a933519772967915628139e563a906ce9ac69c"
+    },
+    {
+      "path": "JianghuSect_v1/test/logs.js",
+      "bytes": 452,
+      "sha256": "2b271b6cdacfbcdb5e30385535fe74bed679b0e772fd9b94c004c83e8fe6cf5d"
+    },
+    {
+      "path": "JianghuSect_v1/test/bottleneck.js",
+      "bytes": 1714,
+      "sha256": "7efc32fb8048726278c67c7d73dec4198bba49aa9b02ff6a2b5989ff2c30c7a3"
+    },
+    {
+      "path": "JianghuSect_v1/test/soak.js",
+      "bytes": 1625,
+      "sha256": "1f591c98a024175e0e88ee9e377981ce4561dcab21beb4b5771deca68ed445e4"
+    },
+    {
+      "path": "JianghuSect_v1/test/load.js",
+      "bytes": 550,
+      "sha256": "9df424e54360919b9b920e27e1a869ac3da90024cd89d37182335607c6c520ee"
+    },
+    {
+      "path": "JianghuSect_v1/test/speed_controls.js",
+      "bytes": 2956,
+      "sha256": "061c817321edfecc8e6cdd12599713c28945dbbed136308d46cdbc8b84682fbf"
+    },
+    {
+      "path": "JianghuSect_v1/test/explore.js",
+      "bytes": 767,
+      "sha256": "e5f736ea6f72ba97cbd3b57ab01fe83d84bfc1a22864782b782a070eaccb424b"
+    },
+    {
+      "path": "JianghuSect_v1/test/perf.js",
+      "bytes": 1059,
+      "sha256": "edd12cebb26b34976a61021ef77ef55f405eae05bcaf0cae3b3118177af05280"
+    },
+    {
+      "path": "JianghuSect_v1/test/browser3.js",
+      "bytes": 1459,
+      "sha256": "2e7603edfb7ce261777df8a08ec6a14f4696e38801f2aa851ec4fd3d87cab912"
+    },
+    {
+      "path": "JianghuSect_v1/test/gesture.js",
+      "bytes": 2030,
+      "sha256": "d746603aab96d1015134e855df2e06babdbcf80b62efc016a08be7b84716f356"
+    },
+    {
+      "path": "JianghuSect_v1/test/cpeco.js",
+      "bytes": 922,
+      "sha256": "139979060afc25952a00adac1dde00fe55abfddb26cce2ff73da0a43d97d06c3"
+    },
+    {
+      "path": "JianghuSect_v1/test/time_controls.js",
+      "bytes": 1353,
+      "sha256": "ec991331931b7997270576a4ceace136d9919210f08ad6bb5ab355e292f95f76"
+    },
+    {
+      "path": "JianghuSect_v1/test/combat_stats.js",
+      "bytes": 1012,
+      "sha256": "4d9f81f74856f78c3be2300139e3b8d1d73044010d3aeee8794207dfdf212b9b"
+    },
+    {
+      "path": "JianghuSect_v1/test/core_lock.js",
+      "bytes": 1126,
+      "sha256": "edaf57b2c8ed1bb89775132ef807622887d24c3e947af0592cdc8d9c8149a6d1"
+    },
+    {
+      "path": "JianghuSect_v1/test/ledger.js",
+      "bytes": 923,
+      "sha256": "9bfcda867d8aa158a115ea444b0737c66e1070f694b181893c83b35a6b659b2c"
+    },
+    {
+      "path": "JianghuSect_v1/test/cp_soak.js",
+      "bytes": 3340,
+      "sha256": "9d53c00f5be951a1c2c808cd652baa65866442a3bee4274ff0ac805d66b025ee"
+    },
+    {
+      "path": "JianghuSect_v1/test/browser.js",
+      "bytes": 2012,
+      "sha256": "546ec45dc8c90a3e14fc86b12a02edd23655ef3c8a2d5ba9aa905d8c55f2effa"
+    },
+    {
+      "path": "JianghuSect_v1/test/browser2.js",
+      "bytes": 3090,
+      "sha256": "21b9bd28838824e9dcfb2069d1689b4d7d4f86c7892e10dd76119b5b94837ab2"
+    },
+    {
+      "path": "JianghuSect_v1/test/combat_balance.js",
+      "bytes": 5341,
+      "sha256": "2d5153ec5cbf5cece4d9e6ebdc22126f1df568dca16fa99a282956324c02b97b"
+    },
+    {
+      "path": "JianghuSect_v1/test/masters.js",
+      "bytes": 936,
+      "sha256": "1f2477d7699cf364703b1b2a3061d3d9542c82d908943866c62149b418c3def8"
+    },
+    {
+      "path": "JianghuSect_v1/js/world_map.js",
+      "bytes": 28957,
+      "sha256": "eb011c4a0a57d4c80b5697d73cf61db0f98db673a28c13f275ef231f69f3e89b"
+    },
+    {
+      "path": "JianghuSect_v1/js/bottleneck.js",
+      "bytes": 14265,
+      "sha256": "fcde3e1a779a159b5a089a3b0049f4a53598443deb8330f7ef9c76a384659ca7"
+    },
+    {
+      "path": "JianghuSect_v1/js/human_core.js",
+      "bytes": 68270,
+      "sha256": "a0d393284fb4b136848e5b80e12f3edd2c4f9437c419c793c2a7e75d881c0542"
+    },
+    {
+      "path": "JianghuSect_v1/js/combat.js",
+      "bytes": 33480,
+      "sha256": "744406c2787c6abee4be274885afd2bd2e8b1364b2a248e20f3ee66302a18f15"
+    },
+    {
+      "path": "JianghuSect_v1/js/expedition.js",
+      "bytes": 44099,
+      "sha256": "674686894b44c51521a59831cfa0a549849455e0d586e49004532b4910e1f8f0"
+    },
+    {
+      "path": "JianghuSect_v1/js/cultivation.js",
+      "bytes": 16366,
+      "sha256": "0db0f466f43a6dd028626089e4316e300069e3786c6fd6cccc19f1a7e88c8295"
+    },
+    {
+      "path": "JianghuSect_v1/js/sect.js",
+      "bytes": 43404,
+      "sha256": "82f06eedb9b2473e17dcb9161487431d4332a63b66dfd8dd255fffc911f1283c"
+    },
+    {
+      "path": "JianghuSect_v1/js/stats.js",
+      "bytes": 22503,
+      "sha256": "31feb628d9ec60a5c2967fea70b20c4310d9668695b9a6fe066c98b3dfc7148b"
+    },
+    {
+      "path": "JianghuSect_v1/js/util.js",
+      "bytes": 4022,
+      "sha256": "313627bd5e85dfd398aa6c14cea567fe3a5e3aac496c688784c3841888e7ef6f"
+    },
+    {
+      "path": "JianghuSect_v1/js/explore.js",
+      "bytes": 59929,
+      "sha256": "9064abd4245c07d06117793aa3f350fec70fa00da7f31e75f8ba99bd00e89536"
+    },
+    {
+      "path": "JianghuSect_v1/js/skills.js",
+      "bytes": 15611,
+      "sha256": "d0a8d9e597ebfc69395227a5c4ef2b592ed3ffe8394c20f86805b5ada64be5b1"
+    },
+    {
+      "path": "JianghuSect_v1/js/main.js",
+      "bytes": 7794,
+      "sha256": "58060b176a459a75367023c0f8b38db16895ff566b731af98ac596b2487899c0"
+    },
+    {
+      "path": "JianghuSect_v1/js/sim.js",
+      "bytes": 22732,
+      "sha256": "101dd72b7e2930a442423cca1a35d2a4a349adf8c0494df4e036afda50873f92"
+    },
+    {
+      "path": "JianghuSect_v1/js/cpeco.js",
+      "bytes": 41224,
+      "sha256": "16ed92369fab6e7aac22bdd62edae5259979706e59fe75a5e3e5141d4318cd07"
+    },
+    {
+      "path": "JianghuSect_v1/js/economy.js",
+      "bytes": 16849,
+      "sha256": "5391fa08a27918d4b36337e258cd4763c7cd14fe5c3fe60e1a370edab30289a8"
+    },
+    {
+      "path": "JianghuSect_v1/js/render.js",
+      "bytes": 54545,
+      "sha256": "5565f55174d7c25bcc9f812c677d14a5d761f8b86dcb46e2990473a64f40946d"
+    },
+    {
+      "path": "JianghuSect_v1/js/ai.js",
+      "bytes": 67139,
+      "sha256": "cf0abc2cf2aa283e193f805a43205572b4fac4b8daee4b8d30de6650d1cb8ef0"
+    },
+    {
+      "path": "JianghuSect_v1/js/ui.js",
+      "bytes": 71093,
+      "sha256": "05be567c4cf092ab645faea58cc347b8a4ffb1081c02c874329220835672ead3"
+    },
+    {
+      "path": "JianghuSect_v1/JianghuSect_single.html",
+      "bytes": 1044230,
+      "sha256": "882371bcab00c452de1942b8ddcd812159bc2377003f463f2f79da830b98592a"
+    },
+    {
+      "path": "JianghuSect_v1/index.html",
+      "bytes": 2501,
+      "sha256": "d93f7a631d053b5af8e5c610a0d2451f10052f495094151f0b4b1815b6214210"
+    },
+    {
+      "path": "JianghuSect_v1/docs/HUMAN_CORE_SPEC_TH.md",
+      "bytes": 39754,
+      "sha256": "f85d3cc644e3f10050ba78f3fbb9f7570269b9b183c2710eb5a2c59248051c65"
+    },
+    {
+      "path": "JianghuSect_v1/docs/CHANGELOG.md",
+      "bytes": 12152,
+      "sha256": "5b0675d3316b1088e59cb75185facc7d04e335a243a1ff94cb75295584843296"
+    },
+    {
+      "path": "JianghuSect_v1/docs/QA_REPORT_TH.md",
+      "bytes": 21023,
+      "sha256": "1993bda96219e385e831de9c995e052969c1a1a1610d7e0bef98732b0f83e428"
+    },
+    {
+      "path": "JianghuSect_v1/docs/KNOWN_LIMITATIONS_TH.md",
+      "bytes": 8606,
+      "sha256": "97803b39ddf12dab01b2dece166567093af44ae7208f82f4283c526f7cf57bfd"
+    }
+  ]
+}

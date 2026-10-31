@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "version": "1.10.9",
+  "checks": [
+    "required-files",
+    "all-entrypoint-dependencies",
+    "offline-standalone-execution",
+    "source-originals52",
+    "no-source-player-save-or-art",
+    "human-core-byte-lock",
+    "zip-crc-and-content-verified-after-build"
+  ],
+  "selectedOriginalFiles": 52,
+  "entrypointScripts": 29,
+  "originalArchiveEmbedded": false,
+  "sourceContinuationAvailable": true
+}

@@ -1,0 +1,205 @@
+{
+  "release": "2.08.3-academy-formula-schema-fix",
+  "simulationEnvelope": 11,
+  "scripts": [
+    {
+      "path": "source/scripts/legacy.bundle.js",
+      "sourceSha256": "605e8e3d9a2cf282f3be29dee6e124aeb5448af9b2f5ae005b147761404905b2",
+      "embeddedSha256": "605e8e3d9a2cf282f3be29dee6e124aeb5448af9b2f5ae005b147761404905b2"
+    },
+    {
+      "path": "source/scripts/living-content-v111.js",
+      "sourceSha256": "c5470e66c15b12a41816966b94eb50ea045fdd67704841b0975a5de255a9a2d3",
+      "embeddedSha256": "c5470e66c15b12a41816966b94eb50ea045fdd67704841b0975a5de255a9a2d3"
+    },
+    {
+      "path": "source/scripts/myriad-worlds-data.js",
+      "sourceSha256": "3561b4a7fb9563a16b15d268ff34d8c34eed61c2f40f3e1fb7917e754d621b2b",
+      "embeddedSha256": "3561b4a7fb9563a16b15d268ff34d8c34eed61c2f40f3e1fb7917e754d621b2b"
+    },
+    {
+      "path": "source/scripts/human.js",
+      "sourceSha256": "b230108298cae486c3dc6bf6698f0384ca67128b064ff3947f19fa6e5522328a",
+      "embeddedSha256": "b230108298cae486c3dc6bf6698f0384ca67128b064ff3947f19fa6e5522328a"
+    },
+    {
+      "path": "source/scripts/combat-data.js",
+      "sourceSha256": "ef77c236263b3fe1da166ea95de34ceba18dda588c76a1c519cdd82e15e63ec4",
+      "embeddedSha256": "ef77c236263b3fe1da166ea95de34ceba18dda588c76a1c519cdd82e15e63ec4"
+    },
+    {
+      "path": "source/scripts/sect-life.js",
+      "sourceSha256": "c992e2982e1f2ab17dc809c40f971077c1c8542aaf2eec7ed5f9e8a7a844636d",
+      "embeddedSha256": "c992e2982e1f2ab17dc809c40f971077c1c8542aaf2eec7ed5f9e8a7a844636d"
+    },
+    {
+      "path": "source/scripts/jianghu-data.js",
+      "sourceSha256": "5d31b7014a871b2c3f8be45732335151925fc6998a006ece9ba1a58fed437ed9",
+      "embeddedSha256": "5d31b7014a871b2c3f8be45732335151925fc6998a006ece9ba1a58fed437ed9"
+    },
+    {
+      "path": "source/scripts/jianghu.js",
+      "sourceSha256": "bda15c3f08883b7faba7335090bbbe9faa988350d929333830f8ef3c5e4bd20e",
+      "embeddedSha256": "bda15c3f08883b7faba7335090bbbe9faa988350d929333830f8ef3c5e4bd20e"
+    },
+    {
+      "path": "source/scripts/progression.js",
+      "sourceSha256": "8e13d7f8ed4edc7cf10f8c28489336efa18c62a6a9718a181d023a415be24b08",
+      "embeddedSha256": "8e13d7f8ed4edc7cf10f8c28489336efa18c62a6a9718a181d023a415be24b08"
+    },
+    {
+      "path": "source/scripts/academy.js",
+      "sourceSha256": "21a6201c64a5f11c818cfd35a3d53a4379c86860158f1b1bf896ef31e94332e4",
+      "embeddedSha256": "21a6201c64a5f11c818cfd35a3d53a4379c86860158f1b1bf896ef31e94332e4"
+    },
+    {
+      "path": "source/scripts/combat.js",
+      "sourceSha256": "517fe45210d048d78a3378f93cb6fb251675ba08dafc18bd4514e8fb13cd2335",
+      "embeddedSha256": "517fe45210d048d78a3378f93cb6fb251675ba08dafc18bd4514e8fb13cd2335"
+    },
+    {
+      "path": "source/scripts/combat-tactics.js",
+      "sourceSha256": "c2558268ed713f64c2f01e9d04c5262cc4bc7abf70abd86a272c440918cc7318",
+      "embeddedSha256": "c2558268ed713f64c2f01e9d04c5262cc4bc7abf70abd86a272c440918cc7318"
+    },
+    {
+      "path": "source/scripts/combat-stats.js",
+      "sourceSha256": "ec29283a73f574e89bd816a0aa11b5f50c5d5cb7c73fa99994b0752e811fc2c5",
+      "embeddedSha256": "ec29283a73f574e89bd816a0aa11b5f50c5d5cb7c73fa99994b0752e811fc2c5"
+    },
+    {
+      "path": "source/scripts/combat-overhaul.js",
+      "sourceSha256": "32e03c45f60b407889f4f93b15a87d163a8a26448e19d5f920ea5d12e4b5dd3b",
+      "embeddedSha256": "32e03c45f60b407889f4f93b15a87d163a8a26448e19d5f920ea5d12e4b5dd3b"
+    },
+    {
+      "path": "source/scripts/combat-view.js",
+      "sourceSha256": "6ed53aec29fac823a6ed6bc5b9d1efb5ef04ba2790a32a3c24a9d47761aa4637",
+      "embeddedSha256": "6ed53aec29fac823a6ed6bc5b9d1efb5ef04ba2790a32a3c24a9d47761aa4637"
+    },
+    {
+      "path": "source/scripts/discovery.js",
+      "sourceSha256": "fd1ce663a8543b0d8a6448835ab59c3b8d1db5161fb04156b0113b8e5740282b",
+      "embeddedSha256": "fd1ce663a8543b0d8a6448835ab59c3b8d1db5161fb04156b0113b8e5740282b"
+    },
+    {
+      "path": "source/scripts/myriad-worlds.js",
+      "sourceSha256": "b76f2a508b1ae75a711a37715278230f50f8bf6c7bb22ce6c8b42e9cd428085f",
+      "embeddedSha256": "b76f2a508b1ae75a711a37715278230f50f8bf6c7bb22ce6c8b42e9cd428085f"
+    },
+    {
+      "path": "source/scripts/story-sidequests.js",
+      "sourceSha256": "16881ce2d837c3c7265fb3e62de171a572944c337b65ce3b32fd2dde818f4836",
+      "embeddedSha256": "16881ce2d837c3c7265fb3e62de171a572944c337b65ce3b32fd2dde818f4836"
+    },
+    {
+      "path": "source/scripts/sect-contributions.js",
+      "sourceSha256": "e42b6e4fdb78f1df582870890d1db0ada4f52e0c09ef86466ec9fa65cc0504c7",
+      "embeddedSha256": "e42b6e4fdb78f1df582870890d1db0ada4f52e0c09ef86466ec9fa65cc0504c7"
+    },
+    {
+      "path": "source/scripts/sect-library.js",
+      "sourceSha256": "f32a26eb3d8ef67fb2aed352a0ee84def14747f28ce3faa41b218b5f0ab445fe",
+      "embeddedSha256": "f32a26eb3d8ef67fb2aed352a0ee84def14747f28ce3faa41b218b5f0ab445fe"
+    },
+    {
+      "path": "source/scripts/stage.js",
+      "sourceSha256": "fc627dde74ad9ee9b9900892c6d425c89016ec8326c15651f0c78b84d5d2a8aa",
+      "embeddedSha256": "fc627dde74ad9ee9b9900892c6d425c89016ec8326c15651f0c78b84d5d2a8aa"
+    },
+    {
+      "path": "source/scripts/sect-infrastructure.js",
+      "sourceSha256": "2405a60cbf939274463a7b0a78d4d538ae021ffda90a064742d27ffcbd836f8b",
+      "embeddedSha256": "2405a60cbf939274463a7b0a78d4d538ae021ffda90a064742d27ffcbd836f8b"
+    },
+    {
+      "path": "source/scripts/edit-hub.js",
+      "sourceSha256": "4f3e6ddcb623b7cf33c67b542e8bca9fd2bb413d1d38b34ba08ed504942e338e",
+      "embeddedSha256": "4f3e6ddcb623b7cf33c67b542e8bca9fd2bb413d1d38b34ba08ed504942e338e"
+    },
+    {
+      "path": "source/scripts/human-ui.js",
+      "sourceSha256": "29e65259452981eb26321c4bd3b46d586edc5fc1321fa299b98a1f1503d99227",
+      "embeddedSha256": "29e65259452981eb26321c4bd3b46d586edc5fc1321fa299b98a1f1503d99227"
+    },
+    {
+      "path": "source/scripts/sect-life-ui.js",
+      "sourceSha256": "237af346dc62ddcd5a0199560396562b7a48a66c1d1274d55484aa7267de75fc",
+      "embeddedSha256": "237af346dc62ddcd5a0199560396562b7a48a66c1d1274d55484aa7267de75fc"
+    },
+    {
+      "path": "source/scripts/jianghu-ui.js",
+      "sourceSha256": "c40c8e7aece26dd32c51d9a5be519871e62195f1236045a97e8851031e5d772f",
+      "embeddedSha256": "c40c8e7aece26dd32c51d9a5be519871e62195f1236045a97e8851031e5d772f"
+    },
+    {
+      "path": "source/scripts/jade-inventory.js",
+      "sourceSha256": "d56ba3fde0a75d6fbf3e06b24015fa2e22e838288ec96b924175b4cd5ada654e",
+      "embeddedSha256": "d56ba3fde0a75d6fbf3e06b24015fa2e22e838288ec96b924175b4cd5ada654e"
+    },
+    {
+      "path": "source/scripts/realm-sprites.js",
+      "sourceSha256": "c5d4f88f36fd9f224cd1225b0066724374e3b44a7ae1cd13ca7e18b9df47ff6a",
+      "embeddedSha256": "c5d4f88f36fd9f224cd1225b0066724374e3b44a7ae1cd13ca7e18b9df47ff6a"
+    },
+    {
+      "path": "source/scripts/progression-ui.js",
+      "sourceSha256": "7e133f5d3f2a435d56a135f29380b155bdd45226a89000ab881c0e987df2490e",
+      "embeddedSha256": "7e133f5d3f2a435d56a135f29380b155bdd45226a89000ab881c0e987df2490e"
+    },
+    {
+      "path": "source/scripts/art-assets.js",
+      "sourceSha256": "b1c09f519283ce31353c1d93c6b56dddb5417782c3426d4d11c865adcc610496",
+      "embeddedSha256": "52af42f472c9cd78bcd1bea4102dfa519ba949abdd0b1fffac75d64fbe1dac9e"
+    },
+    {
+      "path": "source/scripts/living-art.js",
+      "sourceSha256": "9365f71957e9970f1c6b6ff5551af675ef65c603a3a63fdc7c9948e802c6c942",
+      "embeddedSha256": "9365f71957e9970f1c6b6ff5551af675ef65c603a3a63fdc7c9948e802c6c942"
+    },
+    {
+      "path": "source/scripts/ui.js",
+      "sourceSha256": "88d1a35b85aa69211e7c9da38fcd4d4700a165766c94f8300d08f930874ba6b2",
+      "embeddedSha256": "88d1a35b85aa69211e7c9da38fcd4d4700a165766c94f8300d08f930874ba6b2"
+    }
+  ],
+  "assets": {
+    "NOTO_SANS_THAI_LICENSE.txt": {
+      "bytes": 4378,
+      "sha256": "bd85ada3eef71267263e0fd24a40ae20380015c7cf1afa0c27a4340b03431320"
+    },
+    "art-manifest.json": {
+      "bytes": 2437,
+      "sha256": "f6d6b922ede7f0b9916b040e32b93ff893b513985e6502287ef1e76b8988c665"
+    },
+    "gemini-atlas-1-0.webp": {
+      "bytes": 1143138,
+      "sha256": "dcdaa4967f2e1d02b9fe2ba696ad2dfd8febaa23a7aea497106a9acc8c0143f5"
+    },
+    "gemini-atlas-1-1.webp": {
+      "bytes": 1084968,
+      "sha256": "968b78033dd4cbeb69f3ce8157c8dea93fccf306e4bbf28cbdb1455758446b06"
+    },
+    "living-ink-buildings.webp": {
+      "bytes": 627052,
+      "sha256": "98bb0052a8c49f1b355b3be6528e0fb71e2f8a94406a02285faf61f006e16fc3"
+    },
+    "living-ink-environment.webp": {
+      "bytes": 836236,
+      "sha256": "9186f700c5953dc2392169bcfeddd2b77dca4f042f1ca641880b089c2a0b197b"
+    },
+    "noto-sans-thai-400.woff2": {
+      "bytes": 9112,
+      "sha256": "57776453076ebf0fa935080e63c0ae656f1f1ecd5172112d59d3b259e0dd8796"
+    },
+    "noto-sans-thai-600.woff2": {
+      "bytes": 9220,
+      "sha256": "8690b63cc8c7090492cce68f57a421be92fee4f682dff7ee06912132ebd2a8fc"
+    }
+  },
+  "standalone": {
+    "filename": "Jianghu_Ascension_Myriad_Worlds_v2_08_3.html",
+    "bytes": 26895092,
+    "sha256": "cf55cacc4aaa6209a83ca592810a7cfbf9f9afb5707aec0c2be77b9429c6849c"
+  }
+}

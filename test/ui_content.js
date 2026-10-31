@@ -1,0 +1,23 @@
+'use strict';
+const assert=require('assert'),G=require('./load');
+G.document={getElementById(){return {querySelectorAll(){return[];},style:{},classList:{add(){},remove(){}}};}};
+require('../js/ui.js');const {UI,SIM,JD,ECO,EXT,CONTENT:C}=G;
+const W=SIM.create('ui-content');UI.G={W,R:{},opts:{},acc:13,speed:32};UI.tab='content';
+let html=UI.rWorld();assert(html.includes('พื้นที่')||html.includes('เส้นทาง'));assert(!html.includes('undefined'));assert(!html.includes('NaN'));
+assert(html.includes('🔒'));for(const r of JD.EXPANSION.regions)assert(html.includes(r.nameTh));
+// Test personal scroll holder visibility in UI.rContent and UI.rNpc
+const heldRecipe=JD.EXPANSION.recipes[0];
+W.npcs[1].inv.recipes=[heldRecipe.id];
+C.grantRecipeAuth(W,W.npcs[1],heldRecipe.id);
+html=UI.rContent();assert(html.includes(heldRecipe.nameTh),'personally held formula should show its name and holder');assert(html.includes('ม้วนตำรับอยู่กับ'));
+UI.npcId=W.npcs[1].id;UI.tab='ov';
+const npcHtml=UI.rNpc();assert(npcHtml.includes('ม้วนตำรับ'+heldRecipe.nameTh),'NPC sheet should display held personal formula scroll');assert(npcHtml.includes('ตำรับที่ได้รับสิทธิ์ศึกษา'),'NPC sheet should display authorized formulas');assert(!npcHtml.includes('undefined'));assert(!npcHtml.includes('NaN'));
+W.npcs[1].inv.recipes=[];
+W.sect.knownRecipes=JD.EXPANSION.recipes.map(r=>r.id);W.sect.library.push(...JD.EXPANSION.techniques.map(t=>t.id));W.sect.recipeTier=3;
+html=UI.rContent();for(const r of JD.EXPANSION.recipes)assert(html.includes(r.nameTh));for(const t of JD.EXPANSION.techniques)assert(html.includes(t.nameTh));
+assert(html.includes('ค่าเรียน'));assert(html.includes('ค่าสิทธิ์ศึกษา'));assert(!html.includes('undefined'));assert(!html.includes('NaN'));
+for(const tab of ['exp','disc','sects','hist']){UI.tab=tab;assert(typeof UI.rWorld()==='string');}
+for(const tab of ['over','policy','posts','stock','shop','bld']){UI.tab=tab;assert(typeof UI.rSect()==='string');}
+const visitor=EXT.openVisit(W,{nameTh:'พ่อค้าทดสอบ UI',stones:500,stock:{'MAT_ORE_BLACK_IRON_1':3},wants:{'MAT_HERB_DEW_GRASS_1':2},stayDays:2});UI.tab='shop';html=UI.rSect();assert(html.includes('ตลาดภายนอก'));assert(html.includes('ขอสิทธิ์ตำรับ'));assert(html.includes(visitor.nameTh));assert(html.includes('ธุรกรรมภายนอกล่าสุด'));assert(!html.includes('undefined'));assert(!html.includes('NaN'));
+require('../js/render.js');const markerTexts=[];const ctx={font:'',textAlign:'',fillStyle:'',strokeStyle:'',lineWidth:1,measureText(t){return{width:t.length*5};},fillRect(){},strokeRect(){},fillText(t){markerTexts.push(t);},strokeText(){}};G.Render.methods.drawMarkers.call({W,cam:{z:1},selected:null},ctx);assert(markerTexts.some(t=>String(t).includes('พ่อค้า')),'active traders should be visible by the market map marker');
+console.log('PASS native UI content, discovery locks, personal formula scrolls, external market panel/map marker and existing world/sect tab renderers');
